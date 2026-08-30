@@ -30,13 +30,20 @@ export async function authMiddleware(
 }
 
 export function sanitizeId(id: string): string {
-  // Remove path traversal attempts and non-safe characters
-  return id
-    .replace(/[^a-zA-Z0-9-_]/g, "")
+  // Allow Chinese characters, keep path safe
+  let safe = id
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\u4e00-\u9fff\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
     .replace(/\.\./g, "")
     .replace(/^\.+/, "")
     .replace(/\.+$/, "")
     .slice(0, 100);
+  // Fallback for empty (e.g., pure symbols)
+  if (!safe) safe = `post-${Date.now()}`;
+  return safe;
 }
 
 export function sanitizeInput(input: string): string {

@@ -149,12 +149,13 @@ export function TiptapEditor({
       updateStats(editor);
       updateOutline(editor);
       triggerAutoSave(editor);
-      // Debounce preview update
-      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-      autoSaveTimerRef.current = setTimeout(() => {
-        const html = editor.getHTML();
-        setPreviewHtml(html);
-      }, 150);
+      // Immediate preview + immediate markdown sync for parent
+      const html = editor.getHTML();
+      setPreviewHtml(html);
+      if (onAutoSave) {
+        const md = tiptapJsonToMarkdown(editor.getJSON() as Record<string, unknown>);
+        onAutoSave(md);
+      }
     },
     onCreate: ({ editor }) => {
       updateStats(editor);

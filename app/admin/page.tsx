@@ -97,12 +97,16 @@ console.log("慢日志");
 };
 
 function slugify(s: string) {
-  return s
+  let safe = s
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9-_]+/g, "-")
+    .replace(/[^\w\u4e00-\u9fff\s-]+/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
+  if (!safe) safe = `post-${Date.now()}`;
+  return safe;
 }
 
 function catLabel(cat: string, t: ReturnType<typeof useLang>["t"]): string {
@@ -147,15 +151,14 @@ function AdminInner() {
   async function fetchPosts() {
     setLoading(true);
     try {
-      const res = await fetch("/api/posts");
-      if (!res.ok) {
-        throw new Error("Failed to fetch posts");
-      }
+      const res = await fetch("/api/posts", { cache: "no-store", credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
-      setPosts(data);
+      setPosts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
       setPosts([]);
+      setToast("加载失败，请检查网络");
     } finally {
       setLoading(false);
     }
@@ -168,10 +171,10 @@ function AdminInner() {
 
   async function fetchThoughts() {
     try {
-      const res = await fetch("/api/thoughts");
+      const res = await fetch("/api/thoughts", { cache: "no-store", credentials: "include" });
       if (res.ok) {
         const data = await res.json();
-        setThoughts(data);
+        setThoughts(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error(error);
@@ -184,6 +187,7 @@ function AdminInner() {
       const res = await fetch("/api/thoughts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ text: newThoughtText, textZh: newThoughtTextZh }),
       });
       if (res.ok) {
@@ -191,9 +195,13 @@ function AdminInner() {
         setNewThoughtTextZh("");
         fetchThoughts();
         setToast(lang === "zh" ? "随想已添加" : "Thought added");
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast(j.error || "添加失败");
       }
     } catch (error) {
       console.error(error);
+      setToast("网络错误");
     }
   }
 
@@ -202,28 +210,37 @@ function AdminInner() {
       const res = await fetch(`/api/thoughts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ text: editThoughtText, textZh: editThoughtTextZh }),
       });
       if (res.ok) {
         setEditingThought(null);
         fetchThoughts();
         setToast(lang === "zh" ? "随想已更新" : "Thought updated");
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast(j.error || "更新失败");
       }
     } catch (error) {
       console.error(error);
+      setToast("网络错误");
     }
   }
 
   async function deleteThought(id: string) {
     if (!confirm(lang === "zh" ? "确定删除这条随想？" : "Delete this thought?")) return;
     try {
-      const res = await fetch(`/api/thoughts/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/thoughts/${id}`, { method: "DELETE", credentials: "include" });
       if (res.ok) {
         fetchThoughts();
         setToast(lang === "zh" ? "随想已删除" : "Thought deleted");
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast(j.error || "删除失败");
       }
     } catch (error) {
       console.error(error);
+      setToast("网络错误");
     }
   }
 
@@ -252,33 +269,44 @@ function AdminInner() {
   }
 
   async function openEdit(id: string) {
-    const res = await fetch(`/api/posts/${id}`);
-    if (!res.ok) return setToast("加载失败");
-    const post = await res.json();
-    setEditing({
-      id: post.id,
-      title: post.title,
-      excerpt: post.excerpt,
-      category: post.category,
-      author: post.author,
-      authorInitial: post.authorInitial,
-      date: post.date,
-      readTime: post.readTime,
-      featured: !!post.featured,
-      tags: post.tags.join(", "),
-      markdown: post.markdown,
-    });
-    setIsNew(false);
-    setShowMeta(false);
+    try {
+      const res = await fetch(`/api/posts/${id}`, { credentials: "include", cache: "no-store" });
+      if (!res.ok) return setToast("加载失败");
+      const post = await res.json();
+      setEditing({
+        id: post.id,
+        title: post.title,
+        excerpt: post.excerpt,
+        category: post.category,
+        author: post.author,
+        authorInitial: post.authorInitial,
+        date: post.date,
+        readTime: post.readTime,
+        featured: !!post.featured,
+        tags: post.tags.join(", "),
+        markdown: post.markdown || post.markdownZh || "",
+      });
+      setIsNew(false);
+      setShowMeta(false);
+    } catch {
+      setToast("加载失败");
+    }
   }
 
   async function handleDelete(id: string) {
     if (!confirm(t.deleteConfirm(id))) return;
-    const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setToast(t.deleteSuccess);
-      fetchPosts();
-    } else setToast("删除失败");
+    try {
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE", credentials: "include" });
+      if (res.ok) {
+        setToast(t.deleteSuccess);
+        fetchPosts();
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast(j.error || "删除失败");
+      }
+    } catch {
+      setToast("网络错误");
+    }
   }
 
   const handleSave = useCallback(async () => {
@@ -315,6 +343,7 @@ function AdminInner() {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(payload),
     });
     setSaving(false);
