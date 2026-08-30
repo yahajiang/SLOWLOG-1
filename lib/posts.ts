@@ -129,8 +129,12 @@ export async function getAllPosts(): Promise<Post[]> {
       const { prisma } = await import("./prisma");
       const rows = await prisma.post.findMany({ orderBy: { createdAt: "desc" } });
       if (rows.length > 0) return rows.map(dbRowToPost);
-    } catch (e) {
-      console.warn("[posts] DB error fetching all posts, fallback to fs:", e);
+    } catch (e: any) {
+      if (e?.code === "P2022" || e?.message?.includes("does not exist")) {
+        console.warn("[posts] DB schema mismatch (missing column?), falling back to fs. Run: npx prisma db push");
+      } else {
+        console.warn("[posts] DB error fetching all posts, fallback to fs:", e);
+      }
     }
   }
   return getAllPostsFromFs();
@@ -142,8 +146,12 @@ export async function getPostById(id: string): Promise<Post | undefined> {
       const { prisma } = await import("./prisma");
       const row = await prisma.post.findUnique({ where: { id } });
       if (row) return dbRowToPost(row);
-    } catch (e) {
-      console.warn(`[posts] DB error fetching post "${id}", fallback to fs:`, e);
+    } catch (e: any) {
+      if (e?.code === "P2022" || e?.message?.includes("does not exist")) {
+        console.warn(`[posts] DB schema mismatch for post "${id}", falling back to fs`);
+      } else {
+        console.warn(`[posts] DB error fetching post "${id}", fallback to fs:`, e);
+      }
     }
   }
   return getPostByIdFromFs(id);
@@ -162,8 +170,12 @@ export async function getAllPostIds(): Promise<string[]> {
       const { prisma } = await import("./prisma");
       const rows = await prisma.post.findMany({ select: { id: true } });
       if (rows.length > 0) return rows.map((r: { id: string }) => r.id);
-    } catch (e) {
-      console.warn("[posts] DB error fetching post IDs, fallback to fs:", e);
+    } catch (e: any) {
+      if (e?.code === "P2022" || e?.message?.includes("does not exist")) {
+        console.warn("[posts] DB schema mismatch for post IDs, falling back to fs");
+      } else {
+        console.warn("[posts] DB error fetching post IDs, fallback to fs:", e);
+      }
     }
   }
   if (!fs.existsSync(CONTENT_DIR)) return [];
