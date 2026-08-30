@@ -194,7 +194,7 @@ function AdminInner() {
   const [showMeta, setShowMeta] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
-  const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ message: string; itemLabel?: string; itemDetail?: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
   
   // Thoughts state
   const [thoughts, setThoughts] = useState<{ id: string; text: string; textZh: string; time: string; timeZh: string }[]>([]);
@@ -303,8 +303,11 @@ function AdminInner() {
   }
 
   function deleteThought(id: string) {
+    const thought = thoughts.find((t) => t.id === id);
     setConfirmModal({
       message: t.deleteThoughtConfirm,
+      itemLabel: thought ? (lang === "zh" ? thought.textZh || thought.text : thought.text) : undefined,
+      itemDetail: thought ? (lang === "zh" ? thought.timeZh : thought.time) : undefined,
       variant: "danger",
       onConfirm: async () => {
         try {
@@ -375,8 +378,11 @@ function AdminInner() {
   }
 
   function handleDelete(id: string) {
+    const post = posts.find((p) => p.id === id);
     setConfirmModal({
       message: t.deleteConfirm(id),
+      itemLabel: post?.title,
+      itemDetail: post ? `${post.displayDate} · ${post.readTime}` : undefined,
       variant: "danger",
       onConfirm: async () => {
         try {
@@ -398,7 +404,8 @@ function AdminInner() {
   function handleBatchDelete() {
     if (selectedPosts.size === 0) return;
     setConfirmModal({
-      message: lang === "zh" ? `确定删除选中的 ${selectedPosts.size} 篇文章？` : `Delete ${selectedPosts.size} selected posts?`,
+      message: lang === "zh" ? `确定要删除选中的 ${selectedPosts.size} 篇文章吗？` : `Delete ${selectedPosts.size} selected posts?`,
+      itemLabel: lang === "zh" ? `${selectedPosts.size} 篇文章` : `${selectedPosts.size} posts`,
       variant: "danger",
       onConfirm: async () => {
         try {
@@ -735,6 +742,8 @@ function AdminInner() {
       {confirmModal && (
         <ConfirmModal
           message={confirmModal.message}
+          itemLabel={confirmModal.itemLabel}
+          itemDetail={confirmModal.itemDetail}
           variant={confirmModal.variant}
           onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
           onCancel={() => setConfirmModal(null)}

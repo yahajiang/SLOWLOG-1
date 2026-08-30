@@ -22,7 +22,7 @@ interface VersionHistoryProps {
 export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryProps) {
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(true);
-  const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ message: string; itemLabel?: string; itemDetail?: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
   const { t, lang } = useLang();
 
   const fetchVersions = useCallback(async () => {
@@ -46,6 +46,8 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
   const handleRestore = useCallback((version: Version) => {
     setConfirmModal({
       message: t.restoreVersionConfirm,
+      itemLabel: version.title || t.editorUntitled,
+      itemDetail: formatTime(version.createdAt),
       onConfirm: () => {
         onRestore(version.markdown);
         onClose();
@@ -53,7 +55,7 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
     });
   }, [onRestore, onClose, t]);
 
-  const handleDelete = useCallback(async (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     setConfirmModal({
       message: t.deleteThoughtConfirm,
       variant: "danger",
@@ -134,6 +136,8 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
     {confirmModal && (
       <ConfirmModal
         message={confirmModal.message}
+        itemLabel={confirmModal.itemLabel}
+        itemDetail={confirmModal.itemDetail}
         variant={confirmModal.variant}
         onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
         onCancel={() => setConfirmModal(null)}
