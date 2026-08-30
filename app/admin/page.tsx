@@ -21,8 +21,10 @@ import {
 import { CATEGORIES } from "@/lib/categories";
 import type { ContentCategory } from "@/lib/categories";
 import { LangProvider, useLang } from "@/lib/lang-context";
+import type { Lang } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TiptapEditor } from "@/components/TiptapEditor";
+import { useRelativeTime } from "@/lib/relative-time";
 
 type PostSummary = {
   id: string;
@@ -63,29 +65,135 @@ const emptyEditor: EditorData = {
   readTime: "5 min",
   featured: false,
   tags: "",
-  markdown: `## 寮€濮嬪啓浣?
-鍦ㄦ澶勭洿鎺ョ紪杈戝唴瀹癸紝鏀寔瀵屾枃鏈€佽〃鏍笺€佷唬鐮佸潡銆佸浘鐗囨嫋鎷界瓑鍔熻兘銆?
-### 鍔熻兘鐗规€?
-- **瀵屾枃鏈紪杈?*锛氬姞绮椼€佹枩浣撱€佷笅鍒掔嚎銆佸垹闄ょ嚎銆侀珮浜?- **鑷姩鎺掔増**锛氭爣棰樸€佹钀姐€佸垪琛ㄣ€佸紩鐢ㄨ嚜鍔ㄦ牸寮忓寲
-- **琛ㄦ牸鏀寔**锛氬彲瑙嗗寲鍒涘缓鍜岀紪杈戣〃鏍?- **浠ｇ爜楂樹寒**锛氭敮鎸佽娉曢珮浜殑浠ｇ爜鍧?- **鍥剧墖涓婁紶**锛氭嫋鎷芥垨绮樿创鍥剧墖鐩存帴涓婁紶
-- **鑷姩淇濆瓨**锛氭瘡 2 绉掕嚜鍔ㄤ繚瀛樿崏绋?
-> 鎱㈡棩蹇椾笉鏄┖鐧斤紝鏄鏂囧瓧娌夋穩鐨勭┖闂淬€?
+  markdown: `## 开始写作
+
+在此处直接编辑内容，支持富文本、表格、代码块、图片拖拽等功能。
+
+### 功能特性
+
+- **富文本编辑**：加粗、斜体、下划线、删除线、高亮
+- **自动排版**：标题、段落、列表、引用自动格式化
+- **表格支持**：可视化创建和编辑表格
+- **代码高亮**：支持语法高亮的代码块
+- **图片上传**：拖拽或粘贴图片直接上传
+- **自动保存**：每 2 秒自动保存草稿
+
+> 慢日志不是空白，是让文字沉淀的空间。
+
 \`\`\`js
-// 浠ｇ爜鍧楁敮鎸佽娉曢珮浜?console.log("鎱㈡棩蹇?);
+// 代码块支持语法高亮
+console.log("慢日志");
 \`\`\`
 
-- 鏀寔 **绮椾綋** 鍜?*鏂滀綋*
-- 鏀寔浠诲姟鍒楄〃 鈽戯笍
-- 鏀寔 [閾炬帴](https://example.com)
+- 支持 **粗体** 和 *斜体*
+- 支持任务列表 ☑️
+- 支持 [链接](https://example.com)
 
-| 鍔熻兘 | 鐘舵€?| 璇存槑 |
+| 功能 | 状态 | 说明 |
 |------|------|------|
-| 瀵屾枃鏈?| 鉁?| 鎵€瑙佸嵆鎵€寰?|
-| 琛ㄦ牸 | 鉁?| 鍙鍖栫紪杈?|
-| 浠ｇ爜鍧?| 鉁?| 璇硶楂樹寒 |
+| 富文本 | ✅ | 所见即所得 |
+| 表格 | ✅ | 可视化编辑 |
+| 代码块 | ✅ | 语法高亮 |
 
-缁х画浣犵殑鍒涗綔...`,
+继续你的创作...`,
 };
+
+function ThoughtItem({
+  thought,
+  lang,
+  editingThought,
+  setEditingThought,
+  setEditThoughtText,
+  setEditThoughtTextZh,
+  editThoughtText,
+  editThoughtTextZh,
+  updateThought,
+  deleteThought,
+  t,
+}: {
+  thought: { id: string; text: string; textZh: string; createdAt?: string };
+  lang: Lang;
+  editingThought: string | null;
+  setEditingThought: (id: string | null) => void;
+  setEditThoughtText: (text: string) => void;
+  setEditThoughtTextZh: (text: string) => void;
+  editThoughtText: string;
+  editThoughtTextZh: string;
+  updateThought: (id: string) => void;
+  deleteThought: (id: string) => void;
+  t: ReturnType<typeof useLang>["t"];
+}) {
+  const relative = useRelativeTime(thought.createdAt || thought.id, lang);
+
+  return (
+    <div
+      key={thought.id}
+      className="border border-zinc-100 bg-white p-3 rounded hover:border-zinc-200 transition-colors"
+    >
+      {editingThought === thought.id ? (
+        <div className="space-y-2">
+          <input
+            value={editThoughtTextZh}
+            onChange={(e) => setEditThoughtTextZh(e.target.value)}
+            className="w-full px-3 py-1.5 text-sm border border-zinc-200 focus:outline-none focus:border-zinc-400"
+            placeholder="中文"
+          />
+          <input
+            value={editThoughtText}
+            onChange={(e) => setEditThoughtText(e.target.value)}
+            className="w-full px-3 py-1.5 text-sm border border-zinc-200 focus:outline-none focus:border-zinc-400"
+            placeholder="English"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => updateThought(thought.id)}
+              className="px-3 py-1 bg-zinc-900 text-white text-xs rounded hover:bg-zinc-700"
+            >
+              {lang === "zh" ? "保存" : "Save"}
+            </button>
+            <button
+              onClick={() => setEditingThought(null)}
+              className="px-3 py-1 border border-zinc-200 text-xs rounded hover:bg-zinc-50"
+            >
+              {t.cancel}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-zinc-700 line-clamp-2">
+              {lang === "zh" ? thought.textZh || thought.text : thought.text}
+            </p>
+            <p className="text-[11px] text-zinc-400 mt-1">
+              {relative}
+            </p>
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <button
+              onClick={() => {
+                setEditingThought(thought.id);
+                setEditThoughtText(thought.text);
+                setEditThoughtTextZh(thought.textZh);
+              }}
+              className="w-7 h-7 flex items-center justify-center border border-zinc-200 rounded hover:bg-zinc-50 transition-colors"
+              title={t.edit}
+            >
+              <Pencil className="w-3 h-3 text-zinc-500" />
+            </button>
+            <button
+              onClick={() => deleteThought(thought.id)}
+              className="w-7 h-7 flex items-center justify-center border border-zinc-200 rounded hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title={t.delete}
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function slugify(s: string) {
   let safe = s
@@ -620,72 +728,20 @@ function AdminInner() {
                   </p>
                 ) : (
                   thoughts.map((thought) => (
-                    <div
+                    <ThoughtItem
                       key={thought.id}
-                      className="border border-zinc-100 bg-white p-3 rounded hover:border-zinc-200 transition-colors"
-                    >
-                      {editingThought === thought.id ? (
-                        <div className="space-y-2">
-                          <input
-                            value={editThoughtTextZh}
-                            onChange={(e) => setEditThoughtTextZh(e.target.value)}
-                            className="w-full px-3 py-1.5 text-sm border border-zinc-200 focus:outline-none focus:border-zinc-400"
-                            placeholder="涓枃"
-                          />
-                          <input
-                            value={editThoughtText}
-                            onChange={(e) => setEditThoughtText(e.target.value)}
-                            className="w-full px-3 py-1.5 text-sm border border-zinc-200 focus:outline-none focus:border-zinc-400"
-                            placeholder="English"
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => updateThought(thought.id)}
-                              className="px-3 py-1 bg-zinc-900 text-white text-xs rounded hover:bg-zinc-700"
-                            >
-                              {lang === "zh" ? "保存" : "Save"}
-                            </button>
-                            <button
-                              onClick={() => setEditingThought(null)}
-                              className="px-3 py-1 border border-zinc-200 text-xs rounded hover:bg-zinc-50"
-                            >
-                              {t.cancel}
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm text-zinc-700 line-clamp-2">
-                              {lang === "zh" ? thought.textZh || thought.text : thought.text}
-                            </p>
-                            <p className="text-[11px] text-zinc-400 mt-1">
-                              {lang === "zh" ? thought.timeZh : thought.time}
-                            </p>
-                          </div>
-                          <div className="flex gap-1 shrink-0">
-                            <button
-                              onClick={() => {
-                                setEditingThought(thought.id);
-                                setEditThoughtText(thought.text);
-                                setEditThoughtTextZh(thought.textZh);
-                              }}
-                              className="w-7 h-7 flex items-center justify-center border border-zinc-200 rounded hover:bg-zinc-50 transition-colors"
-                              title={t.edit}
-                            >
-                              <Pencil className="w-3 h-3 text-zinc-500" />
-                            </button>
-                            <button
-                              onClick={() => deleteThought(thought.id)}
-                              className="w-7 h-7 flex items-center justify-center border border-zinc-200 rounded hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-colors"
-                              title={t.delete}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      thought={thought}
+                      lang={lang}
+                      editingThought={editingThought}
+                      setEditingThought={setEditingThought}
+                      setEditThoughtText={setEditThoughtText}
+                      setEditThoughtTextZh={setEditThoughtTextZh}
+                      editThoughtText={editThoughtText}
+                      editThoughtTextZh={editThoughtTextZh}
+                      updateThought={updateThought}
+                      deleteThought={deleteThought}
+                      t={t}
+                    />
                   ))
                 )}
               </div>

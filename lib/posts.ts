@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import type { ContentCategory } from "./categories";
 import { markdownToHtml, extractHeadings, injectHeadingIds } from "./markdown";
 import type { Lang } from "./i18n";
+import { hasDatabase } from "./prisma";
 
 export interface Post {
   id: string;
@@ -114,10 +115,6 @@ function getPostByIdFromFs(id: string): Post | undefined {
   return parseFile(filePath, id);
 }
 
-function hasDatabase(): boolean {
-  return !!process.env.DATABASE_URL;
-}
-
 // Public API (hybrid)
 export async function getAllPosts(): Promise<Post[]> {
   if (hasDatabase()) {
@@ -126,7 +123,7 @@ export async function getAllPosts(): Promise<Post[]> {
       const rows = await prisma.post.findMany({ orderBy: { date: "desc" } });
       if (rows.length > 0) return rows.map(dbRowToPost);
     } catch (e) {
-      console.warn("[posts] DB error, fallback to fs:", e);
+      console.warn("[posts] DB error fetching all posts, fallback to fs:", e);
     }
   }
   return getAllPostsFromFs();
@@ -138,7 +135,9 @@ export async function getPostById(id: string): Promise<Post | undefined> {
       const { prisma } = await import("./prisma");
       const row = await prisma.post.findUnique({ where: { id } });
       if (row) return dbRowToPost(row);
-    } catch {}
+    } catch (e) {
+      console.warn(`[posts] DB error fetching post "${id}", fallback to fs:`, e);
+    }
   }
   return getPostByIdFromFs(id);
 }
@@ -156,7 +155,9 @@ export async function getAllPostIds(): Promise<string[]> {
       const { prisma } = await import("./prisma");
       const rows = await prisma.post.findMany({ select: { id: true } });
       if (rows.length > 0) return rows.map((r: { id: string }) => r.id);
-    } catch {}
+    } catch (e) {
+      console.warn("[posts] DB error fetching post IDs, fallback to fs:", e);
+    }
   }
   if (!fs.existsSync(CONTENT_DIR)) return [];
   return fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".md")).map((f: string) => f.replace(/\.md$/, ""));

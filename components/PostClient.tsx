@@ -8,6 +8,7 @@ import { AuthorAvatar } from "./AuthorAvatar";
 import { ReadingProgress } from "./ReadingProgress";
 import { TableOfContents } from "./TableOfContents";
 import { Footer } from "./Footer";
+import { useRelativeTime } from "@/lib/relative-time";
 import type { Post } from "@/lib/posts";
 
 export function PostClient({
@@ -20,6 +21,7 @@ export function PostClient({
   nextPost: Post | null;
 }) {
   const { t, lang } = useLang();
+  const relative = useRelativeTime(rawPost.date, lang);
   const post = lang === "zh"
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;
@@ -70,7 +72,7 @@ export function PostClient({
                 {post.author}
               </p>
               <p className="text-xs text-zinc-400">
-                {post.displayDate} · {post.category}
+                {relative} · {post.category}
               </p>
             </div>
             <div className="ml-auto hidden sm:flex gap-1.5">
