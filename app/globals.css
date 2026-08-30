@@ -389,3 +389,156 @@ code, pre, .font-mono {
   border-top: 2px solid var(--yh-border);
   margin: 1.5em 0;
 }
+
+/* ============================================================
+   Article Prose Styles (Post Detail Page)
+   ============================================================ */
+
+/* Table - clean, modern design */
+.prose table {
+  font-variant-numeric: tabular-nums;
+}
+
+.prose thead {
+  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+}
+
+.prose th {
+  letter-spacing: 0.03em;
+}
+
+.prose tbody tr:hover {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Code Block - enhanced */
+.prose pre {
+  position: relative;
+}
+
+.prose pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.25em 0.75em;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #71717a;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0 0 0 6px;
+}
+
+.prose pre code {
+  font-size: 13.5px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  font-weight: 500;
+}
+
+/* Blockquote - elegant */
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose blockquote p:first-child::before {
+  content: "\201C";
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 0;
+  vertical-align: -0.3em;
+  margin-right: 0.1em;
+  color: var(--yh-accent);
+  opacity: 0.4;
+}
+
+/* Lists - better spacing */
+.prose ul > li > p,
+.prose ol > li > p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* Links - subtle underline */
+.prose a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.prose a:hover {
+  text-decoration-color: transparent;
+}
+
+/* Images - nice frame */
+.prose img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prose img:hover {
+  transform: scale(1.01);
+}
+
+/* Task list */
+.prose ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.prose ul[data-type="taskList"] li label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 0.35em;
+  cursor: pointer;
+  accent-color: var(--yh-accent);
+  border-radius: 4px;
+}
+
+/* Definition lists */
+.prose dl {
+  margin: 1.5em 0;
+}
+
+.prose dt {
+  font-weight: 600;
+  color: var(--yh-text);
+}
+
+.prose dd {
+  margin-left: 1.5em;
+  color: var(--yh-muted);
+}
+
+/* Horizontal rule - decorative */
+.prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--yh-border), transparent);
+  margin: 3em 0;
+}
+
+/* Strong & emphasis */
+.prose strong {
+  color: var(--yh-text);
+}
+
+/* Selection */
+.prose ::selection {
+  background: rgba(100, 130, 255, 0.15);
+}

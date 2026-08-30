@@ -71,7 +71,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <div className="sticky top-[65px] z-30 bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
-        <div className="max-w-5xl mx-auto px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
+        <div className="max-w-6xl mx-auto px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -92,7 +92,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
 
       {showHero && localizedFeatured && (
         <section className="border-b border-zinc-200 bg-white/60">
-          <div className="max-w-5xl mx-auto px-6 py-14 md:py-18">
+          <div className="max-w-6xl mx-auto px-6 py-14 md:py-18">
             <div className="grid md:grid-cols-12 gap-8 items-center">
               <div
                 className="md:col-span-7"
@@ -165,7 +165,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
         </section>
       )}
 
-      <section id="posts" className="max-w-5xl mx-auto px-6 py-10">
+      <section id="posts" className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-zinc-900" />
@@ -207,7 +207,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
             </button>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {gridPosts.map((post, idx) => (
               <ArticleCard key={post.id} post={post} index={idx} />
             ))}

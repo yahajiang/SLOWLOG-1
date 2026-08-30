@@ -95,14 +95,24 @@ export function PostClient({
             <article className="flex-1 max-w-3xl min-w-0">
               <div
                 className="prose prose-zinc max-w-none
-                  prose-p:text-[15px] prose-p:leading-[1.85] prose-p:text-[var(--yh-text)]/85 prose-p:mb-6 prose-p:font-light
-                  prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-10 prose-h2:mb-3 prose-h2:scroll-mt-24 prose-h2:flex prose-h2:items-center prose-h2:gap-3
-                  prose-a:text-[var(--yh-accent)] prose-a:underline prose-a:underline-offset-4
-                  prose-code:text-[13px] prose-code:bg-zinc-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono
-                  prose-pre:bg-zinc-900 prose-pre:text-zinc-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto
-                  prose-blockquote:border-l-2 prose-blockquote:border-[var(--yh-border)] prose-blockquote:pl-4 prose-blockquote:text-zinc-600 prose-blockquote:italic
-                  prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
-                  prose-hr:border-[var(--yh-border)]"
+                  prose-p:text-[16px] prose-p:leading-[1.9] prose-p:text-[var(--yh-text)]/85 prose-p:mb-6 prose-p:font-light
+                  prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-12 prose-h1:mb-4 prose-h1:tracking-tight
+                  prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-3 prose-h2:scroll-mt-24 prose-h2:tracking-tight prose-h2:border-b prose-h2:border-zinc-100 prose-h2:pb-2
+                  prose-h3:text-lg prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-2
+                  prose-h4:text-base prose-h4:font-semibold prose-h4:mt-6 prose-h4:mb-2
+                  prose-a:text-[var(--yh-accent)] prose-a:underline prose-a:underline-offset-4 prose-a:decoration-2 prose-a:hover:decoration-[var(--yh-accent)]
+                  prose-strong:font-semibold prose-strong:text-zinc-900
+                  prose-code:text-[13px] prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-rose-600 prose-code:before:content-none prose-code:after:content-none
+                  prose-pre:bg-zinc-900 prose-pre:text-zinc-100 prose-pre:p-5 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:border prose-pre:border-zinc-800 prose-pre:shadow-lg
+                  prose-blockquote:border-l-[3px] prose-blockquote:border-[var(--yh-accent)]/30 prose-blockquote:pl-5 prose-blockquote:text-zinc-600 prose-blockquote:italic prose-blockquote:bg-zinc-50/50 prose-blockquote:py-1 prose-blockquote:pr-4 prose-blockquote:rounded-r-lg
+                  prose-ul:list-disc prose-ul:pl-6 prose-ul:marker:text-zinc-400 prose-ol:list-decimal prose-ol:pl-6 prose-ol:marker:text-zinc-400
+                  prose-li:text-[15px] prose-li:leading-[1.8] prose-li:mb-1
+                  prose-hr:border-zinc-200 prose-hr:my-12
+                  prose-img:rounded-xl prose-img:my-8 prose-img:shadow-md prose-img:border prose-img:border-zinc-100
+                  prose-table:text-[14px] prose-table:border-collapse prose-table:w-full prose-table:my-8 prose-table:rounded-lg prose-table:overflow-hidden prose-table:shadow-sm prose-table:border prose-table:border-zinc-200
+                  prose-th:border-b-2 prose-th:border-zinc-200 prose-th:bg-zinc-50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-zinc-700 prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
+                  prose-td:border-b prose-td:border-zinc-100 prose-td:px-4 prose-td:py-3 prose-td:text-zinc-600 prose-td:align-top
+                  prose-thead:border-b-2 prose-thead:border-zinc-200"
                 dangerouslySetInnerHTML={{ __html: post.html }}
               />
 
