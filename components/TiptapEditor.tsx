@@ -486,7 +486,7 @@ const Toolbar = memo(function Toolbar({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 overflow-visible">
+    <div className="shrink-0 sticky top-0 z-10 border-b border-zinc-200 bg-zinc-50/80 overflow-visible">
       <div className="px-3 py-2 flex items-center gap-1 flex-wrap">
       {/* Heading */}
       <ToolbarGroup>
