@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Video } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
@@ -20,7 +21,7 @@ export function VideoEmbedModal({ onInsert, onClose }: VideoEmbedModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-[var(--yh-bg)] border border-[var(--yh-border)] shadow-lg rounded w-full max-w-md"
@@ -74,6 +75,7 @@ export function VideoEmbedModal({ onInsert, onClose }: VideoEmbedModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

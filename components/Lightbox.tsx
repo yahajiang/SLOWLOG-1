@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { X, ZoomIn, ZoomOut, RotateCw } from "lucide-react";
 
 export function Lightbox() {
@@ -44,7 +45,7 @@ export function Lightbox() {
 
   if (!src) return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={close}
@@ -75,6 +76,7 @@ export function Lightbox() {
           <p className="text-center text-white/70 text-sm mt-3">{alt}</p>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

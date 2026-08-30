@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
@@ -22,7 +23,7 @@ export function InputModal({ title, placeholder, onSubmit, onClose }: InputModal
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-[var(--yh-bg)] border border-[var(--yh-border)] shadow-lg rounded w-full max-w-md"
@@ -61,6 +62,7 @@ export function InputModal({ title, placeholder, onSubmit, onClose }: InputModal
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
