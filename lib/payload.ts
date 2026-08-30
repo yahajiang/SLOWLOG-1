@@ -7,6 +7,18 @@ import type { Post } from './types'
  * 将 Payload 数据转换为现有 Post 类型
  */
 
+function hasPayloadSecret(): boolean {
+  return !!process.env.PAYLOAD_SECRET
+}
+
+async function getPayloadClient() {
+  if (!hasPayloadSecret()) {
+    console.warn('[payload] PAYLOAD_SECRET not set, skipping Payload init')
+    return null
+  }
+  return getPayload({ config })
+}
+
 function payloadPostToPost(doc: any, locale: string = 'zh'): Post {
   const isZh = locale === 'zh'
   return {
@@ -35,7 +47,8 @@ function payloadPostToPost(doc: any, locale: string = 'zh'): Post {
 }
 
 export async function getAllPosts(locale: string = 'zh') {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'posts',
     where: { _status: { equals: 'published' } },
@@ -47,7 +60,8 @@ export async function getAllPosts(locale: string = 'zh') {
 }
 
 export async function getPostBySlug(slug: string, locale: string = 'zh') {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return null
   const result = await payload.find({
     collection: 'posts',
     where: { slug: { equals: slug } },
@@ -59,7 +73,8 @@ export async function getPostBySlug(slug: string, locale: string = 'zh') {
 }
 
 export async function getPostById(id: string) {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return null
   try {
     const doc = await payload.findByID({ collection: 'posts', id })
     return payloadPostToPost(doc)
@@ -69,7 +84,8 @@ export async function getPostById(id: string) {
 }
 
 export async function getNotes(locale: string = 'zh') {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'notes',
     sort: '-date',
@@ -87,7 +103,8 @@ export async function getNotes(locale: string = 'zh') {
 }
 
 export async function getFeaturedPost(locale: string = 'zh') {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return null
   const result = await payload.find({
     collection: 'posts',
     where: {
@@ -104,7 +121,8 @@ export async function getFeaturedPost(locale: string = 'zh') {
 }
 
 export async function getAllPostSlugs() {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadClient()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'posts',
     where: { _status: { equals: 'published' } },
