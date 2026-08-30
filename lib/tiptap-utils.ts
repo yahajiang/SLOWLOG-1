@@ -255,6 +255,26 @@ function convertInline(el: Element): Record<string, unknown>[] {
         });
       } else if (tag === "br") {
         nodes.push({ type: "hardBreak" });
+      } else if (tag === "span") {
+        const style = childEl.getAttribute("style") || "";
+        const colorMatch = style.match(/color:\s*([^;]+)/);
+        const hlMatch = style.match(/background-color:\s*([^;]+)/);
+        if (colorMatch) {
+          nodes.push({
+            type: "text",
+            text: childEl.textContent || "",
+            marks: [{ type: "textStyle", attrs: { color: colorMatch[1].trim() } }],
+          });
+        } else if (hlMatch) {
+          nodes.push({
+            type: "text",
+            text: childEl.textContent || "",
+            marks: [{ type: "highlight", attrs: { color: hlMatch[1].trim() } }],
+          });
+        } else {
+          const inner = convertInline(childEl);
+          nodes.push(...inner);
+        }
       } else {
         // Recurse
         const inner = convertInline(childEl);
