@@ -542,3 +542,13 @@ code, pre, .font-mono {
 .prose ::selection {
   background: rgba(100, 130, 255, 0.15);
 }
+
+/* Color text support */
+.prose [style*="color"] {
+  color: inherit;
+}
+
+.prose span[style] {
+  font-weight: inherit;
+  font-style: inherit;
+}

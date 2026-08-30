@@ -21,24 +21,24 @@ export function ArticleCard({
   return (
     <Link
       href={`/posts/${post.id}`}
-      className="group text-left w-full border border-zinc-200/60 bg-white hover:border-zinc-300 transition-all duration-300 flex flex-col hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 overflow-hidden"
+      className="group text-left w-full border border-zinc-200/60 bg-white hover:border-zinc-300 transition-all duration-300 flex flex-col hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.1)] hover:-translate-y-1 overflow-hidden"
       style={{
         animation: `slideInUp 0.5s var(--ease-out) both`,
         animationDelay: `${index * 50}ms`,
         transitionTimingFunction: "var(--ease-spring)",
       }}
     >
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden aspect-[16/10]">
         <ArticleArt post={post} />
         <div className="absolute top-3 left-3">
           <CategoryBadge category={post.category} />
         </div>
       </div>
-      <div className="p-4 flex flex-col gap-2.5 flex-1">
-        <h3 className="text-[15px] font-semibold leading-snug text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors duration-200 line-clamp-2">
+      <div className="p-5 flex flex-col gap-3 flex-1">
+        <h3 className="text-[16px] font-semibold leading-snug text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors duration-200 line-clamp-2">
           {post.title}
         </h3>
-        <p className="text-[13px] text-zinc-500 leading-relaxed line-clamp-2">
+        <p className="text-[13.5px] text-zinc-500 leading-relaxed line-clamp-2">
           {post.excerpt}
         </p>
 
@@ -53,14 +53,14 @@ export function ArticleCard({
           ))}
         </div>
 
-        <div className="flex items-center gap-2 pt-2.5 border-t border-zinc-100/80">
+        <div className="flex items-center gap-2.5 pt-3 border-t border-zinc-100/80">
           <AuthorAvatar initial={post.authorInitial} />
           <div className="flex-1 min-w-0">
             <p className="text-[11px] text-zinc-400 truncate">
               {relative} · {post.readTime}
             </p>
           </div>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-[var(--yh-accent)] group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
         </div>
       </div>
     </Link>

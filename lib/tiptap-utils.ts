@@ -484,6 +484,13 @@ function applyMarks(text: string, marks: Record<string, unknown>[]): string {
       case "link":
         result = `<a href="${markAttrs.href || ""}">${result}</a>`;
         break;
+      case "textStyle": {
+        const color = markAttrs.color as string | undefined;
+        if (color) {
+          result = `<span style="color: ${color}">${result}</span>`;
+        }
+        break;
+      }
     }
   }
 

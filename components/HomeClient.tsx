@@ -92,72 +92,65 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
 
       {showHero && localizedFeatured && (
         <section className="border-b border-zinc-200 bg-white/60">
-          <div className="max-w-6xl mx-auto px-6 py-14 md:py-18">
-            <div className="grid md:grid-cols-12 gap-8 items-center">
+          <div className="max-w-6xl mx-auto px-6 py-8 md:py-10">
+            <div className="flex flex-col md:flex-row md:items-center gap-5">
               <div
-                className="md:col-span-7"
+                className="flex-1 min-w-0"
                 style={{ animation: "fadeInUp 0.7s var(--ease-out) both" }}
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-3">
                   <CategoryBadge category={localizedFeatured.category} />
                   <span className="text-[10px] tracking-widest uppercase text-zinc-400">
                     {t.featured}
                   </span>
                 </div>
-                <h1 className="text-3xl md:text-4xl xl:text-[2.6rem] font-semibold leading-[1.15] tracking-tight text-zinc-900 mb-4">
+                <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight text-zinc-900 mb-3">
                   {localizedFeatured.title}
-                </h1>
-                <p className="text-base text-zinc-600 leading-relaxed mb-6 max-w-2xl">
+                </h2>
+                <p className="text-sm text-zinc-600 leading-relaxed mb-4 line-clamp-2">
                   {localizedFeatured.excerpt}
                 </p>
-                <div className="flex items-center gap-3 mb-6">
-                  <AuthorAvatar initial={localizedFeatured.authorInitial} size="lg" />
-                  <div>
-                    <p className="text-sm font-semibold text-zinc-800">
-                      {localizedFeatured.author}
-                    </p>
-                    <p className="text-xs text-zinc-400">
-                      {localizedFeatured.displayDate} · {localizedFeatured.readTime}
-                    </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <AuthorAvatar initial={localizedFeatured.authorInitial} />
+                    <div>
+                      <p className="text-xs font-medium text-zinc-700">
+                        {localizedFeatured.author}
+                      </p>
+                      <p className="text-[11px] text-zinc-400">
+                        {localizedFeatured.displayDate} · {localizedFeatured.readTime}
+                      </p>
+                    </div>
                   </div>
+                  <Link
+                    href={`/posts/${localizedFeatured.id}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[11px] tracking-widest uppercase hover:bg-zinc-700 transition-colors duration-300"
+                    style={{ transitionTimingFunction: "var(--ease-spring)" }}
+                  >
+                    {t.readArticle} <ChevronRight className="w-3 h-3" />
+                  </Link>
                 </div>
-                <Link
-                  href={`/posts/${localizedFeatured.id}`}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white text-xs tracking-widest uppercase hover:bg-zinc-700 transition-colors duration-300 hover:gap-3"
-                  style={{ transitionTimingFunction: "var(--ease-spring)" }}
-                >
-                  {t.readArticle} <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
               </div>
 
               <div
-                className="md:col-span-5 hidden md:flex flex-col gap-4"
+                className="hidden md:block w-48 shrink-0"
                 style={{
                   animation: "fadeIn 0.8s var(--ease-out) both",
                   animationDelay: "150ms",
                 }}
               >
-                <div className="border border-zinc-200 overflow-hidden">
+                <div className="border border-zinc-200 overflow-hidden rounded-lg">
                   <ArticleArt post={localizedFeatured} tall />
                 </div>
-                <div className="h-px bg-zinc-900 w-12" />
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 mt-3">
                   {localizedFeatured.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-xs text-zinc-500 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-sm tracking-wide"
+                      className="text-[10px] text-zinc-400 bg-zinc-50 border border-zinc-100 px-2 py-0.5 rounded-sm"
                     >
                       {tag}
                     </span>
                   ))}
-                </div>
-                <div className="pt-4 border-t border-zinc-100">
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
-                    {t.inThisIssue}
-                  </p>
-                  <p className="text-xs text-zinc-500 leading-relaxed">
-                    {t.inThisIssueDesc(posts.length, CATEGORIES.length - 1)}
-                  </p>
                 </div>
               </div>
             </div>
@@ -165,7 +158,7 @@ export default function HomeClient({ posts }: { posts: Post[] }) {
         </section>
       )}
 
-      <section id="posts" className="max-w-6xl mx-auto px-6 py-10">
+      <section id="posts" className="max-w-[1400px] mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-zinc-900" />
