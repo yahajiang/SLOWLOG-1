@@ -1,5 +1,8 @@
+/* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
+/* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
 import config from '@payload-config'
 import '@payloadcms/next/css'
+import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import React from 'react'
 
@@ -10,19 +13,14 @@ type Args = {
   children: React.ReactNode
 }
 
-// 创建 server action - 必须在模块级别定义
-async function createServerFunction() {
+const serverFunction: ServerFunctionClient = async function (args) {
   'use server'
-  return async (args: any) => {
-    return handleServerFunctions({
-      ...args,
-      config,
-      importMap,
-    })
-  }
+  return handleServerFunctions({
+    ...args,
+    config,
+    importMap,
+  })
 }
-
-const serverFunction = await createServerFunction()
 
 const Layout = ({ children }: Args) => (
   <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>

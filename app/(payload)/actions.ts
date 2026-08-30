@@ -4,8 +4,14 @@ import config from '@payload-config'
 import { handleServerFunctions } from '@payloadcms/next/layouts'
 import { importMap } from './admin/importMap.js'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function serverFunction(args: any): Promise<any> {
+type ServerFunctionClientArgs = {
+  name: string
+  args: Record<string, unknown>
+}
+
+type ServerFunctionClient = (args: ServerFunctionClientArgs) => Promise<unknown>
+
+export const serverFunction: ServerFunctionClient = async (args) => {
   return handleServerFunctions({
     ...args,
     config,
