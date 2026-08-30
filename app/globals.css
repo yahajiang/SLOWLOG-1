@@ -1,0 +1,391 @@
+@import "tailwindcss";
+
+:root {
+  --yh-bg: #fefdfa;
+  --yh-text: #1c1c1e;
+  --yh-muted: #8e8e93;
+  --yh-border: #e5e5e7;
+  --yh-accent: oklch(0.55 0.15 250);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--yh-border) transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--yh-bg);
+  color: var(--yh-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* MiSans only for large headings */
+h1, h2, h3 {
+  font-family: "MiSans", sans-serif;
+}
+
+/* All numbers use MiSans */
+.num,
+.tabular-nums {
+  font-family: "MiSans", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Monospace fallback - use system monospace for code */
+code, pre, .font-mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* Serif fallback - use system serif for decorative elements */
+.font-serif {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+/* ============================================================
+   Mobile Responsive Styles
+   ============================================================ */
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+  /* Increase touch targets for main navigation */
+  nav a, header a, footer a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* Better input handling */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Smooth scrolling for mobile */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Transitions tokens */
+:root {
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 600ms;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(16px); }
+}
+
+/* Stagger children animation utility */
+.stagger-children > * {
+  animation: slideInUp 0.5s var(--ease-out) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 360ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 420ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 480ms; }
+
+/* ============================================================
+   Tiptap Editor Styles
+   ============================================================ */
+
+.tiptap-editor {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--yh-text);
+}
+
+.tiptap-editor:focus {
+  outline: none;
+}
+
+/* Placeholder */
+.tiptap-editor p.is-editor-empty:first-child::before {
+  color: var(--yh-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Headings */
+.tiptap-editor h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 1.5em 0 0.5em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.tiptap-editor h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 1.2em 0 0.4em;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.tiptap-editor h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 1em 0 0.3em;
+  line-height: 1.4;
+}
+
+.tiptap-editor h4 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0.8em 0 0.2em;
+}
+
+/* Paragraph */
+.tiptap-editor p {
+  margin: 0.8em 0;
+}
+
+/* Blockquote */
+.tiptap-editor blockquote {
+  border-left: 3px solid var(--yh-border);
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #555;
+  font-style: italic;
+}
+
+/* Code Block */
+.tiptap-editor pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 6px;
+  padding: 1em;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 1em 0;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.tiptap-editor pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.tiptap-editor code {
+  background: #f1f1f1;
+  color: #c7254e;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Lists */
+.tiptap-editor ul,
+.tiptap-editor ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.tiptap-editor li {
+  margin: 0.25em 0;
+}
+
+.tiptap-editor ul li {
+  list-style-type: disc;
+}
+
+.tiptap-editor ol li {
+  list-style-type: decimal;
+}
+
+/* Task List */
+.tiptap-editor ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tiptap-editor ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.tiptap-editor ul[data-type="taskList"] li label {
+  flex-shrink: 0;
+  margin-top: 0.3em;
+}
+
+.tiptap-editor ul[data-type="taskList"] li label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--yh-accent);
+}
+
+.tiptap-editor ul[data-type="taskList"] li > div {
+  flex: 1;
+}
+
+/* Table */
+.tiptap-editor table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.tiptap-editor th,
+.tiptap-editor td {
+  border: 1px solid var(--yh-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.tiptap-editor th {
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.tiptap-editor td > p {
+  margin: 0;
+}
+
+/* Table selection */
+.tiptap-editor .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(200, 200, 255, 0.3);
+  pointer-events: none;
+}
+
+.tiptap-editor td,
+.tiptap-editor th {
+  position: relative;
+}
+
+/* Horizontal Rule */
+.tiptap-editor hr {
+  border: none;
+  border-top: 2px solid var(--yh-border);
+  margin: 1.5em 0;
+}
+
+/* Image */
+.tiptap-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 1em 0;
+}
+
+.tiptap-editor img.ProseMirror-selectednode {
+  outline: 2px solid var(--yh-accent);
+  outline-offset: 2px;
+}
+
+/* Link */
+.tiptap-editor a {
+  color: var(--yh-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.tiptap-editor a:hover {
+  opacity: 0.8;
+}
+
+/* Highlight */
+.tiptap-editor mark {
+  background: #fef08a;
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+}
+
+/* Typography extension */
+.tiptap-editor p.has-drop-cap:first-letter {
+  font-size: 3.5em;
+  font-weight: 700;
+  float: left;
+  line-height: 1;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
+}
+
+/* Cursor */
+.ProseMirror-focused .ProseMirror-separator {
+  display: none !important;
+}
+
+.ProseMirror .ProseMirror-gapcursor:after {
+  border-top: 1px solid var(--yh-text);
+}
+
+/* Selection */
+.ProseMirror ::selection {
+  background: rgba(100, 130, 255, 0.2);
+}
+
+/* Horizontal rule */
+.tiptap-editor hr {
+  border: none;
+  border-top: 2px solid var(--yh-border);
+  margin: 1.5em 0;
+}
