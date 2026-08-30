@@ -55,7 +55,7 @@ function dbRowToThought(row: any): Thought {
   };
 }
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const { id } = await params;
     if (hasDatabase()) {
@@ -77,7 +77,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const auth = await authMiddleware(request);
     if (auth instanceof NextResponse) return auth;
@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const auth = await authMiddleware(request);
     if (auth instanceof NextResponse) return auth;

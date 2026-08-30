@@ -12,7 +12,7 @@ function isValidPath(filePath: string): boolean {
   return resolved.startsWith(path.resolve(CONTENT_DIR));
 }
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const { id } = await params;
     console.log(`[api/posts/[id]] GET request for id="${id}"`);
@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const auth = await authMiddleware(request);
     if (auth instanceof NextResponse) return auth;
@@ -103,7 +103,7 @@ ${String(markdown).trim()}
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const auth = await authMiddleware(request);
     if (auth instanceof NextResponse) return auth;

@@ -24,7 +24,7 @@ function readVersions(): Version[] {
   }
 }
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const { id } = await params;
     const versions = readVersions();
@@ -37,7 +37,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Record<string, string>> }) {
   try {
     const auth = await authMiddleware(request);
     if (auth instanceof NextResponse) return auth;
