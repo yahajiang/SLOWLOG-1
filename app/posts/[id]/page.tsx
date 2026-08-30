@@ -4,8 +4,7 @@ import { PostClient } from "@/components/PostClient";
 import { LangProvider } from "@/lib/lang-context";
 import type { Metadata } from "next";
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -26,6 +25,7 @@ export async function generateMetadata({
       publishedTime: post.date,
       tags: post.tags,
       url: `${siteUrl}/posts/${post.id}`,
+      siteName: "慢日志",
     },
     other: {
       "article:author": post.author,

@@ -165,18 +165,7 @@ function ThoughtItem({
   );
 }
 
-function slugify(s: string) {
-  let safe = s
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\u4e00-\u9fff\s-]+/g, "-")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  if (!safe) safe = `post-${Date.now()}`;
-  return safe;
-}
+import { sanitizeId } from "@/lib/api-utils";
 
 function catLabel(cat: string, t: ReturnType<typeof useLang>["t"]): string {
   if (cat === "All") return t.catAll;
@@ -981,7 +970,7 @@ function AdminInner() {
                 <input
                   value={editing.id}
                   onChange={(e) =>
-                    setEditing((prev) => (prev ? { ...prev, id: slugify(e.target.value) } : null))
+                    setEditing((prev) => (prev ? { ...prev, id: sanitizeId(e.target.value) } : null))
                   }
                   placeholder={t.formSlugHint}
                   className="w-full px-3 py-2 text-sm font-mono border border-zinc-200 bg-zinc-50 focus:outline-none focus:border-zinc-400"

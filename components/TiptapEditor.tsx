@@ -28,6 +28,7 @@ import { SpecialCharPicker } from "./SpecialCharPicker";
 import { FindReplace } from "./FindReplace";
 import { SourceEditor } from "./SourceEditor";
 import { VersionHistory } from "./VersionHistory";
+import { VideoEmbedModal } from "./VideoEmbedModal";
 
 const lowlight = createLowlight(common);
 
@@ -533,6 +534,7 @@ const Toolbar = memo(function Toolbar({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showHighlightPicker, setShowHighlightPicker] = useState(false);
   const [showMoreInsert, setShowMoreInsert] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
 
   const PRESET_COLORS = [
@@ -701,20 +703,7 @@ const Toolbar = memo(function Toolbar({
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                 图片
               </button>
-              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-left hover:bg-zinc-100 rounded" onClick={() => {
-                const url = prompt("输入视频链接 (YouTube/Vimeo/Bilibili):");
-                if (url) {
-                  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-                  const biliMatch = url.match(/bilibili\.com\/video\/(BV[a-zA-Z0-9]+)/);
-                  let embedUrl = url;
-                  if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
-                  else if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-                  else if (biliMatch) embedUrl = `https://player.bilibili.com/player.html?bvid=${biliMatch[1]}&high_quality=1`;
-                  editor.chain().focus().setIframe({ src: embedUrl }).run();
-                }
-                setShowMoreInsert(false);
-              }}>
+              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-left hover:bg-zinc-100 rounded" onClick={() => { setShowVideoModal(true); setShowMoreInsert(false); }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                 视频
               </button>
@@ -816,6 +805,21 @@ const Toolbar = memo(function Toolbar({
           </button>
         </ToolbarGroup>
       </div>
+      {showVideoModal && (
+        <VideoEmbedModal
+          onInsert={(url) => {
+            const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+            const biliMatch = url.match(/bilibili\.com\/video\/(BV[a-zA-Z0-9]+)/);
+            let embedUrl = url;
+            if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+            else if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+            else if (biliMatch) embedUrl = `https://player.bilibili.com/player.html?bvid=${biliMatch[1]}&high_quality=1`;
+            editor.chain().focus().setIframe({ src: embedUrl }).run();
+          }}
+          onClose={() => setShowVideoModal(false)}
+        />
+      )}
     </div>
   );
 });
