@@ -55,7 +55,7 @@ export function PostClient({
 
       <section className="pt-10 pb-8 md:pt-14">
         <div className="mx-auto max-w-3xl px-6">
-          <Breadcrumb items={[{ label: post.category }]} />
+          <Breadcrumb items={[{ label: post.category }, { label: post.title }]} />
           <div className="flex items-center gap-3 mb-4">
             <CategoryBadge category={post.category} />
             <span className="text-[var(--yh-border)]">/</span>

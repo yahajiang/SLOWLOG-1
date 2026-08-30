@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo, memo } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -166,14 +166,9 @@ export function TiptapEditor({
     onUpdate: ({ editor }) => {
       updateStats(editor);
       updateOutline(editor);
-      triggerAutoSave(editor);
-      // Immediate preview + immediate markdown sync for parent
       const html = editor.getHTML();
       setPreviewHtml(html);
-      if (onAutoSave) {
-        const md = tiptapJsonToMarkdown(editor.getJSON() as Record<string, unknown>);
-        onAutoSave(md);
-      }
+      triggerAutoSave(editor);
     },
     onCreate: ({ editor }) => {
       updateStats(editor);
@@ -902,8 +897,6 @@ function ToolbarSelect({
 // ============================================================
 // Status Bar
 // ============================================================
-
-import { memo } from "react";
 
 const StatusBar = memo(function StatusBar({
   wordCount,

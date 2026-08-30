@@ -8,24 +8,6 @@ const CALLOUT_TYPES: Record<string, { icon: string; label: string; bg: string; b
   IMPORTANT: { icon: "❗", label: "重要", bg: "bg-purple-50", border: "border-purple-400", text: "text-purple-800" },
 };
 
-function parseCallout(blockquoteHtml: string): string | null {
-  const match = blockquoteHtml.match(/^<blockquote>\s*<p>\s*\[!(NOTE|TIP|WARNING|CAUTION|IMPORTANT)\]\s*<\/p>/i);
-  if (!match) return null;
-  const type = match[1].toUpperCase();
-  const config = CALLOUT_TYPES[type];
-  if (!config) return null;
-
-  const content = blockquoteHtml
-    .replace(/^<blockquote>\s*<p>\s*\[![A-Z]+\]\s*<\/p>/i, "")
-    .replace(/<\/blockquote>$/, "")
-    .trim();
-
-  return `<div class="callout ${config.bg} ${config.border} ${config.text} border-l-4 rounded-r-lg p-4 my-6">
-    <p class="font-semibold text-sm mb-1">${config.icon} ${config.label}</p>
-    <div class="text-sm leading-relaxed opacity-90 [&>p]:mb-0">${content}</div>
-  </div>`;
-}
-
 const calloutExtension = {
   name: "callout",
   level: "block" as const,

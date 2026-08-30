@@ -383,13 +383,6 @@ code, pre, .font-mono {
   background: rgba(100, 130, 255, 0.2);
 }
 
-/* Horizontal rule */
-.tiptap-editor hr {
-  border: none;
-  border-top: 2px solid var(--yh-border);
-  margin: 1.5em 0;
-}
-
 /* ============================================================
    Article Prose Styles (Post Detail Page)
    ============================================================ */
@@ -483,15 +476,6 @@ code, pre, .font-mono {
   text-decoration-color: transparent;
 }
 
-/* Images - nice frame */
-.prose img {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.prose img:hover {
-  transform: scale(1.01);
-}
-
 /* Task list */
 .prose ul[data-type="taskList"] {
   list-style: none;
@@ -544,7 +528,7 @@ code, pre, .font-mono {
 /* Images - clickable for lightbox */
 .prose img {
   cursor: zoom-in;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .prose img:hover {

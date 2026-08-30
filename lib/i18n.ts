@@ -124,6 +124,49 @@ export const dict = {
     catTypography: "字体",
     catFrontend: "前端",
     catSnippet: "点滴",
+    // VersionHistory
+    versionHistory: "版本历史",
+    noVersions: "暂无版本记录",
+    maxVersions: "最多保留 4 个版本",
+    restoreVersion: "恢复此版本",
+    restoreVersionConfirm: "确定恢复到此版本？当前内容将被替换。",
+    versionAgo: (t: string) => t,
+    // FindReplace
+    findReplace: "查找与替换",
+    findPlaceholder: "查找...",
+    replacePlaceholder: "替换为...",
+    regex: "正则表达式",
+    replace: "替换",
+    replaceAll: "全部",
+    noResults: "无结果",
+    // SpecialChar
+    specialChars: "特殊字符",
+    math: "数学",
+    currency: "货币",
+    arrows: "箭头",
+    punctuation: "标点",
+    greek: "希腊字母",
+    tables: "制表符",
+    misc: "杂项",
+    // SourceEditor
+    sourceEditor: "Markdown 源码",
+    apply: "应用",
+    // Error / Not Found
+    errorTitle: "出错了",
+    errorRetry: "重试",
+    notFoundTitle: "页面未找到",
+    notFoundBack: "返回首页",
+    // Thoughts
+    addThought: "添加新随想",
+    addThoughtZh: "中文",
+    addThoughtEn: "English",
+    addBtn: "添加",
+    thoughtAdded: "随想已添加",
+    thoughtUpdated: "随想已更新",
+    thoughtDeleted: "随想已删除",
+    noThoughts: "暂无随想",
+    saveThought: "保存",
+    deleteThoughtConfirm: "确定删除这条随想？",
   },
   en: {
     siteName: "SlowLog",
@@ -227,6 +270,43 @@ export const dict = {
     catTypography: "Typography",
     catFrontend: "Frontend",
     catSnippet: "Snippet",
+    versionHistory: "Version History",
+    noVersions: "No versions yet",
+    maxVersions: "Max 4 versions retained",
+    restoreVersion: "Restore this version",
+    restoreVersionConfirm: "Restore to this version? Current content will be replaced.",
+    versionAgo: (t: string) => t,
+    findReplace: "Find & Replace",
+    findPlaceholder: "Find...",
+    replacePlaceholder: "Replace with...",
+    regex: "Regex",
+    replace: "Replace",
+    replaceAll: "All",
+    noResults: "No results",
+    specialChars: "Special Characters",
+    math: "Math",
+    currency: "Currency",
+    arrows: "Arrows",
+    punctuation: "Punctuation",
+    greek: "Greek",
+    tables: "Tables",
+    misc: "Misc",
+    sourceEditor: "Markdown Source",
+    apply: "Apply",
+    errorTitle: "Something went wrong",
+    errorRetry: "Retry",
+    notFoundTitle: "Page not found",
+    notFoundBack: "Back to home",
+    addThought: "Add New Thought",
+    addThoughtZh: "Chinese",
+    addThoughtEn: "English",
+    addBtn: "Add",
+    thoughtAdded: "Thought added",
+    thoughtUpdated: "Thought updated",
+    thoughtDeleted: "Thought deleted",
+    noThoughts: "No thoughts yet",
+    saveThought: "Save",
+    deleteThoughtConfirm: "Delete this thought?",
   },
 } as const;
 
@@ -325,6 +405,43 @@ export type Dict = {
   catTypography: string;
   catFrontend: string;
   catSnippet: string;
+  versionHistory: string;
+  noVersions: string;
+  maxVersions: string;
+  restoreVersion: string;
+  restoreVersionConfirm: string;
+  versionAgo: (t: string) => string;
+  findReplace: string;
+  findPlaceholder: string;
+  replacePlaceholder: string;
+  regex: string;
+  replace: string;
+  replaceAll: string;
+  noResults: string;
+  specialChars: string;
+  math: string;
+  currency: string;
+  arrows: string;
+  punctuation: string;
+  greek: string;
+  tables: string;
+  misc: string;
+  sourceEditor: string;
+  apply: string;
+  errorTitle: string;
+  errorRetry: string;
+  notFoundTitle: string;
+  notFoundBack: string;
+  addThought: string;
+  addThoughtZh: string;
+  addThoughtEn: string;
+  addBtn: string;
+  thoughtAdded: string;
+  thoughtUpdated: string;
+  thoughtDeleted: string;
+  noThoughts: string;
+  saveThought: string;
+  deleteThoughtConfirm: string;
 };
 
 export function getDict(lang: Lang): Dict {

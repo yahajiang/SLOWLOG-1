@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Search, ChevronUp, ChevronDown, X } from "lucide-react";
 import type { Editor } from "@tiptap/react";
+import { useLang } from "@/lib/lang-context";
 
 interface FindReplaceProps {
   editor: Editor;
@@ -15,6 +16,7 @@ export function FindReplace({ editor, onClose }: FindReplaceProps) {
   const [useRegex, setUseRegex] = useState(false);
   const [matchCount, setMatchCount] = useState(0);
   const [currentMatch, setCurrentMatch] = useState(0);
+  const { t } = useLang();
 
   const findMatches = useCallback(() => {
     if (!query) {
@@ -133,7 +135,7 @@ export function FindReplace({ editor, onClose }: FindReplaceProps) {
   return (
     <div className="absolute top-full right-0 mt-1 bg-white border border-zinc-200 shadow-xl rounded-lg z-50 w-80">
       <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-100">
-        <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">查找与替换</span>
+        <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{t.findReplace}</span>
         <button onClick={onClose} className="text-zinc-400 hover:text-zinc-600 text-xs">✕</button>
       </div>
       <div className="p-3 space-y-2">
@@ -143,19 +145,19 @@ export function FindReplace({ editor, onClose }: FindReplaceProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") findNext(); }}
-            placeholder="查找..."
+            placeholder={t.findPlaceholder}
             className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 rounded focus:outline-none focus:border-zinc-400"
             autoFocus
           />
           <span className="text-[10px] text-zinc-400 whitespace-nowrap">
-            {matchCount > 0 ? `${currentMatch}/${matchCount}` : "无结果"}
+            {matchCount > 0 ? `${currentMatch}/${matchCount}` : t.noResults}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <input
             value={replacement}
             onChange={(e) => setReplacement(e.target.value)}
-            placeholder="替换为..."
+            placeholder={t.replacePlaceholder}
             className="flex-1 px-2 py-1.5 text-sm border border-zinc-200 rounded focus:outline-none focus:border-zinc-400"
           />
         </div>
@@ -167,7 +169,7 @@ export function FindReplace({ editor, onClose }: FindReplaceProps) {
               onChange={(e) => setUseRegex(e.target.checked)}
               className="rounded border-zinc-300"
             />
-            正则表达式
+            {t.regex}
           </label>
           <div className="flex items-center gap-1">
             <button onClick={findPrev} className="p-1 hover:bg-zinc-100 rounded" title="上一个">
@@ -176,11 +178,11 @@ export function FindReplace({ editor, onClose }: FindReplaceProps) {
             <button onClick={findNext} className="p-1 hover:bg-zinc-100 rounded" title="下一个">
               <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
             </button>
-            <button onClick={replaceCurrent} className="px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-100 rounded" title="替换当前">
-              替换
-            </button>
-            <button onClick={replaceAll} className="px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-100 rounded" title="全部替换">
-              全部
+              <button onClick={replaceCurrent} className="px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-100 rounded" title={t.replace}>
+                {t.replace}
+              </button>
+              <button onClick={replaceAll} className="px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-100 rounded" title={t.replaceAll}>
+                {t.replaceAll}
             </button>
           </div>
         </div>
