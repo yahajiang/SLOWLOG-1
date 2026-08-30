@@ -4,6 +4,9 @@ import { PostClient } from "@/components/PostClient";
 import { LangProvider } from "@/lib/lang-context";
 import type { Metadata } from "next";
 
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((p) => ({ id: p.id }));

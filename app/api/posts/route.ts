@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { revalidatePath } from "next/cache";
 import { getAllPosts } from "@/lib/posts";
 import { authMiddleware, sanitizeId, sanitizeInput } from "@/lib/api-utils";
 
@@ -68,6 +69,8 @@ export async function POST(request: NextRequest) {
             markdownZh: String(markdown).trim(),
           },
         });
+        revalidatePath("/");
+        revalidatePath("/admin");
         return NextResponse.json({ id, message: "Created" }, { status: 201 });
       } catch (e) {
         console.warn("[api/posts] DB error, fallback to fs:", e);
@@ -93,6 +96,8 @@ ${String(markdown).trim()}
 `;
     fs.mkdirSync(CONTENT_DIR, { recursive: true });
     fs.writeFileSync(filePath, fm, "utf-8");
+    revalidatePath("/");
+    revalidatePath("/admin");
     return NextResponse.json({ id, message: "Created" }, { status: 201 });
   } catch (e) {
     console.error(e);

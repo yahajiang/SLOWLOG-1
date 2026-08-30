@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { revalidatePath } from "next/cache";
 import { getPostById } from "@/lib/posts";
 import { authMiddleware, sanitizeId, sanitizeInput } from "@/lib/api-utils";
 
@@ -61,6 +62,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
               markdown: String(markdown).trim(), markdownZh: String(markdown).trim(),
             },
           });
+          revalidatePath("/");
+          revalidatePath(`/posts/${safeId}`);
           return NextResponse.json({ id: safeId, message: "Updated" });
         }
       } catch (e) { console.warn("[PUT] DB fallback", e); }
@@ -85,6 +88,8 @@ tags: [${safeTags.map((t) => `"${t}"`).join(", ")}]
 ${String(markdown).trim()}
 `;
     fs.writeFileSync(filePath, fm, "utf-8");
+    revalidatePath("/");
+    revalidatePath(`/posts/${safeId}`);
     return NextResponse.json({ id: safeId, message: "Updated" });
   } catch (e) {
     console.error(e);
@@ -106,6 +111,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         const existing = await prisma.post.findUnique({ where: { id: safeId } });
         if (existing) {
           await prisma.post.delete({ where: { id: safeId } });
+          revalidatePath("/");
+          revalidatePath(`/posts/${safeId}`);
           return NextResponse.json({ message: "Deleted" });
         }
       } catch (e) { console.warn("[DELETE] DB fallback", e); }
@@ -115,6 +122,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     if (!isValidPath(filePath)) return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     if (!fs.existsSync(filePath)) return NextResponse.json({ error: "Not found" }, { status: 404 });
     fs.unlinkSync(filePath);
+    revalidatePath("/");
+    revalidatePath(`/posts/${safeId}`);
     return NextResponse.json({ message: "Deleted" });
   } catch (e) {
     console.error(e);
