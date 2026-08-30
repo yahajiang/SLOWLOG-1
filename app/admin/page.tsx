@@ -521,7 +521,7 @@ function AdminInner() {
                 onClick={handleLogout}
                 className="hidden sm:inline-flex items-center gap-1.5 text-xs border border-zinc-200 bg-white/80 px-3 py-2 hover:border-zinc-400 hover:text-red-600 transition-colors rounded text-zinc-600"
               >
-                <LogOut className="w-3.5 h-3.5" /> 閫€鍑?              </button>
+                <LogOut className="w-3.5 h-3.5" /> 退出              </button>
               <button
                 onClick={openNew}
                 className="inline-flex items-center gap-1.5 md:gap-2 bg-zinc-900 text-white text-xs tracking-widest uppercase px-3 md:px-4 py-2 md:py-2.5 hover:bg-zinc-700 transition-colors rounded shadow-sm"
