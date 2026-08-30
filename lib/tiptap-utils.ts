@@ -478,9 +478,15 @@ function applyMarks(text: string, marks: Record<string, unknown>[]): string {
       case "code":
         result = `<code>${result}</code>`;
         break;
-      case "highlight":
-        result = `<mark>${result}</mark>`;
+      case "highlight": {
+        const hlColor = markAttrs.color as string | undefined;
+        if (hlColor) {
+          result = `<mark style="background-color: ${hlColor}">${result}</mark>`;
+        } else {
+          result = `<mark>${result}</mark>`;
+        }
         break;
+      }
       case "link":
         result = `<a href="${markAttrs.href || ""}">${result}</a>`;
         break;

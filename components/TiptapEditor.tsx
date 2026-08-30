@@ -97,7 +97,9 @@ export function TiptapEditor({
           class: "tiptap-link",
         },
       }),
-      Highlight,
+      Highlight.configure({
+        multicolor: true,
+      }),
       TaskList,
       TaskItem.configure({
         nested: true,
@@ -461,6 +463,23 @@ const Toolbar = memo(function Toolbar({
   lang: string;
 }) {
   const [showTableMenu, setShowTableMenu] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showHighlightPicker, setShowHighlightPicker] = useState(false);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+  const highlightPickerRef = useRef<HTMLDivElement>(null);
+
+  const PRESET_COLORS = [
+    "#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4",
+    "#3b82f6", "#8b5cf6", "#ec4899", "#6b7280", "#000000",
+  ];
+  const HIGHLIGHT_COLORS = [
+    { color: "#fef08a", label: "Yellow" },
+    { color: "#bbf7d0", label: "Green" },
+    { color: "#bfdbfe", label: "Blue" },
+    { color: "#fbcfe8", label: "Pink" },
+    { color: "#e9d5ff", label: "Purple" },
+    { color: "#fed7aa", label: "Orange" },
+  ];
 
   if (!editor) return null;
 
@@ -532,6 +551,99 @@ const Toolbar = memo(function Toolbar({
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           title="Highlight"
         />
+        <div className="relative" ref={highlightPickerRef}>
+          <ToolbarButton
+            icon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+              </svg>
+            }
+            active={showHighlightPicker}
+            onClick={() => { setShowHighlightPicker(!showHighlightPicker); setShowColorPicker(false); }}
+            title="Highlight Color"
+          />
+          {showHighlightPicker && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 shadow-lg p-2 z-50 rounded">
+              <p className="text-[10px] text-zinc-400 mb-2 uppercase tracking-wider">Highlight Color</p>
+              <div className="flex gap-1 mb-2">
+                {HIGHLIGHT_COLORS.map(({ color, label }) => (
+                  <button
+                    key={color}
+                    className="w-6 h-6 rounded border border-zinc-200 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    title={label}
+                    onClick={() => {
+                      editor.chain().focus().toggleHighlight({ color }).run();
+                      setShowHighlightPicker(false);
+                    }}
+                  />
+                ))}
+              </div>
+              <button
+                className="text-[10px] text-zinc-500 hover:text-zinc-700 w-full text-left"
+                onClick={() => {
+                  editor.chain().focus().unsetHighlight().run();
+                  setShowHighlightPicker(false);
+                }}
+              >
+                Remove highlight
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="relative" ref={colorPickerRef}>
+          <ToolbarButton
+            icon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 20h16M6 16l4-10h4l4 10" />
+                <circle cx="12" cy="8" r="2" fill="currentColor" />
+              </svg>
+            }
+            active={showColorPicker}
+            onClick={() => { setShowColorPicker(!showColorPicker); setShowHighlightPicker(false); }}
+            title="Text Color"
+          />
+          {showColorPicker && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 shadow-lg p-2 z-50 rounded">
+              <p className="text-[10px] text-zinc-400 mb-2 uppercase tracking-wider">Text Color</p>
+              <div className="flex gap-1 mb-2">
+                {PRESET_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    className="w-6 h-6 rounded border border-zinc-200 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    title={color}
+                    onClick={() => {
+                      editor.chain().focus().setColor(color).run();
+                      setShowColorPicker(false);
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  defaultValue="#000000"
+                  className="w-6 h-6 cursor-pointer border-0 p-0"
+                  onChange={(e) => {
+                    editor.chain().focus().setColor(e.target.value).run();
+                    setShowColorPicker(false);
+                  }}
+                />
+                <span className="text-[10px] text-zinc-400">Custom</span>
+                <button
+                  className="text-[10px] text-zinc-500 hover:text-zinc-700 ml-auto"
+                  onClick={() => {
+                    editor.chain().focus().unsetColor().run();
+                    setShowColorPicker(false);
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
         <ToolbarButton
           icon={<span className="font-mono text-xs">{'<>'}</span>}
           active={editor.isActive("code")}
