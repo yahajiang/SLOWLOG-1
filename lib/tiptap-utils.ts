@@ -441,6 +441,12 @@ function nodeToHtml(node: Record<string, unknown>): string {
     case "image":
       html = `<img src="${attrs.src}" alt="${attrs.alt || ""}" title="${attrs.title || ""}">`;
       break;
+    case "iframeEmbed":
+      html = `<div data-type="iframe-embed"><iframe src="${attrs.src || ""}" width="${attrs.width || "100%"}" height="${attrs.height || "400px"}" frameborder="0" allowfullscreen style="width:100%;border-radius:8px;"></iframe></div>`;
+      break;
+    case "youtube":
+      html = `<div data-type="youtube"><iframe src="https://www.youtube.com/embed/${attrs.src || ""}" width="${attrs.width || "100%"}" height="${attrs.height || "400px"}" frameborder="0" allowfullscreen style="width:100%;border-radius:8px;"></iframe></div>`;
+      break;
     case "hardBreak":
       html = "<br>";
       break;

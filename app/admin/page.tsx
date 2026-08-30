@@ -1041,6 +1041,8 @@ function AdminInner() {
             initialMarkdown={editing.markdown}
             onSave={(md) => setEditing((prev) => (prev ? { ...prev, markdown: md } : null))}
             onAutoSave={handleAutoSave}
+            postId={isNew ? undefined : editing.id}
+            postTitle={editing.title}
           />
         </div>
       </div>
