@@ -1,18 +1,18 @@
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts } from "@/lib/payload";
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
   const posts = await getAllPosts();
   const items = posts
     .map(
-      (post: any) => `
+      (post) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
       <link>${siteUrl}/posts/${post.id}</link>
       <guid>${siteUrl}/posts/${post.id}</guid>
-      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <pubDate>${new Date(post.date || post.createdAt || new Date()).toUTCString()}</pubDate>
       <description><![CDATA[${post.excerpt}]]></description>
-      <category>${post.category}</category>
+      <category><![CDATA[${post.category}]]></category>
     </item>`
     )
     .join("");

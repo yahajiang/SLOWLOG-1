@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/categories";
 import type { Category } from "@/lib/categories";
-import type { Post } from "@/lib/posts";
+import type { Post } from "@/lib/types";
 import { useLang } from "@/lib/lang-context";
 import { Header } from "@/components/Header";
 import { ArticleCard } from "@/components/ArticleCard";

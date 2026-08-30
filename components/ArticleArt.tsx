@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { ART_PALETTES } from "@/lib/categories";
-import type { Post } from "@/lib/posts";
+import type { Post } from "@/lib/types";
 
 export const ArticleArt = memo(function ArticleArt({
   post,

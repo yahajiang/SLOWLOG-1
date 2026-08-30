@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, getFeaturedPost } from "@/lib/payload";
 import HomeClient from "@/components/HomeClient";
 import { LangProvider } from "@/lib/lang-context";
 

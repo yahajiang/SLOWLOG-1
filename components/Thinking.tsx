@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 import { useRelativeTime } from "@/lib/relative-time";
-import type { Thought } from "@/lib/thoughts";
 
-function ThoughtItem({ thought, lang }: { thought: Thought; lang: "zh" | "en" }) {
-  const timeStr = thought.createdAt || thought.time;
+interface ThoughtData {
+  id: string;
+  text: string;
+  textZh: string;
+  createdAt?: string;
+}
+
+function ThoughtItem({ thought, lang }: { thought: ThoughtData; lang: "zh" | "en" }) {
+  const timeStr = thought.createdAt || "";
   const relative = useRelativeTime(timeStr, lang);
 
   return (
@@ -25,7 +31,7 @@ function ThoughtItem({ thought, lang }: { thought: Thought; lang: "zh" | "en" })
 
 export function Thinking() {
   const { t, lang } = useLang();
-  const [thoughts, setThoughts] = useState<Thought[]>([]);
+  const [thoughts, setThoughts] = useState<ThoughtData[]>([]);
 
   useEffect(() => {
     fetch("/api/thoughts")

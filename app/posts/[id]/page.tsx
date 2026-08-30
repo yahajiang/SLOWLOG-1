@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostById } from "@/lib/posts";
+import { getAllPosts, getPostBySlug } from "@/lib/payload";
 import { PostClient } from "@/components/PostClient";
 import { LangProvider } from "@/lib/lang-context";
 import type { Metadata } from "next";
@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const post = await getPostById(id);
+  const post = await getPostBySlug(id);
   if (!post) return { title: "文章未找到" };
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
   return {
@@ -40,7 +40,7 @@ export default async function PostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const post = await getPostById(id);
+  const post = await getPostBySlug(id);
   if (!post) notFound();
 
   const all = await getAllPosts();

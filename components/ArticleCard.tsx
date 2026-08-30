@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { ArticleArt } from "./ArticleArt";
 import { CategoryBadge } from "./CategoryBadge";
 import { AuthorAvatar } from "./AuthorAvatar";
-import type { Post } from "@/lib/posts";
+import type { Post } from "@/lib/types";
 import { useLang } from "@/lib/lang-context";
 import { useRelativeTime } from "@/lib/relative-time";
 

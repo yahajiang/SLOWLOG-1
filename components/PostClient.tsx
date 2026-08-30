@@ -11,7 +11,7 @@ import { Footer } from "./Footer";
 import { useRelativeTime } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import { Breadcrumb } from "./Breadcrumb";
-import type { Post } from "@/lib/posts";
+import type { Post } from "@/lib/types";
 
 export function PostClient({
   post: rawPost,
