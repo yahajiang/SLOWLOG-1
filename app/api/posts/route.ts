@@ -33,16 +33,18 @@ export async function POST(request: NextRequest) {
     if (auth instanceof NextResponse) return auth;
     const body = await request.json();
     const { id: rawId, title, excerpt, category, author, authorInitial, date, displayDate, readTime, featured, tags, markdown } = body;
+    console.log("[api/posts] POST body keys:", Object.keys(body));
+    console.log("[api/posts] title:", title, "excerpt:", excerpt?.slice(0, 30), "category:", category, "markdown len:", markdown?.length, "rawId:", rawId);
     if (!title || !excerpt || !category || !markdown) {
+      console.log("[api/posts] Validation failed - missing field. title=?", !!title, "excerpt=?", !!excerpt, "category=?", !!category, "markdown=?", !!markdown);
       return NextResponse.json({ error: "Missing required fields: title, excerpt, category, markdown" }, { status: 400 });
     }
     const safeTitle = sanitizeInput(String(title));
     const safeExcerpt = sanitizeInput(String(excerpt));
     const safeCategory = sanitizeInput(String(category));
     const id = sanitizeId(String(rawId || title));
+    console.log("[api/posts] Generated id:", id, "rawId:", rawId);
     if (!id) return NextResponse.json({ error: "Invalid id/slug" }, { status: 400 });
-
-    console.log(`[api/posts] Creating post: id="${id}", title="${safeTitle}"`);
 
     const finalDate = date || new Date().toISOString().slice(0, 10);
     const finalDisplayDate = sanitizeInput(displayDate || toDisplayDate(finalDate));
@@ -76,6 +78,7 @@ export async function POST(request: NextRequest) {
         try {
           await prisma.post.create({ data: { ...postData, draft: false } });
         } catch (createErr: any) {
+          console.log("[api/posts] Create with draft failed:", createErr?.message?.slice(0, 200));
           if (createErr?.message?.includes("draft")) {
             await prisma.post.create({ data: postData });
           } else {
@@ -87,8 +90,8 @@ export async function POST(request: NextRequest) {
         revalidatePath("/admin");
         revalidatePath(`/posts/${id}`);
         return NextResponse.json({ id, message: "Created" }, { status: 201 });
-      } catch (e) {
-        console.warn("[api/posts] DB error, fallback to fs:", e);
+      } catch (e: any) {
+        console.warn("[api/posts] DB error, fallback to fs:", e?.message?.slice(0, 300));
       }
     }
 
@@ -109,14 +112,16 @@ tags: [${safeTags.map((t) => `"${t}"`).join(", ")}]
 
 ${String(markdown).trim()}
 `;
+    console.log("[api/posts] Writing to filesystem:", filePath);
     fs.mkdirSync(CONTENT_DIR, { recursive: true });
     fs.writeFileSync(filePath, fm, "utf-8");
+    console.log("[api/posts] File written successfully");
     revalidatePath("/");
     revalidatePath("/admin");
     return NextResponse.json({ id, message: "Created" }, { status: 201 });
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+  } catch (e: any) {
+    console.error("[api/posts] POST error:", e?.message, e?.stack?.slice(0, 500));
+    return NextResponse.json({ error: "Failed to create post", detail: e?.message }, { status: 500 });
   }
 }
 
