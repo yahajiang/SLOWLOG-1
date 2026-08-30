@@ -56,25 +56,32 @@ export async function POST(request: NextRequest) {
         const { prisma } = await import("@/lib/prisma");
         const existing = await prisma.post.findUnique({ where: { id } });
         if (existing) return NextResponse.json({ error: `Post "${id}" already exists` }, { status: 409 });
-        await prisma.post.create({
-          data: {
-            id,
-            title: safeTitle,
-            titleZh: safeTitle,
-            excerpt: safeExcerpt,
-            excerptZh: safeExcerpt,
-            category: safeCategory,
-            author: safeAuthor,
-            authorInitial: safeAuthorInitial,
-            date: new Date(finalDate),
-            displayDate: finalDisplayDate,
-            readTime: safeReadTime,
-            featured: !!featured,
-            tags: safeTags,
-            markdown: String(markdown).trim(),
-            markdownZh: String(markdown).trim(),
-          },
-        });
+        const postData: Record<string, unknown> = {
+          id,
+          title: safeTitle,
+          titleZh: safeTitle,
+          excerpt: safeExcerpt,
+          excerptZh: safeExcerpt,
+          category: safeCategory,
+          author: safeAuthor,
+          authorInitial: safeAuthorInitial,
+          date: new Date(finalDate),
+          displayDate: finalDisplayDate,
+          readTime: safeReadTime,
+          featured: !!featured,
+          tags: safeTags,
+          markdown: String(markdown).trim(),
+          markdownZh: String(markdown).trim(),
+        };
+        try {
+          await prisma.post.create({ data: { ...postData, draft: false } });
+        } catch (createErr: any) {
+          if (createErr?.message?.includes("draft")) {
+            await prisma.post.create({ data: postData });
+          } else {
+            throw createErr;
+          }
+        }
         console.log(`[api/posts] Post "${id}" created in DB`);
         revalidatePath("/");
         revalidatePath("/admin");
