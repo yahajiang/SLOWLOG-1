@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -65,37 +65,7 @@ const emptyEditor: EditorData = {
   readTime: "5 min",
   featured: false,
   tags: "",
-  markdown: `## 开始写作
-
-在此处直接编辑内容，支持富文本、表格、代码块、图片拖拽等功能。
-
-### 功能特性
-
-- **富文本编辑**：加粗、斜体、下划线、删除线、高亮
-- **自动排版**：标题、段落、列表、引用自动格式化
-- **表格支持**：可视化创建和编辑表格
-- **代码高亮**：支持语法高亮的代码块
-- **图片上传**：拖拽或粘贴图片直接上传
-- **自动保存**：每 2 秒自动保存草稿
-
-> 慢日志不是空白，是让文字沉淀的空间。
-
-\`\`\`js
-// 代码块支持语法高亮
-console.log("慢日志");
-\`\`\`
-
-- 支持 **粗体** 和 *斜体*
-- 支持任务列表 ☑️
-- 支持 [链接](https://example.com)
-
-| 功能 | 状态 | 说明 |
-|------|------|------|
-| 富文本 | ✅ | 所见即所得 |
-| 表格 | ✅ | 可视化编辑 |
-| 代码块 | ✅ | 语法高亮 |
-
-继续你的创作...`,
+  markdown: "",
 };
 
 function ThoughtItem({
@@ -233,6 +203,7 @@ function AdminInner() {
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [showMeta, setShowMeta] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
   
   // Thoughts state
   const [thoughts, setThoughts] = useState<{ id: string; text: string; textZh: string; time: string; timeZh: string }[]>([]);
@@ -252,7 +223,7 @@ function AdminInner() {
   async function fetchPosts() {
     setLoading(true);
     try {
-      const res = await fetch("/api/posts", { cache: "no-store", credentials: "include" });
+      const res = await fetch("/api/posts?drafts=true", { cache: "no-store", credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
@@ -376,7 +347,8 @@ function AdminInner() {
   });
 
   function openNew() {
-    setEditing({ ...emptyEditor, id: "", date: new Date().toISOString().slice(0, 10) });
+    const newId = `post-${Date.now()}`;
+    setEditing({ ...emptyEditor, id: newId, date: new Date().toISOString().slice(0, 10) });
     setIsNew(true);
     setShowMeta(true);
   }
@@ -422,6 +394,46 @@ function AdminInner() {
     }
   }
 
+  async function handleBatchDelete() {
+    if (selectedPosts.size === 0) return;
+    if (!confirm(lang === "zh" ? `确定删除选中的 ${selectedPosts.size} 篇文章？` : `Delete ${selectedPosts.size} selected posts?`)) return;
+    try {
+      const res = await fetch("/api/posts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ids: Array.from(selectedPosts) }),
+      });
+      if (res.ok) {
+        setSelectedPosts(new Set());
+        setToast(lang === "zh" ? "已批量删除" : "Batch deleted");
+        fetchPosts();
+      } else {
+        const j = await res.json().catch(() => ({}));
+        setToast(j.error || "删除失败");
+      }
+    } catch {
+      setToast("网络错误");
+    }
+  }
+
+  function toggleSelectAll() {
+    if (selectedPosts.size === filtered.length) {
+      setSelectedPosts(new Set());
+    } else {
+      setSelectedPosts(new Set(filtered.map((p) => p.id)));
+    }
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedPosts((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   const handleSave = useCallback(async () => {
     if (!editing) return;
     // Validation with red popup
@@ -448,7 +460,7 @@ function AdminInner() {
     setShowValidation(false);
     setSaving(true);
     const payload = {
-      id: editing.id || slugify(editing.title),
+      id: editing.id,
       title: editing.title.trim(),
       excerpt: editing.excerpt.trim(),
       category: editing.category,
@@ -488,8 +500,36 @@ function AdminInner() {
     }
   }, [editing, isNew, t, lang]);
 
+  const autoSaveTimerRef2 = useRef<NodeJS.Timeout | null>(null);
+
   const handleAutoSave = useCallback((markdown: string) => {
     setEditing((prev) => (prev ? { ...prev, markdown } : null));
+    if (autoSaveTimerRef2.current) clearTimeout(autoSaveTimerRef2.current);
+    autoSaveTimerRef2.current = setTimeout(async () => {
+      setEditing((prev) => {
+        if (!prev || !prev.id || !prev.title.trim()) return prev;
+        const payload = {
+          id: prev.id,
+          title: prev.title.trim(),
+          excerpt: prev.excerpt.trim(),
+          category: prev.category,
+          author: prev.author.trim() || "Anonymous",
+          authorInitial: prev.authorInitial.trim() || "Y",
+          date: prev.date,
+          readTime: prev.readTime,
+          featured: prev.featured,
+          tags: prev.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          markdown,
+        };
+        fetch("/api/posts", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        }).catch(() => {});
+        return prev;
+      });
+    }, 3000);
   }, []);
 
   // ============================================================
@@ -577,9 +617,25 @@ function AdminInner() {
 
           <div className="border border-[var(--yh-border)] bg-white/80 backdrop-blur-sm rounded">
             <div className="px-4 py-3 border-b border-[var(--yh-border)] flex items-center justify-between bg-zinc-50/30">
-              <p className="text-xs font-medium tracking-widest uppercase text-zinc-500">
-                {t.postsCount(filtered.length, filterCat, query)}
-              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && selectedPosts.size === filtered.length}
+                  onChange={toggleSelectAll}
+                  className="rounded border-zinc-300"
+                />
+                <p className="text-xs font-medium tracking-widest uppercase text-zinc-500">
+                  {t.postsCount(filtered.length, filterCat, query)}
+                </p>
+                {selectedPosts.size > 0 && (
+                  <button
+                    onClick={handleBatchDelete}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium"
+                  >
+                    {lang === "zh" ? `删除选中 (${selectedPosts.size})` : `Delete (${selectedPosts.size})`}
+                  </button>
+                )}
+              </div>
               <span className="text-[11px] text-zinc-400 hidden sm:inline">{t.clickToEdit}</span>
             </div>
 
@@ -597,6 +653,12 @@ function AdminInner() {
               <div className="divide-y divide-zinc-100 stagger-children">
                 {filtered.map((post) => (
                   <div key={post.id} className="group px-4 py-4 flex items-start gap-4 hover:bg-zinc-50/70 transition-colors duration-200">
+                    <input
+                      type="checkbox"
+                      checked={selectedPosts.has(post.id)}
+                      onChange={() => toggleSelect(post.id)}
+                      className="mt-1 rounded border-zinc-300 shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span
@@ -774,7 +836,7 @@ function AdminInner() {
             onChange={(e) => {
               const v = e.target.value;
               setEditing((prev) =>
-                prev ? { ...prev, title: v, id: isNew ? slugify(v) : prev.id } : null
+                prev ? { ...prev, title: v } : null
               );
             }}
             placeholder={lang === "zh" ? "无标题" : "Untitled"}

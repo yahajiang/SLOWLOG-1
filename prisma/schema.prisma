@@ -19,6 +19,7 @@ model Post {
   displayDate   String
   readTime      String
   featured      Boolean  @default(false)
+  draft         Boolean  @default(false)
   tags          String[]
   markdown      String   @db.Text
   markdownZh    String?  @db.Text
@@ -27,6 +28,7 @@ model Post {
 
   @@index([category])
   @@index([date])
+  @@index([draft])
 }
 
 model User {

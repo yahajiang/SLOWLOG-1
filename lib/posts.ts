@@ -19,6 +19,7 @@ export interface Post {
   displayDate: string;
   readTime: string;
   featured?: boolean;
+  draft?: boolean;
   tags: string[];
   markdown: string;
   markdownZh: string;
@@ -56,6 +57,7 @@ function parseFile(filePath: string, id: string): Post {
     displayDate: String(data.displayDate ?? String(data.date ?? "")),
     readTime: String(data.readTime ?? "5 min"),
     featured: Boolean(data.featured),
+    draft: Boolean(data.draft),
     tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
     markdown,
     markdownZh: hasChinese ? markdownZh : markdown,
@@ -88,6 +90,7 @@ function dbRowToPost(row: any): Post {
     displayDate: row.displayDate,
     readTime: row.readTime,
     featured: row.featured,
+    draft: row.draft ?? false,
     tags: row.tags ?? [],
     markdown,
     markdownZh,
@@ -106,7 +109,11 @@ function getAllPostsFromFs(): Post[] {
     const id = f.replace(/\.md$/, "");
     return parseFile(path.join(CONTENT_DIR, f), id);
   });
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return posts.sort((a, b) => {
+    const ta = a.createdAt ? new Date(a.createdAt).getTime() : new Date(a.date).getTime();
+    const tb = b.createdAt ? new Date(b.createdAt).getTime() : new Date(b.date).getTime();
+    return tb - ta;
+  });
 }
 
 function getPostByIdFromFs(id: string): Post | undefined {
@@ -120,7 +127,7 @@ export async function getAllPosts(): Promise<Post[]> {
   if (hasDatabase()) {
     try {
       const { prisma } = await import("./prisma");
-      const rows = await prisma.post.findMany({ orderBy: { date: "desc" } });
+      const rows = await prisma.post.findMany({ orderBy: { createdAt: "desc" } });
       if (rows.length > 0) return rows.map(dbRowToPost);
     } catch (e) {
       console.warn("[posts] DB error fetching all posts, fallback to fs:", e);

@@ -13,9 +13,13 @@ function toDisplayDate(dateStr: string): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const posts = (await getAllPosts()).map(({ html, markdown, htmlZh, markdownZh, headings, headingsZh, ...rest }) => rest);
+    const url = new URL(request.url);
+    const showDrafts = url.searchParams.get("drafts") === "true";
+    const posts = (await getAllPosts())
+      .filter((p) => showDrafts || !p.draft)
+      .map(({ html, markdown, htmlZh, markdownZh, headings, headingsZh, ...rest }) => rest);
     return NextResponse.json(posts);
   } catch (error) {
     console.error(error);
@@ -106,5 +110,128 @@ ${String(markdown).trim()}
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const auth = await authMiddleware(request);
+    if (auth instanceof NextResponse) return auth;
+    const body = await request.json();
+    const { id, title, excerpt, category, author, authorInitial, date, readTime, featured, tags, markdown } = body;
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+
+    if (process.env.DATABASE_URL) {
+      try {
+        const { prisma } = await import("@/lib/prisma");
+        const existing = await prisma.post.findUnique({ where: { id } });
+        if (existing) {
+          await prisma.post.update({
+            where: { id },
+            data: {
+              ...(title !== undefined && { title, titleZh: title }),
+              ...(excerpt !== undefined && { excerpt, excerptZh: excerpt }),
+              ...(category !== undefined && { category }),
+              ...(author !== undefined && { author }),
+              ...(authorInitial !== undefined && { authorInitial }),
+              ...(date !== undefined && { date: new Date(date) }),
+              ...(readTime !== undefined && { readTime }),
+              ...(featured !== undefined && { featured }),
+              ...(tags !== undefined && { tags }),
+              ...(markdown !== undefined && { markdown: String(markdown).trim(), markdownZh: String(markdown).trim() }),
+              draft: true,
+            },
+          });
+          revalidatePath("/");
+          revalidatePath(`/posts/${id}`);
+          return NextResponse.json({ id, message: "Draft saved" });
+        }
+      } catch (e) {
+        console.warn("[api/posts] PATCH DB error, fallback to fs:", e);
+      }
+    }
+
+    const filePath = path.join(CONTENT_DIR, `${id}.md`);
+    if (!fs.existsSync(filePath)) {
+      const fm = `---
+title: "${sanitizeInput(String(title || ""))}"
+excerpt: "${sanitizeInput(String(excerpt || ""))}"
+category: "${sanitizeInput(String(category || "Design"))}"
+author: "${sanitizeInput(String(author || "Anonymous"))}"
+authorInitial: "${sanitizeInput(String(authorInitial || "A"))}"
+date: "${date || new Date().toISOString().slice(0, 10)}"
+displayDate: ""
+readTime: "${sanitizeInput(String(readTime || "5 min"))}"
+featured: ${featured ? "true" : "false"}
+draft: true
+tags: [${Array.isArray(tags) ? tags.map((t: string) => `"${sanitizeInput(String(t))}"`).join(", ") : ""}]
+---
+
+${String(markdown || "").trim()}
+`;
+      fs.mkdirSync(CONTENT_DIR, { recursive: true });
+      fs.writeFileSync(filePath, fm, "utf-8");
+    } else {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const fm = raw.replace(/^---\n[\s\S]*?\n---/, `---
+title: "${sanitizeInput(String(title || ""))}"
+excerpt: "${sanitizeInput(String(excerpt || ""))}"
+category: "${sanitizeInput(String(category || "Design"))}"
+author: "${sanitizeInput(String(author || "Anonymous"))}"
+authorInitial: "${sanitizeInput(String(authorInitial || "A"))}"
+date: "${date || new Date().toISOString().slice(0, 10)}"
+displayDate: ""
+readTime: "${sanitizeInput(String(readTime || "5 min"))}"
+featured: ${featured ? "true" : "false"}
+draft: true
+tags: [${Array.isArray(tags) ? tags.map((t: string) => `"${sanitizeInput(String(t))}"`).join(", ") : ""}]
+---`).replace(/---\n[\s\S]*$/, `\n${String(markdown || "").trim()}\n`);
+      fs.writeFileSync(filePath, fm, "utf-8");
+    }
+    revalidatePath("/");
+    return NextResponse.json({ id, message: "Draft saved" });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Failed to save draft" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const auth = await authMiddleware(request);
+    if (auth instanceof NextResponse) return auth;
+    const body = await request.json();
+    const { ids } = body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: "Missing ids array" }, { status: 400 });
+    }
+
+    if (process.env.DATABASE_URL) {
+      try {
+        const { prisma } = await import("@/lib/prisma");
+        await prisma.post.deleteMany({ where: { id: { in: ids } } });
+        revalidatePath("/");
+        for (const id of ids) revalidatePath(`/posts/${id}`);
+        return NextResponse.json({ message: `Deleted ${ids.length} posts` });
+      } catch (e) {
+        console.warn("[api/posts] DELETE batch DB error, fallback to fs:", e);
+      }
+    }
+
+    let deleted = 0;
+    for (const id of ids) {
+      const safeId = sanitizeId(String(id));
+      const filePath = path.join(CONTENT_DIR, `${safeId}.md`);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        deleted++;
+        revalidatePath(`/posts/${safeId}`);
+      }
+    }
+    revalidatePath("/");
+    return NextResponse.json({ message: `Deleted ${deleted} posts` });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Failed to delete posts" }, { status: 500 });
   }
 }
