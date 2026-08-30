@@ -1,35 +1,10 @@
-import { buildConfig, type CollectionConfig } from 'payload'
+import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-
-const Users: CollectionConfig = {
-  slug: 'users',
-  auth: true,
-  admin: {
-    useAsTitle: 'email',
-  },
-  fields: [
-    {
-      name: 'email',
-      type: 'email',
-      required: true,
-    },
-    {
-      name: 'name',
-      type: 'text',
-    },
-    {
-      name: 'role',
-      type: 'select',
-      options: [
-        { label: 'Admin', value: 'admin' },
-        { label: 'Editor', value: 'editor' },
-      ],
-      defaultValue: 'editor',
-    },
-  ],
-}
+import { Users } from './collections/Users'
+import { Posts } from './collections/Posts'
+import { Notes } from './collections/Notes'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
@@ -39,7 +14,7 @@ export default buildConfig({
     meta: { titleSuffix: ' - 慢日志后台' },
   },
 
-  collections: [Users],
+  collections: [Users, Posts, Notes],
 
   db: postgresAdapter({
     pool: {
@@ -51,5 +26,14 @@ export default buildConfig({
   
   typescript: {
     outputFile: path.resolve(process.cwd(), 'payload-types.ts'),
+  },
+
+  localization: {
+    locales: [
+      { label: '中文', code: 'zh' },
+      { label: 'English', code: 'en' },
+    ],
+    defaultLocale: 'zh',
+    fallback: true,
   },
 })
