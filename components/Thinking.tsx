@@ -2,7 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { useRelativeTime } from "@/lib/relative-time";
 import type { Thought } from "@/lib/thoughts";
+
+function ThoughtItem({ thought, lang }: { thought: Thought; lang: "zh" | "en" }) {
+  const timeStr = thought.createdAt || thought.time;
+  const relative = useRelativeTime(timeStr, lang);
+
+  return (
+    <div className="border-l-2 border-[var(--yh-border)] pl-4 py-1 transition-all duration-500 hover:border-[var(--yh-accent)] hover:pl-5"
+      style={{ transitionTimingFunction: "var(--ease-spring)" }}
+    >
+      <p className="text-sm text-[var(--yh-text)] leading-relaxed">
+        {lang === "zh" ? thought.textZh || thought.text : thought.text}
+      </p>
+      <time className="text-[11px] text-[var(--yh-muted)]/60 mt-1 block">
+        {relative}
+      </time>
+    </div>
+  );
+}
 
 export function Thinking() {
   const { t, lang } = useLang();
@@ -11,7 +30,7 @@ export function Thinking() {
   useEffect(() => {
     fetch("/api/thoughts")
       .then((res) => res.json())
-      .then((data) => setThoughts(data))
+      .then((data) => setThoughts(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
 
@@ -23,24 +42,9 @@ export function Thinking() {
         <h2 className="text-xs font-medium tracking-widest uppercase text-[var(--yh-muted)] mb-8">
           {t.thinking}
         </h2>
-        <div className="space-y-6">
-          {thoughts.map((thought, idx) => (
-            <div
-              key={thought.id}
-              className="border-l-2 border-[var(--yh-border)] pl-4 py-1 transition-all duration-500 hover:border-[var(--yh-accent)] hover:pl-5"
-              style={{
-                transitionTimingFunction: "var(--ease-spring)",
-                animation: `fadeInUp 0.5s var(--ease-out) both`,
-                animationDelay: `${idx * 100}ms`,
-              }}
-            >
-              <p className="text-sm text-[var(--yh-text)] leading-relaxed">
-                {lang === "zh" ? thought.textZh || thought.text : thought.text}
-              </p>
-              <time className="text-[11px] text-[var(--yh-muted)]/60 mt-1 block">
-                {lang === "zh" ? thought.timeZh || thought.time : thought.time}
-              </time>
-            </div>
+        <div className="space-y-6 stagger-children">
+          {thoughts.map((thought) => (
+            <ThoughtItem key={thought.id} thought={thought} lang={lang} />
           ))}
         </div>
       </div>

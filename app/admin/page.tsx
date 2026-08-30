@@ -332,11 +332,6 @@ function AdminInner() {
       setShowValidation(true);
       return;
     }
-    if (!editing.tags.trim()) {
-      showToast(lang === "zh" ? "标签不能为空" : "Tags are required", "error");
-      setShowValidation(true);
-      return;
-    }
     if (!editing.markdown.trim()) {
       showToast(lang === "zh" ? "正文不能为空" : "Content is required", "error");
       setShowValidation(true);
@@ -887,11 +882,8 @@ function AdminInner() {
                     setEditing((prev) => (prev ? { ...prev, tags: e.target.value } : null))
                   }
                   placeholder={t.formTagsPlaceholder}
-                  className={`w-full px-3 py-2 text-sm border bg-white focus:outline-none focus:border-zinc-400 ${showValidation && !editing.tags.trim() ? "border-red-500 bg-red-50" : "border-zinc-200"}`}
+                  className="w-full px-3 py-2 text-sm border border-zinc-200 bg-white focus:outline-none focus:border-zinc-400 transition-colors"
                 />
-                {showValidation && !editing.tags.trim() && (
-                  <p className="text-xs text-red-500 mt-1">标签不能为空</p>
-                )}
               </div>
 
               {/* Featured */}
