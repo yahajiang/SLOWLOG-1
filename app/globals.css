@@ -397,6 +397,9 @@ code, pre, .font-mono {
 /* Table - clean, modern design */
 .prose table {
   font-variant-numeric: tabular-nums;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .prose thead {
@@ -536,6 +539,17 @@ code, pre, .font-mono {
 /* Strong & emphasis */
 .prose strong {
   color: var(--yh-text);
+}
+
+/* Images - clickable for lightbox */
+.prose img {
+  cursor: zoom-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prose img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.15);
 }
 
 /* Selection */

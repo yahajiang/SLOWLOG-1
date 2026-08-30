@@ -9,6 +9,8 @@ import { ReadingProgress } from "./ReadingProgress";
 import { TableOfContents } from "./TableOfContents";
 import { Footer } from "./Footer";
 import { useRelativeTime } from "@/lib/relative-time";
+import { Lightbox } from "./Lightbox";
+import { Breadcrumb } from "./Breadcrumb";
 import type { Post } from "@/lib/posts";
 
 export function PostClient({
@@ -28,6 +30,7 @@ export function PostClient({
 
   return (
     <div className="min-h-screen">
+      <Lightbox />
       <ReadingProgress />
 
       <div className="sticky top-0 z-40 bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
@@ -52,6 +55,7 @@ export function PostClient({
 
       <section className="pt-10 pb-8 md:pt-14">
         <div className="mx-auto max-w-3xl px-6">
+          <Breadcrumb items={[{ label: post.category }]} />
           <div className="flex items-center gap-3 mb-4">
             <CategoryBadge category={post.category} />
             <span className="text-[var(--yh-border)]">/</span>
@@ -109,7 +113,7 @@ export function PostClient({
                   prose-li:text-[15px] prose-li:leading-[1.8] prose-li:mb-1
                   prose-hr:border-zinc-200 prose-hr:my-12
                   prose-img:rounded-xl prose-img:my-8 prose-img:shadow-md prose-img:border prose-img:border-zinc-100
-                  prose-table:text-[14px] prose-table:border-collapse prose-table:w-full prose-table:my-8 prose-table:rounded-lg prose-table:overflow-hidden prose-table:shadow-sm prose-table:border prose-table:border-zinc-200
+                  prose-table:text-[14px] prose-table:border-collapse prose-table:w-full prose-table:my-8 prose-table:rounded-lg prose-table:shadow-sm prose-table:border prose-table:border-zinc-200
                   prose-th:border-b-2 prose-th:border-zinc-200 prose-th:bg-zinc-50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-zinc-700 prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
                   prose-td:border-b prose-td:border-zinc-100 prose-td:px-4 prose-td:py-3 prose-td:text-zinc-600 prose-td:align-top
                   prose-thead:border-b-2 prose-thead:border-zinc-200"
@@ -125,6 +129,14 @@ export function PostClient({
                     #{tag}
                   </span>
                 ))}
+              </div>
+
+              <div className="mt-8 p-4 bg-zinc-50 border border-zinc-200 rounded-lg text-[13px] text-zinc-500 leading-relaxed">
+                <p>
+                  {lang === "zh"
+                    ? `© ${new Date().getFullYear()} ${post.author}. 本文采用 CC BY-NC-SA 4.0 许可协议，转载需注明出处。`
+                    : `© ${new Date().getFullYear()} ${post.author}. This article is licensed under CC BY-NC-SA 4.0. Attribution required for reprints.`}
+                </p>
               </div>
             </article>
 

@@ -15,6 +15,7 @@ export async function generateMetadata({
   const { id } = await params;
   const post = await getPostById(id);
   if (!post) return { title: "文章未找到" };
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
   return {
     title: post.title,
     description: post.excerpt,
@@ -24,6 +25,11 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.date,
       tags: post.tags,
+      url: `${siteUrl}/posts/${post.id}`,
+    },
+    other: {
+      "article:author": post.author,
+      "article:published_time": post.date,
     },
   };
 }
@@ -42,8 +48,29 @@ export default async function PostPage({
   const prevPost = currentIdx < all.length - 1 ? all[currentIdx + 1] : null;
   const nextPost = currentIdx > 0 ? all[currentIdx - 1] : null;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    author: { "@type": "Person", name: post.author },
+    datePublished: post.date,
+    dateModified: post.date,
+    url: `${siteUrl}/posts/${post.id}`,
+    keywords: post.tags.join(", "),
+    publisher: {
+      "@type": "Organization",
+      name: "慢日志",
+    },
+  };
+
   return (
     <LangProvider>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <PostClient post={post} prevPost={prevPost} nextPost={nextPost} />
     </LangProvider>
   );
