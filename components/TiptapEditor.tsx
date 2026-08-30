@@ -29,6 +29,7 @@ import { FindReplace } from "./FindReplace";
 import { SourceEditor } from "./SourceEditor";
 import { VersionHistory } from "./VersionHistory";
 import { VideoEmbedModal } from "./VideoEmbedModal";
+import { InputModal } from "./InputModal";
 
 const lowlight = createLowlight(common);
 
@@ -535,6 +536,7 @@ const Toolbar = memo(function Toolbar({
   const [showHighlightPicker, setShowHighlightPicker] = useState(false);
   const [showMoreInsert, setShowMoreInsert] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
 
   const PRESET_COLORS = [
@@ -707,11 +709,7 @@ const Toolbar = memo(function Toolbar({
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                 视频
               </button>
-              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-left hover:bg-zinc-100 rounded" onClick={() => {
-                const url = prompt("输入链接地址:");
-                if (url) editor.chain().focus().setLink({ href: url }).run();
-                setShowMoreInsert(false);
-              }}>
+              <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-left hover:bg-zinc-100 rounded" onClick={() => { setShowLinkModal(true); setShowMoreInsert(false); }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                 链接
               </button>
@@ -818,6 +816,14 @@ const Toolbar = memo(function Toolbar({
             editor.chain().focus().setIframe({ src: embedUrl }).run();
           }}
           onClose={() => setShowVideoModal(false)}
+        />
+      )}
+      {showLinkModal && (
+        <InputModal
+          title={lang === "zh" ? "插入链接" : "Insert Link"}
+          placeholder="https://..."
+          onSubmit={(url) => editor.chain().focus().setLink({ href: url }).run()}
+          onClose={() => setShowLinkModal(false)}
         />
       )}
     </div>

@@ -25,6 +25,7 @@ import type { Lang } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TiptapEditor } from "@/components/TiptapEditor";
 import { useRelativeTime } from "@/lib/relative-time";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 type PostSummary = {
   id: string;
@@ -193,6 +194,7 @@ function AdminInner() {
   const [showMeta, setShowMeta] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
+  const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
   
   // Thoughts state
   const [thoughts, setThoughts] = useState<{ id: string; text: string; textZh: string; time: string; timeZh: string }[]>([]);
@@ -300,21 +302,26 @@ function AdminInner() {
     }
   }
 
-  async function deleteThought(id: string) {
-    if (!confirm(lang === "zh" ? "确定删除这条随想？" : "Delete this thought?")) return;
-    try {
-      const res = await fetch(`/api/thoughts/${id}`, { method: "DELETE", credentials: "include" });
-      if (res.ok) {
-        fetchThoughts();
-        showToast(lang === "zh" ? "随想已删除" : "Thought deleted", "success");
-      } else {
-        const j = await res.json().catch(() => ({}));
-        showToast(j.error || (lang === "zh" ? "删除失败" : "Delete failed"), "error");
-      }
-    } catch (error) {
-      console.error(error);
-      showToast(lang === "zh" ? "网络错误" : "Network error", "error");
-    }
+  function deleteThought(id: string) {
+    setConfirmModal({
+      message: t.deleteThoughtConfirm,
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/thoughts/${id}`, { method: "DELETE", credentials: "include" });
+          if (res.ok) {
+            fetchThoughts();
+            showToast(t.thoughtDeleted, "success");
+          } else {
+            const j = await res.json().catch(() => ({}));
+            showToast(j.error || (lang === "zh" ? "删除失败" : "Delete failed"), "error");
+          }
+        } catch (error) {
+          console.error(error);
+          showToast(lang === "zh" ? "网络错误" : "Network error", "error");
+        }
+      },
+    });
   }
 
   useEffect(() => {
@@ -367,43 +374,53 @@ function AdminInner() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t.deleteConfirm(id))) return;
-    try {
-      const res = await fetch(`/api/posts/${id}`, { method: "DELETE", credentials: "include" });
-      if (res.ok) {
-        setToast(t.deleteSuccess);
-        fetchPosts();
-      } else {
-        const j = await res.json().catch(() => ({}));
-        setToast(j.error || "删除失败");
-      }
-    } catch {
-      setToast("网络错误");
-    }
+  function handleDelete(id: string) {
+    setConfirmModal({
+      message: t.deleteConfirm(id),
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/posts/${id}`, { method: "DELETE", credentials: "include" });
+          if (res.ok) {
+            setToast(t.deleteSuccess);
+            fetchPosts();
+          } else {
+            const j = await res.json().catch(() => ({}));
+            setToast(j.error || "删除失败");
+          }
+        } catch {
+          setToast("网络错误");
+        }
+      },
+    });
   }
 
-  async function handleBatchDelete() {
+  function handleBatchDelete() {
     if (selectedPosts.size === 0) return;
-    if (!confirm(lang === "zh" ? `确定删除选中的 ${selectedPosts.size} 篇文章？` : `Delete ${selectedPosts.size} selected posts?`)) return;
-    try {
-      const res = await fetch("/api/posts", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ ids: Array.from(selectedPosts) }),
-      });
-      if (res.ok) {
-        setSelectedPosts(new Set());
-        setToast(lang === "zh" ? "已批量删除" : "Batch deleted");
-        fetchPosts();
-      } else {
-        const j = await res.json().catch(() => ({}));
-        setToast(j.error || "删除失败");
-      }
-    } catch {
-      setToast("网络错误");
-    }
+    setConfirmModal({
+      message: lang === "zh" ? `确定删除选中的 ${selectedPosts.size} 篇文章？` : `Delete ${selectedPosts.size} selected posts?`,
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          const res = await fetch("/api/posts", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ ids: Array.from(selectedPosts) }),
+          });
+          if (res.ok) {
+            setSelectedPosts(new Set());
+            setToast(lang === "zh" ? "已批量删除" : "Batch deleted");
+            fetchPosts();
+          } else {
+            const j = await res.json().catch(() => ({}));
+            setToast(j.error || "删除失败");
+          }
+        } catch {
+          setToast("网络错误");
+        }
+      },
+    });
   }
 
   function toggleSelectAll() {
@@ -712,8 +729,18 @@ function AdminInner() {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+      )}
+
+      {/* Confirm Modal */}
+      {confirmModal && (
+        <ConfirmModal
+          message={confirmModal.message}
+          variant={confirmModal.variant}
+          onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
+          onCancel={() => setConfirmModal(null)}
+        />
+      )}
+    </div>
 
           <p className="text-[11px] text-zinc-400 mt-4 text-center">
             {t.fileHint}

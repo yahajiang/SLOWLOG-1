@@ -70,6 +70,7 @@ export const dict = {
     edit: "编辑",
     delete: "删除",
     cancel: "取消",
+    confirm: "确认",
     save: "保存",
     saving: "保存中...",
     publish: "发布",
@@ -223,6 +224,7 @@ export const dict = {
     edit: "Edit",
     delete: "Delete",
     cancel: "Cancel",
+    confirm: "Confirm",
     save: "Save",
     saving: "Saving...",
     publish: "Publish",
@@ -358,6 +360,7 @@ export type Dict = {
   edit: string;
   delete: string;
   cancel: string;
+  confirm: string;
   save: string;
   saving: string;
   publish: string;

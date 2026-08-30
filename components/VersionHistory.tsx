@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Clock, RotateCcw, Trash2 } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface Version {
   id: string;
@@ -21,6 +22,7 @@ interface VersionHistoryProps {
 export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryProps) {
   const [versions, setVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void; variant?: "danger" | "default" } | null>(null);
   const { t, lang } = useLang();
 
   const fetchVersions = useCallback(async () => {
@@ -42,20 +44,28 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
   }, [fetchVersions]);
 
   const handleRestore = useCallback((version: Version) => {
-    if (confirm(t.restoreVersionConfirm)) {
-      onRestore(version.markdown);
-      onClose();
-    }
+    setConfirmModal({
+      message: t.restoreVersionConfirm,
+      onConfirm: () => {
+        onRestore(version.markdown);
+        onClose();
+      },
+    });
   }, [onRestore, onClose, t]);
 
   const handleDelete = useCallback(async (id: string) => {
-    if (!confirm(t.deleteThoughtConfirm)) return;
-    try {
-      await fetch(`/api/versions/${id}`, { method: "DELETE", credentials: "include" });
-      fetchVersions();
-    } catch (e) {
-      console.error(e);
-    }
+    setConfirmModal({
+      message: t.deleteThoughtConfirm,
+      variant: "danger",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/versions/${id}`, { method: "DELETE", credentials: "include" });
+          fetchVersions();
+        } catch (e) {
+          console.error(e);
+        }
+      },
+    });
   }, [fetchVersions, t]);
 
   const formatTime = (iso: string) => {
@@ -71,6 +81,7 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
   };
 
   return (
+    <>
     <div className="absolute top-full right-0 mt-1 bg-white border border-zinc-200 shadow-xl rounded-lg z-50 w-72">
       <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-100">
         <div className="flex items-center gap-1.5">
@@ -120,5 +131,14 @@ export function VersionHistory({ postId, onRestore, onClose }: VersionHistoryPro
         <p className="text-[10px] text-zinc-400">{t.maxVersions}</p>
       </div>
     </div>
+    {confirmModal && (
+      <ConfirmModal
+        message={confirmModal.message}
+        variant={confirmModal.variant}
+        onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
+        onCancel={() => setConfirmModal(null)}
+      />
+    )}
+    </>
   );
 }
