@@ -38,6 +38,8 @@ export async function POST(request: NextRequest) {
     const id = sanitizeId(String(rawId || title));
     if (!id) return NextResponse.json({ error: "Invalid id/slug" }, { status: 400 });
 
+    console.log(`[api/posts] Creating post: id="${id}", title="${safeTitle}"`);
+
     const finalDate = date || new Date().toISOString().slice(0, 10);
     const finalDisplayDate = sanitizeInput(displayDate || toDisplayDate(finalDate));
     const safeAuthor = sanitizeInput(String(author || "Anonymous"));
@@ -69,8 +71,10 @@ export async function POST(request: NextRequest) {
             markdownZh: String(markdown).trim(),
           },
         });
+        console.log(`[api/posts] Post "${id}" created in DB`);
         revalidatePath("/");
         revalidatePath("/admin");
+        revalidatePath(`/posts/${id}`);
         return NextResponse.json({ id, message: "Created" }, { status: 201 });
       } catch (e) {
         console.warn("[api/posts] DB error, fallback to fs:", e);

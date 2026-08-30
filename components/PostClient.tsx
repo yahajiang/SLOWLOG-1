@@ -21,7 +21,7 @@ export function PostClient({
   nextPost: Post | null;
 }) {
   const { t, lang } = useLang();
-  const relative = useRelativeTime(rawPost.date, lang);
+  const relative = useRelativeTime(rawPost.createdAt || rawPost.date, lang);
   const post = lang === "zh"
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Lang } from "./i18n";
 
 export function formatRelativeTime(dateStr: string, lang: Lang): string {
+  if (!dateStr) return "";
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return dateStr;
 
@@ -14,13 +15,14 @@ export function formatRelativeTime(dateStr: string, lang: Lang): string {
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
 
+  if (diffSec < 0) return lang === "zh" ? "刚刚" : "just now";
+
   if (lang === "zh") {
     if (diffSec < 60) return "刚刚";
     if (diffMin < 60) return `${diffMin} 分钟前`;
     if (diffHour < 24) return `${diffHour} 小时前`;
     if (diffDay < 7) return `${diffDay} 天前`;
     if (diffDay < 30) return `${Math.floor(diffDay / 7)} 周前`;
-    // For older dates, show displayDate
     return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric", year: "numeric" });
   } else {
     if (diffSec < 60) return "just now";

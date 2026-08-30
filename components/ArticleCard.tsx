@@ -17,7 +17,7 @@ export function ArticleCard({
   index?: number;
 }) {
   const { lang } = useLang();
-  const relative = useRelativeTime(post.date, lang);
+  const relative = useRelativeTime(post.createdAt || post.date, lang);
   return (
     <Link
       href={`/posts/${post.id}`}

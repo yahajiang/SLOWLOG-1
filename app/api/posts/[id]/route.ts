@@ -15,10 +15,16 @@ function isValidPath(filePath: string): boolean {
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    console.log(`[api/posts/[id]] GET request for id="${id}"`);
     const safeId = sanitizeId(id);
+    console.log(`[api/posts/[id]] sanitized id="${safeId}"`);
     if (!safeId) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     const post = await getPostById(safeId);
-    if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!post) {
+      console.log(`[api/posts/[id]] Post "${safeId}" not found`);
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    console.log(`[api/posts/[id]] Post "${safeId}" found`);
     return NextResponse.json(post);
   } catch (error) {
     console.error(error);
