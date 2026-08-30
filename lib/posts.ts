@@ -25,6 +25,7 @@ export interface Post {
   htmlZh: string;
   headings: { id: string; text: string }[];
   headingsZh: { id: string; text: string }[];
+  createdAt?: string;
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "posts");
@@ -61,6 +62,7 @@ function parseFile(filePath: string, id: string): Post {
     htmlZh,
     headings,
     headingsZh,
+    createdAt: String(data.date ?? new Date().toISOString()),
   };
 }
 
@@ -92,6 +94,7 @@ function dbRowToPost(row: any): Post {
     htmlZh,
     headings,
     headingsZh,
+    createdAt: row.createdAt ? (row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt)) : undefined,
   };
 }
 

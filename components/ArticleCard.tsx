@@ -6,6 +6,8 @@ import { ArticleArt } from "./ArticleArt";
 import { CategoryBadge } from "./CategoryBadge";
 import { AuthorAvatar } from "./AuthorAvatar";
 import type { Post } from "@/lib/posts";
+import { useLang } from "@/lib/lang-context";
+import { useRelativeTime } from "@/lib/relative-time";
 
 export function ArticleCard({
   post,
@@ -14,6 +16,8 @@ export function ArticleCard({
   post: Post;
   index?: number;
 }) {
+  const { lang } = useLang();
+  const relative = useRelativeTime(post.date, lang);
   return (
     <Link
       href={`/posts/${post.id}`}
@@ -49,7 +53,7 @@ export function ArticleCard({
               <p className="text-[12px] font-medium text-zinc-700">
                 {post.author}
               </p>
-              <p className="text-[11px] text-zinc-400">{post.displayDate}</p>
+              <p className="text-[11px] text-zinc-400">{relative} · {post.readTime}</p>
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] group-hover:translate-x-1 transition-all duration-300" />

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
@@ -63,37 +63,28 @@ const emptyEditor: EditorData = {
   readTime: "5 min",
   featured: false,
   tags: "",
-  markdown: `## 开始写作
-
-在此处直接编辑内容，支持富文本、表格、代码块、图片拖拽等功能。
-
-### 功能特性
-
-- **富文本编辑**：加粗、斜体、下划线、删除线、高亮
-- **自动排版**：标题、段落、列表、引用自动格式化
-- **表格支持**：可视化创建和编辑表格
-- **代码高亮**：支持语法高亮的代码块
-- **图片上传**：拖拽或粘贴图片直接上传
-- **自动保存**：每 2 秒自动保存草稿
-
-> 慢日志不是空白，是让文字沉淀的空间。
-
+  markdown: `## 寮€濮嬪啓浣?
+鍦ㄦ澶勭洿鎺ョ紪杈戝唴瀹癸紝鏀寔瀵屾枃鏈€佽〃鏍笺€佷唬鐮佸潡銆佸浘鐗囨嫋鎷界瓑鍔熻兘銆?
+### 鍔熻兘鐗规€?
+- **瀵屾枃鏈紪杈?*锛氬姞绮椼€佹枩浣撱€佷笅鍒掔嚎銆佸垹闄ょ嚎銆侀珮浜?- **鑷姩鎺掔増**锛氭爣棰樸€佹钀姐€佸垪琛ㄣ€佸紩鐢ㄨ嚜鍔ㄦ牸寮忓寲
+- **琛ㄦ牸鏀寔**锛氬彲瑙嗗寲鍒涘缓鍜岀紪杈戣〃鏍?- **浠ｇ爜楂樹寒**锛氭敮鎸佽娉曢珮浜殑浠ｇ爜鍧?- **鍥剧墖涓婁紶**锛氭嫋鎷芥垨绮樿创鍥剧墖鐩存帴涓婁紶
+- **鑷姩淇濆瓨**锛氭瘡 2 绉掕嚜鍔ㄤ繚瀛樿崏绋?
+> 鎱㈡棩蹇椾笉鏄┖鐧斤紝鏄鏂囧瓧娌夋穩鐨勭┖闂淬€?
 \`\`\`js
-// 代码块支持语法高亮
-console.log("慢日志");
+// 浠ｇ爜鍧楁敮鎸佽娉曢珮浜?console.log("鎱㈡棩蹇?);
 \`\`\`
 
-- 支持 **粗体** 和 *斜体*
-- 支持任务列表 ☑️
-- 支持 [链接](https://example.com)
+- 鏀寔 **绮椾綋** 鍜?*鏂滀綋*
+- 鏀寔浠诲姟鍒楄〃 鈽戯笍
+- 鏀寔 [閾炬帴](https://example.com)
 
-| 功能 | 状态 | 说明 |
+| 鍔熻兘 | 鐘舵€?| 璇存槑 |
 |------|------|------|
-| 富文本 | ✅ | 所见即所得 |
-| 表格 | ✅ | 可视化编辑 |
-| 代码块 | ✅ | 语法高亮 |
+| 瀵屾枃鏈?| 鉁?| 鎵€瑙佸嵆鎵€寰?|
+| 琛ㄦ牸 | 鉁?| 鍙鍖栫紪杈?|
+| 浠ｇ爜鍧?| 鉁?| 璇硶楂樹寒 |
 
-继续你的创作...`,
+缁х画浣犵殑鍒涗綔...`,
 };
 
 function slugify(s: string) {
@@ -131,7 +122,9 @@ function AdminInner() {
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error">("success");
   const [showMeta, setShowMeta] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
   
   // Thoughts state
   const [thoughts, setThoughts] = useState<{ id: string; text: string; textZh: string; time: string; timeZh: string }[]>([]);
@@ -181,8 +174,16 @@ function AdminInner() {
     }
   }
 
+  function showToast(msg: string, type: "success" | "error" = "success") {
+    setToastType(type);
+    setToast(msg);
+  }
+
   async function addThought() {
-    if (!newThoughtText && !newThoughtTextZh) return;
+    if (!newThoughtText.trim() && !newThoughtTextZh.trim()) {
+      showToast(lang === "zh" ? "请输入随想内容" : "Please enter thought content", "error");
+      return;
+    }
     try {
       const res = await fetch("/api/thoughts", {
         method: "POST",
@@ -194,18 +195,22 @@ function AdminInner() {
         setNewThoughtText("");
         setNewThoughtTextZh("");
         fetchThoughts();
-        setToast(lang === "zh" ? "随想已添加" : "Thought added");
+        showToast(lang === "zh" ? "随想已添加" : "Thought added", "success");
       } else {
         const j = await res.json().catch(() => ({}));
-        setToast(j.error || "添加失败");
+        showToast(j.error || (lang === "zh" ? "添加失败" : "Add failed"), "error");
       }
     } catch (error) {
       console.error(error);
-      setToast("网络错误");
+      showToast(lang === "zh" ? "网络错误" : "Network error", "error");
     }
   }
 
   async function updateThought(id: string) {
+    if (!editThoughtText.trim() && !editThoughtTextZh.trim()) {
+      showToast(lang === "zh" ? "请输入随想内容" : "Please enter thought content", "error");
+      return;
+    }
     try {
       const res = await fetch(`/api/thoughts/${id}`, {
         method: "PUT",
@@ -216,14 +221,14 @@ function AdminInner() {
       if (res.ok) {
         setEditingThought(null);
         fetchThoughts();
-        setToast(lang === "zh" ? "随想已更新" : "Thought updated");
+        showToast(lang === "zh" ? "随想已更新" : "Thought updated", "success");
       } else {
         const j = await res.json().catch(() => ({}));
-        setToast(j.error || "更新失败");
+        showToast(j.error || (lang === "zh" ? "更新失败" : "Update failed"), "error");
       }
     } catch (error) {
       console.error(error);
-      setToast("网络错误");
+      showToast(lang === "zh" ? "网络错误" : "Network error", "error");
     }
   }
 
@@ -233,14 +238,14 @@ function AdminInner() {
       const res = await fetch(`/api/thoughts/${id}`, { method: "DELETE", credentials: "include" });
       if (res.ok) {
         fetchThoughts();
-        setToast(lang === "zh" ? "随想已删除" : "Thought deleted");
+        showToast(lang === "zh" ? "随想已删除" : "Thought deleted", "success");
       } else {
         const j = await res.json().catch(() => ({}));
-        setToast(j.error || "删除失败");
+        showToast(j.error || (lang === "zh" ? "删除失败" : "Delete failed"), "error");
       }
     } catch (error) {
       console.error(error);
-      setToast("网络错误");
+      showToast(lang === "zh" ? "网络错误" : "Network error", "error");
     }
   }
 
@@ -311,10 +316,33 @@ function AdminInner() {
 
   const handleSave = useCallback(async () => {
     if (!editing) return;
+    // Validation with red popup
     if (!editing.title.trim()) {
-      setToast("标题不能为空");
+      showToast(lang === "zh" ? "标题不能为空" : "Title is required", "error");
+      setShowValidation(true);
       return;
     }
+    if (!editing.excerpt.trim()) {
+      showToast(lang === "zh" ? "摘要不能为空" : "Excerpt is required", "error");
+      setShowValidation(true);
+      return;
+    }
+    if (!editing.date) {
+      showToast(lang === "zh" ? "日期不能为空" : "Date is required", "error");
+      setShowValidation(true);
+      return;
+    }
+    if (!editing.tags.trim()) {
+      showToast(lang === "zh" ? "标签不能为空" : "Tags are required", "error");
+      setShowValidation(true);
+      return;
+    }
+    if (!editing.markdown.trim()) {
+      showToast(lang === "zh" ? "正文不能为空" : "Content is required", "error");
+      setShowValidation(true);
+      return;
+    }
+    setShowValidation(false);
     setSaving(true);
     const payload = {
       id: editing.id || slugify(editing.title),
@@ -348,23 +376,18 @@ function AdminInner() {
     });
     setSaving(false);
     if (res.ok) {
-      setToast(isNew ? t.publishSuccess : t.updateSuccess);
+      showToast(isNew ? t.publishSuccess : t.updateSuccess, "success");
       setEditing(null);
       fetchPosts();
     } else {
       const j = await res.json().catch(() => ({}));
-      setToast(j.error || "保存失败");
+      showToast(j.error || (lang === "zh" ? "保存失败" : "Save failed"), "error");
     }
-  }, [editing, isNew, t]);
+  }, [editing, isNew, t, lang]);
 
-  const handleAutoSave = useCallback(
-    (markdown: string) => {
-      if (editing) {
-        setEditing((prev) => (prev ? { ...prev, markdown } : null));
-      }
-    },
-    [editing]
-  );
+  const handleAutoSave = useCallback((markdown: string) => {
+    setEditing((prev) => (prev ? { ...prev, markdown } : null));
+  }, []);
 
   // ============================================================
   // LIST VIEW
@@ -395,8 +418,7 @@ function AdminInner() {
                 onClick={handleLogout}
                 className="hidden sm:inline-flex items-center gap-1.5 text-xs border border-zinc-200 bg-white/80 px-3 py-2 hover:border-zinc-400 hover:text-red-600 transition-colors rounded text-zinc-600"
               >
-                <LogOut className="w-3.5 h-3.5" /> 退出
-              </button>
+                <LogOut className="w-3.5 h-3.5" /> 閫€鍑?              </button>
               <button
                 onClick={openNew}
                 className="inline-flex items-center gap-1.5 md:gap-2 bg-zinc-900 text-white text-xs tracking-widest uppercase px-3 md:px-4 py-2 md:py-2.5 hover:bg-zinc-700 transition-colors rounded shadow-sm"
@@ -496,7 +518,7 @@ function AdminInner() {
                             <Sparkles className="w-3 h-3" /> {t.featured}
                           </span>
                         )}
-                        <span className="text-[11px] text-zinc-400">{post.displayDate} · {post.readTime}</span>
+                        <span className="text-[11px] text-zinc-400">{post.displayDate} 路 {post.readTime}</span>
                       </div>
                       <h3 className="text-[15px] font-semibold text-zinc-900 truncate">{post.title}</h3>
                       <p className="text-xs text-zinc-500 line-clamp-1 mt-1">{post.excerpt}</p>
@@ -613,7 +635,7 @@ function AdminInner() {
                             value={editThoughtTextZh}
                             onChange={(e) => setEditThoughtTextZh(e.target.value)}
                             className="w-full px-3 py-1.5 text-sm border border-zinc-200 focus:outline-none focus:border-zinc-400"
-                            placeholder="中文"
+                            placeholder="涓枃"
                           />
                           <input
                             value={editThoughtText}
@@ -680,12 +702,12 @@ function AdminInner() {
   }
 
   // ============================================================
-  // EDITOR VIEW — WordPress 风格
+  // EDITOR VIEW 鈥?WordPress 椋庢牸
   // ============================================================
 
   return (
     <div className="h-screen flex flex-col bg-[var(--yh-bg)] overflow-hidden">
-      {/* ── Top Bar ─────────────────────────────────────────── */}
+      {/* 鈹€鈹€ Top Bar 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */}
       <header className="shrink-0 h-12 bg-white/80 backdrop-blur-xl border-b border-[var(--yh-border)] px-3 md:px-4 flex items-center justify-between gap-2 md:gap-4 z-40">
         {/* Left: Back + Title */}
         <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
@@ -753,7 +775,7 @@ function AdminInner() {
         </div>
       </header>
 
-      {/* ── Main Area ──────────────────────────────────────── */}
+      {/* 鈹€鈹€ Main Area 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Left Sidebar: Metadata (collapsible) */}
         <aside
@@ -815,8 +837,11 @@ function AdminInner() {
                     onChange={(e) =>
                       setEditing((prev) => (prev ? { ...prev, date: e.target.value } : null))
                     }
-                    className="w-full px-3 py-2 text-sm border border-zinc-200 bg-white focus:outline-none focus:border-zinc-400"
+                    className={`w-full px-3 py-2 text-sm border bg-white focus:outline-none focus:border-zinc-400 ${showValidation && !editing.date ? "border-red-500 bg-red-50" : "border-zinc-200"}`}
                   />
+                  {showValidation && !editing.date && (
+                    <p className="text-xs text-red-500 mt-1">日期不能为空</p>
+                  )}
                 </div>
               </div>
 
@@ -862,8 +887,11 @@ function AdminInner() {
                     setEditing((prev) => (prev ? { ...prev, tags: e.target.value } : null))
                   }
                   placeholder={t.formTagsPlaceholder}
-                  className="w-full px-3 py-2 text-sm border border-zinc-200 bg-white focus:outline-none focus:border-zinc-400"
+                  className={`w-full px-3 py-2 text-sm border bg-white focus:outline-none focus:border-zinc-400 ${showValidation && !editing.tags.trim() ? "border-red-500 bg-red-50" : "border-zinc-200"}`}
                 />
+                {showValidation && !editing.tags.trim() && (
+                  <p className="text-xs text-red-500 mt-1">标签不能为空</p>
+                )}
               </div>
 
               {/* Featured */}
@@ -910,13 +938,21 @@ function AdminInner() {
       {/* Toast */}
       {toast && (
         <div
-          className="fixed bottom-6 left-1/2 bg-zinc-900 text-white text-sm px-5 py-2.5 rounded-lg shadow-xl z-50"
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 text-sm px-5 py-2.5 rounded-lg shadow-xl z-50 ${toastType === "error" ? "bg-red-600 text-white" : "bg-zinc-900 text-white"}`}
           style={{ animation: "toastIn 0.35s var(--ease-out) both" }}
         >
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
+            {toastType === "error" ? (
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4" />
+                <path d="M12 16h.01" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            )}
             {toast}
           </div>
         </div>

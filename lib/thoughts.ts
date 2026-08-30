@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const THOUGHTS_PATH = path.join(process.cwd(), "data", "thoughts.json");
-export interface Thought { id: string; text: string; textZh: string; time: string; timeZh: string; }
+export interface Thought { id: string; text: string; textZh: string; time: string; timeZh: string; createdAt?: string; }
 
 function hasDatabase(): boolean { return !!process.env.DATABASE_URL; }
 function getThoughtsFromFs(): Thought[] {
@@ -18,7 +18,7 @@ export async function getThoughts(): Promise<Thought[]> {
     try {
       const { prisma } = await import("./prisma");
       const rows = await prisma.thought.findMany({ orderBy: { createdAt: "desc" } });
-      if (rows.length > 0) return rows.map((r: any) => ({ id: r.id, text: r.text, textZh: r.textZh || "", time: r.time, timeZh: r.timeZh || "" }));
+      if (rows.length > 0) return rows.map((r: any) => ({ id: r.id, text: r.text, textZh: r.textZh || "", time: r.time, timeZh: r.timeZh || "", createdAt: r.createdAt?.toISOString() }));
     } catch (e) { console.warn("[thoughts] DB fallback", e); }
   }
   return getThoughtsFromFs();
