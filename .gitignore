@@ -6,3 +6,4 @@ dist
 .env.local
 data/users.json
 
+.env

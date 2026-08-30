@@ -14,7 +14,7 @@ function toDisplayDate(dateStr: string): string {
 
 export async function GET() {
   try {
-    const posts = getAllPosts().map(({ html, markdown, htmlZh, markdownZh, headings, headingsZh, ...rest }) => rest);
+    const posts = (await getAllPosts()).map(({ html, markdown, htmlZh, markdownZh, headings, headingsZh, ...rest }) => rest);
     return NextResponse.json(posts);
   } catch (error) {
     console.error(error);
@@ -36,20 +36,57 @@ export async function POST(request: NextRequest) {
     const safeCategory = sanitizeInput(String(category));
     const id = sanitizeId(String(rawId || title));
     if (!id) return NextResponse.json({ error: "Invalid id/slug" }, { status: 400 });
+
+    const finalDate = date || new Date().toISOString().slice(0, 10);
+    const finalDisplayDate = sanitizeInput(displayDate || toDisplayDate(finalDate));
+    const safeAuthor = sanitizeInput(String(author || "Anonymous"));
+    const safeAuthorInitial = sanitizeInput(String(authorInitial || (author || "A")[0].toUpperCase()));
+    const safeReadTime = sanitizeInput(String(readTime || "5 min"));
+    const safeTags = Array.isArray(tags) ? tags.map((t: string) => sanitizeInput(String(t))) : [];
+
+    if (process.env.DATABASE_URL) {
+      try {
+        const { prisma } = await import("@/lib/prisma");
+        const existing = await prisma.post.findUnique({ where: { id } });
+        if (existing) return NextResponse.json({ error: `Post "${id}" already exists` }, { status: 409 });
+        await prisma.post.create({
+          data: {
+            id,
+            title: safeTitle,
+            titleZh: safeTitle,
+            excerpt: safeExcerpt,
+            excerptZh: safeExcerpt,
+            category: safeCategory,
+            author: safeAuthor,
+            authorInitial: safeAuthorInitial,
+            date: new Date(finalDate),
+            displayDate: finalDisplayDate,
+            readTime: safeReadTime,
+            featured: !!featured,
+            tags: safeTags,
+            markdown: String(markdown).trim(),
+            markdownZh: String(markdown).trim(),
+          },
+        });
+        return NextResponse.json({ id, message: "Created" }, { status: 201 });
+      } catch (e) {
+        console.warn("[api/posts] DB error, fallback to fs:", e);
+      }
+    }
+
     const filePath = path.join(CONTENT_DIR, `${id}.md`);
     if (fs.existsSync(filePath)) return NextResponse.json({ error: `Post "${id}" already exists` }, { status: 409 });
-    const finalDate = date || new Date().toISOString().slice(0, 10);
     const fm = `---
 title: "${safeTitle}"
 excerpt: "${safeExcerpt}"
 category: "${safeCategory}"
-author: "${sanitizeInput(String(author || "Anonymous"))}"
-authorInitial: "${sanitizeInput(String(authorInitial || (author || "A")[0].toUpperCase()))}"
+author: "${safeAuthor}"
+authorInitial: "${safeAuthorInitial}"
 date: "${finalDate}"
-displayDate: "${sanitizeInput(displayDate || toDisplayDate(finalDate))}"
-readTime: "${sanitizeInput(String(readTime || "5 min"))}"
+displayDate: "${finalDisplayDate}"
+readTime: "${safeReadTime}"
 featured: ${featured ? "true" : "false"}
-tags: [${Array.isArray(tags) ? tags.map((t: string) => `"${sanitizeInput(String(t))}"`).join(", ") : ""}]
+tags: [${safeTags.map((t) => `"${t}"`).join(", ")}]
 ---
 
 ${String(markdown).trim()}

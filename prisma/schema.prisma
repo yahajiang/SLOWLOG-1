@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id            String   @id
+  title         String
+  titleZh       String?
+  excerpt       String   @db.Text
+  excerptZh     String?  @db.Text
+  category      String
+  author        String
+  authorInitial String
+  date          DateTime
+  displayDate   String
+  readTime      String
+  featured      Boolean  @default(false)
+  tags          String[]
+  markdown      String   @db.Text
+  markdownZh    String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([date])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Thought {
+  id        String   @id
+  text      String   @db.Text
+  textZh    String?  @db.Text
+  time      String
+  timeZh    String?
+  createdAt DateTime @default(now())
+}

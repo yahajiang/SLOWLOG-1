@@ -2,10 +2,10 @@ import { getAllPosts } from "@/lib/posts";
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
   const items = posts
     .map(
-      (post) => `
+      (post: any) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
       <link>${siteUrl}/posts/${post.id}</link>

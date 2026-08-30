@@ -5,9 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "node scripts/migrate-to-db.mjs",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "@tiptap/extension-code-block-lowlight": "^3.30.5",
     "@tiptap/extension-color": "^3.30.5",
     "@tiptap/extension-heading": "^3.30.5",
@@ -35,6 +41,7 @@
     "lucide-react": "^0.563.0",
     "marked": "^18.0.11",
     "next": "^16.1.6",
+    "pg": "^8.23.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "turndown": "^7.2.4"
@@ -45,6 +52,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/turndown": "^5.0.6",
+    "prisma": "^7.10.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

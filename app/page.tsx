@@ -4,8 +4,8 @@ import { LangProvider } from "@/lib/lang-context";
 
 export const dynamic = "force-static";
 
-export default function Page() {
-  const posts = getAllPosts();
+export default async function Page() {
+  const posts = await getAllPosts();
   return (
     <LangProvider>
       <HomeClient posts={posts} />

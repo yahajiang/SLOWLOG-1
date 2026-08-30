@@ -64,7 +64,38 @@ function parseFile(filePath: string, id: string): Post {
   };
 }
 
-export function getAllPosts(): Post[] {
+function dbRowToPost(row: any): Post {
+  const markdown = row.markdown ?? "";
+  const markdownZh = row.markdownZh ?? markdown;
+  const hasChinese = !!row.markdownZh;
+  const headings = extractHeadings(markdown);
+  const headingsZh = hasChinese ? extractHeadings(markdownZh) : headings;
+  const html = injectHeadingIds(markdownToHtml(markdown));
+  const htmlZh = hasChinese ? injectHeadingIds(markdownToHtml(markdownZh)) : html;
+  return {
+    id: row.id,
+    title: row.title,
+    titleZh: row.titleZh ?? row.title,
+    excerpt: row.excerpt,
+    excerptZh: row.excerptZh ?? row.excerpt,
+    category: row.category as ContentCategory,
+    author: row.author,
+    authorInitial: row.authorInitial,
+    date: row.date instanceof Date ? row.date.toISOString().slice(0, 10) : String(row.date).slice(0, 10),
+    displayDate: row.displayDate,
+    readTime: row.readTime,
+    featured: row.featured,
+    tags: row.tags ?? [],
+    markdown,
+    markdownZh,
+    html,
+    htmlZh,
+    headings,
+    headingsZh,
+  };
+}
+
+function getAllPostsFromFs(): Post[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
   const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".md"));
   const posts = files.map((f) => {
@@ -74,15 +105,58 @@ export function getAllPosts(): Post[] {
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getPostById(id: string): Post | undefined {
+function getPostByIdFromFs(id: string): Post | undefined {
   const filePath = path.join(CONTENT_DIR, `${id}.md`);
   if (!fs.existsSync(filePath)) return undefined;
   return parseFile(filePath, id);
 }
 
-export function getAllPostIds(): string[] {
+function hasDatabase(): boolean {
+  return !!process.env.DATABASE_URL;
+}
+
+// Public API (hybrid)
+export async function getAllPosts(): Promise<Post[]> {
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("./prisma");
+      const rows = await prisma.post.findMany({ orderBy: { date: "desc" } });
+      if (rows.length > 0) return rows.map(dbRowToPost);
+    } catch (e) {
+      console.warn("[posts] DB error, fallback to fs:", e);
+    }
+  }
+  return getAllPostsFromFs();
+}
+
+export async function getPostById(id: string): Promise<Post | undefined> {
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("./prisma");
+      const row = await prisma.post.findUnique({ where: { id } });
+      if (row) return dbRowToPost(row);
+    } catch {}
+  }
+  return getPostByIdFromFs(id);
+}
+
+export function getAllPostsSync(): Post[] {
+  return getAllPostsFromFs();
+}
+export function getPostByIdSync(id: string): Post | undefined {
+  return getPostByIdFromFs(id);
+}
+
+export async function getAllPostIds(): Promise<string[]> {
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("./prisma");
+      const rows = await prisma.post.findMany({ select: { id: true } });
+      if (rows.length > 0) return rows.map((r: { id: string }) => r.id);
+    } catch {}
+  }
   if (!fs.existsSync(CONTENT_DIR)) return [];
-  return fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""));
+  return fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".md")).map((f: string) => f.replace(/\.md$/, ""));
 }
 
 export function getLocalizedPost(post: Post, lang: Lang) {
