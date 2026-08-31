@@ -95,6 +95,7 @@ export const dict = {
     formTagsPlaceholder: "设计, 系统, Tailwind",
     formFeatured: "设为推荐（首页 Hero）",
     formSlugHint: "自动从标题生成",
+    formMoreSettings: "更多设置",
     // Toolbar
     toolbar: "工具栏",
     toolH2: "H2",
@@ -247,6 +248,7 @@ export const dict = {
     formTagsPlaceholder: "Design Tokens, System, Tailwind",
     formFeatured: "Set as Featured (Hero)",
     formSlugHint: "Auto from title",
+    formMoreSettings: "More settings",
     toolbar: "Toolbar",
     toolH2: "H2",
     toolBold: "Bold",
@@ -383,6 +385,7 @@ export type Dict = {
   formTagsPlaceholder: string;
   formFeatured: string;
   formSlugHint: string;
+  formMoreSettings: string;
   toolbar: string;
   toolH2: string;
   toolBold: string;

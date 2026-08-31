@@ -9,7 +9,7 @@ export const ArticleArt = memo(function ArticleArt({
   post: Post;
   tall?: boolean;
 }) {
-  const palette = ART_PALETTES[post.category];
+  const palette = ART_PALETTES[post.category] || { paper: "#F9FAFB", ink: "#52525B", wash: "#E4E4E7" };
   const variant = post.id.length % 6; // 6 variants
   const initial = post.title.charAt(0);
   const shift =

@@ -1,0 +1,110 @@
+// Prisma schema - SlowLog Blog (Tiptap + 双语)
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 单用户
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id            String   @id @default(cuid())
+  name          String
+  nameZh        String?
+  slug          String   @unique
+  description   String?
+  descriptionZh String?
+  coverImageUrl String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  posts         Post[]
+}
+
+model Post {
+  id                String    @id @default(cuid())
+  title             String
+  titleZh           String?
+  slug              String    @unique
+  excerpt           String?   @db.Text
+  excerptZh         String?   @db.Text
+  summary           String?   @db.Text
+  content           Json      // Tiptap JSON
+  status            String    @default("draft") // draft | published | archived
+  categoryId        String?
+  category          Category? @relation(fields: [categoryId], references: [id])
+  tags              String[]  @default([])
+  // PageConfig - 视觉配置 统一前台编辑风
+  pageConfig        Json      @default("{\"layout\":\"standard\",\"theme\":\"light\",\"primaryColor\":\"oklch(0.55 0.15 250)\",\"fontFamily\":\"sans\",\"backgroundColor\":\"#FFFFFF\",\"maxWidth\":\"medium\",\"showTOC\":false}")
+  // SEO
+  seoTitle          String?
+  seoTitleZh        String?
+  seoDescription    String?
+  seoDescriptionZh  String?
+  seoKeywords       String[]  @default([])
+  ogImage           String?
+  canonicalUrl      String?
+  noIndex           Boolean   @default(false)
+  featured          Boolean   @default(false)
+  readTime          String?   @default("5 min")
+  author            String?   @default("Yahajiang")
+  authorInitial     String?   @default("Y")
+  viewCount         Int       @default(0)
+  publishedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([publishedAt])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  content   String   @db.VarChar(500)
+  contentZh String?  @db.VarChar(500)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  size      Int
+  width     Int?
+  height    Int?
+  mimeType  String?
+  alt       String?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id                String   @id @default("singleton")
+  siteName          String   @default("慢日志")
+  siteNameEn        String?  @default("SlowLog")
+  siteDescription   String   @default("慢下来，写点值得读的东西。")
+  siteDescriptionEn String?
+  siteKeywords      String   @default("设计,博客,思考")
+  siteIconUrl       String?
+  logoUrl           String?
+  footerText        String?
+  footerTextEn      String?
+  socialLinks       Json     @default("[]")
+  defaultPageConfig Json     @default("{\"layout\":\"standard\",\"theme\":\"light\",\"primaryColor\":\"oklch(0.55 0.15 250)\",\"fontFamily\":\"sans\",\"backgroundColor\":\"#FFFFFF\",\"maxWidth\":\"medium\",\"showTOC\":false}")
+  postsPerPage      Int      @default(10)
+  theme             String   @default("system")
+  updatedAt         DateTime @updatedAt
+}

@@ -12,13 +12,18 @@ import { useRelativeTime } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import { Breadcrumb } from "./Breadcrumb";
 import type { Post } from "@/lib/types";
+import { PostRenderer } from "./editor/PostRenderer";
+import type { PageConfig } from "@/lib/page-config";
+import { ChevronLeft, ChevronRight, Clock, Calendar } from "lucide-react";
 
 export function PostClient({
   post: rawPost,
+  rawPost: prismaRaw,
   prevPost,
   nextPost,
 }: {
   post: Post;
+  rawPost?: any;
   prevPost: Post | null;
   nextPost: Post | null;
 }) {
@@ -27,65 +32,62 @@ export function PostClient({
   const post = lang === "zh"
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;
+  const content = (prismaRaw as any)?.content || (rawPost as any).content
+  const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined
+  const isDark = pageConfig?.theme === "dark"
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor || undefined, color: isDark ? "#E5E5E7" : undefined }}>
       <Lightbox />
       <ReadingProgress />
 
+      {/* 顶部导航 */}
       <div className="sticky top-0 z-40 bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-sm font-semibold tracking-tight hover:opacity-60 transition-opacity"
-          >
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
+          <Link href="/" className="text-sm font-semibold tracking-tight hover:opacity-60 transition-opacity">
             {t.siteName}
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-            <Link
-              href="/"
-              className="text-xs tracking-widest uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-zinc-200 px-3 py-1.5 bg-white"
-            >
+            <Link href="/" className="text-xs tracking-widest uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-zinc-200 px-3 py-1.5 bg-white rounded-md">
               {t.backToPosts}
             </Link>
           </div>
         </div>
       </div>
 
-      <section className="pt-10 pb-8 md:pt-14">
+      {/* 文章头部 */}
+      <section className="pt-8 pb-6 md:pt-12">
         <div className="mx-auto max-w-3xl px-6">
           <Breadcrumb items={[{ label: post.category }, { label: post.title }]} />
-          <div className="flex items-center gap-3 mb-4">
+
+          <div className="flex items-center gap-3 mb-5">
             <CategoryBadge category={post.category} />
-            <span className="text-[var(--yh-border)]">/</span>
-            <span className="text-[11px] text-[var(--yh-muted)]">
-              {post.readTime}
+            <span className="text-[var(--yh-border)]">·</span>
+            <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
+              <Clock className="w-3 h-3" />{post.readTime}
+            </span>
+            <span className="text-[var(--yh-border)]">·</span>
+            <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
+              <Calendar className="w-3 h-3" />{post.displayDate}
             </span>
           </div>
-          <h1 className="text-3xl md:text-[2.5rem] font-semibold leading-[1.2] tracking-tight text-[var(--yh-text)] mb-4">
+
+          <h1 className={`text-3xl md:text-[2.5rem] font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>
             {post.title}
           </h1>
-          <p className="text-[15px] leading-relaxed text-[var(--yh-muted)] mb-6">
-            {post.excerpt}
-          </p>
+          <p className="text-[16px] leading-relaxed text-zinc-500 mb-6">{post.excerpt}</p>
+
           <div className="flex items-center gap-3 pb-6 border-b border-[var(--yh-border)]">
             <AuthorAvatar initial={post.authorInitial} size="lg" />
             <div>
-              <p className="text-sm font-semibold text-zinc-800">
-                {post.author}
-              </p>
-              <p className="text-xs text-zinc-400">
-                {relative} · {post.category}
-              </p>
+              <p className="text-sm font-semibold text-zinc-800">{post.author}</p>
+              <p className="text-xs text-zinc-400">{relative} · {post.category}</p>
             </div>
             <div className="ml-auto hidden sm:flex gap-1.5">
-              {post.tags.map((t) => (
-                <span
-                  key={t}
-                  className="text-[10px] text-zinc-500 bg-zinc-50 border border-zinc-200 px-2 py-1 rounded-sm"
-                >
-                  {t}
+              {post.tags.map((tag) => (
+                <span key={tag} className="text-[10px] text-zinc-500 bg-zinc-50 border border-zinc-200 px-2 py-1 rounded-sm">
+                  #{tag}
                 </span>
               ))}
             </div>
@@ -93,12 +95,16 @@ export function PostClient({
         </div>
       </section>
 
+      {/* 正文内容 */}
       <section className="pb-16">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className={`mx-auto px-6 ${pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-5xl" : "max-w-5xl"}`}>
           <div className="flex gap-12">
-            <article className="flex-1 max-w-3xl min-w-0">
-              <div
-                className="prose prose-zinc max-w-none
+            <article className={`flex-1 min-w-0 ${pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-5xl" : "max-w-3xl"}`}>
+              {content ? (
+                <PostRenderer content={content} pageConfig={pageConfig} />
+              ) : (
+                <div
+                  className="prose prose-zinc max-w-none
                   prose-p:text-[16px] prose-p:leading-[1.9] prose-p:text-[var(--yh-text)]/85 prose-p:mb-6 prose-p:font-light
                   prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-12 prose-h1:mb-4 prose-h1:tracking-tight
                   prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-12 prose-h2:mb-3 prose-h2:scroll-mt-24 prose-h2:tracking-tight prose-h2:border-b prose-h2:border-zinc-100 prose-h2:pb-2
@@ -117,20 +123,20 @@ export function PostClient({
                   prose-th:border-b-2 prose-th:border-zinc-200 prose-th:bg-zinc-50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-zinc-700 prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
                   prose-td:border-b prose-td:border-zinc-100 prose-td:px-4 prose-td:py-3 prose-td:text-zinc-600 prose-td:align-top
                   prose-thead:border-b-2 prose-thead:border-zinc-200"
-                dangerouslySetInnerHTML={{ __html: post.html }}
-              />
+                  dangerouslySetInnerHTML={{ __html: post.html }}
+                />
+              )}
 
-              <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-[var(--yh-border)]">
+              {/* 底部标签 */}
+              <div className="flex flex-wrap gap-2 mt-12 pt-6 border-t border-[var(--yh-border)]">
                 {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs text-zinc-500 bg-white border border-zinc-200 px-3 py-1.5 rounded-sm"
-                  >
+                  <span key={tag} className="text-xs text-zinc-500 bg-white border border-zinc-200 px-3 py-1.5 rounded-sm hover:bg-zinc-50 transition-colors cursor-default">
                     #{tag}
                   </span>
                 ))}
               </div>
 
+              {/* 版权声明 */}
               <div className="mt-8 p-4 bg-zinc-50 border border-zinc-200 rounded-lg text-[13px] text-zinc-500 leading-relaxed">
                 <p>
                   {lang === "zh"
@@ -140,29 +146,24 @@ export function PostClient({
               </div>
             </article>
 
-            <TableOfContents headings={post.headings} />
+            {pageConfig?.showTOC !== false && <TableOfContents headings={post.headings} />}
           </div>
         </div>
       </section>
 
+      {/* 上一篇/下一篇导航 */}
       <section className="border-t border-[var(--yh-border)] py-10 bg-white/40">
         <div className="mx-auto max-w-3xl px-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
               {prevPost ? (
-                <Link
-                  href={`/posts/${prevPost.id}`}
-                  className="group block border border-zinc-200 bg-white p-4 hover:border-zinc-400 transition-colors"
-                >
-                  <p className="text-[10px] tracking-widest uppercase text-zinc-400 mb-1">
-                    {t.previous}
-                  </p>
-                  <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
-                    {prevPost.title}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    {prevPost.displayDate}
-                  </p>
+                <Link href={`/posts/${prevPost.id}`} className="group flex items-start gap-3 border border-zinc-200 bg-white p-4 hover:border-zinc-400 hover:shadow-sm transition-all rounded-lg">
+                  <ChevronLeft className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] shrink-0 mt-0.5 transition-colors" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] tracking-widest uppercase text-zinc-400 mb-1">{t.previous}</p>
+                    <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">{prevPost.title}</p>
+                    <p className="text-xs text-zinc-400 mt-1">{prevPost.displayDate}</p>
+                  </div>
                 </Link>
               ) : (
                 <div className="p-4 text-xs text-zinc-400">{t.noPrevious}</div>
@@ -170,24 +171,16 @@ export function PostClient({
             </div>
             <div>
               {nextPost ? (
-                <Link
-                  href={`/posts/${nextPost.id}`}
-                  className="group block border border-zinc-200 bg-white p-4 hover:border-zinc-400 transition-colors text-right"
-                >
-                  <p className="text-[10px] tracking-widest uppercase text-zinc-400 mb-1">
-                    {t.next}
-                  </p>
-                  <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
-                    {nextPost.title}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    {nextPost.displayDate}
-                  </p>
+                <Link href={`/posts/${nextPost.id}`} className="group flex items-start gap-3 border border-zinc-200 bg-white p-4 hover:border-zinc-400 hover:shadow-sm transition-all rounded-lg text-right">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] tracking-widest uppercase text-zinc-400 mb-1">{t.next}</p>
+                    <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">{nextPost.title}</p>
+                    <p className="text-xs text-zinc-400 mt-1">{nextPost.displayDate}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] shrink-0 mt-0.5 transition-colors" />
                 </Link>
               ) : (
-                <div className="p-4 text-xs text-zinc-400 text-right">
-                  {t.noNext}
-                </div>
+                <div className="p-4 text-xs text-zinc-400 text-right">{t.noNext}</div>
               )}
             </div>
           </div>

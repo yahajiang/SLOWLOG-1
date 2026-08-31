@@ -9,11 +9,15 @@ interface BreadcrumbItem {
 }
 
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
-  const { t } = useLang();
+  let siteName = "慢日志"
+  try {
+    const { t } = useLang()
+    siteName = t.siteName
+  } catch {}
   return (
     <nav className="flex items-center gap-1.5 text-[12px] text-[var(--yh-muted)] mb-6">
       <Link href="/" className="hover:text-[var(--yh-text)] transition-colors">
-        {t.siteName}
+        {siteName}
       </Link>
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-1.5">

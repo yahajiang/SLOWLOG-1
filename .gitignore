@@ -1,11 +1,34 @@
+# dependencies
 node_modules
+
+# next.js
 .next
 out
+
+# production
 dist
+
+# env files
 .env
 .env.local
-data/users.json
+.env*.local
 
-.env
+# vercel
 .vercel
-.env*
+
+# prisma generated
+/lib/generated/prisma
+
+# misc
+data/users.json
+cookies.txt
+nul
+dev.log
+*.tsbuildinfo
+
+# IDE / agent
+.agents/
+.commandcode/
+.mimosa/
+.zcode/
+skills-lock.json

@@ -1,17 +1,20 @@
-import { getAllPosts } from "@/lib/payload";
+import { getAllPosts } from "@/lib/posts";
+
+export const dynamic = "force-dynamic"
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
-  const posts = await getAllPosts();
+  let posts: any[] = []
+  try { posts = await getAllPosts() } catch { posts = [] }
   const items = posts
     .map(
       (post) => `
     <item>
-      <title><![CDATA[${post.title}]]></title>
+      <title><![CDATA[${post.titleZh || post.title}]]></title>
       <link>${siteUrl}/posts/${post.id}</link>
       <guid>${siteUrl}/posts/${post.id}</guid>
-      <pubDate>${new Date(post.date || post.createdAt || new Date()).toUTCString()}</pubDate>
-      <description><![CDATA[${post.excerpt}]]></description>
+      <pubDate>${new Date(post.publishedAt || post.createdAt).toUTCString()}</pubDate>
+      <description><![CDATA[${post.excerptZh || post.excerpt || ""}]]></description>
       <category><![CDATA[${post.category}]]></category>
     </item>`
     )
