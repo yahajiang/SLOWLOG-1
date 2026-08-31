@@ -16,8 +16,7 @@ function ThoughtItem({ thought, lang }: { thought: ThoughtData; lang: "zh" | "en
   const relative = useRelativeTime(timeStr, lang);
 
   return (
-    <div className="border-l-2 border-[var(--yh-border)] pl-4 py-1 transition-all duration-500 hover:border-[var(--yh-accent)] hover:pl-5"
-      style={{ transitionTimingFunction: "var(--ease-spring)" }}
+    <div className="border-l-2 border-[var(--yh-border)] pl-4 py-1 transition-all duration-500 hover:border-[var(--yh-accent)] hover:pl-5 [transition-timing-function:var(--ease-spring)]"
     >
       <p className="text-sm text-[var(--yh-text)] leading-relaxed">
         {lang === "zh" ? thought.textZh || thought.text : thought.text}

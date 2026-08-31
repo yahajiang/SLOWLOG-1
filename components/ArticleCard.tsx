@@ -21,12 +21,7 @@ export function ArticleCard({
   return (
     <Link
       href={`/posts/${post.id}`}
-      className="group text-left w-full border border-zinc-200/60 bg-white hover:border-zinc-300 transition-all duration-300 flex flex-col hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.1)] hover:-translate-y-1 overflow-hidden"
-      style={{
-        animation: `slideInUp 0.5s var(--ease-out) both`,
-        animationDelay: `${index * 50}ms`,
-        transitionTimingFunction: "var(--ease-spring)",
-      }}
+      className={`group text-left w-full border border-zinc-200/60 bg-white hover:border-zinc-300 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-[3px] flex flex-col overflow-hidden rounded-lg transition-all duration-300 animate-[slideInUp_0.5s_var(--ease-out)_both] [animation-delay:${index * 50}ms]`}
     >
       <div className="relative overflow-hidden aspect-[16/10]">
         <ArticleArt post={post} />

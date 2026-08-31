@@ -25,10 +25,9 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b transition-all duration-500 bg-[var(--yh-bg)]/90 backdrop-blur-xl ${
+      className={`sticky top-0 z-40 border-b transition-all duration-500 bg-[var(--yh-bg)]/90 backdrop-blur-xl [transition-timing-function:var(--ease-spring)] ${
         scrolled ? "border-[var(--yh-border)] shadow-sm" : "border-zinc-200"
       }`}
-      style={{ transitionTimingFunction: "var(--ease-spring)" }}
     >
       <div className="max-w-5xl mx-auto px-6">
         <div className="flex items-center justify-between py-4">
@@ -60,7 +59,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
             <LanguageSwitcher />
 
             <Link
-              href="/admin"
+              href="/dashboard"
               className="w-8 h-8 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-zinc-100/80 transition-colors rounded"
               title={t.navAdmin}
             >
