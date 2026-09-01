@@ -33,13 +33,13 @@ export const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const ART_PALETTES: Record<string, { paper: string; ink: string; wash: string }> = {
-  Design: { paper: "#FAF7F2", ink: "#9F1239", wash: "#FBE3E8" },
-  Plugin: { paper: "#F5F3FF", ink: "#7C3AED", wash: "#EDE9FE" },
-  Engineering: { paper: "#F4F7FA", ink: "#1D4ED8", wash: "#DBEAFE" },
-  Typography: { paper: "#F0FDFD", ink: "#0F766E", wash: "#CCFBF1" },
-  Frontend: { paper: "#FAF6EE", ink: "#B45309", wash: "#FDE9C8" },
-  Snippet: { paper: "#F2F8F4", ink: "#047857", wash: "#D1FAE5" },
-  Life: { paper: "#FFF7ED", ink: "#C2410C", wash: "#FFEDD5" },
+  Design: { paper: "#F9F6F2", ink: "#A5576A", wash: "#EDE1E4" },
+  Plugin: { paper: "#F4F3F8", ink: "#8B7BB0", wash: "#E8E4EF" },
+  Engineering: { paper: "#F2F5F7", ink: "#6B8AB1", wash: "#DFE6EC" },
+  Typography: { paper: "#F0F5F4", ink: "#5FA89F", wash: "#DDEBE9" },
+  Frontend: { paper: "#F7F4EE", ink: "#C2A06A", wash: "#EDE5D5" },
+  Snippet: { paper: "#F1F5F2", ink: "#6BA08A", wash: "#E0EDE8" },
+  Life: { paper: "#F8F4EF", ink: "#C28A6A", wash: "#EDE1D5" },
 };
 
 export const AUTHOR_BG: Record<string, string> = {
