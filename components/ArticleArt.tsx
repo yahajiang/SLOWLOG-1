@@ -39,7 +39,7 @@ export const ArticleArt = memo(function ArticleArt({
     <div
       aria-hidden="true"
       className={`group relative w-full overflow-hidden border-b border-zinc-200 ${tall ? "aspect-[4/5]" : "aspect-[16/9]"}`}
-      style={{ backgroundColor: palette.paper }}
+      style={{ backgroundColor: palette.paper, filter: "contrast(1.15) saturate(1.1)" }}
     >
       {/* Paper grain texture */}
       <div

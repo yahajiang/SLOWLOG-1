@@ -33,7 +33,7 @@ export function Footer() {
             </a>
             <span className="opacity-30">·</span>
             <a href="https://slowlog.vercel.app" target="_blank" className="hover:text-[var(--yh-text)] transition-colors opacity-70 hover:opacity-100">
-              SlowLog
+              SlowLog v0.2.0
             </a>
           </div>
         </div>
