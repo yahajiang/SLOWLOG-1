@@ -10,7 +10,8 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "version:bump": "node scripts/auto-version.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^6.0.0",
