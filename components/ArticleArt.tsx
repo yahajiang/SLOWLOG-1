@@ -3,11 +3,19 @@ import { ART_PALETTES } from "@/lib/categories";
 import type { Post } from "@/lib/types";
 
 function hashVariant(seed: string, max: number): number {
-  let h = 0;
+  // FNV-1a hash for better distribution
+  let h = 0x811c9dc5;
   for (let i = 0; i < seed.length; i++) {
-    h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
   }
   return Math.abs(h) % max;
+}
+
+function getCategoryName(category: any): string {
+  if (typeof category === "string") return category;
+  if (category && typeof category === "object") return category.name || category.nameZh || "";
+  return "";
 }
 
 export const ArticleArt = memo(function ArticleArt({
@@ -17,8 +25,9 @@ export const ArticleArt = memo(function ArticleArt({
   post: Post;
   tall?: boolean;
 }) {
-  const palette = ART_PALETTES[post.category] || { paper: "#F9FAFB", ink: "#52525B", wash: "#E4E4E7" };
-  const variantSeed = (post.title || "") + (post.category || "") + (post.id || "");
+  const catName = getCategoryName(post.category);
+  const palette = ART_PALETTES[catName] || ART_PALETTES[post.category] || { paper: "#F9FAFB", ink: "#52525B", wash: "#E4E4E7" };
+  const variantSeed = (post.title || "") + catName + (post.id || "");
   const variant = useMemo(() => hashVariant(variantSeed, 8), [variantSeed]);
   const initial = post.title.charAt(0);
   const shift =
@@ -43,7 +52,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Design (设计) - 6 variants
           ================================================================ */}
-      {post.category === "Design" && variant === 0 && (
+      {catName === "Design" && variant === 0 && (
         <>
           <span className={`absolute -top-6 font-serif italic leading-none select-none left-6 ${tall ? "text-[11rem]" : "text-[8rem]"}`} style={{ color: palette.ink, opacity: 0.85 }}>
             {initial}
@@ -52,7 +61,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute top-1/2 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
         </>
       )}
-      {post.category === "Design" && variant === 1 && (
+      {catName === "Design" && variant === 1 && (
         <>
           <span className="absolute top-8 right-8 text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink, opacity: 0.1 }}>{initial}</span>
           <div className="absolute bottom-6 left-6 right-6 flex items-end gap-3">
@@ -66,7 +75,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Design" && variant === 2 && (
+      {catName === "Design" && variant === 2 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="grid grid-cols-3 gap-2 opacity-20 transition-opacity duration-500 group-hover:opacity-40">
@@ -79,7 +88,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute top-6 right-6 w-12 h-12 rounded-full transition-transform duration-500 group-hover:scale-125" style={{ backgroundColor: palette.wash }} />
         </>
       )}
-      {post.category === "Design" && variant === 3 && (
+      {catName === "Design" && variant === 3 && (
         <>
           <div className="absolute top-6 left-6">
             <div className="w-16 h-1 rounded-full" style={{ backgroundColor: palette.ink }} />
@@ -90,7 +99,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute top-1/2 right-1/4 w-24 h-px" style={{ backgroundColor: palette.ink, opacity: 0.1 }} />
         </>
       )}
-      {post.category === "Design" && variant === 4 && (
+      {catName === "Design" && variant === 4 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -102,7 +111,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Design" && variant === 5 && (
+      {catName === "Design" && variant === 5 && (
         <>
           <div className="absolute top-0 left-0 w-full h-1/2 overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
@@ -122,7 +131,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Plugin (插件) - 6 variants
           ================================================================ */}
-      {post.category === "Plugin" && variant === 0 && (
+      {catName === "Plugin" && variant === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-20 h-20 rounded-xl border-2 flex items-center justify-center transition-transform duration-500 group-hover:scale-105" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
@@ -138,7 +147,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Plugin" && variant === 1 && (
+      {catName === "Plugin" && variant === 1 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex gap-3 items-center">
             <div className="w-12 h-12 rounded-lg border-2 rotate-6 transition-transform duration-500 group-hover:rotate-12" style={{ borderColor: palette.ink, backgroundColor: palette.wash }} />
@@ -149,7 +158,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Plugin" && variant === 2 && (
+      {catName === "Plugin" && variant === 2 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-24 h-16 rounded-lg border-2 flex items-center justify-center" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
@@ -164,7 +173,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Plugin" && variant === 3 && (
+      {catName === "Plugin" && variant === 3 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-20 h-20 rounded-2xl rotate-12 flex items-center justify-center transition-transform duration-700 group-hover:rotate-0" style={{ backgroundColor: palette.ink }}>
@@ -176,7 +185,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Plugin" && variant === 4 && (
+      {catName === "Plugin" && variant === 4 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-2 gap-4">
             {["{ }", "< >", "( )", "[ ]"].map((sym, i) => (
@@ -187,7 +196,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Plugin" && variant === 5 && (
+      {catName === "Plugin" && variant === 5 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="flex gap-2 items-center">
@@ -206,7 +215,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Engineering (工程) - 6 variants
           ================================================================ */}
-      {post.category === "Engineering" && variant === 0 && (
+      {catName === "Engineering" && variant === 0 && (
         <>
           <div className="absolute inset-4" style={{ backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: "24px 24px" }} />
           <span className="absolute top-1/3 left-6 h-3 w-3 rounded-full" style={{ backgroundColor: palette.ink }} />
@@ -216,7 +225,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-6 right-8 h-10 w-10 rounded-full border translate-x-2 -translate-y-2 opacity-30" style={{ borderColor: palette.ink }} />
         </>
       )}
-      {post.category === "Engineering" && variant === 1 && (
+      {catName === "Engineering" && variant === 1 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
             <rect x="10" y="10" width="100" height="60" rx="4" stroke={palette.ink} strokeWidth="1.5" opacity="0.3" />
@@ -228,7 +237,7 @@ export const ArticleArt = memo(function ArticleArt({
           </svg>
         </div>
       )}
-      {post.category === "Engineering" && variant === 2 && (
+      {catName === "Engineering" && variant === 2 && (
         <>
           <div className="absolute top-6 left-6 right-6 flex gap-2">
             {[1, 2, 3].map((i) => (
@@ -242,7 +251,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Engineering" && variant === 3 && (
+      {catName === "Engineering" && variant === 3 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-32 h-20 border-2 rounded-lg" style={{ borderColor: palette.ink }}>
@@ -256,7 +265,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Engineering" && variant === 4 && (
+      {catName === "Engineering" && variant === 4 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
@@ -271,7 +280,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Engineering" && variant === 5 && (
+      {catName === "Engineering" && variant === 5 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="grid grid-cols-4 gap-2">
@@ -286,7 +295,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Typography (字体) - 6 variants
           ================================================================ */}
-      {post.category === "Typography" && variant === 0 && (
+      {catName === "Typography" && variant === 0 && (
         <>
           <div className="absolute inset-6 flex flex-col justify-center gap-4" aria-hidden>
             {[0, 1, 2, 3].map((i) => (
@@ -300,7 +309,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-3 right-5 text-6xl font-serif leading-none select-none" style={{ color: palette.ink, opacity: 0.08 }}>T</span>
         </>
       )}
-      {post.category === "Typography" && variant === 1 && (
+      {catName === "Typography" && variant === 1 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
@@ -315,7 +324,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-4 left-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>TYPOGRAPHY</span>
         </>
       )}
-      {post.category === "Typography" && variant === 2 && (
+      {catName === "Typography" && variant === 2 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex items-end gap-4">
@@ -327,7 +336,7 @@ export const ArticleArt = memo(function ArticleArt({
           <div className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
         </>
       )}
-      {post.category === "Typography" && variant === 3 && (
+      {catName === "Typography" && variant === 3 && (
         <>
           <div className="absolute top-6 left-6">
             <span className="text-4xl font-serif italic leading-none" style={{ color: palette.ink, opacity: 0.12 }}>Ag</span>
@@ -342,7 +351,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Typography" && variant === 4 && (
+      {catName === "Typography" && variant === 4 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -353,7 +362,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Typography" && variant === 5 && (
+      {catName === "Typography" && variant === 5 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="grid grid-cols-5 gap-1">
@@ -368,7 +377,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Frontend (前端) - 6 variants
           ================================================================ */}
-      {post.category === "Frontend" && variant === 0 && (
+      {catName === "Frontend" && variant === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="absolute -top-5 -left-5 w-28 h-18 rounded-lg border bg-white/70 backdrop-blur-sm transition-transform duration-500 group-hover:-rotate-6" style={{ borderColor: palette.ink, transform: "rotate(-4deg)" }} />
@@ -379,7 +388,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Frontend" && variant === 1 && (
+      {catName === "Frontend" && variant === 1 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex flex-col gap-2 items-start">
             <div className="flex items-center gap-2">
@@ -397,7 +406,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Frontend" && variant === 2 && (
+      {catName === "Frontend" && variant === 2 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-2 gap-3">
             <div className="w-16 h-12 rounded border-2" style={{ borderColor: palette.ink, backgroundColor: palette.wash }} />
@@ -407,7 +416,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Frontend" && variant === 3 && (
+      {catName === "Frontend" && variant === 3 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-32 h-20 rounded-lg border-2 overflow-hidden" style={{ borderColor: palette.ink }}>
@@ -425,7 +434,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Frontend" && variant === 4 && (
+      {catName === "Frontend" && variant === 4 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-28 h-28 rounded-2xl border-2 border-dashed flex items-center justify-center" style={{ borderColor: palette.ink }}>
@@ -441,7 +450,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Frontend" && variant === 5 && (
+      {catName === "Frontend" && variant === 5 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-3 gap-2">
             {["div", "span", "p", "h1", "a", "img"].map((tag, i) => (
@@ -456,7 +465,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Snippet (点滴) - 6 variants
           ================================================================ */}
-      {post.category === "Snippet" && variant === 0 && (
+      {catName === "Snippet" && variant === 0 && (
         <>
           <span className={`absolute top-6 h-24 w-24 rounded-full mix-blend-multiply ${shift}`} style={{ backgroundColor: palette.wash }} />
           <span className={`absolute top-12 h-16 w-16 rounded-full mix-blend-multiply ${tilt} left-1/2`} style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
@@ -465,7 +474,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-4 left-6 font-serif italic text-sm" style={{ color: palette.ink, opacity: 0.6 }}>No. {post.id.slice(0, 4)}</span>
         </>
       )}
-      {post.category === "Snippet" && variant === 1 && (
+      {catName === "Snippet" && variant === 1 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex gap-4 items-center">
@@ -477,7 +486,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-4 left-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>SNIPPET</span>
         </>
       )}
-      {post.category === "Snippet" && variant === 2 && (
+      {catName === "Snippet" && variant === 2 && (
         <>
           <div className="absolute top-8 left-8 right-8 bottom-8 border-2 rounded-lg" style={{ borderColor: palette.ink, opacity: 0.15 }} />
           <div className="absolute top-12 left-12 right-12 bottom-12 border rounded" style={{ borderColor: palette.ink, opacity: 0.1 }} />
@@ -485,7 +494,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-6 left-6 text-[9px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>NOTE</span>
         </>
       )}
-      {post.category === "Snippet" && variant === 3 && (
+      {catName === "Snippet" && variant === 3 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
@@ -497,7 +506,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute top-6 right-6 text-[9px] font-mono" style={{ color: palette.ink, opacity: 0.3 }}>{post.id.slice(0, 6)}</span>
         </>
       )}
-      {post.category === "Snippet" && variant === 4 && (
+      {catName === "Snippet" && variant === 4 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -509,7 +518,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Snippet" && variant === 5 && (
+      {catName === "Snippet" && variant === 5 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex gap-3 items-center">
@@ -523,7 +532,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-4 left-6 font-serif italic text-sm" style={{ color: palette.ink, opacity: 0.4 }}>· · ·</span>
         </>
       )}
-      {post.category === "Snippet" && variant === 6 && (
+      {catName === "Snippet" && variant === 6 && (
         <>
           <div className="absolute top-0 right-0 w-1/2 h-full">
             <div className="absolute inset-0 flex items-center justify-center">
@@ -536,7 +545,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Snippet" && variant === 7 && (
+      {catName === "Snippet" && variant === 7 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -553,7 +562,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Life (生活) - 8 variants
           ================================================================ */}
-      {post.category === "Life" && variant === 0 && (
+      {catName === "Life" && variant === 0 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -568,7 +577,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Life" && variant === 1 && (
+      {catName === "Life" && variant === 1 && (
         <>
           <div className="absolute top-0 left-0 w-full h-1/3 overflow-hidden">
             <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${palette.wash} 0%, transparent 60%)` }} />
@@ -587,7 +596,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute top-6 right-6 w-8 h-8 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.08 }} />
         </>
       )}
-      {post.category === "Life" && variant === 2 && (
+      {catName === "Life" && variant === 2 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-2 gap-4">
             <div className="w-20 h-20 rounded-2xl border-2 flex items-center justify-center transition-transform duration-500 group-hover:rotate-6" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
@@ -599,7 +608,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Life" && variant === 3 && (
+      {catName === "Life" && variant === 3 && (
         <>
           <div className="absolute inset-0">
             <div className="absolute top-0 left-0 w-full h-full" style={{ background: `radial-gradient(circle at 30% 70%, ${palette.wash} 0%, transparent 50%)` }} />
@@ -614,7 +623,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Life" && variant === 4 && (
+      {catName === "Life" && variant === 4 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             <div className="w-28 h-28 rounded-full border-2 border-dashed flex items-center justify-center transition-transform duration-700 group-hover:rotate-180" style={{ borderColor: palette.ink }}>
@@ -626,7 +635,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </div>
       )}
-      {post.category === "Life" && variant === 5 && (
+      {catName === "Life" && variant === 5 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex gap-4 items-end">
@@ -638,7 +647,7 @@ export const ArticleArt = memo(function ArticleArt({
           <span className="absolute bottom-4 left-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>LIFE</span>
         </>
       )}
-      {post.category === "Life" && variant === 6 && (
+      {catName === "Life" && variant === 6 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -652,7 +661,7 @@ export const ArticleArt = memo(function ArticleArt({
           </div>
         </>
       )}
-      {post.category === "Life" && variant === 7 && (
+      {catName === "Life" && variant === 7 && (
         <>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
@@ -674,7 +683,7 @@ export const ArticleArt = memo(function ArticleArt({
       {/* ================================================================
           Fallback (通用) - 未匹配分类时使用
           ================================================================ */}
-      {!["Design","Plugin","Engineering","Typography","Frontend","Snippet","Life"].includes(post.category) && (
+      {!["Design","Plugin","Engineering","Typography","Frontend","Snippet","Life"].includes(catName) && (
         <>
           {variant === 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
