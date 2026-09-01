@@ -6,6 +6,7 @@ export const CATEGORIES = [
   "Typography",
   "Frontend",
   "Snippet",
+  "Life",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
@@ -18,6 +19,7 @@ export const CATEGORY_LABEL: Record<ContentCategory, string> = {
   Typography: "字体",
   Frontend: "前端",
   Snippet: "点滴",
+  Life: "生活",
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
