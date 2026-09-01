@@ -77,12 +77,14 @@ export const ArticleArt = memo(function ArticleArt({
   tall?: boolean;
 }) {
   const catName = getCategoryName(post.category);
-  const palette = ART_PALETTES[catName] || ART_PALETTES[post.category] || { paper: "#F9FAFB", ink: "#52525B", wash: "#E4E4E7" };
+  const palette = ART_PALETTES[catName] || ART_PALETTES[post.category] || { paper: "#F2F0EC", ink: "#2C2A26", wash: "#E8E2DA" };
   const variantSeed = (post.title || "") + catName + (post.id || "");
   const variant = useMemo(() => hashVariant(variantSeed, 8), [variantSeed]);
   const initial = post.title.charAt(0);
+  const no = useMemo(() => (post.id || "").slice(0, 4).toUpperCase(), [post.id]);
   const KNOWN = ["Design", "Plugin", "Engineering", "Typography", "Frontend", "Snippet", "Life"];
   const isKnown = KNOWN.includes(catName);
+  const shift = variant <= 2 ? "left-6" : variant <= 4 ? "left-1/3" : variant === 5 ? "left-1/4" : variant === 6 ? "right-6" : "right-1/4";
 
   // 按分类给文字变体做主题微调
   const theme = useMemo(() => {
@@ -101,318 +103,50 @@ export const ArticleArt = memo(function ArticleArt({
   return (
     <div
       aria-hidden="true"
-      className={`group relative w-full overflow-hidden ${tall ? "aspect-[4/5]" : "aspect-[16/9]"}`}
+      className={`group relative w-full overflow-hidden border-b border-zinc-200 ${tall ? "aspect-[4/5]" : "aspect-[16/9]"}`}
       style={{ backgroundColor: palette.paper }}
     >
-      <div className="absolute inset-0" style={{ backgroundImage: `linear-gradient(transparent 98%, ${palette.wash} 98%)`, backgroundSize: "100% 8px" }} />
+      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, ${palette.wash} 3px, ${palette.wash} 4px)` }} />
 
-      {/* ---------- Design：大字 + 单线 ---------- */}
-      {catName === "Design" && variant === 0 && (
-        <span className={`absolute left-6 font-serif italic leading-none select-none ${tall ? "text-[10rem] -top-4" : "text-[7rem] top-4"}`} style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Design" && variant === 1 && (
-        <span className="absolute inset-0 flex items-center justify-center text-[5.5rem] font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Design" && variant === 2 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-16 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-xs tracking-[0.4em] select-none" style={{ color: palette.ink }}>设计</span>
-        </div>
-      )}
-      {catName === "Design" && variant === 3 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Design" && variant === 4 && (
-        <span className="absolute inset-0 flex items-center justify-center text-8xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Design" && variant === 5 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-2xl leading-none select-none" style={{ color: palette.wash }}>·</span>
-          <span className="text-sm tracking-widest select-none" style={{ color: palette.ink }}>{catName}</span>
-        </div>
-      )}
-      {catName === "Design" && variant === 6 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[11px] tracking-[0.5em] select-none" style={{ color: palette.ink }}>— DESIGN —</span>
-          <span className="text-7xl font-serif italic leading-none select-none mt-2" style={{ color: palette.ink }}>{initial}</span>
-        </div>
-      )}
-      {catName === "Design" && variant === 7 && (
-        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[11px] tracking-[0.3em] select-none" style={{ color: palette.ink }}>—</span>
-        </div>
+      {/* ---------- Design：复刻 bolg Design，首字位移 + 底线/圆点/编号 ---------- */}
+      {catName === "Design" && (
+        <>
+          <span className={`absolute -top-6 font-serif italic leading-none select-none ${shift} ${tall ? "text-[11rem]" : "text-[8rem]"}`} style={{ color: palette.ink }}>{initial}</span>
+          <span className={`absolute bottom-4 right-6 block rounded-full mix-blend-multiply ${tall ? "h-24 w-24" : "h-16 w-16"}`} style={{ backgroundColor: palette.wash, border: `1px solid ${palette.ink}` }} />
+          <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.35 }} />
+          <span className="absolute bottom-7 left-6 font-serif italic text-sm select-none" style={{ color: palette.ink }}>No. {no}</span>
+        </>
       )}
 
-      {/* ---------- Plugin：等宽 + 符号 ---------- */}
-      {catName === "Plugin" && variant === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-5xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-2xl font-mono font-light leading-none select-none" style={{ color: palette.ink }}>+</span>
-        </div>
-      )}
-      {catName === "Plugin" && variant === 1 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-mono font-bold leading-none select-none tracking-tighter" style={{ color: palette.ink }}>{initial}</span>
-          <span className="ml-2 text-[11px] tracking-widest select-none self-end mb-6" style={{ color: palette.ink }}>/ PLUGIN</span>
-        </div>
-      )}
-      {catName === "Plugin" && variant === 2 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-4">
-          <span className="text-xs tracking-widest select-none" style={{ color: palette.ink }}>—</span>
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-xs tracking-widest select-none" style={{ color: palette.ink }}>—</span>
-        </div>
-      )}
-      {catName === "Plugin" && variant === 3 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>&lt;{initial}&gt;</span>
-          <span className="text-[10px] tracking-[0.4em] select-none mt-2" style={{ color: palette.ink }}>PLUGIN</span>
-        </div>
-      )}
-      {catName === "Plugin" && variant === 4 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Plugin" && variant === 5 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Plugin" && variant === 6 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-mono font-light leading-none select-none" style={{ color: palette.ink }}>[ {initial} ]</span>
-        </div>
-      )}
-      {catName === "Plugin" && variant === 7 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-lg font-mono select-none" style={{ color: palette.wash }}>· · ·</span>
-        </div>
+      {/* ---------- Plugin / Frontend / Snippet / Life：极简单字 + 右下编号（bolg 规则复用） ---------- */}
+      {(catName === "Plugin" || catName === "Frontend" || catName === "Snippet" || catName === "Life") && (
+        <>
+          <span className={`absolute ${tall ? "-top-4 text-[10rem]" : "top-4 text-[7rem]"} font-serif italic leading-none select-none ${shift}`} style={{ color: palette.ink }}>{initial}</span>
+          <span className="absolute bottom-6 left-6 font-mono text-[11px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>No. {no} · {catName.toLowerCase()}</span>
+          <span className={`absolute bottom-4 right-6 rounded-full ${tall ? "h-20 w-20" : "h-14 w-14"}`} style={{ backgroundColor: palette.wash, border: `1px solid ${palette.ink}` }} />
+        </>
       )}
 
-      {/* ---------- Engineering：代码感文字 ---------- */}
-      {catName === "Engineering" && variant === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="ml-3 w-px h-8" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Engineering" && variant === 1 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Engineering" && variant === 2 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>&#123; {initial} &#125;</span>
-          <span className="text-[10px] tracking-[0.5em] select-none mt-2" style={{ color: palette.ink }}>ENGINEERING</span>
-        </div>
-      )}
-      {catName === "Engineering" && variant === 3 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="text-xs font-mono select-none" style={{ color: palette.ink }}>//</span>
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-        </div>
-      )}
-      {catName === "Engineering" && variant === 4 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-mono italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Engineering" && variant === 5 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Engineering" && variant === 6 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>&lt; {initial} /&gt;</span>
-          <span className="w-10 h-px mt-3" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Engineering" && variant === 7 && (
-        <span className="absolute inset-0 flex items-center justify-center text-6xl font-mono font-bold leading-none select-none tracking-tight" style={{ color: palette.ink }}>{initial}<span className="text-3xl font-light ml-1" style={{ color: palette.wash }}>·</span></span>
+      {/* ---------- Engineering：复刻 bolg Technology（网格 + 首字位移 + 线/圆） ---------- */}
+      {catName === "Engineering" && (
+        <>
+          <div className="absolute inset-4" style={{ backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: "28px 28px", opacity: 0.6 }} />
+          <span className={`absolute top-1/3 ${shift} h-2 w-2 rounded-full`} style={{ backgroundColor: palette.ink }} />
+          <span className="absolute top-1/3 left-6 right-10 h-px" style={{ backgroundColor: palette.ink, opacity: 0.35 }} />
+          <span className="absolute bottom-6 left-6 font-mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>No. {no}</span>
+          <span className="absolute bottom-6 right-8 h-10 w-10 rounded-full border" style={{ borderColor: palette.ink }} />
+        </>
       )}
 
-      {/* ---------- Typography：字形编排 ---------- */}
-      {catName === "Typography" && variant === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[11px] tracking-[0.5em] font-mono select-none self-end mb-4" style={{ color: palette.ink }}>TYPO</span>
-        </div>
-      )}
-      {catName === "Typography" && variant === 1 && (
-        <span className="absolute inset-0 flex items-center justify-center text-8xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Typography" && variant === 2 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-7xl font-serif leading-none select-none -mb-1" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-10 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-[10px] tracking-[0.4em] font-mono select-none mt-2" style={{ color: palette.ink }}>TYPE</span>
-        </div>
-      )}
-      {catName === "Typography" && variant === 3 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center">
-          <span className="text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-12 h-px mt-2" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Typography" && variant === 4 && (
-        <span className="absolute inset-0 flex items-center justify-center text-[5.5rem] font-serif font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Typography" && variant === 5 && (
-        <div className="absolute inset-0 flex items-end justify-between px-8 py-6">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[10px] font-mono tracking-[0.4em] select-none" style={{ color: palette.ink }}>FONT</span>
-        </div>
-      )}
-      {catName === "Typography" && variant === 6 && (
-        <span className="absolute top-4 left-6 text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Typography" && variant === 7 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="text-[10px] font-mono tracking-widest select-none" style={{ color: palette.ink }}>［</span>
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[10px] font-mono tracking-widest select-none" style={{ color: palette.ink }}>］</span>
-        </div>
+      {/* ---------- Typography：复刻排版克制（首字 + 单线） ---------- */}
+      {catName === "Typography" && (
+        <>
+          <span className={`absolute top-6 font-serif italic text-6xl leading-none select-none ${shift}`} style={{ color: palette.ink }}>{initial}</span>
+          <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.25 }} />
+          <span className="absolute bottom-8 left-6 font-mono text-[10px] tracking-[0.3em] select-none" style={{ color: palette.ink }}>TYPE · No.{no}</span>
+        </>
       )}
 
-      {/* ---------- Frontend：简洁文字 ---------- */}
-      {catName === "Frontend" && variant === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>&lt;{initial}/&gt;</span>
-        </div>
-      )}
-      {catName === "Frontend" && variant === 1 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-mono font-bold leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Frontend" && variant === 2 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-5xl font-mono leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-[11px] tracking-widest select-none" style={{ color: palette.ink }}>UI</span>
-        </div>
-      )}
-      {catName === "Frontend" && variant === 3 && (
-        <span className="absolute inset-0 flex items-center justify-center text-6xl font-mono italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Frontend" && variant === 4 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[10px] tracking-[0.4em] select-none mt-2" style={{ color: palette.ink }}>FRONTEND</span>
-        </div>
-      )}
-      {catName === "Frontend" && variant === 5 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-8 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Frontend" && variant === 6 && (
-        <span className="absolute bottom-6 left-6 right-6 text-6xl font-mono font-bold leading-none select-none text-center" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Frontend" && variant === 7 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-mono leading-none select-none" style={{ color: palette.ink }}>[{initial}]</span>
-        </div>
-      )}
-
-      {/* ---------- Snippet：克制排版 ---------- */}
-      {catName === "Snippet" && variant === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Snippet" && variant === 1 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Snippet" && variant === 2 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-8 h-px mt-3" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Snippet" && variant === 3 && (
-        <span className="absolute inset-0 flex items-center justify-center text-6xl font-serif leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Snippet" && variant === 4 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-sm font-light select-none" style={{ color: palette.ink }}>—</span>
-        </div>
-      )}
-      {catName === "Snippet" && variant === 5 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[11px] tracking-[0.5em] select-none" style={{ color: palette.ink }}>— NOTE —</span>
-          <span className="text-6xl font-serif italic leading-none select-none mt-1" style={{ color: palette.ink }}>{initial}</span>
-        </div>
-      )}
-      {catName === "Snippet" && variant === 6 && (
-        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[10px] font-mono tracking-widest select-none" style={{ color: palette.ink }}>No.{post.id.slice(0, 4)}</span>
-        </div>
-      )}
-      {catName === "Snippet" && variant === 7 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-[10px] font-mono select-none" style={{ color: palette.ink }}>·</span>
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[10px] font-mono select-none" style={{ color: palette.ink }}>·</span>
-        </div>
-      )}
-
-      {/* ---------- Life：柔和排版 ---------- */}
-      {catName === "Life" && variant === 0 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Life" && variant === 1 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-xs tracking-widest select-none" style={{ color: palette.ink }}>生活</span>
-        </div>
-      )}
-      {catName === "Life" && variant === 2 && (
-        <span className="absolute inset-0 flex items-center justify-center text-7xl font-serif leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      )}
-      {catName === "Life" && variant === 3 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-8 h-px mt-3" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
-      {catName === "Life" && variant === 4 && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-6xl font-serif leading-none select-none" style={{ color: palette.ink }}>[ {initial} ]</span>
-        </div>
-      )}
-      {catName === "Life" && variant === 5 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[11px] tracking-[0.5em] select-none" style={{ color: palette.ink }}>— LIFE —</span>
-          <span className="text-7xl font-serif italic leading-none select-none mt-1" style={{ color: palette.ink }}>{initial}</span>
-        </div>
-      )}
-      {catName === "Life" && variant === 6 && (
-        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="text-[11px] tracking-[0.3em] select-none" style={{ color: palette.ink }}>—</span>
-        </div>
-      )}
-      {catName === "Life" && variant === 7 && (
-        <div className="absolute inset-0 flex items-center justify-center gap-3">
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-          <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-          <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-        </div>
-      )}
 
       {/* Fallback */}
       {!isKnown && <FallbackCover initial={initial} palette={palette} variant={variant} />}
