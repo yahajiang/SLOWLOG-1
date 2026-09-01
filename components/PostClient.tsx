@@ -14,7 +14,16 @@ import { Breadcrumb } from "./Breadcrumb";
 import type { Post } from "@/lib/types";
 import { PostRenderer } from "./editor/PostRenderer";
 import type { PageConfig } from "@/lib/page-config";
-import { ChevronLeft, ChevronRight, Clock, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink } from "lucide-react";
+
+const REPO_MAP: Record<string, string> = {
+  "soulsync-emotion-engine-architecture": "https://github.com/yahajiang/astrbot_plugin_soulsync",
+  "tauri-react-print-assistant": "https://github.com/yahajiang/print-assistant",
+  "soulsync-bistro-emotion-food": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-bistro",
+  "soulsync-mirror-self-exploration": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync_mirror",
+  "soulsync-shield-prompt-injection": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-shield",
+  "soulsync-menu-image-generator": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-menu",
+};
 
 export function PostClient({
   post: rawPost,
@@ -61,7 +70,7 @@ export function PostClient({
         <div className="mx-auto max-w-3xl px-6">
           <Breadcrumb items={[{ label: post.category }, { label: post.title }]} />
 
-          <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center gap-3 mb-5 flex-wrap">
             <CategoryBadge category={post.category} />
             <span className="text-[var(--yh-border)]">·</span>
             <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
@@ -71,6 +80,19 @@ export function PostClient({
             <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
               <Calendar className="w-3 h-3" />{post.displayDate}
             </span>
+            {REPO_MAP[rawPost.id] && (
+              <>
+                <span className="text-[var(--yh-border)]">·</span>
+                <a
+                  href={REPO_MAP[rawPost.id]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" />{lang === "zh" ? "仓库地址" : "Repository"}
+                </a>
+              </>
+            )}
           </div>
 
           <h1 className={`text-3xl md:text-[2.5rem] font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>

@@ -1,13 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import { ArticleArt } from "./ArticleArt";
 import { CategoryBadge } from "./CategoryBadge";
 import { AuthorAvatar } from "./AuthorAvatar";
 import type { Post } from "@/lib/types";
 import { useLang } from "@/lib/lang-context";
 import { useRelativeTime } from "@/lib/relative-time";
+
+const REPO_MAP: Record<string, string> = {
+  "soulsync-emotion-engine-architecture": "https://github.com/yahajiang/astrbot_plugin_soulsync",
+  "tauri-react-print-assistant": "https://github.com/yahajiang/print-assistant",
+  "soulsync-bistro-emotion-food": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-bistro",
+  "soulsync-mirror-self-exploration": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync_mirror",
+  "soulsync-shield-prompt-injection": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-shield",
+  "soulsync-menu-image-generator": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-menu",
+};
 
 export function ArticleCard({
   post,
@@ -55,7 +64,19 @@ export function ArticleCard({
               {relative} · {post.readTime}
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+          {REPO_MAP[post.id] ? (
+            <a
+              href={REPO_MAP[post.id]}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-[10px] text-zinc-400 hover:text-[var(--yh-accent)] transition-colors flex items-center gap-0.5 shrink-0"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : (
+            <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+          )}
         </div>
       </div>
     </Link>
