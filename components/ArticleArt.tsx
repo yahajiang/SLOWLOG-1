@@ -1,6 +1,14 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { ART_PALETTES } from "@/lib/categories";
 import type { Post } from "@/lib/types";
+
+function hashVariant(seed: string, max: number): number {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h) % max;
+}
 
 export const ArticleArt = memo(function ArticleArt({
   post,
@@ -10,12 +18,13 @@ export const ArticleArt = memo(function ArticleArt({
   tall?: boolean;
 }) {
   const palette = ART_PALETTES[post.category] || { paper: "#F9FAFB", ink: "#52525B", wash: "#E4E4E7" };
-  const variant = post.id.length % 6; // 6 variants
+  const variantSeed = (post.title || "") + (post.category || "") + (post.id || "");
+  const variant = useMemo(() => hashVariant(variantSeed, 8), [variantSeed]);
   const initial = post.title.charAt(0);
   const shift =
-    variant === 0 ? "left-6" : variant === 1 ? "left-1/4" : variant === 2 ? "left-1/2" : variant === 3 ? "right-6" : variant === 4 ? "right-1/4" : "right-1/2";
+    variant === 0 ? "left-6" : variant === 1 ? "left-1/4" : variant === 2 ? "left-1/2" : variant === 3 ? "right-6" : variant === 4 ? "right-1/4" : variant === 5 ? "right-1/2" : variant === 6 ? "left-8" : "right-8";
   const tilt =
-    variant === 0 ? "rotate-6" : variant === 1 ? "-rotate-3" : variant === 2 ? "rotate-12" : variant === 3 ? "-rotate-6" : variant === 4 ? "rotate-3" : "-rotate-12";
+    variant === 0 ? "rotate-6" : variant === 1 ? "-rotate-3" : variant === 2 ? "rotate-12" : variant === 3 ? "-rotate-6" : variant === 4 ? "rotate-3" : variant === 5 ? "-rotate-12" : variant === 6 ? "rotate-15" : "-rotate-15";
 
   return (
     <div
@@ -512,6 +521,260 @@ export const ArticleArt = memo(function ArticleArt({
             </div>
           </div>
           <span className="absolute bottom-4 left-6 font-serif italic text-sm" style={{ color: palette.ink, opacity: 0.4 }}>· · ·</span>
+        </>
+      )}
+      {post.category === "Snippet" && variant === 6 && (
+        <>
+          <div className="absolute top-0 right-0 w-1/2 h-full">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 rounded-full border-2 border-dashed" style={{ borderColor: palette.ink, opacity: 0.12 }} />
+            </div>
+          </div>
+          <div className="absolute bottom-6 left-6">
+            <div className="text-4xl font-serif italic leading-none select-none" style={{ color: palette.ink, opacity: 0.1 }}>{initial}</div>
+            <div className="w-8 h-0.5 mt-2" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+          </div>
+        </>
+      )}
+      {post.category === "Snippet" && variant === 7 && (
+        <>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-2xl rotate-6 flex items-center justify-center transition-transform duration-700 group-hover:rotate-0" style={{ border: `2px solid ${palette.ink}`, backgroundColor: palette.wash }}>
+                <span className="text-3xl font-serif italic" style={{ color: palette.ink, opacity: 0.6 }}>{initial}</span>
+              </div>
+              <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 rounded-lg" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ================================================================
+          Life (生活) - 8 variants
+          ================================================================ */}
+      {post.category === "Life" && variant === 0 && (
+        <>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <div className="w-20 h-28 rounded-t-[40px] border-2 transition-transform duration-500 group-hover:scale-105" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+                <div className="absolute top-3 left-3 right-3 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+                <div className="absolute top-6 left-3 right-5 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+                <div className="absolute top-9 left-3 right-4 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.1 }} />
+                <div className="absolute bottom-3 left-3 right-3 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.08 }} />
+              </div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full blur-sm" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+            </div>
+          </div>
+        </>
+      )}
+      {post.category === "Life" && variant === 1 && (
+        <>
+          <div className="absolute top-0 left-0 w-full h-1/3 overflow-hidden">
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${palette.wash} 0%, transparent 60%)` }} />
+          </div>
+          <div className="absolute bottom-6 left-6 right-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full border-2 flex items-center justify-center" style={{ borderColor: palette.ink }}>
+                <span className="text-lg font-serif" style={{ color: palette.ink, opacity: 0.6 }}>{initial}</span>
+              </div>
+              <div className="flex-1">
+                <div className="w-24 h-1.5 rounded" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+                <div className="w-16 h-1 rounded mt-1.5" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+              </div>
+            </div>
+          </div>
+          <span className="absolute top-6 right-6 w-8 h-8 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.08 }} />
+        </>
+      )}
+      {post.category === "Life" && variant === 2 && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="w-20 h-20 rounded-2xl border-2 flex items-center justify-center transition-transform duration-500 group-hover:rotate-6" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+              <span className="text-2xl">🏠</span>
+            </div>
+            <div className="w-20 h-20 rounded-2xl border-2 flex items-center justify-center transition-transform duration-500 group-hover:-rotate-6" style={{ borderColor: palette.ink }}>
+              <span className="text-2xl">☕</span>
+            </div>
+          </div>
+        </div>
+      )}
+      {post.category === "Life" && variant === 3 && (
+        <>
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 w-full h-full" style={{ background: `radial-gradient(circle at 30% 70%, ${palette.wash} 0%, transparent 50%)` }} />
+          </div>
+          <div className="absolute bottom-6 left-6">
+            <div className="text-5xl font-serif italic leading-none select-none" style={{ color: palette.ink, opacity: 0.08 }}>{initial}</div>
+          </div>
+          <div className="absolute top-6 right-6 flex flex-col gap-1 items-end">
+            <div className="w-16 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+            <div className="w-10 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+            <div className="w-6 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.1 }} />
+          </div>
+        </>
+      )}
+      {post.category === "Life" && variant === 4 && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative">
+            <div className="w-28 h-28 rounded-full border-2 border-dashed flex items-center justify-center transition-transform duration-700 group-hover:rotate-180" style={{ borderColor: palette.ink }}>
+              <div className="w-20 h-20 rounded-full border flex items-center justify-center" style={{ borderColor: palette.ink, opacity: 0.3 }}>
+                <span className="text-xl" style={{ color: palette.ink, opacity: 0.5 }}>☀️</span>
+              </div>
+            </div>
+            <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+          </div>
+        </div>
+      )}
+      {post.category === "Life" && variant === 5 && (
+        <>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex gap-4 items-end">
+              {[40, 60, 30, 50, 45].map((h, i) => (
+                <div key={i} className="w-3 rounded-t transition-all duration-500 group-hover:scale-y-110" style={{ height: `${h}%`, backgroundColor: palette.ink, opacity: 0.1 + i * 0.05 }} />
+              ))}
+            </div>
+          </div>
+          <span className="absolute bottom-4 left-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>LIFE</span>
+        </>
+      )}
+      {post.category === "Life" && variant === 6 && (
+        <>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-xl border-2 rotate-12 flex items-center justify-center transition-transform duration-700 group-hover:rotate-0" style={{ backgroundColor: palette.ink }}>
+                <div className="w-20 h-20 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.wash }}>
+                  <span className="text-2xl">🌱</span>
+                </div>
+              </div>
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 h-2 rounded-full blur-sm" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+            </div>
+          </div>
+        </>
+      )}
+      {post.category === "Life" && variant === 7 && (
+        <>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              <div className="flex gap-3 items-center">
+                <div className="w-8 h-8 rounded-lg border-2" style={{ borderColor: palette.ink }} />
+                <div className="w-4 h-px" style={{ backgroundColor: palette.ink, opacity: 0.4 }} />
+                <div className="w-12 h-12 rounded-xl border-2 flex items-center justify-center" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+                  <span className="text-lg">☕</span>
+                </div>
+                <div className="w-4 h-px" style={{ backgroundColor: palette.ink, opacity: 0.4 }} />
+                <div className="w-8 h-8 rounded-lg border-2" style={{ borderColor: palette.ink }} />
+              </div>
+            </div>
+          </div>
+          <span className="absolute bottom-4 right-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>· · ·</span>
+        </>
+      )}
+
+      {/* ================================================================
+          Fallback (通用) - 未匹配分类时使用
+          ================================================================ */}
+      {!["Design","Plugin","Engineering","Typography","Frontend","Snippet","Life"].includes(post.category) && (
+        <>
+          {variant === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full border-2 border-dashed flex items-center justify-center transition-transform duration-700 group-hover:rotate-12" style={{ borderColor: palette.ink }}>
+                  <span className="text-4xl font-serif italic leading-none select-none" style={{ color: palette.ink, opacity: 0.3 }}>{initial}</span>
+                </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+              </div>
+            </div>
+          )}
+          {variant === 1 && (
+            <>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex gap-3 items-center">
+                  <div className="w-8 h-8 rounded-lg border-2" style={{ borderColor: palette.ink, opacity: 0.3 }} />
+                  <div className="w-12 h-12 rounded-xl border-2 flex items-center justify-center" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+                    <span className="text-lg font-serif" style={{ color: palette.ink, opacity: 0.5 }}>{initial}</span>
+                  </div>
+                  <div className="w-8 h-8 rounded-lg border-2" style={{ borderColor: palette.ink, opacity: 0.3 }} />
+                </div>
+              </div>
+              <span className="absolute bottom-4 right-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>· · ·</span>
+            </>
+          )}
+          {variant === 2 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                <div className="w-20 h-28 rounded-xl border-2 flex items-center justify-center transition-transform duration-500 group-hover:scale-105" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+                  <span className="text-3xl font-serif italic" style={{ color: palette.ink, opacity: 0.4 }}>{initial}</span>
+                </div>
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-2 rounded-full blur-sm" style={{ backgroundColor: palette.ink, opacity: 0.12 }} />
+              </div>
+            </div>
+          )}
+          {variant === 3 && (
+            <>
+              <div className="absolute inset-0">
+                <div className="absolute top-0 left-0 w-full h-full" style={{ background: `radial-gradient(circle at 70% 30%, ${palette.wash} 0%, transparent 50%)` }} />
+              </div>
+              <div className="absolute top-6 left-6">
+                <div className="text-5xl font-serif italic leading-none select-none" style={{ color: palette.ink, opacity: 0.08 }}>{initial}</div>
+              </div>
+              <div className="absolute bottom-6 right-6 flex flex-col gap-1 items-end">
+                <div className="w-16 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+                <div className="w-10 h-1 rounded" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+              </div>
+            </>
+          )}
+          {variant === 4 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-2xl border-2 border-dashed flex items-center justify-center transition-transform duration-700 group-hover:rotate-180" style={{ borderColor: palette.ink }}>
+                  <span className="text-3xl font-serif italic" style={{ color: palette.ink, opacity: 0.2 }}>{initial}</span>
+                </div>
+                <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full" style={{ backgroundColor: palette.ink, opacity: 0.15 }} />
+                <div className="absolute -bottom-2 -right-2 w-5 h-5 rounded-lg" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+              </div>
+            </div>
+          )}
+          {variant === 5 && (
+            <>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex gap-4 items-end">
+                  {[40, 60, 30, 50, 45].map((h, i) => (
+                    <div key={i} className="w-3 rounded-t transition-all duration-500" style={{ height: `${h}%`, backgroundColor: palette.ink, opacity: 0.1 + i * 0.05 }} />
+                  ))}
+                </div>
+              </div>
+              <span className="absolute bottom-4 left-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>{post.category}</span>
+            </>
+          )}
+          {variant === 6 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full border-2 flex items-center justify-center transition-transform duration-500 group-hover:scale-110" style={{ borderColor: palette.ink }}>
+                  <span className="text-xl font-serif italic" style={{ color: palette.ink, opacity: 0.4 }}>{initial}</span>
+                </div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border" style={{ borderColor: palette.ink, opacity: 0.1 }} />
+              </div>
+            </div>
+          )}
+          {variant === 7 && (
+            <>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  <div className="flex gap-2 items-center">
+                    <div className="w-10 h-10 rounded-lg border-2" style={{ borderColor: palette.ink, opacity: 0.4 }} />
+                    <div className="w-4 h-px" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+                    <div className="w-14 h-14 rounded-xl border-2 flex items-center justify-center" style={{ borderColor: palette.ink, backgroundColor: palette.wash }}>
+                      <span className="text-lg font-serif" style={{ color: palette.ink, opacity: 0.5 }}>{initial}</span>
+                    </div>
+                    <div className="w-4 h-px" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+                    <div className="w-10 h-10 rounded-lg border-2" style={{ borderColor: palette.ink, opacity: 0.4 }} />
+                  </div>
+                </div>
+              </div>
+              <span className="absolute bottom-4 right-6 text-[10px] font-mono tracking-widest" style={{ color: palette.ink, opacity: 0.4 }}>· · ·</span>
+            </>
+          )}
         </>
       )}
     </div>
