@@ -14,14 +14,14 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-16 bg-gradient-to-b from-transparent to-[var(--yh-bg)]">
+    <footer className="mt-16 w-full bg-gradient-to-b from-transparent to-[var(--yh-bg)]">
       <div className="mx-auto max-w-3xl px-6 pt-10 pb-6">
         <div className="h-px bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent mb-8" />
-        <div className="flex flex-col items-center gap-3 text-center">
+        <div className="flex flex-col items-center gap-3 text-center w-full">
           <p className="text-xs text-[var(--yh-muted)] tracking-wide opacity-70">
             {t.footerSlogan}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--yh-muted)]">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--yh-muted)] w-full">
             <span>&copy; {new Date().getFullYear()} Yahajiang</span>
             <span className="opacity-30">·</span>
             <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors opacity-70 hover:opacity-100">
