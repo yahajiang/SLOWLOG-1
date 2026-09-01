@@ -18,52 +18,47 @@ function getCategoryName(category: any): string {
 }
 
 // 通用封面：极简文字为主，单线/圆点点缀
-function FallbackCover({ initial, palette, variant }: { initial: string; palette: any; variant: number }) {
+function FallbackCover({ initial, palette, variant }: { initial: string; palette: any; variant: number; no?: string; tall?: boolean }) {
   const F: React.JSX.Element[] = [
-    // 0: 单字居中 + 底线
-    <div key={0} className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+    <div key={0} className="absolute inset-0">
+      <span className="absolute -top-6 font-serif italic leading-none select-none left-6 text-[8rem]" style={{ color: palette.ink }}>{initial}</span>
+      <span className="absolute bottom-4 right-6 block rounded-full mix-blend-multiply h-16 w-16" style={{ backgroundColor: palette.wash, border: `1px solid ${palette.ink}` }} />
+      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.35 }} />
+      <span className="absolute bottom-7 left-6 font-serif italic text-sm select-none" style={{ color: palette.ink }}>No. {variant}</span>
+    </div>,
+    <div key={1} className="absolute inset-0">
+      <div className="absolute inset-4" style={{ backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: "28px 28px", opacity: 0.6 }} />
+      <span className="absolute top-1/3 left-6 h-2 w-2 rounded-full" style={{ backgroundColor: palette.ink }} />
+      <span className="absolute bottom-6 right-8 h-10 w-10 rounded-full border" style={{ borderColor: palette.ink }} />
+    </div>,
+    <div key={2} className="absolute inset-x-8 bottom-0 top-1/4 flex items-end gap-2">
+      {[34, 58, 44, 76, 62, 92].map((h, i) => (
+        <span key={i} className="flex-1" style={{ height: `${h}%`, backgroundColor: i % 3 === 0 ? palette.ink : palette.wash, border: `1px solid ${palette.ink}`, borderBottom: "none" }} />
+      ))}
+    </div>,
+    <div key={3} className="absolute inset-0">
+      <span className="absolute top-6 h-20 w-20 rounded-full mix-blend-multiply left-6" style={{ backgroundColor: palette.wash }} />
+      <span className="absolute top-10 h-20 w-20 rounded-full mix-blend-multiply left-1/2" style={{ backgroundColor: palette.ink, opacity: 0.25 }} />
+      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.5 }} />
+      <span className="absolute bottom-8 left-6 font-serif italic text-sm select-none" style={{ color: palette.ink }}>{initial}</span>
+    </div>,
+    <div key={4} className="absolute inset-0 flex items-center justify-center">
       <span className="text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
+    </div>,
+    <div key={5} className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+      <span className="w-10 h-px" style={{ backgroundColor: palette.ink }} />
+      <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
       <span className="w-10 h-px" style={{ backgroundColor: palette.ink }} />
     </div>,
-    // 1: 首字 + 角点
-    <div key={1} className="absolute inset-0">
-      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="absolute top-6 right-6 w-2 h-2 rounded-full" style={{ backgroundColor: palette.ink }} />
-      <span className="absolute bottom-6 left-6 w-2 h-2 rounded-full" style={{ backgroundColor: palette.ink }} />
-    </div>,
-    // 2: 左竖线 + 文字
-    <div key={2} className="absolute inset-0 flex items-center justify-center gap-4">
-      <span className="w-px h-12" style={{ backgroundColor: palette.ink }} />
+    <div key={6} className="absolute inset-0 flex items-center justify-center gap-3">
+      <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
       <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="w-px h-12" style={{ backgroundColor: palette.ink }} />
+      <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
     </div>,
-    // 3: 大字 + 底行
-    <div key={3} className="absolute inset-0 flex flex-col items-center justify-center">
-      <span className="text-7xl font-serif leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="text-[11px] tracking-[0.3em] mt-3 select-none" style={{ color: palette.ink }}>· · ·</span>
-    </div>,
-    // 4: 括号文字
-    <div key={4} className="absolute inset-0 flex items-center justify-center">
-      <span className="text-6xl font-serif italic leading-none select-none flex items-center gap-2" style={{ color: palette.ink }}>
-        <span className="text-3xl font-light">［</span>{initial}<span className="text-3xl font-light">］</span>
-      </span>
-    </div>,
-    // 5: 斜线 + 文字
-    <div key={5} className="absolute inset-0 flex items-center justify-center gap-3">
-      <span className="w-8 h-px rotate-12" style={{ backgroundColor: palette.ink }} />
-      <span className="text-5xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="w-8 h-px -rotate-12" style={{ backgroundColor: palette.ink }} />
-    </div>,
-    // 6: 上档线 + 文字 + 底线
-    <div key={6} className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-      <span className="w-12 h-px" style={{ backgroundColor: palette.ink }} />
+    <div key={7} className="absolute inset-0 flex items-center justify-center gap-4">
+      <span className="w-12 h-12 rounded-lg border-2" style={{ borderColor: palette.ink }} />
       <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="w-12 h-px" style={{ backgroundColor: palette.ink }} />
-    </div>,
-    // 7: 序号标签
-    <div key={7} className="absolute inset-0 flex items-center justify-center gap-6">
-      <span className="text-6xl font-serif italic leading-none select-none" style={{ color: palette.ink }}>{initial}</span>
-      <span className="text-xs tracking-[0.4em] select-none flex flex-col leading-tight" style={{ color: palette.ink }}>—<br />—</span>
+      <span className="w-12 h-12 rounded-lg border-2" style={{ borderColor: palette.ink }} />
     </div>,
   ];
   return F[variant] || F[0];
@@ -77,7 +72,7 @@ export const ArticleArt = memo(function ArticleArt({
   tall?: boolean;
 }) {
   const catName = getCategoryName(post.category);
-  const palette = ART_PALETTES[catName] || ART_PALETTES[post.category] || { paper: "#F2F0EC", ink: "#2C2A26", wash: "#E8E2DA" };
+  const palette = ART_PALETTES[catName] || ART_PALETTES[post.category] || { paper: "#F8F7F4", ink: "#2B2926", wash: "#E8E2DA" };
   const variantSeed = (post.title || "") + catName + (post.id || "");
   const variant = useMemo(() => hashVariant(variantSeed, 8), [variantSeed]);
   const initial = post.title.charAt(0);
