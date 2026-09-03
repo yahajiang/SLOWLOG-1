@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -66,7 +66,7 @@ export default function ChangePasswordPage() {
           </p>
         </div>
 
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-8 rounded-[var(--radius-md)]">
+        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-8 rounded-none">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium block mb-2">
@@ -76,7 +76,7 @@ export default function ChangePasswordPage() {
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-zinc-50 focus:bg-white focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-[var(--radius-sm)]"
+                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder="your@email.com"
                 autoFocus
               />
@@ -90,7 +90,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-zinc-50 focus:bg-white focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-[var(--radius-sm)]"
+                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder="至少 8 位"
               />
             </div>
@@ -103,7 +103,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-zinc-50 focus:bg-white focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-[var(--radius-sm)]"
+                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder="再次输入密码"
               />
             </div>
@@ -116,13 +116,13 @@ export default function ChangePasswordPage() {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-zinc-50 focus:bg-white focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-[var(--radius-sm)]"
+                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder="您的名称"
               />
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-[var(--radius-sm)]">
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">
                 {error}
               </div>
             )}
@@ -130,7 +130,7 @@ export default function ChangePasswordPage() {
             <button
               type="submit"
               disabled={loading || !newEmail || !newPassword || !confirmPassword || !newName}
-              className="w-full py-3 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-[var(--radius-sm)] font-medium"
+              className="w-full py-3 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-none font-medium"
             >
               {loading ? "保存中..." : "确认修改"}
             </button>

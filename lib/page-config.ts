@@ -15,7 +15,7 @@ export const DEFAULT_PAGE_CONFIG: PageConfig = {
   fontFamily: "sans",
   backgroundColor: "#FFFFFF",
   maxWidth: "medium",
-  showTOC: false,
+  showTOC: true,
 }
 
 export function parsePageConfig(raw: unknown): PageConfig {

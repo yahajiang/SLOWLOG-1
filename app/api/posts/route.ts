@@ -19,7 +19,19 @@ export async function GET(req: NextRequest) {
     where.status = status
   }
   if (q) where.OR = [{ title: { contains: q, mode: "insensitive" } }, { titleZh: { contains: q, mode: "insensitive" } }]
-  const posts = await prisma.post.findMany({ where, include: { category: true }, orderBy: { updatedAt: "desc" }, take: 100 })
+  // 列表 API 排除 content 大字段，详情走 /api/posts/[id]
+  const posts = await prisma.post.findMany({
+    where,
+    select: {
+      id: true, title: true, titleZh: true, slug: true, excerpt: true,
+      excerptZh: true, status: true, featured: true, tags: true, readTime: true,
+      author: true, authorInitial: true, viewCount: true, publishedAt: true,
+      createdAt: true, updatedAt: true, categoryId: true,
+      category: { select: { name: true, nameZh: true, slug: true } },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 100,
+  })
   return NextResponse.json(posts)
 }
 

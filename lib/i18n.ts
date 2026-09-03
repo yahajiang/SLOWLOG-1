@@ -39,7 +39,33 @@ export const dict = {
     // Footer
     footerSlogan: "慢日志 — 用时间沉淀文字",
     footerBuilt: "基于 Next.js 与 Tailwind CSS 构建",
+    footerTagline: "慢下来，写点值得读的东西。",
+    siteNameEn: "SLOWLOG",
+    switchToEn: "Switch to English",
+    switchToZh: "切换到中文",
+    // Archive
+    archiveTitle: "归档",
+    archiveDesc: (n: number, y: number) => `全部 ${n} 篇 · 按年份分组 · ${y} 年`,
+    archiveEmpty: "未找到匹配文章",
+    viewAllGrouped: "查看全部 →",
+    noFeaturedHint: "仅 1 篇推荐文章已在上方展示",
+    noFeaturedSub: "再发布一篇将在此显示",
+    expandThoughts: (n: number) => `展开全部 · 还有 ${n} 条`,
+    collapseThoughts: "收起",
+    readingRemaining: (m: number) => `剩余约 ${m} 分钟`,
+    almostDone: "即将读完",
+    postsCount2: (n: number) => `${n} 篇`,
+    thoughtUnit: "条",
+    yearUnit: "年",
+    viewRepo: "仓库地址",
+    readingProgress: "阅读进度",
+    readingNow: "阅读中",
+    estimatedTime: (m: number) => `预估 ${m} min`,
+    backToHome: "← 返回首页",
+    filteredCount: (n: number) => `筛选 ${n}`,
     // Post detail
+    copyright: (author: string, year: number) => `© ${year} ${author}. 本文采用 CC BY-NC-SA 4.0 许可协议，转载需注明出处。`,
+    copyrightEn: (author: string, year: number) => `© ${year} ${author}. This article is licensed under CC BY-NC-SA 4.0. Attribution required for reprints.`,
     backToPosts: "← 返回文章",
     onThisPage: "本页目录",
     previous: "上一篇",
@@ -167,6 +193,7 @@ export const dict = {
     thoughtUpdated: "随想已更新",
     thoughtDeleted: "随想已删除",
     noThoughts: "暂无随想",
+    noThoughtsHint: "去后台发布一条，记录此刻的想法",
     saveThought: "保存",
     deleteThoughtConfirm: "确定删除这条随想？",
   },
@@ -196,6 +223,34 @@ export const dict = {
     viewAll: "View all",
     footerSlogan: "SlowLog — Where words settle",
     footerBuilt: "Built with Next.js & Tailwind CSS",
+    footerTagline: "Slow down, write something worth reading.",
+    siteNameEn: "SLOWLOG",
+    switchToEn: "Switch to English",
+    switchToZh: "Switch to Chinese",
+    archiveTitle: "Archive",
+    archiveDesc: (n: number, y: number) => `All ${n} posts · ${y} years`,
+    archiveEmpty: "No matches",
+    viewAllGrouped: "View all →",
+    noFeaturedHint: "Only 1 featured post shown above",
+    noFeaturedSub: "Publish another to show here",
+    expandThoughts: (n: number) => `Show all · ${n} more`,
+    collapseThoughts: "Collapse",
+    readingRemaining: (m: number) => `~${m} min left`,
+    almostDone: "Almost done",
+    postsCount2: (n: number) => `${n} posts`,
+    thoughtUnit: "",
+    yearUnit: "",
+    viewRepo: "Repository",
+    noThoughtsHint: "Go to admin to post a thought, capture the moment.",
+    readingProgress: "Reading Progress",
+    readingNow: "Reading",
+    estimatedTime: (m: number) => `~${m} min`,
+    backToHome: "← Home",
+    filteredCount: (n: number) => `${n} filtered`,
+    // Post detail
+    copyright: (author: string, year: number) => `© ${year} ${author}. This article is licensed under CC BY-NC-SA 4.0. Attribution required for reprints.`,
+    copyrightEn: (author: string, year: number) => `© ${year} ${author}. This article is licensed under CC BY-NC-SA 4.0. Attribution required for reprints.`,
+    // Post detail
     backToPosts: "← Back to posts",
     onThisPage: "On this page",
     previous: "Previous",
@@ -338,6 +393,22 @@ export type Dict = {
   viewAll: string;
   footerSlogan: string;
   footerBuilt: string;
+  footerTagline: string;
+  siteNameEn: string;
+  archiveTitle: string;
+  archiveDesc: (n: number, y: number) => string;
+  archiveEmpty: string;
+  viewAllGrouped: string;
+  noFeaturedHint: string;
+  noFeaturedSub: string;
+  expandThoughts: (n: number) => string;
+  collapseThoughts: string;
+  readingRemaining: (m: number) => string;
+  almostDone: string;
+  postsCount2: (n: number) => string;
+  thoughtUnit: string;
+  yearUnit: string;
+  viewRepo: string;
   backToPosts: string;
   onThisPage: string;
   previous: string;
@@ -436,7 +507,7 @@ export type Dict = {
   apply: string;
   errorTitle: string;
   errorRetry: string;
-  notFoundTitle: string;
+notFoundTitle: string;
   notFoundBack: string;
   addThought: string;
   addThoughtZh: string;
@@ -446,8 +517,18 @@ export type Dict = {
   thoughtUpdated: string;
   thoughtDeleted: string;
   noThoughts: string;
+  noThoughtsHint: string;
   saveThought: string;
   deleteThoughtConfirm: string;
+  readingProgress: string;
+  readingNow: string;
+  estimatedTime: (m: number) => string;
+  backToHome: string;
+  filteredCount: (n: number) => string;
+  copyright: (author: string, year: number) => string;
+  copyrightEn: (author: string, year: number) => string;
+  switchToEn: string;
+  switchToZh: string;
 };
 
 export function getDict(lang: Lang): Dict {

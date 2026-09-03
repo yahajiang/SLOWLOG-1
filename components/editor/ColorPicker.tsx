@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useState } from "react"
 import { Check } from "lucide-react"
 
@@ -35,7 +35,7 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
 
   return (
     <div className="p-3">
-      {label && <p className="text-[11px] font-medium text-zinc-500 mb-2">{label}</p>}
+      {label && <p className="text-[11px] font-medium text-[var(--yh-muted)] mb-2">{label}</p>}
       <div className="space-y-1.5">
         {PALETTE.map((row, ri) => (
           <div key={ri} className="flex gap-1">
@@ -44,8 +44,8 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
                 key={color}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => onChange(color)}
-                className={`relative w-6 h-6 rounded-md border transition-all duration-100 hover:scale-110 hover:shadow-md ${
-                  value === color ? "border-zinc-800 ring-2 ring-zinc-300 scale-110" : "border-zinc-200"
+                className={`relative w-6 h-6 rounded-none border transition-all duration-100 hover:scale-110 hover:shadow-md ${
+                  value === color ? "border-zinc-800 ring-2 ring-zinc-300 scale-110" : "border-[var(--yh-border)]"
                 }`}
                 style={{ backgroundColor: color }}
               >
@@ -56,24 +56,24 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
         ))}
       </div>
       {/* 自定义颜色输入 */}
-      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-zinc-100">
+      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--yh-border)]">
         <input
           type="color"
           value={custom}
           onChange={(e) => { setCustom(e.target.value); onChange(e.target.value); }}
-          className="w-7 h-7 rounded-md border border-zinc-200 cursor-pointer p-0"
+          className="w-7 h-7 rounded-none border border-[var(--yh-border)] cursor-pointer p-0"
         />
         <input
           type="text"
           value={custom}
           onChange={(e) => { const v = e.target.value; setCustom(v); if (/^#[0-9a-fA-F]{6}$/.test(v)) onChange(v); }}
           placeholder="#000000"
-          className="flex-1 px-2 py-1 text-[11px] font-mono border border-zinc-200 rounded-md focus:outline-none focus:border-zinc-400"
+          className="flex-1 px-2 py-1 text-[11px] font-mono border border-[var(--yh-border)] rounded-none focus:outline-none focus:border-zinc-400"
         />
       </div>
       {onReset && (
         <button onMouseDown={(e) => e.preventDefault()} onClick={onReset}
-          className="w-full mt-2 text-[11px] text-zinc-500 hover:text-zinc-700 py-1 rounded hover:bg-zinc-50 transition-colors">
+          className="w-full mt-2 text-[11px] text-[var(--yh-muted)] hover:text-zinc-700 py-1 rounded hover:bg-[var(--dash-card)] transition-colors">
           重置
         </button>
       )}

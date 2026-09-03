@@ -51,6 +51,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.3.4",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
