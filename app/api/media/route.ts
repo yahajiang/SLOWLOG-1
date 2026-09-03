@@ -24,14 +24,20 @@ export async function POST(req: NextRequest) {
   const files = form.getAll("file") as File[]
   if (!files.length) return NextResponse.json({ error: "No file" }, { status: 400 })
   const results = []
-  for (const file of files) {
-    if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "单张上限5MB" }, { status: 400 })
-    if (!ALLOWED_MIMES.has(file.type)) return NextResponse.json({ error: "仅支持 JPEG/PNG/WebP/GIF" }, { status: 400 })
-    const filename = `${Date.now()}-${file.name}`
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const res = await compressAndUpload(buffer, filename, { quality: 75 })
-    const media = await prisma.media.create({ data: { filename: file.name, url: res.url, size: res.size, width: res.width, height: res.height, mimeType: res.mimeType, alt: "" } })
-    results.push(media)
+  try {
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "单张上限5MB" }, { status: 400 })
+      if (!ALLOWED_MIMES.has(file.type)) return NextResponse.json({ error: "仅支持 JPEG/PNG/WebP/GIF" }, { status: 400 })
+      const filename = `${Date.now()}-${file.name}`
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const res = await compressAndUpload(buffer, filename, { quality: 75 })
+      const media = await prisma.media.create({ data: { filename: file.name, url: res.url, size: res.size, width: res.width, height: res.height, mimeType: res.mimeType, alt: "" } })
+      results.push(media)
+    }
+  } catch (e: any) {
+    // 错误透明化：Blob/压缩失败时返回具体原因，不再裸 500
+    console.error("[media] upload failed:", e)
+    return NextResponse.json({ error: `上传失败：${e?.message || "未知错误"}` }, { status: 500 })
   }
   return NextResponse.json(results)
 }

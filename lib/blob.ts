@@ -5,6 +5,37 @@ import path from "path"
 
 type CompressOpts = { quality?: number; maxWidth?: number }
 
+// 兜底：Blob 不可用时把文件内嵌为 data URI（媒体库与正文 <img> 均可直接使用，上传不中断）
+async function toDataUri(buffer: Buffer, mime: string): Promise<string> {
+  return `data:${mime};base64,${buffer.toString("base64")}`
+}
+
+// 写出链：Vercel Blob → 本地 public/uploads（仅本地开发可用，serverless 只读 FS 会失败）→ data URI
+async function putLocal(name: string, data: Buffer, mime: string) {
+  const uploadsDir = path.join(process.cwd(), "public", "uploads")
+  await fs.mkdir(uploadsDir, { recursive: true })
+  const safeName = `${Date.now()}-${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`
+  const filePath = path.join(uploadsDir, safeName)
+  await fs.writeFile(filePath, data)
+  return { url: `/uploads/${safeName}` }
+}
+
+async function persist(name: string, buffer: Buffer, mime: string): Promise<{ url: string }> {
+  try {
+    const blob = await put(name, buffer, { access: "public", contentType: mime })
+    return { url: blob.url }
+  } catch (blobErr) {
+    console.error("[blob] put failed, fallback to local:", blobErr instanceof Error ? blobErr.message : blobErr)
+    try {
+      const local = await putLocal(name, buffer, mime)
+      return local
+    } catch (localErr) {
+      console.error("[blob] local fallback failed, use data URI:", localErr instanceof Error ? localErr.message : localErr)
+      return { url: await toDataUri(buffer, mime) }
+    }
+  }
+}
+
 export async function compressAndUpload(
   file: File | Buffer,
   filename: string,
@@ -15,27 +46,10 @@ export async function compressAndUpload(
   const buffer = file instanceof Buffer ? file : Buffer.from(await (file as File).arrayBuffer())
   const origMime = (file as any).type || guessMime(filename)
 
-  const token = process.env.BLOB_READ_WRITE_TOKEN || ""
-  const isPlaceholder = !token || token.includes("placeholder") || token.length < 20
-
-  // helper: fallback to local public/uploads
-  async function putLocal(name: string, data: Buffer, mime: string) {
-    const uploadsDir = path.join(process.cwd(), "public", "uploads")
-    await fs.mkdir(uploadsDir, { recursive: true })
-    const safeName = `${Date.now()}-${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`
-    const filePath = path.join(uploadsDir, safeName)
-    await fs.writeFile(filePath, data)
-    return { url: `/uploads/${safeName}` }
-  }
-
   // SVG/GIF keep original
   if (origMime === "image/svg+xml" || origMime === "image/gif" || filename.endsWith(".svg") || filename.endsWith(".gif")) {
-    if (isPlaceholder) {
-      const local = await putLocal(filename, buffer, origMime)
-      return { url: local.url, size: buffer.length, mimeType: origMime }
-    }
-    const blob = await put(filename, buffer, { access: "public", contentType: origMime })
-    return { url: blob.url, size: buffer.length, mimeType: origMime }
+    const res = await persist(filename, buffer, origMime)
+    return { url: res.url, size: buffer.length, mimeType: origMime }
   }
 
   // defense-in-depth: verify buffer is actually an image via sharp
@@ -66,20 +80,9 @@ export async function compressAndUpload(
   const outBuffer = await pipeline.toBuffer()
   const metaAfter = await sharp(outBuffer).metadata()
 
-  if (isPlaceholder) {
-    const local = await putLocal(outExt, outBuffer, targetMime)
-    return {
-      url: local.url,
-      width: metaAfter.width,
-      height: metaAfter.height,
-      size: outBuffer.length,
-      mimeType: targetMime,
-    }
-  }
-
-  const blob = await put(outExt, outBuffer, { access: "public", contentType: targetMime })
+  const res = await persist(outExt, outBuffer, targetMime)
   return {
-    url: blob.url,
+    url: res.url,
     width: metaAfter.width,
     height: metaAfter.height,
     size: outBuffer.length,
