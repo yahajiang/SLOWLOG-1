@@ -34,3 +34,7 @@ dev.log
 .mimosa/
 .zcode/
 skills-lock.json
+
+# sensitive / user data
+cookies*.txt
+/public/uploads
