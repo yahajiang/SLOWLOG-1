@@ -22,6 +22,8 @@ dist
 # misc
 data/users.json
 cookies.txt
+cookies*.txt
+/public/uploads
 nul
 dev.log
 *.tsbuildinfo
