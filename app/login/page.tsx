@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLang, LangProvider } from "@/lib/lang-context";
+import { useLang } from "@/lib/lang-context";
 
 function LoginPageInner() {
   const [username, setUsername] = useState("");
@@ -41,40 +41,40 @@ function LoginPageInner() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-zinc-900 mb-2">{t.siteName}</h1>
-          <p className="text-sm text-zinc-500">{lang === "zh" ? "后台管理" : "Admin Panel"}</p>
+          <p className="text-sm text-[var(--yh-muted)]">{lang === "zh" ? "后台管理" : "Admin Panel"}</p>
         </div>
 
         {changed && (
-          <div className="mb-4 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-[var(--radius-sm)]">
+          <div className="mb-4 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-none">
             {lang === "zh" ? "账户已更新，请使用新凭据登录。" : "Account updated. Please sign in with your new credentials."}
           </div>
         )}
 
-        <div className="bg-white border border-zinc-200 p-8">
+        <div className="bg-[var(--dash-card)] border border-[var(--yh-border)] p-8">
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-zinc-500 font-medium block mb-2">
+              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {lang === "zh" ? "用户名" : "Username"}
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-zinc-400 focus:outline-none transition-colors"
                 placeholder={lang === "zh" ? "请输入用户名" : "Enter username"}
                 autoFocus
               />
             </div>
 
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-zinc-500 font-medium block mb-2">
+              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {lang === "zh" ? "密码" : "Password"}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors"
+                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-zinc-400 focus:outline-none transition-colors"
                 placeholder={lang === "zh" ? "请输入密码" : "Enter password"}
               />
             </div>
@@ -95,7 +95,7 @@ function LoginPageInner() {
           </form>
         </div>
 
-        <p className="text-center text-[11px] text-zinc-400 mt-6">
+        <p className="text-center text-[11px] text-[var(--yh-muted)] mt-6">
           &copy; {new Date().getFullYear()} Yahajiang
         </p>
       </div>
@@ -104,9 +104,5 @@ function LoginPageInner() {
 }
 
 export default function LoginPage() {
-  return (
-    <LangProvider>
-      <LoginPageInner />
-    </LangProvider>
-  );
+  return <LoginPageInner />;
 }

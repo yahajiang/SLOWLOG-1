@@ -14,41 +14,41 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-16 w-full bg-gradient-to-b from-transparent to-[var(--yh-bg)]">
-      <div className="mx-auto max-w-3xl px-6 pt-10 pb-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent mb-8" />
-        <div className="flex flex-col items-center gap-3 text-center w-full">
-          <p className="text-xs text-[var(--yh-muted)] tracking-wide opacity-70">
-            {t.footerSlogan}
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--yh-muted)] w-full">
-            <span>&copy; {new Date().getFullYear()} Yahajiang</span>
-            <span className="opacity-30">·</span>
-            <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors opacity-70 hover:opacity-100">
-              yahajiang@gmail.com
-            </a>
-            <span className="opacity-30">·</span>
-            <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors opacity-70 hover:opacity-100">
-              GitHub
-            </a>
-            <span className="opacity-30">·</span>
-            <a href="https://slowlog.vercel.app" target="_blank" className="hover:text-[var(--yh-text)] transition-colors opacity-70 hover:opacity-100">
-              SlowLog v0.2.0
-            </a>
+    <footer className="mt-auto w-full border-t border-[var(--yh-border)] bg-[var(--dash-card)]">
+      <div className="bg-[var(--yh-bg)]/60 border-b border-[var(--yh-border)]">
+        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-[13px] flex flex-col lg:flex-row items-center justify-between gap-[18px]">
+          <div className="flex items-center gap-2 text-[12px]">
+            <span className="w-[22px] h-[22px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px]">S</span>
+            <span className="font-medium">慢日志 · SLOWLOG</span>
+            <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.2.0"}</span>
+            <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {t.siteSlogan}</span>
+          </div>
+          <div className="flex items-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
+            <span className="hidden sm:inline">{t.footerBuilt}</span>
           </div>
         </div>
-        {showTop && (
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-[var(--yh-text)] text-white flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-all duration-300 z-50 animate-[fadeIn_0.3s_var(--ease-out)]"
-            aria-label="Back to top"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M8 12V4M4 7l4-4 4 4" />
-            </svg>
-          </button>
-        )}
       </div>
+      <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-[9px] flex flex-col lg:flex-row items-center justify-between gap-[9px] mono text-[11px] text-[var(--yh-muted)]">
+        <div className="flex items-center gap-[7px]">
+          <span>© {new Date().getFullYear()} Yahajiang</span>
+          <span>·</span>
+          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
+          <span>·</span>
+          <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
+        </div>
+        <span className="hidden sm:inline">{t.footerTagline}</span>
+      </div>
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 w-11 h-11 rounded-none bg-[var(--yh-text)] text-white flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-all duration-300 z-50 animate-[fadeIn_0.3s_var(--ease-out)]"
+          aria-label="Back to top"
+        >
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 12V4M4 7l4-4 4 4" />
+          </svg>
+        </button>
+      )}
     </footer>
   );
 }

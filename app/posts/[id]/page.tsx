@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { PostClient } from "@/components/PostClient";
-import { LangProvider } from "@/lib/lang-context";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.slice(0, 20).map((p) => ({ id: p.id }));
+}
 
 function toLegacy(post: any) {
   if (!post) return null;
@@ -17,7 +21,7 @@ function toLegacy(post: any) {
     category: post.category,
     author: post.author || "Yahajiang",
     authorInitial: post.authorInitial || "Y",
-    date: post.publishedAt ? post.publishedAt.toISOString().slice(0, 10) : post.createdAt.toISOString().slice(0, 10),
+    date: post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 10) : new Date(post.createdAt).toISOString().slice(0, 10),
     displayDate: post.displayDate,
     readTime: post.readTime || "5 min",
     featured: post.featured,
@@ -26,7 +30,7 @@ function toLegacy(post: any) {
     htmlZh: "",
     headings: post.headings,
     headingsZh: post.headingsZh,
-    createdAt: (post.createdAt as Date).toISOString(),
+    createdAt: new Date(post.createdAt).toISOString(),
     content: post.content,
     pageConfig: post.pageConfig,
   } as any;
@@ -73,7 +77,7 @@ export default async function PostPage({
 
   const allRaw = await getAllPosts();
   const all = allRaw.map((p) => toLegacy(p)!);
-  const currentIdx = all.findIndex((p) => p.id === id);
+  const currentIdx = allRaw.findIndex((p) => p.id === id || (p as any).slug === id);
   const prevPost = currentIdx < all.length - 1 ? all[currentIdx + 1] : null;
   const nextPost = currentIdx > 0 ? all[currentIdx - 1] : null;
 
@@ -95,12 +99,12 @@ export default async function PostPage({
   };
 
   return (
-    <LangProvider>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <PostClient post={post} rawPost={raw} prevPost={prevPost} nextPost={nextPost} />
-    </LangProvider>
+    </>
   );
 }

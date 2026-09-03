@@ -18,7 +18,7 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
 
   return (
     <div
-      className="group relative pl-8 py-4 transition-all duration-500 hover:pl-10"
+      className="group relative pl-[29px] py-[14px] transition-all duration-500 hover:pl-9"
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* 时间线竖线 */}
@@ -29,11 +29,11 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
         <div className="absolute w-[5px] h-[5px] rounded-full bg-[var(--yh-border)] group-hover:bg-[var(--yh-accent)] transition-all duration-500" />
       </div>
       {/* 内容卡片 */}
-      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-lg px-5 py-4 border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-white/80 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-500">
+      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-none px-[18px] py-[14px] border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-white/80 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-500">
         <p className="text-[14.5px] text-[var(--yh-text)] leading-[1.85] tracking-wide">
           {text}
         </p>
-        <div className="flex items-center gap-2 mt-3">
+        <div className="flex items-center gap-2 mt-[11px]">
           <div className="w-1 h-1 rounded-full bg-[var(--yh-accent)]/40" />
           <time className="text-[11px] text-[var(--yh-muted)] tracking-wide opacity-60 group-hover:opacity-100 transition-opacity duration-300">
             {relative}
@@ -63,18 +63,18 @@ export function Thinking() {
   if (thoughts.length === 0) return null;
 
   return (
-    <section className="pb-24">
-      <div className="mx-auto max-w-3xl px-6">
+    <section className="pb-[86px]">
+      <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
         {/* 标题区 */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[var(--yh-accent)] to-[var(--yh-accent)]/50" />
+        <div className="flex items-center gap-3 mb-9">
+          <div className="w-1.5 h-5 rounded-none bg-gradient-to-b from-[var(--yh-accent)] to-[var(--yh-accent)]/50" />
           <h2 className="text-[13px] font-medium tracking-[0.2em] uppercase text-[var(--yh-muted)]">
             {t.thinking}
           </h2>
           <div className="flex-1 h-px bg-gradient-to-r from-[var(--yh-border)] to-transparent" />
         </div>
         {/* 时间线 */}
-        <div className="relative pl-2">
+        <div className="relative pl-[7px]">
           {thoughts.map((thought, i) => (
             <div
               key={thought.id}
@@ -87,7 +87,7 @@ export function Thinking() {
           {/* 时间线终点装饰 */}
           <div className="absolute left-[7px] bottom-0 flex flex-col items-center">
             <div className="w-2 h-2 rounded-full bg-[var(--yh-accent)]/30" />
-            <div className="w-px h-8 bg-gradient-to-b from-[var(--yh-accent)]/20 to-transparent mt-1" />
+            <div className="w-px h-[29px] bg-gradient-to-b from-[var(--yh-accent)]/20 to-transparent mt-1" />
           </div>
         </div>
       </div>

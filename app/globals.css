@@ -61,36 +61,6 @@ code, pre, .font-mono {
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-/* ============================================================
-   Mobile Responsive Styles
-   ============================================================ */
-
-/* Better touch targets on mobile */
-@media (max-width: 768px) {
-  /* Increase touch targets for main navigation */
-  nav a, header a, footer a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-  }
-  
-  /* Prevent text size adjustment on orientation change */
-  html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-  
-  /* Better input handling */
-  input, textarea, select {
-    font-size: 16px; /* Prevents zoom on iOS */
-  }
-  
-  /* Smooth scrolling for mobile */
-  .overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
 /* Transitions tokens */
 :root {
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -530,7 +500,7 @@ body::before {
   text-transform: uppercase;
   color: #71717a;
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 0 0 0 6px;
+  border-radius: 0;
 }
 
 .prose pre code {

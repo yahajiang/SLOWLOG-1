@@ -3,6 +3,13 @@
 import { useEffect, useState } from "react";
 import type { Lang } from "./i18n";
 
+export function formatDisplayDate(dateStr: string | null, lang: Lang): string {
+  if (!dateStr) return ""
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return ""
+  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric" })
+}
+
 export function formatRelativeTime(dateStr: string, lang: Lang): string {
   if (!dateStr) return "";
   const date = new Date(dateStr);

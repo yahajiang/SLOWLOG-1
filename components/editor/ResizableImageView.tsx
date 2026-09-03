@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import React, { useRef, useState, useCallback, useEffect } from "react"
 
@@ -54,7 +54,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
     <NodeViewWrapper className="my-6" data-drag-handle="false">
       <div
         ref={containerRef}
-        className={`group relative rounded-xl border-2 transition-all ${selected ? "border-blue-400" : "border-transparent hover:border-zinc-200"}`}
+        className={`group relative rounded-none border-2 transition-all ${selected ? "border-blue-400" : "border-transparent hover:border-[var(--yh-border)]"}`}
         style={{ width: width || "100%", maxWidth: "100%", userSelect: "none" }}
       >
         {/* 图片顶部工具条 */}
@@ -64,7 +64,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
               key={w}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => { e.stopPropagation(); updateAttributes({ width: w }) }}
-              className={`px-2.5 py-0.5 text-[11px] rounded-full border transition-colors font-medium ${width === w ? "bg-white text-zinc-900 border-white" : "bg-white/80 border-white/50 text-zinc-700 hover:bg-white"}`}
+              className={`px-2.5 py-0.5 text-[11px] rounded-none border transition-colors font-medium ${width === w ? "bg-[var(--dash-card)] text-zinc-900 border-white" : "bg-[var(--dash-card)]/80 border-white/50 text-zinc-700 hover:bg-[var(--dash-card)]"}`}
             >
               {w}
             </button>
@@ -72,7 +72,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
           <button
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => { e.stopPropagation(); updateAttributes({ width: null }) }}
-            className="px-2 py-0.5 text-[11px] rounded-full border bg-white/80 border-white/50 text-zinc-700 hover:bg-white"
+            className="px-2 py-0.5 text-[11px] rounded-none border bg-[var(--dash-card)]/80 border-white/50 text-zinc-700 hover:bg-[var(--dash-card)]"
           >
             自适应
           </button>
@@ -84,26 +84,26 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
           src={src}
           alt={alt || ""}
           title={title || ""}
-          className="w-full h-auto block rounded-xl"
+          className="w-full h-auto block rounded-none"
           draggable={false}
         />
 
         {/* 宽度标签 */}
-        <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/60 text-white text-[10px] rounded-full whitespace-nowrap transition-opacity ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+        <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/60 text-white text-[10px] rounded-none whitespace-nowrap transition-opacity ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
           {width || "自适应"}
         </div>
 
         {/* 右下角拖拽手柄 */}
         <div
           onPointerDown={(e) => { e.stopPropagation(); handleResize(e) }}
-          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-white border-2 border-blue-400 rounded-full shadow-md cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-[var(--dash-card)] border-2 border-blue-400 rounded-none shadow-md cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
         >
           <div className="w-3 h-3 border-r-2 border-b-2 border-blue-400 rounded-br-sm" />
         </div>
 
         {/* 拖拽中指示 */}
         {resizing && (
-          <div className="absolute inset-0 rounded-xl pointer-events-none" style={{ border: "2px dashed #3b82f6" }} />
+          <div className="absolute inset-0 rounded-none pointer-events-none" style={{ border: "2px dashed #3b82f6" }} />
         )}
       </div>
     </NodeViewWrapper>

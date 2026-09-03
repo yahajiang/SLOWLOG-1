@@ -1,4 +1,5 @@
 import { prisma } from "./prisma"
+import { unstable_cache } from "next/cache"
 import type { ContentCategory } from "./categories"
 
 export interface PostDTO {
@@ -37,9 +38,11 @@ export interface PostDTO {
   headingsZh: { id: string; text: string; level: number }[]
 }
 
-function toDisplayDate(d: Date | null): string {
+function toDisplayDate(d: Date | string | null): string {
   if (!d) return ""
-  return d.toLocaleDateString("zh-CN", { year: "numeric", month: "short", day: "numeric" })
+  const date = typeof d === "string" ? new Date(d) : d
+  if (isNaN(date.getTime())) return ""
+  return date.toLocaleDateString("zh-CN", { year: "numeric", month: "short", day: "numeric" })
 }
 
 function extractCategory(dto: any): ContentCategory {
@@ -54,12 +57,16 @@ function extractHeadings(content: unknown): { id: string; text: string; level: n
   const doc = content as any
   const nodes: any[] = doc.content || doc.root?.children || []
   const headings: { id: string; text: string; level: number }[] = []
+  const seen = new Map<string, number>()
   for (const n of nodes) {
     if (n.type === "heading") {
       const level = n.attrs?.level || 2
-      const text = (n.content || []).map((c: any) => c.text || "").join("")
+      const text = (n.content || []).map((c: any) => c.text || "").join("").trim()
       if (text) {
-        const id = text.toLowerCase().replace(/[^\w]+/g, "-").replace(/^-|-$/g, "")
+        let base = text.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g, "-").replace(/^-|-$/g, "") || `heading-${headings.length}`
+        const count = seen.get(base) || 0
+        seen.set(base, count + 1)
+        const id = count === 0 ? base : `${base}-${count}`
         headings.push({ id, text, level })
       }
     }
@@ -105,16 +112,24 @@ function mapPost(row: any): PostDTO {
   }
 }
 
+const getCachedPostRows = unstable_cache(
+  async (status: string) => {
+    return prisma.post.findMany({
+      where: { status },
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    })
+  },
+  ["posts-all"],
+  { revalidate: 60, tags: ["posts"] }
+)
+
 export async function getAllPosts(opts?: { status?: string; locale?: string }) {
   const where: any = {}
   if (opts?.status) where.status = opts.status
   else where.status = "published"
-  const rows = await prisma.post.findMany({
-    where,
-    include: { category: true },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  })
+  const rows = await getCachedPostRows(where.status)
   return rows.map(mapPost)
 }
 
@@ -143,4 +158,15 @@ export async function getAllPostSlugs() {
 
 export async function incrementViewCount(id: string) {
   await prisma.post.update({ where: { id }, data: { viewCount: { increment: 1 } } })
+}
+
+export function groupByYear(posts: PostDTO[]): Map<number, PostDTO[]> {
+  const map = new Map<number, PostDTO[]>()
+  for (const p of posts) {
+    const d = p.publishedAt || p.createdAt
+    const y = d ? new Date(d).getFullYear() : 0
+    if (!map.has(y)) map.set(y, [])
+    map.get(y)!.push(p)
+  }
+  return new Map([...map.entries()].sort((a, b) => b[0] - a[0]))
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 export default function NotFound() {
   return (
@@ -6,7 +6,7 @@ export default function NotFound() {
       <div className="max-w-md text-center">
         <h1 className="text-6xl font-semibold text-zinc-200 mb-4">404</h1>
         <h2 className="text-xl font-semibold text-zinc-900 mb-2">页面未找到</h2>
-        <p className="text-sm text-zinc-500 mb-6">
+        <p className="text-sm text-[var(--yh-muted)] mb-6">
           您访问的页面不存在或已被移动。
         </p>
         <Link

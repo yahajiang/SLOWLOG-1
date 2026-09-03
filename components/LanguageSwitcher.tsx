@@ -1,15 +1,15 @@
-"use client";
+﻿"use client";
 
 import { useLang } from "@/lib/lang-context";
 
 export function LanguageSwitcher() {
-  const { lang, setLang } = useLang();
+  const { lang, setLang, t } = useLang();
 
   return (
     <button
       onClick={() => setLang(lang === "zh" ? "en" : "zh")}
-      className="text-[10px] tracking-widest uppercase px-2.5 py-1.5 border border-zinc-200 bg-white hover:border-zinc-400 hover:bg-zinc-50 transition-colors font-medium"
-      title={lang === "zh" ? "Switch to English" : "切换到中文"}
+      className="mono text-[12px] tracking-[0.14em] uppercase px-3 py-[5px] rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] hover:border-zinc-400 hover:bg-[var(--dash-card)] transition-colors font-medium"
+      title={lang === "zh" ? t.switchToEn : t.switchToZh}
     >
       {lang === "zh" ? "EN" : "中"}
     </button>

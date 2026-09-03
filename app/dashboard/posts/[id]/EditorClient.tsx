@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
@@ -24,8 +24,8 @@ const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor").th
   loading: () => (
     <div className="flex items-center justify-center h-96">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
-        <p className="text-sm text-zinc-400">加载编辑器...</p>
+        <div className="w-8 h-8 border-2 border-[var(--dash-border)] border-t-[var(--dash-text)] rounded-none animate-spin" />
+        <p className="text-sm text-[var(--dash-muted)]">加载编辑器...</p>
       </div>
     </div>
   )
@@ -40,17 +40,17 @@ function PreviewPanel({ content, post, pageConfig, categories }: { content: any;
       <div className="mx-auto max-w-3xl px-6">
         <Breadcrumb items={[{ label: categories.find((c: any) => c.id === post.categoryId)?.nameZh || "慢日志" }, { label: (post.titleZh || post.title) || "未命名" }]} />
         <div className="flex items-center gap-3 mb-4 mt-3">
-          <span className="inline-block px-2.5 py-0.5 text-[10px] font-semibold tracking-widest uppercase rounded-sm border" style={{ backgroundColor: pageConfig.primaryColor || undefined, borderColor: pageConfig.primaryColor || undefined, color: "#fff" }}>{categories.find((c: any) => c.id === post.categoryId)?.nameZh || categories.find((c: any) => c.id === post.categoryId)?.name || "未分类"}</span>
+          <span className="inline-block px-2.5 py-0.5 text-[10px] font-semibold tracking-widest uppercase rounded-none border" style={{ backgroundColor: pageConfig.primaryColor || undefined, borderColor: pageConfig.primaryColor || undefined, color: "#fff" }}>{categories.find((c: any) => c.id === post.categoryId)?.nameZh || categories.find((c: any) => c.id === post.categoryId)?.name || "未分类"}</span>
           <span className="text-zinc-200">/</span>
-          <span className="text-[11px] text-zinc-400">{post.readTime || "5 min"}</span>
+          <span className="text-[11px] text-[var(--yh-muted)]">{post.readTime || "5 min"}</span>
         </div>
         <h1 className={`text-3xl font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: pageConfig.primaryColor && pageConfig.theme !== "dark" ? pageConfig.primaryColor : undefined }}>{(post.titleZh || post.title) || "未命名"}</h1>
-        <p className="text-[15px] leading-relaxed text-zinc-500 mb-6">{(post.excerptZh || post.excerpt) || "摘要"}</p>
-        <div className="flex items-center gap-3 pb-6 border-b border-zinc-100">
-          <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
+        <p className="text-[15px] leading-relaxed text-[var(--yh-muted)] mb-6">{(post.excerptZh || post.excerpt) || "摘要"}</p>
+        <div className="flex items-center gap-3 pb-6 border-b border-[var(--yh-border)]">
+          <div className="w-10 h-10 rounded-none bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
           <div>
             <p className="text-sm font-semibold text-zinc-800">{post.author || "Yahajiang"}</p>
-            <p className="text-xs text-zinc-400">{new Date().toLocaleDateString()} · {categories.find((c: any) => c.id === post.categoryId)?.name || "Design"}</p>
+            <p className="text-xs text-[var(--yh-muted)]">{new Date().toLocaleDateString()} · {categories.find((c: any) => c.id === post.categoryId)?.name || "Design"}</p>
           </div>
         </div>
       </div>
@@ -227,19 +227,19 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   }, [])
 
   return (
-    <div className="flex flex-col h-screen -m-8">
+    <div className="flex flex-col h-screen -m-8 pt-2">
       {/* ===== Top bar ===== */}
-      <div className="h-[52px] border-b border-[var(--dash-border)] bg-[var(--dash-card)]/90 backdrop-blur-xl px-4 flex items-center gap-3">
+      <div className="h-14 border-b border-[var(--dash-border)] bg-[var(--dash-card)]/90 backdrop-blur-xl px-4 flex items-center gap-3 mt-1">
         <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">← 返回列表</Link>
         <div className="w-px h-4 bg-[var(--dash-border)]" />
-        <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder="输入标题..." className="max-w-[280px] text-sm font-semibold shrink-0" style={{ fontFamily: "MiSans, sans-serif" }} />
+        <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder="输入标题..." className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
         <Badge tone={post.status === "published" ? "emerald" : "amber"}>{post.status === "published" ? "已发布" : "草稿"}</Badge>
         <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label="推荐" className="shrink-0" />
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? "保存中..." : "保存草稿"}</Button>
           <Button variant="primary" onClick={() => handleSave("published")}>发布</Button>
-          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-[var(--radius-sm)] flex items-center justify-center hover:bg-zinc-50 bg-white" aria-label="页面设置">⚙</button>
+          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label="页面设置">⚙</button>
           {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>删除</Button>}
         </div>
       </div>
@@ -247,27 +247,27 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
 
       {/* ===== 文章信息 ===== */}
       <div className="border-b border-[var(--dash-border)] bg-[var(--dash-card)] px-5 py-2">
-        <div className="grid grid-cols-7 gap-2 items-end">
-          <FormField label={t.formSlug} className="col-span-1">
-            <Input value={post.slug || ""} onChange={(e) => setPost({ ...post, slug: e.target.value })} placeholder="auto" className="font-mono text-xs" />
+        <div className="flex flex-wrap gap-2 items-end">
+          <FormField label={t.formSlug} className="flex-[1.2] min-w-[180px]">
+            <Input value={post.slug || ""} onChange={(e) => setPost({ ...post, slug: e.target.value })} placeholder="auto" className="font-mono text-[13px] h-9" />
           </FormField>
-          <FormField label={t.formCategory} required error={categoryError} className="col-span-1">
-            <Select value={post.categoryId || ""} onChange={(e) => setPost({ ...post, categoryId: e.target.value || null })}>
+          <FormField label={t.formCategory} required error={categoryError} className="w-[88px] shrink-0">
+            <Select value={post.categoryId || ""} onChange={(e) => setPost({ ...post, categoryId: e.target.value || null })} className="h-9 text-[11px] px-1">
               <option value="">未分类</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.nameZh || c.name}</option>)}
             </Select>
           </FormField>
-          <FormField label={t.formTags} error={tagsError} className="col-span-1">
-            <Input value={post.tags?.join ? post.tags.join(", ") : post.tags || ""} onChange={(e) => setPost({ ...post, tags: e.target.value.split(",") })} placeholder={t.formTagsPlaceholder} />
+          <FormField label={t.formTags} error={tagsError} className="flex-1 min-w-[140px]">
+            <Input value={post.tags?.join ? post.tags.join(", ") : post.tags || ""} onChange={(e) => setPost({ ...post, tags: e.target.value.split(",") })} placeholder={t.formTagsPlaceholder} className="h-9" />
           </FormField>
-          <FormField label={t.formExcerpt} required className="col-span-2">
-            <Input value={post.excerpt || ""} onChange={(e) => setPost({ ...post, excerpt: e.target.value, excerptZh: e.target.value })} placeholder="一句话概括..." />
+          <FormField label={t.formExcerpt} required className="flex-[2] min-w-[220px]">
+            <Input value={post.excerpt || ""} onChange={(e) => setPost({ ...post, excerpt: e.target.value, excerptZh: e.target.value })} placeholder="一句话概括..." className="h-9" />
           </FormField>
-          <FormField label={t.formReadTime} className="col-span-1">
-            <Input value={post.readTime || ""} onChange={(e) => setPost({ ...post, readTime: e.target.value })} placeholder="5 min" />
+          <FormField label={t.formReadTime} className="w-[88px] shrink-0">
+            <Input value={post.readTime || ""} onChange={(e) => setPost({ ...post, readTime: e.target.value })} placeholder="5 min" className="h-9 text-[11px] px-1" />
           </FormField>
-          <FormField label={t.formAuthor} className="col-span-1">
-            <Input value={post.author || ""} onChange={(e) => { const v = e.target.value; setPost({ ...post, author: v, authorInitial: v.trim() ? v.trim().charAt(0).toUpperCase() : "Y" }) }} placeholder="Yahajiang" />
+          <FormField label={t.formAuthor} className="w-[99px] shrink-0">
+            <Input value={post.author || ""} onChange={(e) => { const v = e.target.value; setPost({ ...post, author: v, authorInitial: v.trim() ? v.trim().charAt(0).toUpperCase() : "Y" }) }} placeholder="Yahajiang" className="h-9 text-[11px] px-1" />
           </FormField>
         </div>
         {errorMsg && <p className="text-xs text-red-500 mt-1">{errorMsg}</p>}
@@ -278,7 +278,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         <div ref={splitRef} className="flex-1 flex min-w-0">
           {/* ---- Left: Editor ---- */}
           <div className="flex flex-col min-w-0" style={{ width: `${split * 100}%` }}>
-            <div className="flex-1 min-h-0 overflow-y-auto bg-[var(--yh-bg)]">
+            <div className="flex-1 min-h-0 overflow-y-auto bg-[var(--dash-bg)]">
               <div className="w-full p-4">
                 <TiptapEditor content={post.content} onUpdate={(json) => setPost({ ...post, content: json })} />
               </div>
@@ -290,7 +290,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
             onPointerDown={onDividerDown}
             onPointerMove={onDividerMove}
             onPointerUp={onDividerUp}
-            className={`w-[6px] shrink-0 flex items-center justify-center cursor-col-resize touch-none transition-colors ${dragging ? "bg-[var(--dash-accent)]/25" : "bg-zinc-100 hover:bg-[var(--dash-accent)]/15"}`}
+            className={`w-[6px] shrink-0 flex items-center justify-center cursor-col-resize touch-none transition-colors ${dragging ? "bg-[var(--dash-accent)]/25" : "bg-[var(--dash-border)] hover:bg-[var(--dash-accent)]/15"}`}
           >
             <div className={`w-px h-8 transition-colors ${dragging ? "bg-[var(--dash-accent)]" : "bg-[var(--dash-border)]"}`} />
           </div>
@@ -310,7 +310,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       </div>
 
       {/* ===== Bottom status ===== */}
-      <div className="h-6 border-t border-[var(--dash-border)] bg-[var(--dash-card)] px-4 flex items-center justify-between text-[11px] text-[var(--dash-muted)]" style={{ fontFamily: "MiSans, sans-serif" }}>
+      <div className="h-6 border-t border-[var(--dash-border)] bg-[var(--dash-card)] px-4 flex items-center justify-between text-[11px] text-[var(--dash-muted)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
         <span>字数 {wordCount} · {post.status === "published" ? "已发布" : "草稿"} {lastSaved && `· 最后保存 ${lastSaved.toLocaleTimeString()}`}</span>
         <span>自动保存中 · 拖拽分隔条调整列宽</span>
       </div>

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+﻿import type { ReactNode } from "react"
 
 const tones = {
   emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -13,7 +13,7 @@ export function Badge({
   children: ReactNode
 }) {
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium whitespace-nowrap ${tones[tone]}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-none border font-medium whitespace-nowrap ${tones[tone]}`}>
       {children}
     </span>
   )

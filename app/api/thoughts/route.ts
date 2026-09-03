@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag, unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 
-export async function GET() {
-  try {
+const getCachedThoughts = unstable_cache(
+  async () => {
     const rows = await prisma.note.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
-    const thoughts = rows.map((doc) => ({
+    return rows.map((doc) => ({
       id: doc.id,
       text: doc.content || "",
       textZh: doc.contentZh || doc.content || "",
@@ -15,6 +16,14 @@ export async function GET() {
       timeZh: "刚刚",
       createdAt: doc.createdAt,
     }));
+  },
+  ["thoughts-all"],
+  { revalidate: 30, tags: ["thoughts"] }
+)
+
+export async function GET() {
+  try {
+    const thoughts = await getCachedThoughts()
     return NextResponse.json(thoughts);
   } catch (error) {
     console.error(error);
@@ -30,6 +39,7 @@ export async function POST(req: Request) {
     const text = body.textZh || body.text || body.content || ""
     if (!text || text.length > 500) return NextResponse.json({ error: "Invalid content" }, { status: 400 })
     const doc = await prisma.note.create({ data: { content: text, contentZh: body.textZh || text } })
+    revalidateTag("thoughts")
     return NextResponse.json({ id: doc.id, text: doc.content, textZh: doc.contentZh, createdAt: doc.createdAt })
   } catch (e) {
     console.error(e)

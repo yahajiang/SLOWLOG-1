@@ -25,23 +25,25 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b transition-all duration-500 bg-[var(--yh-bg)]/90 backdrop-blur-xl [transition-timing-function:var(--ease-spring)] ${
-        scrolled ? "border-[var(--yh-border)] shadow-sm" : "border-zinc-200"
+      className={`sticky top-0 z-40 h-[62px] border-b transition-all duration-500 bg-[var(--yh-bg)]/90 backdrop-blur-xl [transition-timing-function:var(--ease-spring)] ${
+        scrolled ? "border-[var(--yh-border)] shadow-sm" : "border-[var(--yh-border)]"
       }`}
     >
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="flex items-center justify-between py-4">
-          <Link href="/" className="flex items-baseline gap-3 group">
-            <span className="font-semibold text-xl tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">
-              {t.siteName}
+      <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full">
+        <div className="flex items-center justify-between h-full">
+          <Link href="/" className="flex items-center gap-3 group">
+            <span className="w-[26px] h-[26px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+            <span className="flex items-baseline gap-1">
+              <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">慢日志</span>
+              <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-text)]">· SLOWLOG</span>
             </span>
-            <span className="hidden sm:inline text-[10px] tracking-widest uppercase text-[var(--yh-muted)] border-l border-[var(--yh-border)] pl-3">
+            <span className="hidden sm:inline mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] border-l border-[var(--yh-border)] pl-3">
               {t.siteSlogan}
             </span>
           </Link>
 
-          <div className="flex items-center gap-5">
-            <nav className="hidden md:flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-7">
+            <nav className="hidden md:flex items-center gap-7 mono text-[12px] tracking-[0.14em] uppercase">
               <Link
                 href="/"
                 className="text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
@@ -54,26 +56,32 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
               >
                 {t.navPosts}
               </Link>
+              <Link
+                href="/archive"
+                className="text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+              >
+                {t.archiveTitle}
+              </Link>
             </nav>
 
             <LanguageSwitcher />
 
             <Link
               href="/dashboard"
-              className="w-8 h-8 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-zinc-100/80 transition-colors rounded"
+              className="w-9 h-9 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-zinc-100/80 transition-colors rounded-none"
               title={t.navAdmin}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-[18px] h-[18px]" />
             </Link>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="pl-9 pr-4 py-2 text-xs border border-zinc-200 bg-zinc-50 focus:bg-white focus:border-zinc-400 focus:outline-none transition-colors w-44 md:w-52"
+                className="pl-10 pr-[18px] py-2 mono text-[12px] tracking-[0.14em] border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors w-48 md:w-56 min-h-[48px] rounded-none"
               />
             </div>
           </div>

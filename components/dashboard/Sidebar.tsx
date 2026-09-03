@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, FileText, MessageSquare, Folder, Image as ImageIcon, Settings, ExternalLink, LogOut } from "lucide-react"
@@ -18,7 +18,7 @@ export function Sidebar() {
   return (
     <aside className="w-[240px] shrink-0 bg-[var(--dash-card)] border-r border-[var(--dash-border)] flex flex-col h-screen sticky top-0">
       <div className="px-6 py-6 border-b border-[var(--dash-border)]">
-        <Link href="/dashboard" className="text-[16px] font-semibold tracking-tight text-[var(--dash-text)] hover:opacity-60 transition-opacity" style={{ fontFamily: "MiSans, sans-serif" }}>
+        <Link href="/dashboard" className="text-[16px] font-semibold tracking-tight text-[var(--dash-text)] hover:opacity-60 transition-opacity" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
           慢日志后台
         </Link>
         <p className="text-[11px] tracking-wide text-[var(--dash-muted)] mt-1">深度思考 · 缓慢进化</p>
@@ -31,7 +31,8 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-[var(--radius-sm)] transition-all duration-200 ${active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] font-medium border-l-[3px] border-[var(--dash-accent)]" : "text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-zinc-50"}`}
+              prefetch={true}
+              className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-none transition-[transform,box-shadow,border-color,background-color] duration-200 border-l-[3px] ${active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] font-medium border-[var(--dash-accent)]" : "text-[var(--dash-muted)] border-transparent hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] hover:border-[var(--dash-border)]/50"}`}
             >
               <Icon className="w-4 h-4" /> {item.label}
             </Link>
@@ -39,10 +40,10 @@ export function Sidebar() {
         })}
       </nav>
       <div className="p-3 border-t border-[var(--dash-border)] space-y-1">
-        <Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-zinc-50 rounded-[var(--radius-sm)] transition-colors">
+        <Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors">
           <ExternalLink className="w-4 h-4" /> 前台
         </Link>
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-[var(--radius-sm)] transition-colors text-left">
+        <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-none transition-colors text-left">
           <LogOut className="w-4 h-4" /> 登出
         </button>
       </div>

@@ -52,27 +52,27 @@ export function Lightbox() {
         <img
           src={src}
           alt={alt}
-          className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-200"
+          className="max-w-full max-h-[85vh] object-contain rounded-none shadow-2xl transition-transform duration-200"
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
         />
-        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 rounded-lg px-2 py-1.5 backdrop-blur-sm">
-          <button onClick={() => setScale((s) => Math.min(s + 0.25, 3))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="放大 (+)">
+        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 rounded-none px-2 py-1.5 backdrop-blur-sm">
+          <button onClick={() => setScale((s) => Math.min(s + 0.25, 3))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Zoom in (+)">
             <ZoomIn className="w-4 h-4" />
           </button>
-          <button onClick={() => setScale((s) => Math.max(s - 0.25, 0.5))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="缩小 (-)">
+          <button onClick={() => setScale((s) => Math.max(s - 0.25, 0.5))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Zoom out (-)">
             <ZoomOut className="w-4 h-4" />
           </button>
-          <button onClick={() => setRotation((r) => r + 90)} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="旋转 (R)">
+          <button onClick={() => setRotation((r) => r + 90)} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Rotate (R)">
             <RotateCw className="w-4 h-4" />
           </button>
-          <button onClick={() => { setScale(1); setRotation(0); }} className="p-1.5 text-white/70 hover:text-white rounded transition-colors text-[11px] font-mono" title="重置 (0)">
+          <button onClick={() => { setScale(1); setRotation(0); }} className="p-1.5 text-white/70 hover:text-white rounded transition-colors text-[11px] font-mono" title="Reset (0)">
             1:1
           </button>
-          <div className="w-px h-4 bg-white/20" />
-          <a href={src} download className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="下载">
+          <div className="w-px h-4 bg-[var(--dash-card)]/20" />
+          <a href={src} download className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Download">
             <Download className="w-4 h-4" />
           </a>
-          <button onClick={close} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="关闭 (Esc)">
+          <button onClick={close} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Close (Esc)">
             <X className="w-4 h-4" />
           </button>
         </div>

@@ -1,5 +1,10 @@
+import { readFileSync } from 'fs';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+const analyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: { NEXT_PUBLIC_APP_VERSION: pkg.version },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.public.blob.vercel-storage.com' },
@@ -44,8 +49,27 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=300' },
         ],
       },
+      {
+        // Dashboard list API - 列表数据，浏览器+CDN 都可缓存
+        source: '/api/categories',
+        headers: [
+          { key: 'Cache-Control', value: 'private, max-age=30, stale-while-revalidate=120' },
+        ],
+      },
+      {
+        source: '/api/thoughts',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=30, stale-while-revalidate=60' },
+        ],
+      },
+      {
+        source: '/api/media',
+        headers: [
+          { key: 'Cache-Control', value: 'private, max-age=60, stale-while-revalidate=120' },
+        ],
+      },
     ]
   },
 }
 
-export default nextConfig
+export default analyzer(nextConfig)

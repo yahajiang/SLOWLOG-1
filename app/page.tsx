@@ -1,9 +1,12 @@
 import { getAllPosts } from "@/lib/posts";
 import { prisma } from "@/lib/prisma";
 import HomeClient from "@/components/HomeClient";
-import { LangProvider } from "@/lib/lang-context";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return [];
+}
 
 export default async function Page() {
   const [postsRaw, dbCats] = await Promise.all([
@@ -20,7 +23,7 @@ export default async function Page() {
     category: p.category as any,
     author: p.author || "Yahajiang",
     authorInitial: p.authorInitial || "Y",
-    date: p.publishedAt ? p.publishedAt.toISOString().slice(0, 10) : p.createdAt.toISOString().slice(0, 10),
+    date: p.publishedAt ? new Date(p.publishedAt).toISOString().slice(0, 10) : new Date(p.createdAt).toISOString().slice(0, 10),
     displayDate: p.displayDate,
     readTime: p.readTime || "5 min",
     featured: p.featured,
@@ -32,7 +35,7 @@ export default async function Page() {
     htmlZh: "",
     headings: p.headings,
     headingsZh: p.headingsZh,
-    createdAt: p.createdAt.toISOString(),
+    createdAt: new Date(p.createdAt).toISOString(),
     content: p.content,
     pageConfig: p.pageConfig,
   })) as any;
@@ -40,8 +43,6 @@ export default async function Page() {
     ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" } as any, ...dbCats]
     : undefined
   return (
-    <LangProvider>
-      <HomeClient posts={posts} categories={categories} />
-    </LangProvider>
+    <HomeClient posts={posts} categories={categories} />
   );
 }

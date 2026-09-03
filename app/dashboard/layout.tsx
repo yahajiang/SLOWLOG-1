@@ -8,8 +8,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen bg-[var(--dash-bg)] flex">
       <Sidebar />
-      <div className="flex-1 min-w-0 flex flex-col relative z-[2]">
-        <main className="flex-1 p-8">{children}</main>
+      <div className="flex-1 min-w-0 flex flex-col relative z-[2] bg-[var(--dash-bg)]">
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   )
