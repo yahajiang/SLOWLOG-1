@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+
+// 文章数据变更后立即再生前台缓存：数据缓存 tag + 首页 + 文章详情路由（覆盖 id/slug 两种地址形态）
+function revalidatePostViews(post?: { id: string; slug?: string | null }) {
+  revalidateTag("posts")
+  revalidatePath("/")
+  revalidatePath("/rss.xml")
+  revalidatePath("/sitemap.xml")
+  revalidatePath("/posts/[id]", "page")
+  if (post) {
+    revalidatePath(`/posts/${post.id}`)
+    if (post.slug) revalidatePath(`/posts/${post.slug}`)
+  }
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -66,9 +79,7 @@ export async function POST(req: NextRequest) {
         publishedAt: body.status === "published" ? new Date() : null,
       },
     })
-    revalidatePath("/")
-    revalidatePath("/sitemap.xml")
-    revalidatePath("/rss.xml")
+    revalidatePostViews(post)
     return NextResponse.json(post)
   } catch (e: any) {
     if (e.code === "P2002") return NextResponse.json({ error: "Slug 已存在" }, { status: 400 })
