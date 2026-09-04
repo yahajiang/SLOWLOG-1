@@ -33,8 +33,9 @@ html {
 
 body {
   background: var(--yh-bg);
-  background-image: radial-gradient(circle at 20% 50%, oklch(0.97 0.01 250 / 0.3) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, oklch(0.97 0.01 30 / 0.2) 0%, transparent 50%);
+  background-image: radial-gradient(circle at 20% 45%, oklch(0.985 0.012 250 / 0.5) 0%, transparent 55%),
+                    radial-gradient(circle at 82% 18%, oklch(0.975 0.012 30 / 0.35) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 112%, oklch(0.965 0.01 80 / 0.3) 0%, transparent 55%);
   color: var(--yh-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -131,17 +132,34 @@ code, pre, .font-mono {
   100% { background-position: 200% center; }
 }
 
-/* 背景纹理 */
+/* 背景纹理 · 纸感三件套
+   1) body::before 高频颗粒：feTurbulence 细噪，multiply 压出纸纤维截面
+   2) body::after  低频云纹 + 边缘暖晕影：大尺度明暗不均，像老纸的驼纹与四周微黄
+   依旧守"纸感是暗示，不是噪音"：合成后可见度 ~4-6% */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.03;
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--yh-accent) 1px, transparent 1px),
-    radial-gradient(circle at 75% 75%, var(--yh-accent) 0.5px, transparent 0.5px);
-  background-size: 60px 60px, 40px 40px;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(ellipse 130% 95% at 50% 42%, transparent 60%, rgba(151, 118, 82, 0.55) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='900' height='900' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size: 100% 100%, 900px 900px;
+  background-repeat: no-repeat, repeat;
   pointer-events: none;
 }
 
