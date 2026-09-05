@@ -64,6 +64,7 @@ function MThoughts() {
 
 function MTimeline({ posts }: { posts: any[] }) {
   const { t, lang } = useLang();
+  // 首页时间线卡只放最近 8 条，无展开——其余只能去归档页查看
   const recent = useMemo(() => {
     return [...posts]
       .sort(
@@ -71,7 +72,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           new Date((b as any).publishedAt || (b as any).createdAt || (b as any).date).getTime() -
           new Date((a as any).publishedAt || (a as any).createdAt || (a as any).date).getTime()
       )
-      .slice(0, 6);
+      .slice(0, 8);
   }, [posts]);
   if (recent.length === 0) return null;
   const year = new Date(
