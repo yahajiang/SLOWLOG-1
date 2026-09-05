@@ -16,13 +16,18 @@ import { mCatLabel } from "@/lib/madapt";
 function MThoughts() {
   const { t, lang } = useLang();
   const [thoughts, setThoughts] = useState<any[]>([]);
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     fetch("/api/thoughts")
       .then((r) => r.json())
-      .then((d) => setThoughts(Array.isArray(d) ? d.slice(0, 3) : []))
+      .then((d) => setThoughts(Array.isArray(d) ? d : []))
       .catch(() => {});
   }, []);
   if (thoughts.length === 0) return null;
+  // 默认只展示 4 条，其余折叠（与桌面同款）
+  const VISIBLE = 4;
+  const hidden = thoughts.length - VISIBLE;
+  const shown = expanded ? thoughts : thoughts.slice(0, VISIBLE);
   return (
     <section className="w-full mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-5">
@@ -32,7 +37,7 @@ function MThoughts() {
         </p>
       </div>
       <div className="space-y-3">
-        {thoughts.map((th) => (
+        {shown.map((th) => (
           <div key={th.id} className="bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none px-4 py-3">
             <p className="text-[14px] text-[var(--yh-text)] leading-[1.8]">
               {lang === "zh" ? th.contentZh || th.content : th.content}
@@ -43,6 +48,16 @@ function MThoughts() {
           </div>
         ))}
       </div>
+      {hidden > 0 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="mt-4 w-full mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[44px]"
+        >
+          {expanded
+            ? (lang === "zh" ? "收起" : "Collapse")
+            : (lang === "zh" ? `展开更多 · ${hidden} 条` : `Show more · ${hidden}`)}
+        </button>
+      )}
     </section>
   );
 }

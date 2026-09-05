@@ -48,6 +48,7 @@ export function Thinking() {
   const { t, lang } = useLang();
   const [thoughts, setThoughts] = useState<ThoughtData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/api/thoughts")
@@ -62,6 +63,11 @@ export function Thinking() {
   if (loading) return null;
   if (thoughts.length === 0) return null;
 
+  // 默认只展示 4 条，其余折叠（可展开/收起）
+  const VISIBLE = 4;
+  const hidden = thoughts.length - VISIBLE;
+  const shown = expanded ? thoughts : thoughts.slice(0, VISIBLE);
+
   return (
     <section className="pb-[86px]">
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
@@ -75,7 +81,7 @@ export function Thinking() {
         </div>
         {/* 时间线 */}
         <div className="relative pl-[7px]">
-          {thoughts.map((thought, i) => (
+          {shown.map((thought, i) => (
             <div
               key={thought.id}
               className="animate-[fadeInUp_0.5s_var(--ease-out)_both]"
@@ -90,6 +96,19 @@ export function Thinking() {
             <div className="w-px h-[29px] bg-gradient-to-b from-[var(--yh-accent)]/20 to-transparent mt-1" />
           </div>
         </div>
+        {/* 折叠控制 */}
+        {hidden > 0 && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mono text-[11px] tracking-[0.14em] uppercase px-5 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none min-h-[44px]"
+            >
+              {expanded
+                ? (lang === "zh" ? "收起" : "Collapse")
+                : (lang === "zh" ? `展开更多 · ${hidden} 条` : `Show more · ${hidden}`)}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
