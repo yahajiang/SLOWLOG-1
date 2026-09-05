@@ -65,8 +65,11 @@ export default function RootLayout({
         <noscript>
           <style>{".welcome{display:none!important}"}</style>
         </noscript>
-        <Providers>{children}</Providers>
-        <Welcome />
+        <Providers>
+          {/* 欢迎幕放在内容之前：流式渲染时首帧即覆盖页面，避免"先见页面后盖幕" */}
+          <Welcome />
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -733,8 +733,6 @@ body::after {
   inset: 0;
   z-index: 90;
   background-color: var(--yh-bg);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -745,42 +743,10 @@ body::after {
   transform: translateY(-1.5%);
   pointer-events: none;
 }
-.welcome-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  text-align: center;
-}
-.welcome-s {
-  width: 52px;
-  height: 52px;
-  border-radius: 9999px;
-  background: #18181b;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 20px;
-  animation: welcomePop 0.6s var(--ease-out) both;
-}
-.welcome-brand {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 14px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--yh-muted);
-  animation: welcomeItem 0.6s 0.18s var(--ease-out) both;
-}
-.welcome-tagline {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 20px;
-  color: var(--yh-text);
-  opacity: 0.85;
-  animation: welcomeItem 0.7s 0.38s var(--ease-out) both;
+.welcome-inner { display: none; }
+/* 编排与加载态同款：三段（品牌横排 / 骨架卡片 / 底部格言）级联入场 */
+.wi-item {
+  animation: welcomeItem 0.6s var(--ease-out) both;
 }
 @keyframes welcomePop {
   from { opacity: 0; transform: scale(0.85); }
