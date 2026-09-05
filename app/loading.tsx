@@ -6,7 +6,7 @@ export default function Loading() {
   const { t } = useLang();
   return (
     <div className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-6">
-      <div className="w-full max-w-[min(70%,1600px)] mx-auto flex flex-col items-center gap-9 animate-[pageIn_0.4s_var(--ease-out)_both]">
+      <div className="w-full max-w-[min(70%,1600px)] mx-auto flex flex-col items-center gap-9">
         <div className="flex items-center gap-4">
           <span className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[15px]">S</span>
           <span className="mono text-[15px] tracking-[0.14em] uppercase text-[var(--yh-muted)]">慢日志 · SLOWLOG</span>
