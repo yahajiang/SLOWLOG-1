@@ -23,9 +23,6 @@ export function Footer() {
             <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.2.0"}</span>
             <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {t.siteSlogan}</span>
           </div>
-          <div className="flex items-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
-            <span className="hidden sm:inline">{t.footerBuilt}</span>
-          </div>
         </div>
       </div>
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-[9px] flex flex-col lg:flex-row items-center justify-between gap-[9px] mono text-[11px] text-[var(--yh-muted)]">
@@ -36,7 +33,7 @@ export function Footer() {
           <span>·</span>
           <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
         </div>
-        <span className="hidden sm:inline">{t.footerTagline}</span>
+        <span className="hidden sm:inline">{t.footerBuilt}</span>
       </div>
       {showTop && (
         <button
