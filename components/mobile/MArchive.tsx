@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
@@ -8,10 +8,13 @@ import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { mCatLabel } from "@/lib/madapt";
 
-/** 移动端归档：标题 + 搜索 + 年份分组全宽行 */
+/** 移动端归档：标题 + 搜索 + 年份分组全宽行（默认最近 8 篇，其余折叠） */
+const VISIBLE = 8;
+
 export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]][] }) {
   const { t, lang } = useLang();
   const [q, setQ] = useState("");
+  const [expanded, setExpanded] = useState(false);
   const filteredYears = q.trim()
     ? years
         .map(
@@ -27,6 +30,23 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
         )
         .filter(([, arr]) => arr.length > 0)
     : years;
+
+  // 折叠：跨年份按时间倒序取前 VISIBLE 篇，年份组内相应截断
+  const total = filteredYears.reduce((a, [, arr]) => a + arr.length, 0);
+  const visibleYears = useMemo(() => {
+    if (expanded || q.trim()) return filteredYears;
+    let budget = VISIBLE;
+    const out: [number, any[]][] = [];
+    for (const [y, arr] of filteredYears) {
+      if (budget <= 0) break;
+      const take = arr.slice(0, budget);
+      out.push([y, take]);
+      budget -= take.length;
+    }
+    return out;
+  }, [filteredYears, expanded, q]);
+  const shownCount = visibleYears.reduce((a, [, arr]) => a + arr.length, 0);
+  const hiddenCount = total - shownCount;
 
   return (
     <div data-m="1" className="min-h-screen bg-[var(--yh-bg)] flex flex-col">
@@ -49,7 +69,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
         </div>
       </div>
       <div className="w-full mx-auto px-4 pb-12 space-y-5 flex-1">
-        {filteredYears.map(([year, arr]) => (
+        {visibleYears.map(([year, arr]) => (
           <div key={year} className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none">
             <h2 className="mono text-[12px] tracking-[0.14em] uppercase font-semibold mb-3">
               {year} · {t.postsCount2(arr.length)}
@@ -78,6 +98,18 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
         ))}
         {filteredYears.length === 0 && (
           <p className="text-sm text-[var(--yh-muted)] text-center py-12">{t.archiveEmpty}</p>
+        )}
+        {!q.trim() && hiddenCount > 0 && (
+          <div className="flex justify-center">
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[44px] w-full"
+            >
+              {expanded
+                ? (lang === "zh" ? "收起 · 只看最近 8 篇" : "Collapse · latest 8")
+                : (lang === "zh" ? `展开全部 · ${hiddenCount} 篇` : `Expand all · ${hiddenCount} posts`)}
+            </button>
+          </div>
         )}
       </div>
       <MFooter desktopHref="/archive" />
