@@ -10,7 +10,7 @@ export function DashLoading({
 }) {
   if (compact) {
     return (
-      <div className="animate-[pageIn_0.4s_var(--ease-out)_both]">
+      <div>
         <div className="flex items-center gap-2.5 mb-4">
           <span className="w-1.5 h-1.5 bg-[var(--yh-accent)] animate-[pulse_1.2s_var(--ease-out)_infinite]" />
           <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--yh-muted)]">加载中</span>
@@ -20,7 +20,7 @@ export function DashLoading({
     )
   }
   return (
-    <div className="animate-[pageIn_0.4s_var(--ease-out)_both]">
+    <div>
       <div className="flex items-center gap-3 mb-6">
         <span className="w-[26px] h-[26px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px]">S</span>
         <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)]">慢日志 · SLOWLOG</span>
