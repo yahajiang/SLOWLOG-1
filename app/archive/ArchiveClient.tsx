@@ -1,39 +1,19 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Footer } from "@/components/Footer"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { useLang } from "@/lib/lang-context"
 import { catLabel } from "@/components/HomeClient"
 
-// 归档默认只展示最近 8 篇，其余折叠；搜索时自动显示全部结果
-const VISIBLE = 8
-
+// 归档页 = 查看全部的终点：全量按年份分组显示（首页时间线卡只放最近 8 条，其余引导到这里）
 export default function ArchiveClient({ posts, years }: { posts: any[]; years: [number, any[]][] }) {
-  const { t, lang } = useLang()
+  const { t } = useLang()
   const [q, setQ] = useState("")
-  const [expanded, setExpanded] = useState(false)
   const filteredYears = q.trim()
     ? years.map(([y, arr]) => [y, arr.filter((p:any)=> (p.titleZh||p.title).toLowerCase().includes(q.toLowerCase()) || p.category.toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
     : years
-
-  // 折叠：跨年份按时间倒序取前 VISIBLE 篇，年份组内相应截断
-  const total = filteredYears.reduce((a, [, arr]) => a + arr.length, 0)
-  const visibleYears = useMemo(() => {
-    if (expanded || q.trim()) return filteredYears
-    let budget = VISIBLE
-    const out: [number, any[]][] = []
-    for (const [y, arr] of filteredYears) {
-      if (budget <= 0) break
-      const take = arr.slice(0, budget)
-      out.push([y, take])
-      budget -= take.length
-    }
-    return out
-  }, [filteredYears, expanded, q])
-  const shownCount = visibleYears.reduce((a, [, arr]) => a + arr.length, 0)
-  const hiddenCount = total - shownCount
 
   return (
     <>
@@ -57,7 +37,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">{t.archiveDesc(posts.length, years.length)}{q && ` · ${t.filteredCount(filteredYears.reduce((a, [,arr])=>a+arr.length,0))}`}</p>
       </div>
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pb-16 space-y-8 flex-1">
-        {visibleYears.map(([year, arr]) => (
+        {filteredYears.map(([year, arr]) => (
           <div key={year} className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-6 rounded-none">
             <h2 className="mono text-[13px] tracking-[0.14em] uppercase font-semibold mb-4">{year} · {t.postsCount2(arr.length)}</h2>
             <div className="space-y-2">
@@ -78,18 +58,6 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
           </div>
         ))}
         {filteredYears.length===0 && <p className="text-sm text-[var(--yh-muted)] text-center py-12">{t.archiveEmpty}</p>}
-        {!q.trim() && hiddenCount > 0 && (
-          <div className="flex justify-center">
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="mono text-[11px] tracking-[0.14em] uppercase px-5 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none min-h-[44px]"
-            >
-              {expanded
-                ? (lang === "zh" ? "收起 · 只看最近 8 篇" : "Collapse · latest 8")
-                : (lang === "zh" ? `展开全部 · ${hiddenCount} 篇` : `Expand all · ${hiddenCount} posts`)}
-            </button>
-          </div>
-        )}
       </div>
       <Footer />
     </>
