@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
+import { Welcome } from "@/components/Welcome";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -55,7 +56,17 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <body className="bg-[var(--yh-bg)] text-[var(--yh-text)] antialiased min-h-screen flex flex-col">
+        {/* 首帧前同步检查回访标记：回访者给 html 打 class，CSS 直接隐藏欢迎幕（零闪烁） */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{if(localStorage.getItem('slowlog-welcomed'))document.documentElement.classList.add('html-returning')}catch(e){}",
+          }}
+        />
+        <noscript>
+          <style>{".welcome{display:none!important}"}</style>
+        </noscript>
         <Providers>{children}</Providers>
+        <Welcome />
       </body>
     </html>
   );
