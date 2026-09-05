@@ -1,5 +1,10 @@
+// 骨架基元：底色块 + shimmer 扫光（与主站加载态同款动效，200ms 级联由各变体自行错峰）
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`bg-[var(--dash-bg)] animate-pulse rounded-none ${className}`} />
+  return (
+    <div
+      className={`bg-[var(--dash-border)]/50 rounded-none overflow-hidden relative after:absolute after:inset-0 after:content-[''] after:animate-[shimmer_1.5s_var(--ease-out)_infinite] after:bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.55)_50%,transparent_100%)] after:bg-[length:200%_100%] ${className}`}
+    />
+  )
 }
 
 export function StatCardSkeleton() {
@@ -142,6 +147,24 @@ export function SettingsPageSkeleton() {
           </div>
         ))}
         <Skeleton className="h-9 w-24 mt-2" />
+      </div>
+    </div>
+  )
+}
+
+// 改密页：标题 + 4 组「标签 / 输入」+ 提交条
+export function ChangePasswordPageSkeleton() {
+  return (
+    <div className="space-y-6 max-w-md">
+      <Skeleton className="h-7 w-28" />
+      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 space-y-5">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i}>
+            <Skeleton className="h-3 w-20 mb-2" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+        ))}
+        <Skeleton className="h-9 w-full" />
       </div>
     </div>
   )
