@@ -19,7 +19,7 @@ function renderInline(node: any, idx: number): React.ReactNode {
     for (const m of marks) {
       if (m.type === "bold") el = <strong key={idx + "-b"}>{el}</strong>
       if (m.type === "italic") el = <em key={idx + "-i"}>{el}</em>
-      if (m.type === "code") el = <code key={idx + "-c"}>{el}</code>
+      if (m.type === "code") el = <code key={idx + "-c"} className="mono text-[0.9em] px-[6px] py-[2px] mx-[1px] rounded-none bg-[var(--yh-border)]/40 border border-[var(--yh-border)]/60 text-[var(--yh-text)] align-middle">{el}</code>
       if (m.type === "underline") el = <u key={idx + "-u"}>{el}</u>
       if (m.type === "strike") el = <s key={idx + "-s"}>{el}</s>
       if (m.type === "textStyle") {
