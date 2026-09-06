@@ -325,15 +325,17 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   {[...grouped.entries()].sort((a,b)=> b[0]-a[0]).map(([year, arr]) => (
                     <div key={year}>
                       <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-1.5">{year} · {t.postsCount2(arr.length)}</p>
-                      <div className="space-y-1">
+                      {/* 迷你时间线：细竖线 + 骑线圆点，hover 点亮品牌色 */}
+                      <div className="space-y-0.5 border-l border-[var(--yh-border)] pl-5 ml-1">
                         {arr.map((p)=> {
                           const d = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date)
                           const md = `${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
                           return (
-                            <Link key={p.id} href={`/posts/${p.id}`} className="flex items-center gap-2 text-[13px] hover:text-[var(--yh-accent)] group">
+                            <Link key={p.id} href={`/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[3px]">
+                              <span className="absolute -left-[26px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:bg-[var(--yh-accent)] group-hover:border-[var(--yh-accent)] group-hover:scale-110 transition-all duration-200" />
                               <span className="mono text-[10px] text-[var(--yh-muted)] w-10 shrink-0">{md}</span>
-                              <span className="truncate group-hover:underline underline-offset-4">{lang==="zh" ? (p.titleZh||p.title) : p.title}</span>
-                              <span className="ml-auto mono text-[10px] text-[var(--yh-muted)] hidden sm:block">{catLabel(p.category, t)}</span>
+                              <span className="truncate group-hover:text-[var(--yh-accent)] group-hover:underline underline-offset-4 decoration-[var(--yh-accent)]/40">{lang==="zh" ? (p.titleZh||p.title) : p.title}</span>
+                              <span className="ml-auto mono text-[10px] text-[var(--yh-muted)] px-1.5 py-px border border-[var(--yh-border)]/80 hidden sm:block shrink-0">{catLabel(p.category, t)}</span>
                             </Link>
                           )
                         })}
