@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* 外链 CSS 加载探针：layout 内联关键样式里没有此类——
+   探针读到 --sl-css-loaded=1 即外链样式表生效，否则触发一次自动重载 */
+.css-probe {
+  --sl-css-loaded: 1;
+}
+
 :root {
   --yh-bg: #fefdfa;
   --yh-text: #1c1c1e;
