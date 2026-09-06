@@ -55,6 +55,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable}`} suppressHydrationWarning>
+      <head>
+        {/* 关键样式内联：外链 CSS 被网络链路掐断时（国内访问 CF/Vercel 间歇失败），
+            页面仍保持纸底/字色/字体的基本排版，不裸奔 */}
+        <style dangerouslySetInnerHTML={{ __html: `:root{--yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#8e8e93;--yh-border:#e5e5e7;--yh-accent:oklch(.55 .15 250);--dash-bg:var(--yh-bg);--dash-card:#fff;--dash-border:var(--yh-border);--dash-text:var(--yh-text);--dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent)}*{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%}body{background:var(--yh-bg);color:var(--yh-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}img,svg{max-width:100%}h1,h2,h3{font-weight:600;line-height:1.3}.welcome{position:fixed;inset:0;z-index:90;background:var(--yh-bg)}.html-returning .welcome{display:none}` }} />
+        {/* 外链 CSS 加载失败时自动重载一次（sessionStorage 防循环）：
+            探针读 .css-probe 的自定义属性——它只存在于外链 globals.css 中 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "window.addEventListener('load',function(){setTimeout(function(){try{if(sessionStorage.getItem('sl-css-retry'))return;var p=document.createElement('div');p.className='css-probe';document.body.appendChild(p);var ok=getComputedStyle(p).getPropertyValue('--sl-css-loaded').trim()==='1';document.body.removeChild(p);if(!ok){sessionStorage.setItem('sl-css-retry','1');location.reload();}}catch(e){}},400);});",
+          }}
+        />
+      </head>
       <body className="bg-[var(--yh-bg)] text-[var(--yh-text)] antialiased min-h-screen flex flex-col">
         {/* 首帧前同步检查回访标记：回访者给 html 打 class，CSS 直接隐藏欢迎幕（零闪烁） */}
         <script
