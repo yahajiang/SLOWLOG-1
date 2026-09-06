@@ -130,7 +130,25 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                 <div className="flex items-center gap-3 mb-3">
                   <CategoryBadge category={localizedFeatured.category} />
                   <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
-                  {featuredPosts.length > 1 && <span className="text-[10px] text-[var(--yh-muted)]">{heroIndex + 1} / {featuredPosts.length}</span>}
+                  {featuredPosts.length > 1 && (
+                    <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
+                      <button
+                        onClick={() => setHeroIndex((i) => (i - 1 + featuredPosts.length) % featuredPosts.length)}
+                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
+                        aria-label="上一篇推荐"
+                      >
+                        ‹
+                      </button>
+                      {heroIndex + 1} / {featuredPosts.length}
+                      <button
+                        onClick={() => setHeroIndex((i) => (i + 1) % featuredPosts.length)}
+                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
+                        aria-label="下一篇推荐"
+                      >
+                        ›
+                      </button>
+                    </span>
+                  )}
                 </div>
                 <h2 className="serif text-[26px] font-semibold leading-tight tracking-[-0.02em] text-zinc-900 mb-3">
                   {localizedFeatured.title}
