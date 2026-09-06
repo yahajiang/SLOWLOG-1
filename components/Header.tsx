@@ -31,9 +31,9 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
     >
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
             <span className="w-[26px] h-[26px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
-            <span className="flex items-baseline gap-1">
+            <span className="flex items-baseline gap-1 whitespace-nowrap">
               <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">慢日志</span>
               <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-text)]">· SLOWLOG</span>
             </span>
