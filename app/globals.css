@@ -33,6 +33,15 @@
   scrollbar-color: var(--yh-border) transparent;
 }
 
+/* 键盘可达性：Tab 导航时显示品牌色焦点框（鼠标点击不触发）
+   放 @layer base——Tailwind v4 管线会丢弃顶层 :focus-visible 伪类规则（实测） */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--yh-accent);
+    outline-offset: 2px;
+  }
+}
+
 html {
   scroll-behavior: auto;
 }
