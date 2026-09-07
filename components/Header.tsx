@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface HeaderProps {
   searchQuery: string;
@@ -64,6 +65,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
               </Link>
             </nav>
 
+            <ThemeToggle />
             <LanguageSwitcher />
 
             <Link

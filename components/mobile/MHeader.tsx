@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Search, Settings, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface MHeaderProps {
   searchQuery?: string;
@@ -29,6 +30,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           </span>
         </Link>
         <div className="flex items-center gap-2 shrink-0">
+          <ThemeToggle />
           <LanguageSwitcher />
           {showAdmin && (
             <Link

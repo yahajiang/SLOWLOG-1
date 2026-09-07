@@ -865,3 +865,65 @@ body::after {
   .page-enter > * { animation: none; }
   .stagger-children > * { animation: none; }
 }
+
+/* ============================================================
+   夜灯下的墨纸 · 暗色模式（v0.4 P2）
+   概念：白天纸底墨字（在纸上写），夜里墨底纸字（墨本身发光）。
+   html.dark 由 head 内联脚本在首帧前设置（localStorage sl-theme
+   或跟随系统）。以下覆盖均为未分层规则，压过 utilities layer。
+   ============================================================ */
+html.dark {
+  --yh-bg: #14110d;
+  --yh-text: #e8e4dc;
+  --yh-muted: #8e8478;
+  --yh-border: #2c2a26;
+  --yh-accent: oklch(0.78 0.13 250);
+  --dash-bg: #14110d;
+  --dash-card: #1c1915;
+  --dash-border: #2c2a26;
+  --dash-text: #e8e4dc;
+  --dash-muted: #8e8478;
+  --dash-accent: oklch(0.78 0.13 250);
+  --dash-accent-soft: rgba(160, 180, 255, 0.08);
+  color-scheme: dark;
+}
+
+/* 纸纹颗粒：夜里换 screen 微光浮现 */
+.dark body::before {
+  mix-blend-mode: screen;
+  opacity: 0.04;
+}
+.dark body::after {
+  mix-blend-mode: screen;
+  opacity: 0.035;
+}
+
+/* 硬编码灰阶类映射（[class~=] 属性选择器——无转义，Lightning CSS 友好） */
+.dark [class~="bg-white"] { background-color: #1c1915 }
+.dark [class~="hover:bg-white"]:hover { background-color: #26221c }
+.dark [class~="bg-zinc-50"], .dark [class~="bg-zinc-100"] { background-color: #211d18 }
+.dark [class~="hover:bg-zinc-100"]:hover { background-color: #26221c }
+.dark [class~="bg-zinc-200"] { background-color: #2c2822 }
+.dark [class~="bg-zinc-300"] { background-color: #3a352d }
+.dark [class~="bg-zinc-900"] { background-color: #e8e4dc }
+.dark [class~="hover:bg-zinc-900"]:hover { background-color: #f0ece4 }
+.dark [class~="hover:bg-zinc-700"]:hover { background-color: #3a352d }
+.dark [class~="text-white"] { color: #14110d }
+.dark [class~="hover:text-white"]:hover { color: #14110d }
+.dark [class~="text-zinc-100"] { color: #3a352d }
+.dark [class~="text-zinc-200"] { color: #4a443c }
+.dark [class~="text-zinc-300"] { color: #6e675c }
+.dark [class~="hover:text-zinc-700"]:hover { color: #c9c0b4 }
+.dark [class~="text-zinc-600"] { color: #8e8478 }
+.dark [class~="text-zinc-700"] { color: #a89f92 }
+.dark [class~="text-zinc-800"] { color: #c9c0b4 }
+.dark [class~="text-zinc-900"] { color: #e8e4dc }
+.dark [class~="hover:text-zinc-900"]:hover { color: #f0ece4 }
+.dark [class~="border-white"] { border-color: #3a352d }
+.dark [class~="border-zinc-200"] { border-color: #2c2a26 }
+.dark [class~="via-zinc-200"] { --tw-gradient-via: #2c2822 }
+.dark [class~="border-zinc-300"] { border-color: #3a352d }
+.dark [class~="border-zinc-400"] { border-color: #4a443c }
+.dark [class~="border-zinc-700"] { border-color: #3a352d }
+.dark [class~="border-zinc-800"] { border-color: #2c2a26 }
+.dark [class~="border-zinc-900"] { border-color: #e8e4dc }

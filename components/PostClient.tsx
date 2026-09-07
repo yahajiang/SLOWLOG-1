@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useLang } from "@/lib/lang-context";
 import { getReadProgress, saveReadProgress, clearReadProgress } from "@/lib/read-progress";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 import { CategoryBadge } from "./CategoryBadge";
 import { AuthorAvatar } from "./AuthorAvatar";
 import { ReadingProgress } from "./ReadingProgress";
@@ -132,6 +133,7 @@ export function PostClient({
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
               className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
