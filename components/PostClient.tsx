@@ -17,7 +17,7 @@ import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import type { PageConfig } from "@/lib/page-config";
 import { catLabel } from "@/components/HomeClient";
-import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink, Search } from "lucide-react";
+import { ChevronRight, Clock, Calendar, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
   loading: () => <div className="animate-pulse h-96 bg-[var(--dash-card)]/30 rounded-none" />,
@@ -36,14 +36,10 @@ const REPO_MAP: Record<string, string> = {
 export function PostClient({
   post: rawPost,
   rawPost: prismaRaw,
-  prevPost,
-  nextPost,
   relatedPosts = [],
 }: {
   post: Post;
   rawPost?: any;
-  prevPost: Post | null;
-  nextPost: Post | null;
   relatedPosts?: Post[];
 }) {
   const { t, lang } = useLang();
@@ -263,42 +259,6 @@ export function PostClient({
             </article>
 
             {showTOC && <TableOfContents headings={post.headings} readMinutes={parseInt(post.readTime) || undefined} />}
-          </div>
-        </div>
-      </section>
-
-      {/* 上一篇/下一篇导航 · 间距加大、卡片收窄 */}
-      <section className="border-t border-[var(--yh-border)] py-8 bg-[var(--dash-card)]/40">
-        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              {prevPost ? (
-                <Link href={`/posts/${prevPost.id}`} className="group flex items-start gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 hover:border-[var(--yh-border)] hover:shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-300 hover:-translate-y-[1px] rounded-none transform-gpu [backface-visibility:hidden]">
-                  <ChevronLeft className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] shrink-0 mt-0.5 transition-colors" />
-                  <div className="min-w-0">
-                    <p className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)] mb-1">{t.previous}</p>
-                    <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">{prevPost.title}</p>
-                    <p className="text-xs text-[var(--yh-muted)] mt-1">{formatDisplayDate(prevPost.date, lang)}</p>
-                  </div>
-                </Link>
-              ) : (
-                <div className="p-4 text-xs text-[var(--yh-muted)]">{t.noPrevious}</div>
-              )}
-            </div>
-            <div>
-              {nextPost ? (
-                <Link href={`/posts/${nextPost.id}`} className="group flex items-start gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 hover:border-[var(--yh-border)] hover:shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-300 hover:-translate-y-[1px] rounded-none text-right transform-gpu [backface-visibility:hidden]">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)] mb-1">{t.next}</p>
-                    <p className="text-sm font-medium text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">{nextPost.title}</p>
-                    <p className="text-xs text-[var(--yh-muted)] mt-1">{formatDisplayDate(nextPost.date, lang)}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-300 group-hover:text-[var(--yh-accent)] shrink-0 mt-0.5 transition-colors" />
-                </Link>
-              ) : (
-                <div className="p-4 text-xs text-[var(--yh-muted)] text-right">{t.noNext}</div>
-              )}
-            </div>
           </div>
         </div>
       </section>
