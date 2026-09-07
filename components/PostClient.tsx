@@ -35,11 +35,13 @@ export function PostClient({
   rawPost: prismaRaw,
   prevPost,
   nextPost,
+  relatedPosts = [],
 }: {
   post: Post;
   rawPost?: any;
   prevPost: Post | null;
   nextPost: Post | null;
+  relatedPosts?: Post[];
 }) {
   const { t, lang } = useLang();
   const relative = useRelativeTime(rawPost.createdAt || rawPost.date, lang);
@@ -235,6 +237,40 @@ export function PostClient({
           </div>
         </div>
       </section>
+
+      {/* 继续阅读（v0.3 P1-6）：同分类优先的相关文章，最多 3 篇 */}
+      {relatedPosts.length > 0 && (
+        <section className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pb-14">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-1.5 h-5 rounded-none bg-gradient-to-b from-[var(--yh-accent)] to-[var(--yh-accent)]/50" />
+            <h2 className="text-[13px] font-medium tracking-[0.2em] uppercase text-[var(--yh-muted)]">
+              {lang === "zh" ? "继续阅读" : "Keep Reading"}
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--yh-border)] to-transparent" />
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {relatedPosts.map((rp, idx) => (
+              <Link
+                key={rp.id}
+                href={`/posts/${rp.id}`}
+                className="group border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300 animate-[fadeInUp_0.5s_var(--ease-out)_both]"
+                style={{ animationDelay: `${idx * 70}ms` }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="mono text-[9px] tracking-[.14em] uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-1.5 py-px">{rp.category}</span>
+                  <span className="mono text-[10px] text-[var(--yh-muted)]">{formatDisplayDate(rp.date, lang)}</span>
+                </div>
+                <p className="text-[13px] font-medium leading-snug text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
+                  {lang === "zh" ? rp.titleZh || rp.title : rp.title}
+                </p>
+                <p className="text-[12px] text-[var(--yh-muted)] leading-relaxed line-clamp-2 mt-1.5">
+                  {lang === "zh" ? rp.excerptZh || rp.excerpt : rp.excerpt}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>

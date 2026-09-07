@@ -81,6 +81,12 @@ export default async function PostPage({
   const prevPost = currentIdx < all.length - 1 ? all[currentIdx + 1] : null;
   const nextPost = currentIdx > 0 ? all[currentIdx - 1] : null;
 
+  // 相关文章（v0.3 P1-6）：同分类优先，不足 3 篇用最新其他分类补足，排除当前与上下篇
+  const exclude = new Set([post.id, prevPost?.id, nextPost?.id].filter(Boolean) as string[]);
+  const sameCat = all.filter((p) => !exclude.has(p.id) && p.category === post.category);
+  const others = all.filter((p) => !exclude.has(p.id) && p.category !== post.category);
+  const relatedPosts = [...sameCat, ...others].slice(0, 3);
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
   const jsonLd = {
     "@context": "https://schema.org",
@@ -104,7 +110,7 @@ export default async function PostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PostClient post={post} rawPost={raw} prevPost={prevPost} nextPost={nextPost} />
+      <PostClient post={post} rawPost={raw} prevPost={prevPost} nextPost={nextPost} relatedPosts={relatedPosts} />
     </>
   );
 }

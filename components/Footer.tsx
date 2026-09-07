@@ -29,6 +29,8 @@ export function Footer() {
           <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
           <span>·</span>
           <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
+          <span>·</span>
+          <a href="/rss.xml" target="_blank" className="hover:text-[var(--yh-text)] transition-colors" title="RSS 订阅">RSS</a>
           <span className="hidden md:inline">·</span>
           <span className="hidden md:inline">{t.footerBuilt}</span>
         </div>
