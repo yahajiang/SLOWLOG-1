@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server"
 import { getAllPosts } from "@/lib/posts"
 import { prisma } from "@/lib/prisma"
+import { pinyin } from "pinyin-pro"
+
+// 拼音字段：py=全拼（连续无音调）、abbr=首字母——搜索面板支持拼音输入（sheji/sj → 设计）
+function pyOf(text: string): { py: string; abbr: string } {
+  const clean = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "")
+  if (!clean) return { py: "", abbr: "" }
+  try {
+    return {
+      py: pinyin(clean, { toneType: "none", type: "array", nonZh: "consecutive" }).join("").toLowerCase(),
+      abbr: pinyin(clean, { pattern: "first", toneType: "none", type: "array", nonZh: "consecutive" }).join("").toLowerCase(),
+    }
+  } catch {
+    return { py: "", abbr: "" }
+  }
+}
 
 // 全局搜索索引：运行时按需生成（数据量小 ≤100 篇），CDN 缓存 1h + SWR。
 // 发布/编辑文章触发的 revalidateTag 会连带刷新，索引自动跟进。
@@ -45,23 +60,40 @@ export async function GET() {
     const index = {
       v: 1,
       generatedAt: new Date().toISOString(),
-      posts: posts.map((p) => ({
-        id: p.id,
-        title: p.titleZh || p.title,
-        titleEn: p.title,
-        excerpt: (p.excerptZh || p.excerpt || "").slice(0, 160),
-        category: p.category,
-        tags: p.tags || [],
-        date: p.displayDate,
-        readTime: p.readTime || "",
-        body: stripMd(extractText(p.content)).slice(0, 20000),
-      })),
-      thoughts: thoughts.map((n) => ({
-        id: n.id,
-        text: (n.contentZh || n.content || "").slice(0, 120),
-        date: n.createdAt,
-      })),
-      categories: [...catSet.entries()].map(([name, count]) => ({ name, count })),
+      posts: posts.map((p) => {
+        const title = p.titleZh || p.title
+        const pyT = pyOf(title)
+        const catName = p.categoryName || p.category
+        const pyC = pyOf(catName)
+        return {
+          id: p.id,
+          title,
+          titleEn: p.title,
+          excerpt: (p.excerptZh || p.excerpt || "").slice(0, 160),
+          category: p.category,
+          tags: p.tags || [],
+          date: p.displayDate,
+          readTime: p.readTime || "",
+          body: stripMd(extractText(p.content)).slice(0, 20000),
+          py: pyT.py + " " + pyC.py,
+          abbr: pyT.abbr + " " + pyC.abbr,
+        }
+      }),
+      thoughts: thoughts.map((n) => {
+        const text = (n.contentZh || n.content || "").slice(0, 120)
+        const pyT = pyOf(text)
+        return {
+          id: n.id,
+          text,
+          date: n.createdAt,
+          py: pyT.py,
+          abbr: pyT.abbr,
+        }
+      }),
+      categories: [...catSet.entries()].map(([name, count]) => {
+        const pyC = pyOf(name)
+        return { name, count, py: pyC.py, abbr: pyC.abbr }
+      }),
     }
     return NextResponse.json(index, {
       headers: { "Cache-Control": "s-maxage=3600, stale-while-revalidate=600" },
