@@ -74,6 +74,13 @@ function extractHeadings(content: unknown): { id: string; text: string; level: n
   return headings
 }
 
+
+// 定时发布守卫：published 但未到时间 → 前台不可见（后台预览走 /api 独立查询）
+function scheduledGuard(row: any) {
+  if (!row) return null
+  if (row.status === "published" && row.publishedAt && new Date(row.publishedAt) > new Date()) return null
+  return mapPost(row)
+}
 function mapPost(row: any): PostDTO {
   const headings = extractHeadings(row.content)
   return {
@@ -114,8 +121,13 @@ function mapPost(row: any): PostDTO {
 
 const getCachedPostRows = unstable_cache(
   async (status: string) => {
+    // 定时发布（v0.3 P1-8）：published 只放已到时间的（publishedAt 为空视为立即发布）
+    const where: any = { status }
+    if (status === "published") {
+      where.OR = [{ publishedAt: null }, { publishedAt: { lte: new Date() } }]
+    }
     return prisma.post.findMany({
-      where: { status },
+      where,
       include: { category: true },
       orderBy: { createdAt: "desc" },
       take: 100,
@@ -135,14 +147,12 @@ export async function getAllPosts(opts?: { status?: string; locale?: string }) {
 
 export async function getPostBySlug(slug: string) {
   const row = await prisma.post.findUnique({ where: { slug }, include: { category: true } })
-  if (!row) return null
-  return mapPost(row)
+  return scheduledGuard(row)
 }
 
 export async function getPostById(id: string) {
   const row = await prisma.post.findUnique({ where: { id }, include: { category: true } })
-  if (!row) return null
-  return mapPost(row)
+  return scheduledGuard(row)
 }
 
 export async function getFeaturedPost() {

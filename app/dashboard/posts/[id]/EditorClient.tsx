@@ -71,6 +71,10 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [showConfig, setShowConfig] = useState(false)
+  // 定时发布（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron）
+  const [scheduleOpen, setScheduleOpen] = useState(false)
+  const [scheduleAt, setScheduleAt] = useState("")
+  const scheduledFuture = post.status === "published" && post.publishedAt && new Date(post.publishedAt) > new Date()
   const [wordCount, setWordCount] = useState(0)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -233,16 +237,55 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">← 返回列表</Link>
         <div className="w-px h-4 bg-[var(--dash-border)]" />
         <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder="输入标题..." className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
-        <Badge tone={post.status === "published" ? "emerald" : "amber"}>{post.status === "published" ? "已发布" : "草稿"}</Badge>
+        <Badge tone={scheduledFuture ? "sky" : post.status === "published" ? "emerald" : "amber"}>
+          {scheduledFuture ? `定时 ${new Date(post.publishedAt).toLocaleString("zh-CN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : post.status === "published" ? "已发布" : "草稿"}
+        </Badge>
         <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label="推荐" className="shrink-0" />
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? "保存中..." : "保存草稿"}</Button>
           <Button variant="primary" onClick={() => handleSave("published")}>发布</Button>
+          <button
+            onClick={() => setScheduleOpen((v) => !v)}
+            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
+            aria-label="定时发布"
+            title="定时发布"
+          >⏰</button>
           <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label="页面设置">⚙</button>
           {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>删除</Button>}
         </div>
       </div>
+      {/* 定时发布面板（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron） */}
+      {scheduleOpen && (
+        <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg)] px-4 py-3 flex flex-wrap items-center gap-3">
+          <span className="text-xs text-[var(--dash-muted)]">定时发布：到达设定时间后自动对读者可见（无需保持页面打开）</span>
+          <input
+            type="datetime-local"
+            value={scheduleAt}
+            onChange={(e) => setScheduleAt(e.target.value)}
+            className="h-8 px-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-xs text-[var(--dash-text)] focus:outline-none focus:border-[var(--dash-accent)]"
+          />
+          <Button
+            size="sm"
+            disabled={!scheduleAt || saving}
+            onClick={async () => {
+              setSaving(true)
+              setErrorMsg("")
+              try {
+                const res = await fetch(`/api/posts/${post.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "published", publishedAt: new Date(scheduleAt).toISOString() }) })
+                if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "定时失败") }
+                setPost((prev: any) => ({ ...prev, status: "published", publishedAt: new Date(scheduleAt).toISOString() }))
+                toast(`已定时发布 · ${new Date(scheduleAt).toLocaleString("zh-CN")}`, "success")
+                setScheduleOpen(false)
+              } catch (e: any) { setErrorMsg(e.message || "定时失败"); toast(e.message || "定时失败", "error") }
+              finally { setSaving(false) }
+            }}
+          >
+            {saving ? "处理中..." : "确认定时"}
+          </Button>
+          <button onClick={() => setScheduleOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)]">取消</button>
+        </div>
+      )}
       <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title="确定删除？" description={`将物理删除 "${post.title || post.slug || post.id}"，不可恢复。`} confirmText="删除" variant="danger" onConfirm={confirmDelete} />
 
       {/* ===== 文章信息 ===== */}

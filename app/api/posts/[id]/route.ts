@@ -46,6 +46,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     data.status = body.status
     if (body.status === "published") data.publishedAt = new Date()
   }
+  // 定时发布（v0.3 P1-8）：显式传 publishedAt（未来时间）覆盖上面的 now——
+  // 前台查询惰性过滤（publishedAt <= now），到期自然放出，无需 cron
+  if (body.publishedAt !== undefined) {
+    const d = new Date(body.publishedAt)
+    if (!isNaN(d.getTime())) data.publishedAt = d
+  }
   if (body.categoryId !== undefined) data.categoryId = body.categoryId
   if (body.tags !== undefined) data.tags = Array.isArray(body.tags) ? body.tags.map((t: string) => String(t).trim()).filter(Boolean) : []
   if (body.pageConfig !== undefined) data.pageConfig = body.pageConfig
