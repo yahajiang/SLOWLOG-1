@@ -927,3 +927,30 @@ html.dark {
 .dark [class~="border-zinc-700"] { border-color: #3a352d }
 .dark [class~="border-zinc-800"] { border-color: #2c2a26 }
 .dark [class~="border-zinc-900"] { border-color: #e8e4dc }
+
+/* ============================================================
+   封面家族色 · 日/夜双令牌（v0.4 暗色模式配套）
+   .art-{分类} 由 ArticleArt/CategoryBadge 注入；日间 = ART_PALETTES 原值
+   ============================================================ */
+.art-Design { --ap: #F5F3EF; --ai: #3A332E; --aw: #E8E0D8; --aa: #C9A98A }
+.art-Plugin { --ap: #EEF2EE; --ai: #2E3A35; --aw: #DDE3DE; --aa: #7AA88A }
+.art-Engineering { --ap: #EAF0F5; --ai: #30333A; --aw: #D6DEE8; --aa: #7A9CC2 }
+.art-Typography { --ap: #F5F1E8; --ai: #3C3830; --aw: #E8E0D0; --aa: #C2A87A }
+.art-Frontend { --ap: #F5F0E4; --ai: #3C3428; --aw: #E8DCC4; --aa: #C9A25E }
+.art-Snippet { --ap: #EDF2EF; --ai: #2C3830; --aw: #DCE4DE; --aa: #7AA88A }
+.art-Life { --ap: #F5F0EA; --ai: #3A322C; --aw: #E8DED2; --aa: #C9A98A }
+.art-Generic { --ap: #F8F7F4; --ai: #2B2926; --aw: #E8E2DA; --aa: #C9A98A }
+
+/* 夜版：各分类色相保持，亮度整体下沉、文字提为该色相夜光 */
+.dark .art-Design { --ap: #1d1a16; --ai: #d4c8b8; --aw: #2a251e; --aa: #d9b98f }
+.dark .art-Plugin { --ap: #161d19; --ai: #b8ccc0; --aw: #202a25; --aa: #8fc4a4 }
+.dark .art-Engineering { --ap: #141a20; --ai: #b8c6d4; --aw: #1e2630; --aa: #8fb2d9 }
+.dark .art-Typography { --ap: #1d1a13; --ai: #d4ccb8; --aw: #2a251c; --aa: #d4ba85 }
+.dark .art-Frontend { --ap: #1e1a13; --ai: #d4c8b0; --aw: #2a251c; --aa: #d9b56f }
+.dark .art-Snippet { --ap: #131a16; --ai: #b0ccc0; --aw: #1c2620; --aa: #85c4a8 }
+.dark .art-Life { --ap: #1d1712; --ai: #d4c0b0; --aw: #2a221c; --aa: #d9a878 }
+.dark .art-Generic { --ap: #1c1a17; --ai: #d4d0c8; --aw: #2a2721; --aa: #b0aead }
+
+/* 夜里 multiply 叠加在深底会成黑块——换 screen 微光 */
+.dark .cover [style*="mix-blend-mode: multiply"],
+.dark .mix-blend-multiply { mix-blend-mode: screen; opacity: 0.14 }
