@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
+import { useLang } from "@/lib/lang-context"
 import { MediaPageSkeleton } from "@/components/dashboard/Skeleton"
 
 interface UploadProgress { name: string; loaded: number; total: number }
@@ -30,6 +31,7 @@ export default function MediaPage(){
   const [progress, setProgress] = useState<UploadProgress | null>(null)
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+  const { lang } = useLang()
   const load = useCallback(() => fetch("/api/media").then(r => r.json()).then(d => { setItems(d); setLoading(false) }), [])
   useEffect(() => { load() }, [load])
 
@@ -47,8 +49,8 @@ export default function MediaPage(){
       if (ok) successCount++; else failCount++
     }
     setProgress(null)
-    if (successCount) toast(`已上传 ${successCount} 张${failCount ? `, ${failCount} 失败` : ""}`, failCount ? "error" : "success")
-    else if (failCount) toast("上传失败", "error")
+    if (successCount) toast(lang === "zh" ? `已上传 ${successCount} 张${failCount ? `, ${failCount} 失败` : ""}` : `${successCount} uploaded${failCount ? `, ${failCount} failed` : ""}`, failCount ? "error" : "success")
+    else if (failCount) toast(lang === "zh" ? "上传失败" : "Upload failed", "error")
     load()
   }, [load, toast])
 
@@ -67,33 +69,33 @@ export default function MediaPage(){
   const confirmDel = useCallback(async () => {
     if (!delId) return
     await fetch(`/api/media?id=${delId}`, { method: "DELETE" })
-    toast("已删除", "success")
+    toast(lang === "zh" ? "已删除" : "Deleted", "success")
     setDelId(null)
     load()
   }, [delId, toast, load])
 
   const copy = useCallback(async (url: string) => {
     await navigator.clipboard.writeText(url)
-    toast("已复制链接", "success")
+    toast(lang === "zh" ? "已复制链接" : "Link copied", "success")
   }, [toast])
 
   return (
     loading ? <MediaPageSkeleton /> :
     <div className="space-y-6" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>媒体库</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "媒体库" : "Media"}</h1>
         <div className="flex items-center gap-3">
           <div className="flex border border-[var(--dash-border)] rounded-none overflow-hidden text-xs">
             <button onClick={() => setView("grid")} className={`px-3 py-1.5 ${view === "grid" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>网格</button>
             <button onClick={() => setView("list")} className={`px-3 py-1.5 ${view === "list" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>列表</button>
           </div>
           <label className="px-4 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none cursor-pointer hover:opacity-90 font-medium disabled:opacity-50">
-            {progress ? "上传中..." : "上传"}
+            {progress ? (lang === "zh" ? "上传中..." : "Uploading...") : (lang === "zh" ? "上传" : "Upload")}
             <input type="file" multiple accept="image/*" className="hidden" onChange={onUploadChange} disabled={!!progress} />
           </label>
         </div>
       </div>
-      <p className="text-xs text-[var(--dash-muted)]">支持 JPEG/PNG/WebP/GIF/SVG，单张 ≤5MB，JPEG/PNG→quality:75 压缩 · 支持拖拽上传</p>
+      <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "支持 JPEG/PNG/WebP/GIF/SVG，单张 ≤5MB，JPEG/PNG→quality:75 压缩 · 支持拖拽上传" : "JPEG/PNG/WebP/GIF/SVG, max 5MB, JPEG/PNG→quality:75 · drag & drop supported"}</p>
       {progress && (
         <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between text-xs text-[var(--dash-text)] mb-1.5">
@@ -135,13 +137,13 @@ export default function MediaPage(){
                 <p className="text-xs text-[var(--dash-muted)]">{m.mimeType} · {(m.size / 1024).toFixed(1)}KB</p>
               </div>
               <button onClick={() => copy(m.url)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">复制</button>
-              <button onClick={() => del(m.id)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600">删除</button>
+              <button onClick={() => del(m.id)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600">{lang === "zh" ? "删除" : "Delete"}</button>
             </div>
           ))}
         </div>
       )}
-      {items.length === 0 && <p className="text-center text-sm text-[var(--dash-muted)] py-12">暂无图片，拖拽或粘贴上传</p>}
-      <ConfirmDialog open={!!delId} onOpenChange={(v) => !v && setDelId(null)} title="删除图片？" description="将同时从 Vercel Blob 删除，不可恢复。" confirmText="删除" variant="danger" onConfirm={confirmDel} />
+      {items.length === 0 && <p className="text-center text-sm text-[var(--dash-muted)] py-12">{lang === "zh" ? "暂无图片，拖拽或粘贴上传" : "No images yet — drag, drop or paste to upload"}</p>}
+      <ConfirmDialog open={!!delId} onOpenChange={(v) => !v && setDelId(null)} title={lang === "zh" ? "删除图片？" : "Delete this image?"} description={lang === "zh" ? "将同时从 Vercel Blob 删除，不可恢复。" : "Also removes from Vercel Blob. This cannot be undone."} confirmText={lang === "zh" ? "删除" : "Delete"} variant="danger" onConfirm={confirmDel} />
     </div>
   )
 }
