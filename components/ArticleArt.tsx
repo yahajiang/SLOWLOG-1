@@ -350,10 +350,11 @@ export const ArticleArt = memo(function ArticleArt({
   // 未知分类 hash 进 7 族（无灰色兜底），空分类才用通用纸
   const effectiveCat = isRawKnown ? rawCatName : rawCatName ? KNOWN[hashVariant(rawCatName, KNOWN.length)] : "";
   const catName = effectiveCat || rawCatName;
+  // 暗色模式（v0.4）：palette 值改走 CSS 变量（.art-{分类} 日/夜两套令牌），
+  // 193 处内联引用自动随主题切换；ART_PALETTES 仅保留作 fallback 键存在性
+  const artCat = effectiveCat || catName || (post.category as any) || "Generic";
   const palette =
-    (ART_PALETTES as any)[effectiveCat] ||
-    (ART_PALETTES as any)[catName] ||
-    (ART_PALETTES as any)[(post.category as any)] || { paper: "#F8F7F4", ink: "#2B2926", wash: "#E8E2DA", accent: "#C9A98A" };
+    { paper: "var(--ap)", ink: "var(--ai)", wash: "var(--aw)", accent: "var(--aa)" };
   const variantSeed = (post.title || "") + catName + (post.id || "") + (post.tags?.join(",") || "");
   const variant = useMemo(() => hashVariant(variantSeed, 8), [variantSeed]);
   const variant4 = useMemo(() => hashVariant(variantSeed + "4", 4), [variantSeed]);
@@ -379,8 +380,8 @@ export const ArticleArt = memo(function ArticleArt({
   return (
     <div
       aria-hidden="true"
-      className={`group relative w-full overflow-hidden rounded-none border border-[var(--yh-border)] cover cover-loop ${tall ? "aspect-[4/5]" : "aspect-[4/3]"}`}
-      style={{ backgroundColor: palette.paper }}
+      className={`group relative w-full overflow-hidden rounded-none border border-[var(--yh-border)] cover cover-loop art-${artCat} ${tall ? "aspect-[4/5]" : "aspect-[4/3]"}`}
+      style={{ backgroundColor: "var(--ap)" }}
     >
       {/* 纸纹 + 微噪点 */}
       <div className="absolute inset-0" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, ${palette.wash} 3px, ${palette.wash} 4px)`, opacity: catName === "Design" ? 0.20 : catName === "Plugin" ? 0.12 : 0.15 }} />
