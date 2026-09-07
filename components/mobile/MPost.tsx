@@ -90,13 +90,9 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
 export function MPost({
   post: rawPost,
   rawPost: prismaRaw,
-  prevPost,
-  nextPost,
 }: {
   post: any;
   rawPost?: any;
-  prevPost: any | null;
-  nextPost: any | null;
 }) {
   const { t, lang } = useLang();
   const relative = useRelativeTime(rawPost.createdAt || rawPost.date, lang);
@@ -220,45 +216,6 @@ export function MPost({
             </div>
           </article>
           <MTOC headings={post.headings || []} />
-        </div>
-      </section>
-
-      <section className="border-t border-[var(--yh-border)] py-6 bg-[var(--dash-card)]/40">
-        <div className="w-full mx-auto px-4">
-          <div className="grid grid-cols-1 gap-3">
-            {prevPost ? (
-              <Link
-                href={`/m/posts/${prevPost.id}`}
-                className="flex items-start gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none active:bg-zinc-50"
-              >
-                <ChevronLeft className="w-4 h-4 text-zinc-300 shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)] mb-1">{t.previous}</p>
-                  <p className="text-sm font-medium text-zinc-900 line-clamp-2">
-                    {lang === "zh" ? prevPost.titleZh || prevPost.title : prevPost.title}
-                  </p>
-                </div>
-              </Link>
-            ) : (
-              <div className="p-4 text-xs text-[var(--yh-muted)]">{t.noPrevious}</div>
-            )}
-            {nextPost ? (
-              <Link
-                href={`/m/posts/${nextPost.id}`}
-                className="flex items-start gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none active:bg-zinc-50"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)] mb-1">{t.next}</p>
-                  <p className="text-sm font-medium text-zinc-900 line-clamp-2">
-                    {lang === "zh" ? nextPost.titleZh || nextPost.title : nextPost.title}
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-300 shrink-0 mt-0.5" />
-              </Link>
-            ) : (
-              <div className="p-4 text-xs text-[var(--yh-muted)]">{t.noNext}</div>
-            )}
-          </div>
         </div>
       </section>
 
