@@ -20,7 +20,7 @@ export function Footer() {
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-[22px] h-[22px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px]">S</span>
           <span className="font-medium">慢日志 · SLOWLOG</span>
-          <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.0"}</span>
+          <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.1"}</span>
           <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {t.siteSlogan}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
