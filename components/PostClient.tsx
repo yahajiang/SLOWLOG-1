@@ -178,12 +178,12 @@ export function PostClient({
                 />
               )}
 
-              {/* 底部标签 */}
+              {/* 底部标签：可点击进入标签聚合页 */}
               <div className="flex flex-wrap gap-2 mt-12 pt-6 border-t border-[var(--yh-border)]">
                 {post.tags.map((tag) => (
-                  <span key={tag} className={`text-xs px-3 py-1.5 rounded-none border transition-colors cursor-default ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-[var(--dash-card)]"}`}>
+                  <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`} className={`text-xs px-3 py-1.5 rounded-none border transition-colors ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10 hover:bg-[var(--dash-card)]/15" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-white hover:text-[var(--yh-text)]"}`}>
                     #{tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
 
