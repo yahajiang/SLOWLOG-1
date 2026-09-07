@@ -50,7 +50,7 @@ export default function PostsPage() {
 
   const toggleSelect = useCallback((id:string)=> setSelected(s=>{const n=new Set(s); n.has(id)?n.delete(id):n.add(id); return n}), [])
   const toggleAll = useCallback(()=> setSelected(paged.length===selected.size? new Set(): new Set(paged.map(p=>p.id))), [paged, selected])
-  const copyLink = useCallback(async (id:string)=>{ const url=`${location.origin}/posts/${id}`; await navigator.clipboard.writeText(url); toast("链接已复制","success")}, [toast])
+  const copyLink = useCallback(async (id:string)=>{ const url=`${location.origin}/posts/${id}`; await navigator.clipboard.writeText(url); toast(lang === "zh" ? "链接已复制" : "Link copied","success")}, [toast])
   const delOne = useCallback((id:string)=> setDelId(id), [])
   const confirmDel = useCallback(async()=>{
     if(!delId) return
@@ -75,7 +75,7 @@ export default function PostsPage() {
   }, [toast, load])
   const toggleFeatured = useCallback(async (p:any)=>{
     const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({featured:!p.featured})})
-    if(r.ok) toast(p.featured?"已取消推荐":"已设为推荐","success"); else toast(t.dashOpFail,"error")
+    if(r.ok) toast(p.featured?(lang === "zh" ? "已取消推荐" : "Unfeatured"):(lang === "zh" ? "已设为推荐" : "Featured"),"success"); else toast(t.dashOpFail,"error")
     await load()
   }, [toast, load])
   const duplicate = useCallback(async (p:any)=>{
@@ -128,12 +128,12 @@ export default function PostsPage() {
                 <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || t.dashUncategorized} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-emerald-50 text-emerald-700 border-emerald-200") : p.status === "draft" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `${t.dashScheduledPrefix} ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
               </div>
               <div className="flex items-center gap-1 ml-2 flex-wrap justify-end">
-                <button onClick={()=>toggleFeatured(p)} className={`text-xs px-2.5 py-1 border rounded-none font-medium ${p.featured?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] hover:opacity-90":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{p.featured?"取消推荐":"推荐"}</button>
-                <button onClick={()=>togglePublish(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium">{p.status==="published"?"下架":"发布"}</button>
-                <Link href={`/dashboard/posts/${p.id}`} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium">编辑</Link>
-                <button onClick={()=>duplicate(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">复制</button>
-                <button onClick={()=>copyLink(p.id)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">链接</button>
-                <Link href={`/posts/${p.id}`} target="_blank" className="text-xs px-2.5 py-1 bg-[var(--dash-text)] text-white border border-[var(--dash-text)] rounded-none hover:opacity-90 font-medium">查看</Link>
+                <button onClick={()=>toggleFeatured(p)} className={`text-xs px-2.5 py-1 border rounded-none font-medium ${p.featured?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] hover:opacity-90":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{p.featured?(lang === "zh" ? "取消推荐" : "Unfeature"):(lang === "zh" ? "推荐" : "Feature")}</button>
+                <button onClick={()=>togglePublish(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium">{p.status==="published"?(lang === "zh" ? "下架" : "Unpublish"):(lang === "zh" ? "发布" : "Publish")}</button>
+                <Link href={`/dashboard/posts/${p.id}`} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium">{lang === "zh" ? "编辑" : "Edit"}</Link>
+                <button onClick={()=>duplicate(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Duplicate"}</button>
+                <button onClick={()=>copyLink(p.id)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "链接" : "Link"}</button>
+                <Link href={`/posts/${p.id}`} target="_blank" className="text-xs px-2.5 py-1 bg-[var(--dash-text)] text-white border border-[var(--dash-text)] rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "查看" : "View"}</Link>
                 <button onClick={()=>delOne(p.id)} className="text-xs px-2.5 py-1 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 hover:bg-red-50 font-medium">{t.dashDelete}</button>
               </div>
             </div>
