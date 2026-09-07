@@ -145,6 +145,20 @@ export const dict = {
     // File hint
     fileHint: "Markdown 文件实时写入 content/posts/*.md，保存后刷新首页即生效，npm run build 静态化。",
     // Categories (display names)
+    // 后台
+    dashOverview: "仪表盘",
+    dashPosts: "文章",
+    dashNotes: "随想",
+    dashCategories: "分类",
+    dashMedia: "媒体库",
+    dashSettings: "设置",
+    dashFront: "前台",
+    dashLogout: "登出",
+    dashTagline: "深度思考 · 缓慢进化",
+    dashFocus: "保持专注",
+    dashBrand: "慢日志后台",
+    emptyFiltered: "没有匹配的文章",
+    emptyFilteredHint: "换个关键词试试，或清除筛选查看全部",
     catAll: "全部",
     catDesign: "设计",
     catPlugin: "插件",
@@ -322,6 +336,20 @@ export const dict = {
     startTyping: "Preview — start typing to see the result",
     markdownLabel: "Markdown",
     fileHint: "Markdown files write to content/posts/*.md. Refresh after save. `next build` for static export.",
+    // 后台
+    dashOverview: "Overview",
+    dashPosts: "Posts",
+    dashNotes: "Thoughts",
+    dashCategories: "Categories",
+    dashMedia: "Media",
+    dashSettings: "Settings",
+    dashFront: "Frontend",
+    dashLogout: "Sign out",
+    dashTagline: "Think deep · Evolve slow",
+    dashFocus: "Stay focused",
+    dashBrand: "SlowLog Admin",
+    emptyFiltered: "No matching posts",
+    emptyFilteredHint: "Try another keyword, or clear the filter",
     catAll: "All",
     catDesign: "Design",
     catPlugin: "Plugin",
@@ -475,6 +503,19 @@ export type Dict = {
   startTyping: string;
   markdownLabel: string;
   fileHint: string;
+  dashOverview: string;
+  dashPosts: string;
+  dashNotes: string;
+  dashCategories: string;
+  dashMedia: string;
+  dashSettings: string;
+  dashFront: string;
+  dashLogout: string;
+  dashTagline: string;
+  dashFocus: string;
+  dashBrand: string;
+  emptyFiltered: string;
+  emptyFilteredHint: string;
   catAll: string;
   catDesign: string;
   catPlugin: string;
