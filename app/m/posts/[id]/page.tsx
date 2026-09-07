@@ -49,9 +49,5 @@ export default async function MobilePostPage({
 
   const allRaw = await getAllPosts();
   const all = allRaw.map((p) => adaptPost(p)!);
-  const currentIdx = allRaw.findIndex((p) => p.id === id || (p as any).slug === id);
-  const prevPost = currentIdx < all.length - 1 ? all[currentIdx + 1] : null;
-  const nextPost = currentIdx > 0 ? all[currentIdx - 1] : null;
-
-  return <MPost post={post} rawPost={raw} prevPost={prevPost} nextPost={nextPost} />;
+  return <MPost post={post} rawPost={raw} />;
 }
