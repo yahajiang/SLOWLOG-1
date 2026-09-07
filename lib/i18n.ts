@@ -156,6 +156,66 @@ export const dict = {
     dashLogout: "登出",
     dashTagline: "深度思考 · 缓慢进化",
     dashFocus: "保持专注",
+    // 后台文案第二批（列表+编辑器）
+    dashNewPost: "新建文章",
+    dashUntitled: "未命名",
+    dashUncategorized: "未分类",
+    dashAll: "全部",
+    dashPublished: "已发布",
+    dashDraft: "草稿",
+    dashScheduledPrefix: "定时",
+    dashRecommend: "推荐",
+    dashUnrecommend: "取消推荐",
+    dashUnpublish: "下架",
+    dashPublishAction: "发布",
+    dashEdit: "编辑",
+    dashDuplicate: "复制",
+    dashDelete: "删除",
+    dashDeleted: "已删除",
+    dashOpFail: "操作失败",
+    dashCopyDraft: "已复制为草稿",
+    dashCopyFail: "复制失败",
+    dashSearchPh: "搜索标题…",
+    editorBack: "← 返回列表",
+    editorSaveDraft: "保存草稿",
+    editorSaving: "保存中...",
+    editorPublish: "发布",
+    editorScheduleTitle: "定时发布",
+    editorScheduleHint: "定时发布：到达设定时间后自动对读者可见（无需保持页面打开）",
+    editorConfirmSchedule: "确认定时",
+    editorProcessing: "处理中...",
+    editorCancel: "取消",
+    editorScheduledDone: "已定时发布",
+    editorSettings: "页面设置",
+    editorDeleteConfirm: "确定删除？",
+    editorDeleteDesc: (t: string) => `将物理删除 "${t}"，不可恢复。`,
+    editorDeleteBtn: "删除",
+    editorPublished: "已发布",
+    editorDraftBadge: "草稿",
+    editorScheduledAt: (d: string) => `定时 ${d}`,
+    editorWords: (n: number) => `字数 ${n}`,
+    editorLastSaved: "最后保存",
+    editorVersions: "版本历史",
+    editorClose: "关闭",
+    editorNoVersions: "暂无历史版本。",
+    editorVersionsHint: "编辑停止 3 秒后自动保存，每 5 分钟记一版（保留最近 10 版）。",
+    editorLatest: "最新一版",
+    editorMinAgo: (n: number) => `约 ${n} 分钟前保存`,
+    editorRollback: "回滚到此版",
+    editorRollbackNote: "回滚会先保存当前内容为一版，不会丢失。",
+    editorRollbackDone: "已回滚到此版本（未保存，确认后再保存草稿）",
+    editorScheduledOk: "已定时发布",
+    toastPublished: "发布成功",
+    toastUnpublished: "已下架为草稿",
+    toastPublishFail: "发布失败",
+    toastScheduleFail: "定时失败",
+    toastCopiedLink: "链接已复制",
+    toastCopyFail: "复制失败",
+    toastCopiedDraft: "已复制为草稿",
+    toastDeleted: "已删除",
+    toastLimit5mb: "单张上限 5MB",
+    toastImageInserted: "图片已插入",
+    toastUploadFail: "上传失败",
     dashBrand: "慢日志后台",
     emptyFiltered: "没有匹配的文章",
     emptyFilteredHint: "换个关键词试试，或清除筛选查看全部",
@@ -347,6 +407,66 @@ export const dict = {
     dashLogout: "Sign out",
     dashTagline: "Think deep · Evolve slow",
     dashFocus: "Stay focused",
+    // 后台文案第二批（列表+编辑器）
+    dashNewPost: "New Post",
+    dashUntitled: "Untitled",
+    dashUncategorized: "Uncategorized",
+    dashAll: "All",
+    dashPublished: "Published",
+    dashDraft: "Draft",
+    dashScheduledPrefix: "Scheduled",
+    dashRecommend: "Feature",
+    dashUnrecommend: "Unfeature",
+    dashUnpublish: "Unpublish",
+    dashPublishAction: "Publish",
+    dashEdit: "Edit",
+    dashDuplicate: "Duplicate",
+    dashDelete: "Delete",
+    dashDeleted: "Deleted",
+    dashOpFail: "Operation failed",
+    dashCopyDraft: "Copied as draft",
+    dashCopyFail: "Copy failed",
+    dashSearchPh: "Search titles…",
+    editorBack: "← Back to list",
+    editorSaveDraft: "Save draft",
+    editorSaving: "Saving...",
+    editorPublish: "Publish",
+    editorScheduleTitle: "Schedule",
+    editorScheduleHint: "Scheduled posts become visible to readers at the set time (no need to keep this page open)",
+    editorConfirmSchedule: "Confirm",
+    editorProcessing: "Processing...",
+    editorCancel: "Cancel",
+    editorScheduledDone: "Scheduled",
+    editorSettings: "Page settings",
+    editorDeleteConfirm: "Delete this post?",
+    editorDeleteDesc: (t: string) => `This will permanently delete "${t}". This cannot be undone.`,
+    editorDeleteBtn: "Delete",
+    editorPublished: "Published",
+    editorDraftBadge: "Draft",
+    editorScheduledAt: (d: string) => `Scheduled ${d}`,
+    editorWords: (n: number) => `${n} words`,
+    editorLastSaved: "Last saved",
+    editorVersions: "Version history",
+    editorClose: "Close",
+    editorNoVersions: "No versions yet.",
+    editorVersionsHint: "Autosaves 3s after you stop typing; one snapshot every 5 min (last 10 kept).",
+    editorLatest: "Latest",
+    editorMinAgo: (n: number) => `Saved ~${n} min ago`,
+    editorRollback: "Roll back",
+    editorRollbackNote: "Current content is snapshotted before rollback, so nothing is lost.",
+    editorRollbackDone: "Rolled back (unsaved — save draft to confirm)",
+    editorScheduledOk: "Scheduled",
+    toastPublished: "Published",
+    toastUnpublished: "Unpublished to draft",
+    toastPublishFail: "Publish failed",
+    toastScheduleFail: "Schedule failed",
+    toastCopiedLink: "Link copied",
+    toastCopyFail: "Copy failed",
+    toastCopiedDraft: "Copied as draft",
+    toastDeleted: "Deleted",
+    toastLimit5mb: "Max 5MB per image",
+    toastImageInserted: "Image inserted",
+    toastUploadFail: "Upload failed",
     dashBrand: "SlowLog Admin",
     emptyFiltered: "No matching posts",
     emptyFilteredHint: "Try another keyword, or clear the filter",
@@ -401,6 +521,7 @@ export type Dict = {
   siteName: string;
   siteSlogan: string;
   siteDescription: string;
+
   navHome: string;
   navPosts: string;
   navAdmin: string;
@@ -505,6 +626,13 @@ export type Dict = {
   fileHint: string;
   dashOverview: string;
   dashPosts: string;
+  dashNewPost: string;
+  dashUntitled: string;
+  dashUncategorized: string;
+  dashPublished: string;
+  dashDraft: string;
+  dashScheduledPrefix: string;
+  dashDelete: string;
   dashNotes: string;
   dashCategories: string;
   dashMedia: string;
@@ -514,6 +642,12 @@ export type Dict = {
   dashTagline: string;
   dashFocus: string;
   dashBrand: string;
+  toastDeleted: string;
+  dashOpFail: string;
+  toastPublished: string;
+  toastUnpublished: string;
+  toastCopiedDraft: string;
+  toastCopyFail: string;
   emptyFiltered: string;
   emptyFilteredHint: string;
   catAll: string;
