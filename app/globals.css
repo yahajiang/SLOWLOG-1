@@ -872,17 +872,17 @@ body::after {
    html.dark 由 head 内联脚本在首帧前设置（localStorage sl-theme
    或跟随系统）。以下覆盖均为未分层规则，压过 utilities layer。
    ============================================================ */
-html.dark {
-  --yh-bg: #14110d;
-  --yh-text: #e8e4dc;
-  --yh-muted: #8e8478;
-  --yh-border: #2c2a26;
+.dark {
+  --yh-bg: #14110d !important;
+  --yh-text: #e8e4dc !important;
+  --yh-muted: #8e8478 !important;
+  --yh-border: #2c2a26 !important;
   --yh-accent: oklch(0.78 0.13 250);
-  --dash-bg: #14110d;
-  --dash-card: #1c1915;
-  --dash-border: #2c2a26;
-  --dash-text: #e8e4dc;
-  --dash-muted: #8e8478;
+  --dash-bg: #14110d !important;
+  --dash-card: #1c1915 !important;
+  --dash-border: #2c2a26 !important;
+  --dash-text: #e8e4dc !important;
+  --dash-muted: #8e8478 !important;
   --dash-accent: oklch(0.78 0.13 250);
   --dash-accent-soft: rgba(160, 180, 255, 0.08);
   color-scheme: dark;
@@ -954,3 +954,17 @@ html.dark {
 /* 夜里 multiply 叠加在深底会成黑块——换 screen 微光 */
 .dark .cover [style*="mix-blend-mode: multiply"],
 .dark .mix-blend-multiply { mix-blend-mode: screen; opacity: 0.14 }
+
+/* 文章级强制浅色（pageConfig.theme=light 且全局为暗时） */
+.sl-force-light {
+  --yh-bg: #fefdfa; --yh-text: #1c1c1e; --yh-muted: #8e8e93; --yh-border: #e5e5e7;
+  --yh-accent: oklch(0.55 0.15 250);
+  --dash-bg: #fefdfa; --dash-card: #fff; --dash-border: #e5e5e7;
+  --dash-text: #1c1c1e; --dash-muted: #8e8e93; --dash-accent: oklch(0.55 0.15 250);
+}
+
+/* 暗色下文章表格定向适配（th/td 的灰阶类经映射层后仍白底的兜底写死） */
+.dark article table { background-color: #1c1915 }
+.dark article th { background-color: #1c1915 !important; color: #d4c8b8 !important; border-color: #2c2a26 !important }
+.dark article td { color: #c9c0b4 !important; border-color: #2c2a26 !important }
+.dark article table, .dark article th, .dark article td { --dash-card: #1c1915; --dash-border: #2c2a26; --yh-border: #2c2a26 }
