@@ -10,44 +10,75 @@ export function TableOfContents({
 }) {
   const [active, setActive] = useState("");
   const isClickRef = React.useRef(false);
+  const releaseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useLang();
 
+  // 依赖用 id 串（headings 数组每次渲染都是新引用，直接依赖会导致 effect 反复重建）
+  const idsKey = headings.map((h) => h.id).join("|");
+
   useEffect(() => {
-    const els = headings
-      .map((h) => document.getElementById(h.id))
-      .filter(Boolean) as HTMLElement[];
-    if (els.length === 0) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isClickRef.current) return;
-        let best: string | null = null;
-        let bestRatio = 0;
-        for (const e of entries) {
-          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
-            bestRatio = e.intersectionRatio;
-            best = (e.target as HTMLElement).id;
-          }
-        }
-        if (best) setActive(best);
-      },
-      { rootMargin: "-88px 0px -30% 0px", threshold: [0, 1] }
-    );
-    els.forEach((el) => observer.observe(el));
-    // fallback sync on scroll for crisp active
-    function onScroll() {
-      if (isClickRef.current) return;
-      let cur = "";
-      for (const el of els) {
-        if (el.getBoundingClientRect().top <= 88) cur = el.id;
+    let cancelled = false;
+    let bound = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let tries = 0;
+    let els: HTMLElement[] = [];
+
+    // ⚠️ 正文由 dynamic 组件异步渲染——mount 时标题可能尚未存在，
+    // 必须轮询等待正文出现再绑定（否则目录高亮永不工作）。
+    // ⚠️ 不用 headings.id 做 getElementById——DB 保存的 id 与正文渲染的
+    // DOM id 是两套生成逻辑，可能字节级不同。直接抓正文标题按文档顺序对齐。
+    function tryBind() {
+      if (cancelled || bound) return;
+      tries++;
+      const scope = document.querySelector("article") || document.querySelector(".prose");
+      els = scope
+        ? Array.from(scope.querySelectorAll<HTMLElement>("h2[id], h3[id]")).slice(0, headings.length)
+        : [];
+      if (els.length === 0) {
+        if (tries < 40) timer = setTimeout(tryBind, 200);
+        return;
       }
-      if (cur) setActive(cur);
+      bound = true;
+      sync();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
+
+    function sync() {
+      timer = null;
+      if (isClickRef.current || !bound) return;
+      // 按文档顺序对齐：最后一个越过 LINE 的元素索引 → 对应 headings 项
+      let curIdx = 0;
+      els.forEach((el, i) => {
+        if (el.getBoundingClientRect().top <= 96) curIdx = i;
+      });
+      const cur = headings[Math.min(curIdx, headings.length - 1)]?.id || "";
+      setActive((prev) => (prev === cur ? prev : cur));
+    }
+
+    function onScroll() {
+      if (isClickRef.current) {
+        // 点击锁定：平滑滚动停止 180ms 后自动释放（长距离滚动不闪跳）
+        if (releaseTimer.current) clearTimeout(releaseTimer.current);
+        releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 180);
+        return;
+      }
+      // setTimeout 触发（rAF 在部分 headless/后台环境不触发）
+      if (timer === null) timer = setTimeout(sync, 16);
+    }
+
+    tryBind();
     return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      if (releaseTimer.current) clearTimeout(releaseTimer.current);
+      if (bound) {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      }
     };
-  }, [headings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idsKey]);
 
   if (headings.length === 0) return null;
 
@@ -71,12 +102,13 @@ export function TableOfContents({
                   e.preventDefault();
                   setActive(h.id);
                   isClickRef.current = true;
+                  if (releaseTimer.current) clearTimeout(releaseTimer.current);
                   const el = document.getElementById(h.id);
                   if (el) {
                     el.scrollIntoView({ behavior: "smooth", block: "start" });
                     history.pushState(null, "", `#${h.id}`);
                   }
-                  setTimeout(() => { isClickRef.current = false; }, 800);
+                  releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
                 }}
                 className={`group flex items-center gap-2 text-[13px] leading-snug transition-all duration-200 border-l-2 -ml-[13px] pl-3 py-[5px] ${
                   active === h.id
