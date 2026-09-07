@@ -167,9 +167,9 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
     case "tableRow":
       return <tr key={idx} className="border-b border-[var(--yh-border)] last:border-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</tr>
     case "tableHeader":
-      return <th key={idx} className="border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-[9px] text-left font-semibold text-zinc-700 text-[13px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</th>
+      return <th key={idx} className={`border px-4 py-[9px] text-left font-semibold text-[13px] ${isDarkMode ? "border-[#2c2a26] bg-[#1c1915] text-[#d4c8b8]" : "border-[var(--yh-border)] bg-[var(--dash-card)] text-zinc-700"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</th>
     case "tableCell":
-      return <td key={idx} className="border border-[var(--yh-border)] px-4 py-[9px] text-zinc-600 align-top">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</td>
+      return <td key={idx} className={`border px-4 py-[9px] align-top ${isDarkMode ? "border-[#2c2a26] text-[#c9c0b4]" : "border-[var(--yh-border)] text-zinc-600"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</td>
     default:
       // fallback: try render content
       if (content.length) return <div key={idx}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</div>
@@ -177,13 +177,14 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
   }
 }
 
-export function PostRenderer({ content, pageConfig }: { content: unknown; pageConfig?: PageConfig | null }) {
+export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { content: unknown; pageConfig?: PageConfig | null; isDark?: boolean }) {
   if (!content || typeof content !== "object") return null
   const doc = content as any
   const nodes: any[] = doc.content || doc.root?.children || []
   if (!Array.isArray(nodes) || nodes.length === 0) return <p className="text-sm text-[var(--yh-muted)]">暂无内容</p>
 
   const pc = pageConfig
+  const isDarkMode = isDarkProp ?? (typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : false)
   const maxW = pc?.maxWidth === "narrow" ? "max-w-2xl" : pc?.maxWidth === "wide" ? "max-w-none" : "max-w-none"
   const font = pc?.fontFamily === "serif" ? "font-serif" : ""
   const bg = pc?.backgroundColor && pc.backgroundColor !== "#FFFFFF" ? pc.backgroundColor : "transparent"
