@@ -49,9 +49,9 @@ export function Sidebar() {
         <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-none transition-colors text-left">
           <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>
-        <div className="flex items-center justify-between px-3 pt-2">
-          <span className="text-[11px] tracking-wide text-[var(--dash-muted)]">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</span>
-          <div className="flex items-center gap-1">
+        <div className="px-3 pt-2 space-y-2">
+          <p className="text-[11px] tracking-wide text-[var(--dash-muted)]">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</p>
+          <div className="flex items-center justify-end gap-1">
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
