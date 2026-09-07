@@ -1,35 +1,37 @@
 ﻿"use client"
 import { useEffect, useState } from "react"
 import { useToast } from "@/components/ui/Toast"
+import { useLang } from "@/lib/lang-context"
 import { SettingsPageSkeleton } from "@/components/dashboard/Skeleton"
 
 export default function SettingsPage(){
   const [form,setForm]=useState<any>(null)
   const [saving,setSaving]=useState(false)
   const { toast } = useToast()
+  const { lang } = useLang()
   useEffect(()=>{fetch("/api/settings").then(r=>r.json()).then(setForm)},[])
   const save=async()=>{
     setSaving(true)
     const r=await fetch("/api/settings",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)})
     setSaving(false)
-    if(r.ok) toast("已保存","success"); else toast("保存失败","error")
+    if(r.ok) toast(lang === "zh" ? "已保存" : "Saved","success"); else toast(lang === "zh" ? "保存失败" : "Save failed","error")
   }
   if(!form) return <SettingsPageSkeleton />
   return (
     <div className="space-y-6 max-w-2xl">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>设置</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 space-y-5 shadow-[var(--shadow-card)]">
-        <div><label className="text-xs text-[var(--dash-muted)]">站点名称</label><input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">站点描述</label><input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">关键词</label><input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点名称" : "Site Name"}</label><input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点描述" : "Description"}</label><input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "关键词" : "Keywords"}</label><input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
         <div className="grid grid-cols-2 gap-4">
-          <div><label className="text-xs text-[var(--dash-muted)]">Favicon URL</label><input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-          <div><label className="text-xs text-[var(--dash-muted)]">Logo URL</label><input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+          <div><label className="text-xs text-[var(--dash-muted)]">{"Favicon URL"}</label><input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+          <div><label className="text-xs text-[var(--dash-muted)]">{"Logo URL"}</label><input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
         </div>
-        <div><label className="text-xs text-[var(--dash-muted)]">页脚文案</label><input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">每页文章数</label><input type="number" value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className="mt-1 w-32 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">主题</label><select value={form.theme||"system"} onChange={e=>setForm({...form,theme:e.target.value})} className="mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"><option value="light">浅色</option><option value="dark">深色</option><option value="system">跟随系统</option></select></div>
-        <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving?"保存中...":"保存"}</button>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "页脚文案" : "Footer text"}</label><input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "每页文章数" : "Posts per page"}</label><input type="number" value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className="mt-1 w-32 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "主题" : "Theme"}</label><select value={form.theme||"system"} onChange={e=>setForm({...form,theme:e.target.value})} className="mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"><option value="light">{(lang === "zh" ? "浅色" : "Light")}</option><option value="dark">{(lang === "zh" ? "深色" : "Dark")}</option><option value="system">{(lang === "zh" ? "跟随系统" : "System")}</option></select></div>
+        <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中..." : "Saving...") : (lang === "zh" ? "保存" : "Save")}</button>
       </div>
     </div>
   )
