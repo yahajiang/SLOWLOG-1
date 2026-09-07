@@ -9,6 +9,7 @@ import { parsePageConfig } from "@/lib/page-config"
 import Link from "next/link"
 import { Breadcrumb } from "@/components/Breadcrumb"
 import { ConfirmDialog } from "@/components/ui/Dialog"
+import { CalendarClock, Settings, RotateCcw } from "lucide-react"
 import { getVersions, snapVersion, forceSnap, type PostVersion } from "@/lib/post-versions"
 import { useToast } from "@/components/ui/Toast"
 import { Button } from "@/components/ui/Button"
@@ -267,17 +268,17 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <Button variant="primary" onClick={() => handleSave("published")}>发布</Button>
           <button
             onClick={openVersions}
-            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
+            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-text)] hover:text-[var(--dash-accent)] transition-colors"
             aria-label="版本历史"
             title="版本历史"
-          >⏱</button>
+          ><RotateCcw className="w-3.5 h-3.5" /></button>
           <button
             onClick={() => setScheduleOpen((v) => !v)}
-            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
+            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-text)] hover:text-[var(--dash-accent)] transition-colors"
             aria-label="定时发布"
             title="定时发布"
-          >⏰</button>
-          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label="页面设置">⚙</button>
+          ><CalendarClock className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label="页面设置"><Settings className="w-3.5 h-3.5" /></button>
           {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>删除</Button>}
         </div>
       </div>
