@@ -3,25 +3,28 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, FileText, MessageSquare, Folder, Image as ImageIcon, Settings, ExternalLink, LogOut } from "lucide-react"
 import { signOut } from "next-auth/react"
-
-const nav = [
-  { href: "/dashboard", label: "仪表盘", icon: LayoutDashboard },
-  { href: "/dashboard/posts", label: "文章", icon: FileText },
-  { href: "/dashboard/notes", label: "随想", icon: MessageSquare },
-  { href: "/dashboard/categories", label: "分类", icon: Folder },
-  { href: "/dashboard/media", label: "媒体库", icon: ImageIcon },
-  { href: "/dashboard/settings", label: "设置", icon: Settings },
-]
+import { useLang } from "@/lib/lang-context"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { t, lang } = useLang()
+  const nav = [
+    { href: "/dashboard", label: t.dashOverview, icon: LayoutDashboard },
+    { href: "/dashboard/posts", label: t.dashPosts, icon: FileText },
+    { href: "/dashboard/notes", label: t.dashNotes, icon: MessageSquare },
+    { href: "/dashboard/categories", label: t.dashCategories, icon: Folder },
+    { href: "/dashboard/media", label: t.dashMedia, icon: ImageIcon },
+    { href: "/dashboard/settings", label: t.dashSettings, icon: Settings },
+  ]
   return (
     <aside className="w-[240px] shrink-0 bg-[var(--dash-card)] border-r border-[var(--dash-border)] flex flex-col h-screen sticky top-0">
       <div className="px-6 py-6 border-b border-[var(--dash-border)]">
         <Link href="/dashboard" className="text-[16px] font-semibold tracking-tight text-[var(--dash-text)] hover:opacity-60 transition-opacity" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
-          慢日志后台
+          {t.dashBrand}
         </Link>
-        <p className="text-[11px] tracking-wide text-[var(--dash-muted)] mt-1">深度思考 · 缓慢进化</p>
+        <p className="text-[11px] tracking-wide text-[var(--dash-muted)] mt-1">{t.dashTagline}</p>
       </div>
       <nav className="flex-1 px-3 py-6 space-y-1">
         {nav.map((item) => {
@@ -41,13 +44,19 @@ export function Sidebar() {
       </nav>
       <div className="p-3 border-t border-[var(--dash-border)] space-y-1">
         <Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors">
-          <ExternalLink className="w-4 h-4" /> 前台
+          <ExternalLink className="w-4 h-4" /> {t.dashFront}
         </Link>
         <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-none transition-colors text-left">
-          <LogOut className="w-4 h-4" /> 登出
+          <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>
+        <div className="flex items-center justify-between px-3 pt-2">
+          <span className="text-[11px] tracking-wide text-[var(--dash-muted)]">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</span>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
+        </div>
       </div>
-      <div className="px-6 py-4 border-t border-[var(--dash-border)] text-[11px] tracking-wide text-[var(--dash-muted)] text-center">© 2026 慢日志 · 保持专注</div>
     </aside>
   )
 }
