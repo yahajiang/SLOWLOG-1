@@ -8,9 +8,9 @@ import { useLang } from "@/lib/lang-context";
 // `/` 或 ⌘K 唤起，Esc/遮罩/路由跳转关闭；结果按 文章/分类/随想 分组，
 // 命中片段 mark 高亮，↑↓ 循环导航（左侧品牌色边线），Enter 打开。
 // 索引来自 /api/search-index（运行时生成 + CDN 缓存），内存检索零依赖。
-type IndexPost = { id: string; title: string; titleEn: string; excerpt: string; category: string; tags: string[]; date: string; readTime: string; body: string };
-type IndexThought = { id: string; text: string; date: string };
-type IndexCat = { name: string; count: number };
+type IndexPost = { id: string; title: string; titleEn: string; excerpt: string; category: string; tags: string[]; date: string; readTime: string; body: string; py?: string; abbr?: string };
+type IndexThought = { id: string; text: string; date: string; py?: string; abbr?: string };
+type IndexCat = { name: string; count: number; py?: string; abbr?: string };
 type IndexData = { v: number; posts: IndexPost[]; thoughts: IndexThought[]; categories: IndexCat[]; offline?: boolean };
 type Row = { key: string; group: string; title: string; meta: string; kind: "post" | "cat" | "thought"; href: string; matchText: string };
 
@@ -61,11 +61,15 @@ export function SearchPanel() {
   useEffect(() => { setOpen(false); setQuery(""); }, [pathname]);
 
   // 检索：子串 + 简单评分（标题 3 > 标签 2.5 > 摘要 1.5 > 正文 0.5），零依赖
+  // 拼音支持：query 为纯英文字母时，同时匹配索引里的全拼（sheji）与首字母（sj）
   const rows = useMemo<Row[]>(() => {
     if (!index) return [];
     const q = query.trim().toLowerCase();
     const out: Row[] = [];
     const zh = lang === "zh";
+    const isAlphaQ = /^[a-z]+$/.test(q);
+    const pyHit = (py: string | undefined, abbr: string | undefined) =>
+      isAlphaQ && !!q && ((py || "").includes(q) || (abbr || "").startsWith(q));
     if (!q) {
       for (const p of index.posts.slice(0, 5)) out.push({ key: "p" + p.id, group: zh ? "最近文章" : "Recent", title: p.title, meta: p.date, kind: "post", href: `/posts/${p.id}`, matchText: p.title });
       return out;
@@ -75,19 +79,26 @@ export function SearchPanel() {
       const title = p.title, ex = p.excerpt, body = p.body;
       let s = -1;
       if (title.toLowerCase().includes(q)) s = 30;
+      else if (pyHit(p.py, p.abbr)) s = 28;
       else if (p.tags.some((x) => x.toLowerCase().includes(q))) s = 25;
-      else if (p.category.toLowerCase().includes(q)) s = 20;
+      else if (p.category.toLowerCase().includes(q) || pyHit((p.py || "").split(" ")[1], (p.abbr || "").split(" ")[1])) s = 20;
       else if (ex.toLowerCase().includes(q)) s = 15;
       else if (body.toLowerCase().includes(q)) s = 10;
       if (s < 0) continue;
       if (body.toLowerCase().indexOf(q) >= 0 && s === 10) s += Math.max(0, 6 - body.toLowerCase().indexOf(q) / 4000);
       scored.push({ s, r: { key: "p" + p.id, group: zh ? "文章" : "Posts", title, meta: p.date + (p.readTime ? " · " + p.readTime : ""), kind: "post", href: `/posts/${p.id}`, matchText: title } });
     }
+    // 分类中文标签 + 硬编码拼音（映射固定 7 条，零运行时成本）
+    const CAT_ZH: Record<string, string> = { Design: "设计", Plugin: "插件", Engineering: "工程", Typography: "排印", Frontend: "前端", Snippet: "片段", Life: "生活" };
+    const CAT_PY: Record<string, string> = { Design: "sheji", Plugin: "chajian", Engineering: "gongcheng", Typography: "paiyin", Frontend: "qianduan", Snippet: "pianduan", Life: "shenghuo" };
+    const CAT_ABBR: Record<string, string> = { Design: "sj", Plugin: "cj", Engineering: "gc", Typography: "py", Frontend: "qd", Snippet: "pd", Life: "sh" };
     for (const c of index.categories) {
-      if (c.name.toLowerCase().includes(q)) scored.push({ s: 18, r: { key: "c" + c.name, group: zh ? "分类" : "Categories", title: c.name, meta: c.count + (zh ? " 篇" : " posts"), kind: "cat", href: `/archive`, matchText: c.name } });
+      const zhLabel = CAT_ZH[c.name] || "";
+      const zhHit = zhLabel.includes(q) || (CAT_PY[c.name] || "").includes(q) || (CAT_ABBR[c.name] || "").startsWith(q);
+      if (c.name.toLowerCase().includes(q) || zhHit || pyHit(c.py, c.abbr)) scored.push({ s: 18, r: { key: "c" + c.name, group: zh ? "分类" : "Categories", title: zhLabel ? `${zhLabel} · ${c.name}` : c.name, meta: c.count + (zh ? " 篇" : " posts"), kind: "cat", href: `/archive`, matchText: c.name } });
     }
     for (const n of index.thoughts) {
-      if (n.text.toLowerCase().includes(q)) {
+      if (n.text.toLowerCase().includes(q) || pyHit(n.py, n.abbr)) {
         const d = new Date(n.date);
         scored.push({ s: 8, r: { key: "t" + n.id, group: zh ? "随想" : "Thoughts", title: n.text, meta: `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`, kind: "thought", href: `/#thoughts`, matchText: n.text } });
       }
