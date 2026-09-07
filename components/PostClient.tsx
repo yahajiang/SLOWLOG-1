@@ -14,7 +14,7 @@ import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import type { PageConfig } from "@/lib/page-config";
 import { catLabel } from "@/components/HomeClient";
-import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
   loading: () => <div className="animate-pulse h-96 bg-[var(--dash-card)]/30 rounded-none" />,
@@ -69,6 +69,14 @@ export function PostClient({
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
+              className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              aria-label={lang === "zh" ? "全局搜索" : "Search"}
+              title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
             <LanguageSwitcher />
             <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">
               {t.backToPosts}
