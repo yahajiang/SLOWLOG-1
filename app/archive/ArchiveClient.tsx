@@ -4,6 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { ChevronRight, Search } from "lucide-react"
 import { Footer } from "@/components/Footer"
+import { CategoryBadge } from "@/components/CategoryBadge"
+import { EmptyState } from "@/components/EmptyState"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { useLang } from "@/lib/lang-context"
 import { catLabel } from "@/components/HomeClient"
@@ -44,6 +46,16 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-6">
         <h1 className="serif text-[32px] font-semibold tracking-tight">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">{t.archiveDesc(posts.length, years.length)}{q && ` · ${t.filteredCount(filteredYears.reduce((a, [,arr])=>a+arr.length,0))}`}</p>
+        <div className="relative mt-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={lang === "zh" ? "搜索标题或分类…" : "Search titles or categories…"}
+            className="w-full pl-10 pr-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none rounded-none placeholder:text-[var(--yh-muted)]"
+          />
+        </div>
       </div>
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pb-16 space-y-8 flex-1">
         {filteredYears.map(([year, arr]) => (
@@ -58,7 +70,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
                   <Link key={p.id} href={`/posts/${p.id}`} className="group flex items-center gap-4 py-2 border-b border-[var(--yh-border)]/50 last:border-0 hover:bg-[var(--yh-bg)]/50 px-2 -mx-2">
                     <span className="mono text-[11px] text-[var(--yh-muted)] w-12 shrink-0">{md}</span>
                     <span className="text-sm truncate flex-1 group-hover:text-[var(--yh-accent)] group-hover:underline underline-offset-4">{title}</span>
-                    <span className="mono text-[10px] px-2 py-0.5 border border-[var(--yh-border)] bg-white hidden sm:block">{catLabel(p.category, t)}</span>
+                    <span className="hidden sm:block"><CategoryBadge category={p.category} /></span>
                     <span className="mono text-[10px] text-[var(--yh-muted)] hidden sm:block">{p.readTime || ""}</span>
                     <ChevronRight className="w-3.5 h-3.5 text-zinc-300 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-[var(--yh-accent)] transition-all duration-200 shrink-0" />
                   </Link>
@@ -67,7 +79,12 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
             </div>
           </div>
         ))}
-        {filteredYears.length===0 && <p className="text-sm text-[var(--yh-muted)] text-center py-12">{t.archiveEmpty}</p>}
+        {filteredYears.length===0 && (
+            <EmptyState
+              title={lang === "zh" ? "没有匹配的文章" : "No matching posts"}
+              hint={lang === "zh" ? "换个关键词试试，或清除筛选查看全部" : "Try another keyword, or clear the filter"}
+            />
+          )}
       </div>
       <Footer />
     </>

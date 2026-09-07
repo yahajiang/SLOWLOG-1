@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Footer } from "@/components/Footer";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SearchButton } from "@/components/SearchButton";
+import { CategoryBadge } from "@/components/CategoryBadge";
 import { getAllPosts } from "@/lib/posts";
 
 // 标签聚合页（v0.3 P1-7）：/tag/[tag]——文章页底部标签可点击进入，
@@ -73,7 +74,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
                 <Link key={p.id} href={`/posts/${p.id}`} className="group flex items-center gap-4 py-2 border-b border-[var(--yh-border)]/50 last:border-0 hover:bg-[var(--yh-bg)]/50 px-2 -mx-2">
                   <span className="mono text-[11px] text-[var(--yh-muted)] w-12 shrink-0">{md}</span>
                   <span className="text-sm truncate flex-1 group-hover:text-[var(--yh-accent)] group-hover:underline underline-offset-4">{title}</span>
-                  <span className="mono text-[10px] px-2 py-0.5 border border-[var(--yh-border)] bg-white hidden sm:block">{p.category}</span>
+                  <span className="hidden sm:block"><CategoryBadge category={p.category} /></span>
                   <span className="mono text-[10px] text-[var(--yh-muted)] hidden sm:block">{p.readTime || ""}</span>
                   <ChevronRight className="w-3.5 h-3.5 text-zinc-300 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-[var(--yh-accent)] transition-all duration-200 shrink-0" />
                 </Link>

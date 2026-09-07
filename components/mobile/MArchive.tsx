@@ -6,7 +6,8 @@ import { Search } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
-import { mCatLabel } from "@/lib/madapt";
+import { mCatLabel } from "@/lib/madapt"
+import { EmptyState } from "@/components/EmptyState"
 
 // 归档页 = 查看全部的终点：全量按年份分组显示（首页时间线卡只放最近 8 条，其余引导到这里）
 export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]][] }) {
@@ -77,7 +78,10 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
           </div>
         ))}
         {filteredYears.length === 0 && (
-          <p className="text-sm text-[var(--yh-muted)] text-center py-12">{t.archiveEmpty}</p>
+          <EmptyState
+            title={lang === "zh" ? "没有匹配的文章" : "No matching posts"}
+            hint={lang === "zh" ? "换个关键词试试" : "Try another keyword"}
+          />
         )}
       </div>
       <MFooter desktopHref="/archive" />

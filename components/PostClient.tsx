@@ -262,7 +262,7 @@ export function PostClient({
               </div>
             </article>
 
-            {showTOC && <TableOfContents headings={post.headings} />}
+            {showTOC && <TableOfContents headings={post.headings} readMinutes={parseInt(post.readTime) || undefined} />}
           </div>
         </div>
       </section>
