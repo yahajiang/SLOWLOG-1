@@ -76,6 +76,13 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[var(--yh-bg)] text-[var(--yh-text)] antialiased min-h-screen flex flex-col">
+        {/* 主题首帧同步：localStorage sl-theme 显式偏好优先，否则跟随系统——
+            首帧前给 html 打 dark class，避免暗色用户看到白闪 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{var t=localStorage.getItem('sl-theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d){document.documentElement.classList.add('dark');var m=document.querySelector('meta[name=theme-color]');if(m)m.content='#14110d'}}catch(e){}",
+          }}
+        />
         {/* 首帧前同步检查回访标记：回访者给 html 打 class，CSS 直接隐藏欢迎幕（零闪烁） */}
         <script
           dangerouslySetInnerHTML={{

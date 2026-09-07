@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer"
 import { CategoryBadge } from "@/components/CategoryBadge"
 import { EmptyState } from "@/components/EmptyState"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { useLang } from "@/lib/lang-context"
 import { catLabel } from "@/components/HomeClient"
 
@@ -38,6 +39,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
             >
               <Search className="w-3.5 h-3.5" />
             </button>
+            <ThemeToggle />
             <LanguageSwitcher />
             <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-white rounded-none">{t.backToHome}</Link>
           </div>
