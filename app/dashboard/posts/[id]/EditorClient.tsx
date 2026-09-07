@@ -10,6 +10,7 @@ import Link from "next/link"
 import { Breadcrumb } from "@/components/Breadcrumb"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { CalendarClock, Settings, RotateCcw } from "lucide-react"
+import { useLang } from "@/lib/lang-context"
 import { getVersions, snapVersion, forceSnap, type PostVersion } from "@/lib/post-versions"
 import { useToast } from "@/components/ui/Toast"
 import { Button } from "@/components/ui/Button"
@@ -67,6 +68,7 @@ function PreviewPanel({ content, post, pageConfig, categories }: { content: any;
 
 export default function EditorClient({ initialPost, categories, isNew }: { initialPost: any; categories: any[]; isNew: boolean }) {
   const router = useRouter()
+  const { t, lang } = useLang()
   const [post, setPost] = useState(initialPost)
   const postRef = useRef(post)
   postRef.current = post
@@ -90,7 +92,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     // 回滚前先 forceSnap 当前内容（保住被回滚掉的版本）
     forceSnap(post.id, post.content)
     setPost((prev: any) => ({ ...prev, content: v.content }))
-    toast("已回滚到此版本（未保存，确认后再保存草稿）", "success")
+    toast(t.editorRollbackDone, "success")
     setVersionsOpen(false)
     setSelectedVersion(null)
   }
@@ -193,13 +195,13 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status }),
         })
-        if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "发布失败") }
+        if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || t.toastPublishFail) }
         // 更新本地状态，badge 立即切换
         setPost((prev: any) => ({ ...prev, status }))
         setLastSaved(new Date())
-        if (!silent) toast(status === "published" ? "发布成功" : "已下架为草稿", "success")
+        if (!silent) toast(status === "published" ? t.toastPublished : t.toastUnpublished, "success")
       } catch (e: any) {
-        if (!silent) { setErrorMsg(e.message || "发布失败"); toast(e.message || "发布失败", "error") }
+        if (!silent) { setErrorMsg(e.message || t.toastPublishFail); toast(e.message || t.toastPublishFail, "error") }
       } finally { if (!silent) setSaving(false) }
       return
     }
@@ -222,7 +224,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       else { res = await fetch(`/api/posts/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }) }
       if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "save failed") }
       setLastSaved(new Date()); if (!silent) toast("已保存", "success")
-    } catch (e: any) { if (!silent) { setErrorMsg(e.message || "保存失败"); toast(e.message || "保存失败", "error") } }
+    } catch (e: any) { if (!silent) { setErrorMsg(e.message || (lang === "zh" ? "保存失败" : "Save failed")); toast(e.message || (lang === "zh" ? "保存失败" : "Save failed"), "error") } }
     finally { if (!silent) setSaving(false) }
   }, [isNew, pageConfig, router, toast])
 
@@ -255,43 +257,43 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     <div className="flex flex-col h-screen -m-8 pt-2">
       {/* ===== Top bar ===== */}
       <div className="h-14 border-b border-[var(--dash-border)] bg-[var(--dash-card)]/90 backdrop-blur-xl px-4 flex items-center gap-3 mt-1">
-        <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">← 返回列表</Link>
+        <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">{t.editorBack}</Link>
         <div className="w-px h-4 bg-[var(--dash-border)]" />
         <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder="输入标题..." className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
         <Badge tone={scheduledFuture ? "sky" : post.status === "published" ? "emerald" : "amber"}>
-          {scheduledFuture ? `定时 ${new Date(post.publishedAt).toLocaleString("zh-CN", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : post.status === "published" ? "已发布" : "草稿"}
+          {scheduledFuture ? `${t.dashScheduledPrefix} ${new Date(post.publishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : post.status === "published" ? t.editorPublished : t.editorDraftBadge}
         </Badge>
         <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label="推荐" className="shrink-0" />
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
-          <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? "保存中..." : "保存草稿"}</Button>
-          <Button variant="primary" onClick={() => handleSave("published")}>发布</Button>
+          <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? t.editorSaving : t.editorSaveDraft}</Button>
+          <Button variant="primary" onClick={() => handleSave("published")}>{t.editorPublish}</Button>
           <button
             onClick={openVersions}
             className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-text)] hover:text-[var(--dash-accent)] transition-colors"
-            aria-label="版本历史"
-            title="版本历史"
+            aria-label={t.editorVersions}
+            title={t.editorVersions}
           ><RotateCcw className="w-3.5 h-3.5" /></button>
           <button
             onClick={() => setScheduleOpen((v) => !v)}
             className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-text)] hover:text-[var(--dash-accent)] transition-colors"
-            aria-label="定时发布"
-            title="定时发布"
+            aria-label={t.editorScheduleTitle}
+            title={t.editorScheduleTitle}
           ><CalendarClock className="w-3.5 h-3.5" /></button>
-          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label="页面设置"><Settings className="w-3.5 h-3.5" /></button>
-          {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>删除</Button>}
+          <button onClick={() => setShowConfig(!showConfig)} className="w-8 h-8 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]" aria-label={t.editorSettings}><Settings className="w-3.5 h-3.5" /></button>
+          {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>{t.editorDeleteBtn}</Button>}
         </div>
       </div>
       {/* 版本历史面板（v0.3 P2）：localStorage 快照，最近 10 版，可预览回滚 */}
       {versionsOpen && (
         <div className="fixed top-14 right-0 bottom-0 w-[320px] z-30 border-l border-[var(--dash-border)] bg-[var(--dash-card)] flex flex-col">
           <div className="h-12 px-4 flex items-center justify-between border-b border-[var(--dash-border)] shrink-0">
-            <span className="text-sm font-medium text-[var(--dash-text)]">版本历史</span>
+            <span className="text-sm font-medium text-[var(--dash-text)]">{t.editorVersions}</span>
             <button onClick={() => setVersionsOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)]">关闭</button>
           </div>
           {versions.length === 0 ? (
             <div className="p-6 text-center text-xs text-[var(--dash-muted)]">
-              暂无历史版本。<br />编辑停止 3 秒后自动保存，<br />每 5 分钟记一版（保留最近 10 版）。
+              {lang === "zh" ? <>暂无历史版本。<br />编辑停止 3 秒后自动保存，<br />每 5 分钟记一版（保留最近 10 版）。</> : <>No versions yet.<br />Autosaves 3s after you stop typing; one snapshot every 5 min (last 10 kept).</>}
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto">
@@ -304,18 +306,17 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
                       <span className="text-[10px] text-[var(--dash-muted)]">{v.words} 字</span>
                     </div>
                     <div className="mt-1 flex items-center justify-between">
-                      <span className="text-[10px] text-[var(--dash-muted)]">{i === 0 ? "最新一版" : `约 ${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} 分钟前保存`}</span>
+                      <span className="text-[10px] text-[var(--dash-muted)]">{i === 0 ? (lang === "zh" ? "最新一版" : "Latest") : lang === "zh" ? `约 ${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} 分钟前保存` : `Saved ~${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} min ago`}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); rollbackTo(v) }}
                         className="text-[10px] px-2 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
-                      >
-                        回滚到此版
+                      >{lang === "zh" ? "回滚到此版" : "Roll back"}
                       </button>
                     </div>
                   </div>
                 )
               })}
-              <div className="px-4 py-3 text-[10px] text-[var(--dash-muted)]">回滚会先保存当前内容为一版，不会丢失。</div>
+              <div className="px-4 py-3 text-[10px] text-[var(--dash-muted)]">{lang === "zh" ? "回滚会先保存当前内容为一版，不会丢失。" : "Current content is snapshotted before rollback — nothing is lost."}</div>
             </div>
           )}
         </div>
@@ -323,7 +324,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       {/* 定时发布面板（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron） */}
       {scheduleOpen && (
         <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg)] px-4 py-3 flex flex-wrap items-center gap-3">
-          <span className="text-xs text-[var(--dash-muted)]">定时发布：到达设定时间后自动对读者可见（无需保持页面打开）</span>
+          <span className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "定时发布：到达设定时间后自动对读者可见（无需保持页面打开）" : "Schedule: the post becomes visible to readers at the set time (no need to keep this page open)"}</span>
           <input
             type="datetime-local"
             value={scheduleAt}
@@ -338,20 +339,20 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
               setErrorMsg("")
               try {
                 const res = await fetch(`/api/posts/${post.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "published", publishedAt: new Date(scheduleAt).toISOString() }) })
-                if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "定时失败") }
+                if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || t.toastScheduleFail) }
                 setPost((prev: any) => ({ ...prev, status: "published", publishedAt: new Date(scheduleAt).toISOString() }))
-                toast(`已定时发布 · ${new Date(scheduleAt).toLocaleString("zh-CN")}`, "success")
+                toast(`${t.editorScheduledDone} · ${new Date(scheduleAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US")}`, "success")
                 setScheduleOpen(false)
-              } catch (e: any) { setErrorMsg(e.message || "定时失败"); toast(e.message || "定时失败", "error") }
+              } catch (e: any) { setErrorMsg(e.message || t.toastScheduleFail); toast(e.message || t.toastScheduleFail, "error") }
               finally { setSaving(false) }
             }}
           >
-            {saving ? "处理中..." : "确认定时"}
+            {saving ? t.editorProcessing : t.editorConfirmSchedule}
           </Button>
-          <button onClick={() => setScheduleOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)]">取消</button>
+          <button onClick={() => setScheduleOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors">{t.editorCancel}</button>
         </div>
       )}
-      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title="确定删除？" description={`将物理删除 "${post.title || post.slug || post.id}"，不可恢复。`} confirmText="删除" variant="danger" onConfirm={confirmDelete} />
+      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title={lang === "zh" ? "确定删除？" : "Delete this post?"} description={lang === "zh" ? `将物理删除 "${post.title || post.slug || post.id}"，不可恢复。` : `This will permanently delete "${post.title || post.slug || post.id}". This cannot be undone.`} confirmText={t.editorDeleteBtn} variant="danger" onConfirm={confirmDelete} />
 
       {/* ===== 文章信息 ===== */}
       <div className="border-b border-[var(--dash-border)] bg-[var(--dash-card)] px-5 py-2">
@@ -419,7 +420,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
 
       {/* ===== Bottom status ===== */}
       <div className="h-6 border-t border-[var(--dash-border)] bg-[var(--dash-card)] px-4 flex items-center justify-between text-[11px] text-[var(--dash-muted)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
-        <span>字数 {wordCount} · {post.status === "published" ? "已发布" : "草稿"} {lastSaved && `· 最后保存 ${lastSaved.toLocaleTimeString()}`}</span>
+        <span>{t.editorWords(wordCount)} · {post.status === "published" ? t.editorPublished : t.editorDraftBadge} {lastSaved && `· ${t.editorLastSaved} ${lastSaved.toLocaleTimeString()}`}</span>
         <span>自动保存中 · 拖拽分隔条调整列宽</span>
       </div>
     </div>
