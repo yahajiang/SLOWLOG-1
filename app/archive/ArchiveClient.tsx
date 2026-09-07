@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Search } from "lucide-react"
 import { Footer } from "@/components/Footer"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { useLang } from "@/lib/lang-context"
@@ -10,7 +10,7 @@ import { catLabel } from "@/components/HomeClient"
 
 // 归档页 = 查看全部的终点：全量按年份分组显示（首页时间线卡只放最近 8 条，其余引导到这里）
 export default function ArchiveClient({ posts, years }: { posts: any[]; years: [number, any[]][] }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [q, setQ] = useState("")
   const filteredYears = q.trim()
     ? years.map(([y, arr]) => [y, arr.filter((p:any)=> (p.titleZh||p.title).toLowerCase().includes(q.toLowerCase()) || p.category.toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
@@ -28,6 +28,14 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
+              className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              aria-label={lang === "zh" ? "全局搜索" : "Search"}
+              title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
             <LanguageSwitcher />
             <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-white rounded-none">{t.backToHome}</Link>
           </div>
