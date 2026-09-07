@@ -3,6 +3,7 @@ import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font
 import "./globals.css";
 import { Providers } from "./Providers";
 import { Welcome } from "@/components/Welcome";
+import { SearchPanel } from "@/components/SearchPanel";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -88,6 +89,7 @@ export default function RootLayout({
           {/* 欢迎幕放在内容之前：流式渲染时首帧即覆盖页面，避免"先见页面后盖幕" */}
           <Welcome />
           {children}
+          <SearchPanel />
         </Providers>
       </body>
     </html>
