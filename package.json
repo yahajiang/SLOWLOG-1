@@ -11,7 +11,12 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
-    "version:bump": "node scripts/auto-version.js"
+    "version:bump": "node scripts/auto-version.js",
+    "analyze": "node scripts/analyze.mjs",
+    "export-md": "node --env-file=.env scripts/export-md.mjs",
+    "import-md": "node --env-file=.env scripts/import-md.mjs",
+    "backup": "node --env-file=.env scripts/backup.mjs",
+    "perf": "next build && node scripts/perf-budget.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^6.0.0",
