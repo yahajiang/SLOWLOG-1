@@ -9,6 +9,7 @@ import { parsePageConfig } from "@/lib/page-config"
 import Link from "next/link"
 import { Breadcrumb } from "@/components/Breadcrumb"
 import { ConfirmDialog } from "@/components/ui/Dialog"
+import { getVersions, snapVersion, forceSnap, type PostVersion } from "@/lib/post-versions"
 import { useToast } from "@/components/ui/Toast"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -75,6 +76,23 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const [scheduleAt, setScheduleAt] = useState("")
   const scheduledFuture = post.status === "published" && post.publishedAt && new Date(post.publishedAt) > new Date()
+  // 版本历史（v0.3 P2）：localStorage 快照，最近 10 版
+  const [versionsOpen, setVersionsOpen] = useState(false)
+  const [versions, setVersions] = useState<PostVersion[]>([])
+  const [selectedVersion, setSelectedVersion] = useState<PostVersion | null>(null)
+  const openVersions = () => {
+    setVersions(getVersions(post.id))
+    setSelectedVersion(null)
+    setVersionsOpen(true)
+  }
+  const rollbackTo = (v: PostVersion) => {
+    // 回滚前先 forceSnap 当前内容（保住被回滚掉的版本）
+    forceSnap(post.id, post.content)
+    setPost((prev: any) => ({ ...prev, content: v.content }))
+    toast("已回滚到此版本（未保存，确认后再保存草稿）", "success")
+    setVersionsOpen(false)
+    setSelectedVersion(null)
+  }
   const [wordCount, setWordCount] = useState(0)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -116,6 +134,8 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     if (isNew) return
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current)
     autoSaveTimerRef.current = setTimeout(() => {
+      // 版本快照（≥5 分钟节流在 snapVersion 内部）
+      snapVersion(post.id, post.content)
       handleAutoSave()
     }, 3000)
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current) }
@@ -246,6 +266,12 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? "保存中..." : "保存草稿"}</Button>
           <Button variant="primary" onClick={() => handleSave("published")}>发布</Button>
           <button
+            onClick={openVersions}
+            className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
+            aria-label="版本历史"
+            title="版本历史"
+          >⏱</button>
+          <button
             onClick={() => setScheduleOpen((v) => !v)}
             className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
             aria-label="定时发布"
@@ -255,6 +281,44 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           {!isNew && <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>删除</Button>}
         </div>
       </div>
+      {/* 版本历史面板（v0.3 P2）：localStorage 快照，最近 10 版，可预览回滚 */}
+      {versionsOpen && (
+        <div className="fixed top-14 right-0 bottom-0 w-[320px] z-30 border-l border-[var(--dash-border)] bg-[var(--dash-card)] flex flex-col">
+          <div className="h-12 px-4 flex items-center justify-between border-b border-[var(--dash-border)] shrink-0">
+            <span className="text-sm font-medium text-[var(--dash-text)]">版本历史</span>
+            <button onClick={() => setVersionsOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)]">关闭</button>
+          </div>
+          {versions.length === 0 ? (
+            <div className="p-6 text-center text-xs text-[var(--dash-muted)]">
+              暂无历史版本。<br />编辑停止 3 秒后自动保存，<br />每 5 分钟记一版（保留最近 10 版）。
+            </div>
+          ) : (
+            <div className="flex-1 overflow-y-auto">
+              {versions.map((v, i) => {
+                const selected = selectedVersion?.at === v.at
+                return (
+                  <div key={v.at} className={`px-4 py-3 border-b border-[var(--dash-border)] cursor-pointer transition-colors ${selected ? "bg-[var(--dash-bg)]" : "hover:bg-[var(--dash-bg)]/60"}`} onClick={() => setSelectedVersion(v)}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-[var(--dash-text)]">{new Date(v.at).toLocaleString("zh-CN")}</span>
+                      <span className="text-[10px] text-[var(--dash-muted)]">{v.words} 字</span>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="text-[10px] text-[var(--dash-muted)]">{i === 0 ? "最新一版" : `约 ${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} 分钟前保存`}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); rollbackTo(v) }}
+                        className="text-[10px] px-2 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
+                      >
+                        回滚到此版
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+              <div className="px-4 py-3 text-[10px] text-[var(--dash-muted)]">回滚会先保存当前内容为一版，不会丢失。</div>
+            </div>
+          )}
+        </div>
+      )}
       {/* 定时发布面板（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron） */}
       {scheduleOpen && (
         <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg)] px-4 py-3 flex flex-wrap items-center gap-3">
