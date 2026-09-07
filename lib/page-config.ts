@@ -1,6 +1,6 @@
 export interface PageConfig {
   layout: "standard" | "magazine" | "fullscreen"
-  theme: "light" | "dark"
+  theme: "light" | "dark" | "system"
   primaryColor: string
   fontFamily: "sans" | "serif"
   backgroundColor: string
@@ -10,7 +10,7 @@ export interface PageConfig {
 
 export const DEFAULT_PAGE_CONFIG: PageConfig = {
   layout: "standard",
-  theme: "light",
+  theme: "system",
   primaryColor: "oklch(0.55 0.15 250)",
   fontFamily: "sans",
   backgroundColor: "#FFFFFF",

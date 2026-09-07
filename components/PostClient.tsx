@@ -216,7 +216,7 @@ export function PostClient({
           <div className={`${isFullscreen ? "flex gap-8 max-w-6xl mx-auto" : "grid lg:grid-cols-[1fr_308px] gap-8"}`}>
             <article className={`min-w-0 ${isFullscreen ? "max-w-5xl mx-auto flex-1" : pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-5xl" : "max-w-5xl"} ${isFullscreen ? "pt-8" : ""}`}>
               {content ? (
-                <PostRenderer content={content} pageConfig={pageConfig} />
+                <PostRenderer content={content} pageConfig={pageConfig} isDark={isDark || pageConfig?.theme === "dark"} />
               ) : (
                 <div
                   className="prose prose-zinc max-w-5xl
