@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useToast } from "@/components/ui/Toast"
 import { ConfirmDialog } from "@/components/ui/Dialog"
+import { useLang } from "@/lib/lang-context"
 import { PostsPageSkeleton } from "@/components/dashboard/Skeleton"
 
 export default function PostsPage() {
@@ -17,6 +18,7 @@ export default function PostsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [delId, setDelId] = useState<string | null>(null)
   const { toast } = useToast()
+  const { t, lang } = useLang()
 
   const load = useCallback(async () => {
     const params = new URLSearchParams()
@@ -53,7 +55,7 @@ export default function PostsPage() {
   const confirmDel = useCallback(async()=>{
     if(!delId) return
     const r=await fetch(`/api/posts/${delId}`,{method:"DELETE"})
-    if(r.ok) toast("已删除","success"); else toast("删除失败","error")
+    if(r.ok) toast(t.toastDeleted,"success"); else toast(t.dashOpFail,"error")
     setDelId(null); setSelected(s=>{const n=new Set(s); n.delete(delId); return n}); await load()
   }, [delId, toast, load])
   const [bulkConfirm, setBulkConfirm] = useState(false)
@@ -63,22 +65,22 @@ export default function PostsPage() {
   }, [selected])
   const confirmBulkDel = useCallback(async()=>{
     for(const id of selected) await fetch(`/api/posts/${id}`,{method:"DELETE"})
-    toast(`已删除 ${selected.size} 篇`,"success"); setSelected(new Set()); setBulkConfirm(false); await load()
+    toast(lang === "zh" ? `已删除 ${selected.size} 篇` : `${selected.size} deleted`,"success"); setSelected(new Set()); setBulkConfirm(false); await load()
   }, [selected, toast, load])
   const togglePublish = useCallback(async (p:any)=>{
     const ns = p.status==="published" ? "draft" : "published"
     const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({status:ns})})
-    if(r.ok) toast(ns==="published"?"已发布":"已下架为草稿","success"); else toast("操作失败","error")
+    if(r.ok) toast(ns==="published"?t.toastPublished:t.toastUnpublished,"success"); else toast(t.dashOpFail,"error")
     await load()
   }, [toast, load])
   const toggleFeatured = useCallback(async (p:any)=>{
     const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({featured:!p.featured})})
-    if(r.ok) toast(p.featured?"已取消推荐":"已设为推荐","success"); else toast("操作失败","error")
+    if(r.ok) toast(p.featured?"已取消推荐":"已设为推荐","success"); else toast(t.dashOpFail,"error")
     await load()
   }, [toast, load])
   const duplicate = useCallback(async (p:any)=>{
     const r=await fetch("/api/posts",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({title:p.title+" 副本", titleZh:(p.titleZh||p.title)+" 副本", slug:p.slug+"-copy-"+Date.now(), excerpt:p.excerpt, content:p.content, status:"draft", categoryId:p.categoryId, tags:p.tags, pageConfig:p.pageConfig})})
-    if(r.ok) toast("已复制为草稿","success"); else {const j=await r.json(); toast(j.error||"复制失败","error")}
+    if(r.ok) toast(t.toastCopiedDraft,"success"); else {const j=await r.json(); toast(j.error||t.toastCopyFail,"error")}
     await load()
   }, [toast, load])
 
@@ -87,26 +89,26 @@ export default function PostsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>文章</h1>
-        <Link href="/dashboard/posts/new" className="px-5 py-2.5 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 transition-opacity font-medium">新建文章</Link>
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashPosts}</h1>
+        <Link href="/dashboard/posts/new" className="px-5 py-2.5 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 transition-opacity font-medium">{t.dashNewPost}</Link>
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 space-y-3 shadow-[var(--shadow-card)]">
         <div className="flex flex-wrap gap-2 items-center">
-          <input value={q} onChange={e=>{setQ(e.target.value); setPage(1)}} placeholder="搜索标题、摘要、标签..." className="flex-1 min-w-[200px] px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--dash-accent)]/20 transition-colors" />
+          <input value={q} onChange={e=>{setQ(e.target.value); setPage(1)}} placeholder={lang === "zh" ? "搜索标题、摘要、标签..." : "Search title, excerpt, tags..."} className="flex-1 min-w-[200px] px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--dash-accent)]/20 transition-colors" />
           <select value={status} onChange={e=>{setStatus(e.target.value); setPage(1)}} className="px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none">
-            <option value="all">全部状态</option>
-            <option value="published">已发布</option>
-            <option value="draft">草稿</option>
-            <option value="archived">归档</option>
+            <option value="all">{lang === "zh" ? "全部状态" : "All statuses"}</option>
+            <option value="published">{t.dashPublished}</option>
+            <option value="draft">{t.dashDraft}</option>
+            <option value="archived">{lang === "zh" ? "归档" : "Archived"}</option>
           </select>
           <select value={catFilter} onChange={e=>{setCatFilter(e.target.value); setPage(1)}} className="px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none">
-            <option value="all">全部分类</option>
+            <option value="all">{lang === "zh" ? "全部分类" : "All categories"}</option>
             {cats.map((c:any)=><option key={c.id} value={c.slug}>{c.nameZh||c.name}</option>)}
           </select>
           <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{total} 篇 · 第 {page}/{totalPages} 页</span>
         </div>
-          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">已选 {selected.size} 篇</span><button onClick={bulkDel} className="px-3 py-1.5 bg-red-600 text-white rounded-none text-xs border border-red-600 hover:bg-red-700 font-medium">批量删除</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">清空</button></div>}
+          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-red-600 text-white rounded-none text-xs border border-red-600 hover:bg-red-700 font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)]">
@@ -120,10 +122,10 @@ export default function PostsPage() {
               <input type="checkbox" checked={selected.has(p.id)} onChange={()=>toggleSelect(p.id)} className="accent-[var(--dash-accent)]" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <Link href={`/dashboard/posts/${p.id}`} className="text-sm font-medium text-[var(--dash-text)] hover:text-[var(--dash-accent)] line-clamp-1">{p.titleZh || p.title || "未命名"}</Link>
+                  <Link href={`/dashboard/posts/${p.id}`} className="text-sm font-medium text-[var(--dash-text)] hover:text-[var(--dash-accent)] line-clamp-1">{p.titleZh || p.title || t.dashUntitled}</Link>
                   {p.featured && <span className="text-[10px] px-1.5 py-0.5 bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] rounded-none border border-[var(--dash-accent)]/20">推荐</span>}
                 </div>
-                <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || "未分类"} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-emerald-50 text-emerald-700 border-emerald-200") : p.status === "draft" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `定时 ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
+                <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || t.dashUncategorized} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-emerald-50 text-emerald-700 border-emerald-200") : p.status === "draft" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `${t.dashScheduledPrefix} ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
               </div>
               <div className="flex items-center gap-1 ml-2 flex-wrap justify-end">
                 <button onClick={()=>toggleFeatured(p)} className={`text-xs px-2.5 py-1 border rounded-none font-medium ${p.featured?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] hover:opacity-90":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{p.featured?"取消推荐":"推荐"}</button>
@@ -132,7 +134,7 @@ export default function PostsPage() {
                 <button onClick={()=>duplicate(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">复制</button>
                 <button onClick={()=>copyLink(p.id)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">链接</button>
                 <Link href={`/posts/${p.id}`} target="_blank" className="text-xs px-2.5 py-1 bg-[var(--dash-text)] text-white border border-[var(--dash-text)] rounded-none hover:opacity-90 font-medium">查看</Link>
-                <button onClick={()=>delOne(p.id)} className="text-xs px-2.5 py-1 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 hover:bg-red-50 font-medium">删除</button>
+                <button onClick={()=>delOne(p.id)} className="text-xs px-2.5 py-1 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 hover:bg-red-50 font-medium">{t.dashDelete}</button>
               </div>
             </div>
           ))}
@@ -140,14 +142,14 @@ export default function PostsPage() {
         </div>
         {totalPages>1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--dash-border)] bg-[var(--dash-bg)] text-xs">
-            <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">上一页</button>
+            <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "上一页" : "Prev"}</button>
             <span className="tabular-nums">第 {page} / {totalPages} 页 · 共 {total} 篇</span>
-            <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">下一页</button>
+            <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "下一页" : "Next"}</button>
           </div>
         )}
       </div>
-      <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title="确定删除？" description="将物理删除，不可恢复。" confirmText="删除" variant="danger" onConfirm={confirmDel} />
-      <ConfirmDialog open={bulkConfirm} onOpenChange={setBulkConfirm} title={`批量删除 ${selected.size} 篇？`} description="将物理删除选中的所有文章，不可恢复。" confirmText="删除" variant="danger" onConfirm={confirmBulkDel} />
+      <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title={lang === "zh" ? "确定删除？" : "Delete this post?"} description={lang === "zh" ? "将物理删除，不可恢复。" : "This will be permanently deleted."} confirmText={t.dashDelete} variant="danger" onConfirm={confirmDel} />
+      <ConfirmDialog open={bulkConfirm} onOpenChange={setBulkConfirm} title={lang === "zh" ? `批量删除 ${selected.size} 篇？` : `Delete ${selected.size} selected?`} description={lang === "zh" ? "将物理删除选中的所有文章，不可恢复。" : "Selected posts will be permanently deleted."} confirmText={t.dashDelete} variant="danger" onConfirm={confirmBulkDel} />
     </div>
   )
 }
