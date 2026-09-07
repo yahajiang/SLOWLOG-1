@@ -7,6 +7,7 @@ import { ArticleArt } from "@/components/ArticleArt";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { useLang } from "@/lib/lang-context";
+import { getReadProgress } from "@/lib/read-progress";
 import { formatDisplayDate } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
@@ -74,6 +75,18 @@ function MTimeline({ posts }: { posts: any[] }) {
       )
       .slice(0, 8);
   }, [posts]);
+  // 继续阅读标记：读过（5-95%）的文章行显示百分比
+  const [reading, setReading] = useState<Record<string, number>>({});
+  useEffect(() => {
+    try {
+      const m: Record<string, number> = {};
+      for (const p of recent) {
+        const v = getReadProgress(p.id);
+        if (v && v >= 5 && v < 95) m[p.id] = v;
+      }
+      setReading(m);
+    } catch {}
+  }, [recent]);
   if (recent.length === 0) return null;
   const year = new Date(
     (recent[0] as any).publishedAt || (recent[0] as any).createdAt || (recent[0] as any).date
@@ -105,6 +118,7 @@ function MTimeline({ posts }: { posts: any[] }) {
               <Link key={p.id} href={`/m/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[5px] active:bg-[var(--yh-bg)]/60">
                 <span className="absolute -left-[21px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-active:bg-[var(--yh-accent)] group-active:border-[var(--yh-accent)] transition-colors" />
                 <span className="mono text-[10px] text-[var(--yh-muted)] w-10 shrink-0">{md}</span>
+                {reading[p.id] != null && <span className="mono text-[9px] text-[var(--yh-accent)] shrink-0">{reading[p.id]}%</span>}
                 <span className="truncate">{lang === "zh" ? p.titleZh || p.title : p.title}</span>
               </Link>
             );

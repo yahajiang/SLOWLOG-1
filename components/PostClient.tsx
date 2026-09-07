@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { getReadProgress, saveReadProgress, clearReadProgress } from "@/lib/read-progress";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { CategoryBadge } from "./CategoryBadge";
 import { AuthorAvatar } from "./AuthorAvatar";
@@ -54,11 +56,70 @@ export function PostClient({
   const isFullscreen = pageConfig?.layout === "fullscreen"
   const showTOC = !isFullscreen
 
+  // 继续阅读（v0.3 P1-9）：记录滚动深度 + 重访提示条
+  const postId = rawPost.id || post.id
+  const [resumePct, setResumePct] = useState<number | null>(null)
+  useEffect(() => {
+    const saved = getReadProgress(postId)
+    if (saved && saved > 10 && saved < 92) setResumePct(saved)
+  }, [postId])
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+    function onScroll() {
+      if (timer) return
+      timer = setTimeout(() => {
+        timer = null
+        const doc = document.documentElement
+        const total = doc.scrollHeight - window.innerHeight
+        if (total <= 0) return
+        const pct = Math.min(100, Math.round((window.scrollY / total) * 100))
+        if (pct >= 98) clearReadProgress(postId)
+        else if (pct > 3) saveReadProgress(postId, pct)
+      }, 400)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      if (timer) clearTimeout(timer)
+    }
+  }, [postId])
+
+  const jumpToResume = () => {
+    const doc = document.documentElement
+    const total = doc.scrollHeight - window.innerHeight
+    if (resumePct != null && total > 0) window.scrollTo({ top: (total * resumePct) / 100, behavior: "smooth" })
+    setResumePct(null)
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--yh-bg)]" style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor && pageConfig.backgroundColor !== "#FFFFFF" ? pageConfig.backgroundColor : undefined, color: isDark ? "#E5E5E7" : undefined, ...(pageConfig?.primaryColor ? { ["--yh-accent" as any]: pageConfig.primaryColor } : {}) } as any}>
       <div className="h-[3px] w-full bg-[var(--yh-accent)]" />
       <Lightbox />
       <ReadingProgress />
+
+      {/* 继续阅读提示条：重访且有历史深度时浮动显示 */}
+      {resumePct !== null && (
+        <div className="fixed left-1/2 -translate-x-1/2 top-[65px] z-30 animate-[pageIn_0.35s_var(--ease-out)_both]">
+          <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-card)] px-4 py-2.5 rounded-none">
+            <span className="mono text-[11px] text-[var(--yh-muted)]">
+              {lang === "zh" ? `上次读到 ${resumePct}%` : `Left off at ${resumePct}%`}
+            </span>
+            <button
+              onClick={jumpToResume}
+              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-zinc-900 text-white hover:bg-[var(--yh-accent)] transition-colors rounded-none"
+            >
+              {lang === "zh" ? "继续" : "Resume"}
+            </button>
+            <button
+              onClick={() => setResumePct(null)}
+              className="mono text-[11px] text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors px-1"
+              aria-label={lang === "zh" ? "关闭" : "Dismiss"}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 顶部导航 */}
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
