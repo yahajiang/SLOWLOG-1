@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLang } from "@/lib/lang-context";
 import { getReadProgress, saveReadProgress, clearReadProgress } from "@/lib/read-progress";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -59,6 +60,8 @@ export function PostClient({
   // 继续阅读（v0.3 P1-9）：记录滚动深度 + 重访提示条
   const postId = rawPost.id || post.id
   const [resumePct, setResumePct] = useState<number | null>(null)
+  const [portalReady, setPortalReady] = useState(false)
+  useEffect(() => setPortalReady(true), [])
   useEffect(() => {
     const saved = getReadProgress(postId)
     if (saved && saved > 10 && saved < 92) setResumePct(saved)
@@ -97,16 +100,16 @@ export function PostClient({
       <Lightbox />
       <ReadingProgress />
 
-      {/* 继续阅读提示条：重访且有历史深度时浮动显示 */}
-      {resumePct !== null && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-[65px] z-30 animate-[pageIn_0.35s_var(--ease-out)_both]">
-          <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-card)] px-4 py-2.5 rounded-none">
-            <span className="mono text-[11px] text-[var(--yh-muted)]">
+      {/* 继续阅读提示条：Portal 直挂 body——固定悬浮视口底部，滚动时始终可见，不受 transform 祖先劫持 */}
+      {portalReady && resumePct !== null && createPortal(
+        <div id="sl-resume-bar" className="fixed left-1/2 -translate-x-1/2 z-40 animate-[pageIn_0.35s_var(--ease-out)_both]" style={{ bottom: 24 }}>
+          <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-float)] px-4 py-2.5 rounded-none">
+            <span className="mono text-[11px] text-[var(--yh-muted)] whitespace-nowrap">
               {lang === "zh" ? `上次读到 ${resumePct}%` : `Left off at ${resumePct}%`}
             </span>
             <button
               onClick={jumpToResume}
-              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-zinc-900 text-white hover:bg-[var(--yh-accent)] transition-colors rounded-none"
+              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-zinc-900 text-white hover:bg-[var(--yh-accent)] transition-colors rounded-none whitespace-nowrap"
             >
               {lang === "zh" ? "继续" : "Resume"}
             </button>
@@ -118,7 +121,8 @@ export function PostClient({
               ✕
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 顶部导航 */}
