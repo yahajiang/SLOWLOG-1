@@ -86,8 +86,8 @@ export default function MediaPage(){
         <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "媒体库" : "Media"}</h1>
         <div className="flex items-center gap-3">
           <div className="flex border border-[var(--dash-border)] rounded-none overflow-hidden text-xs">
-            <button onClick={() => setView("grid")} className={`px-3 py-1.5 ${view === "grid" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>网格</button>
-            <button onClick={() => setView("list")} className={`px-3 py-1.5 ${view === "list" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>列表</button>
+            <button onClick={() => setView("grid")} className={`px-3 py-1.5 ${view === "grid" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "网格" : "Grid"}</button>
+            <button onClick={() => setView("list")} className={`px-3 py-1.5 ${view === "list" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "列表" : "List"}</button>
           </div>
           <label className="px-4 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none cursor-pointer hover:opacity-90 font-medium disabled:opacity-50">
             {progress ? (lang === "zh" ? "上传中..." : "Uploading...") : (lang === "zh" ? "上传" : "Upload")}
