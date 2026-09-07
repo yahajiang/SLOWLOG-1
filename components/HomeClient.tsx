@@ -63,6 +63,18 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
 
   const featuredPosts = useMemo(() => posts.filter((p) => p.featured), [posts])
   const [heroIndex, setHeroIndex] = useState(0)
+  // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
+  const [readMarks, setReadMarks] = useState<Record<string, number>>({});
+  useEffect(() => {
+    const m: Record<string, number> = {};
+    try {
+      for (const p of posts) {
+        const v = getReadProgress(p.id);
+        if (v && v >= 5 && v < 95) m[p.id] = v;
+      }
+    } catch {}
+    setReadMarks(m);
+  }, [posts]);
   const featured = featuredPosts[heroIndex] || null
   const localizedFeatured = featured
     ? lang === "zh"
@@ -315,14 +327,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               }
               const years = [...byYear.entries()].sort((a,b)=> b[0]-a[0]).slice(0,2)
               const recent = years.flatMap(([,arr])=> arr).slice(0,8)
-              // 继续阅读标记：读过（5-95%）且未读完的文章行显示百分比
-              const reading = new Map<string, number>()
-              try {
-                for (const p of recent) {
-                  const v = getReadProgress(p.id)
-                  if (v && v >= 5 && v < 95) reading.set(p.id, v)
-                }
-              } catch {}
+              // 继续阅读标记（readMarks 由顶部 effect 水合后填充）
               const grouped = new Map<number, typeof posts>()
               for (const p of recent) {
                 const y = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date).getFullYear()
@@ -343,7 +348,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                             <Link key={p.id} href={`/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[3px]">
                               <span className="absolute -left-[26px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:bg-[var(--yh-accent)] group-hover:border-[var(--yh-accent)] group-hover:scale-110 transition-all duration-200" />
                               <span className="mono text-[10px] text-[var(--yh-muted)] w-10 shrink-0">{md}</span>
-                              {reading.has(p.id) && <span className="mono text-[9px] text-[var(--yh-accent)] shrink-0">{reading.get(p.id)}%</span>}
+                              {readMarks[p.id] && <span className="mono text-[9px] text-[var(--yh-accent)] shrink-0">{readMarks[p.id]}%</span>}
                               <span className="truncate group-hover:text-[var(--yh-accent)] group-hover:underline underline-offset-4 decoration-[var(--yh-accent)]/40">{lang==="zh" ? (p.titleZh||p.title) : p.title}</span>
                               <span className="ml-auto mono text-[10px] text-[var(--yh-muted)] px-1.5 py-px border border-[var(--yh-border)]/80 hidden sm:block shrink-0">{catLabel(p.category, t)}</span>
                             </Link>
