@@ -92,7 +92,7 @@ export function PostClient({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--yh-bg)]" style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor && pageConfig.backgroundColor !== "#FFFFFF" ? pageConfig.backgroundColor : undefined, color: isDark ? "#E5E5E7" : undefined, ...(pageConfig?.primaryColor ? { ["--yh-accent" as any]: pageConfig.primaryColor } : {}) } as any}>
+    <div className={`min-h-screen flex flex-col bg-[var(--yh-bg)] ${pageConfig?.theme === "dark" ? "dark" : ""} ${pageConfig?.theme === "light" ? "sl-force-light" : ""}`} style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor && pageConfig.backgroundColor !== "#FFFFFF" ? pageConfig.backgroundColor : undefined, color: isDark ? "#E5E5E7" : undefined, ...(pageConfig?.primaryColor ? { ["--yh-accent" as any]: pageConfig.primaryColor } : {}) } as any}>
       <div className="h-[3px] w-full bg-[var(--yh-accent)]" />
       <Lightbox />
       <ReadingProgress />
