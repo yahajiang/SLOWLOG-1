@@ -18,7 +18,11 @@ export function ConfigPanel({ value, onChange }: { value: PageConfig; onChange: 
 
       <div>
         <p className="text-xs font-medium text-[var(--dash-text)] mb-2">主题</p>
-        <label className="flex items-center gap-2 text-sm text-[var(--dash-text)]"><input type="checkbox" checked={value.theme==="dark"} onChange={e=>set({theme:e.target.checked?"dark":"light"})} className="accent-[var(--dash-accent)]" /> 深色</label>
+        <div className="flex gap-2">
+          {([["system","跟随系统"],["light","浅色"],["dark","深色"]] as const).map(([k,label]) => (
+            <button key={k} onClick={()=>set({theme:k})} className={`flex-1 py-2 text-xs border rounded-none font-medium transition-colors ${(value.theme||"system")===k?"bg-[var(--dash-text)] text-white border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{label}</button>
+          ))}
+        </div>
       </div>
 
       <div>
