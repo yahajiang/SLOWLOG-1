@@ -35,6 +35,7 @@ dev.log
 .zcode/
 skills-lock.json
 backups/
+.workbuddy/
 
 # content exports
 content-export/
