@@ -32,7 +32,7 @@ export function MFooter({ desktopHref }: MFooterProps) {
         <p className="mono text-[10px] text-[var(--yh-muted)]">© {new Date().getFullYear()} Yahajiang · {t.footerBuilt}</p>
         <button
           onClick={goDesktop}
-          className="mono text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-zinc-100 transition-colors"
+          className="mono text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors"
         >
           桌面版
         </button>

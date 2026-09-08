@@ -96,7 +96,7 @@ function MTimeline({ posts }: { posts: any[] }) {
       <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm font-medium text-zinc-900">{t.browseTimeline}</p>
+            <p className="text-sm font-medium text-[var(--yh-text)]">{t.browseTimeline}</p>
             <p className="text-xs text-[var(--yh-muted)] mt-1">{t.timelineDesc(posts.length)}</p>
           </div>
           <Link
@@ -204,14 +204,14 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
               <CategoryBadge category={featured.category} />
               <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
             </div>
-            <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-zinc-900 mb-2">
+            <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2">
               {heroTitle}
             </h2>
             <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{heroExcerpt}</p>
             <div className="flex items-center gap-2 mb-4">
               <AuthorAvatar initial={featured.authorInitial} />
               <div>
-                <p className="text-xs font-medium text-zinc-700">{featured.author}</p>
+                <p className="text-xs font-medium text-[var(--yh-muted)]">{featured.author}</p>
                 <p className="text-[11px] text-[var(--yh-muted)]">{heroDate} · {featured.readTime}</p>
               </div>
             </div>
