@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink, List, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
@@ -108,7 +108,16 @@ export function MPost({
       : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content;
   const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined;
-  const isDark = pageConfig?.theme === "dark";
+  const [sysDark, setSysDark] = useState(false)
+  useEffect(() => {
+    if (pageConfig?.theme !== "system") return
+    const mq = window.matchMedia("(prefers-color-scheme: dark)")
+    setSysDark(mq.matches);
+    const fn = (e: MediaQueryListEvent) => setSysDark(e.matches);
+    mq.addEventListener("change", fn)
+    return () => mq.removeEventListener("change", fn);
+  }, [pageConfig?.theme])
+  const isDark = pageConfig?.theme === "dark" || (pageConfig?.theme === "system" && sysDark)
   const repoUrl =
     (prismaRaw as any)?.repoUrl || (rawPost as any)?.repoUrl || REPO_MAP[rawPost.id];
 
@@ -178,7 +187,7 @@ export function MPost({
           <div className="flex items-center gap-3 py-3 px-3 -mx-1 rounded-none mt-4 bg-[var(--dash-card)] border border-[var(--yh-border)]">
             <AuthorAvatar initial={post.authorInitial} />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold truncate text-zinc-800">{post.author}</p>
+              <p className="text-sm font-semibold truncate text-[var(--yh-text)]">{post.author}</p>
               <p className="text-xs text-[var(--yh-muted)] truncate">
                 {relative} · {mCatLabel(post.category, t)} · {post.readTime}
               </p>

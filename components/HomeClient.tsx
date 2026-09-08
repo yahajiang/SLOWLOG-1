@@ -163,7 +163,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     </span>
                   )}
                 </div>
-                <h2 className="serif text-[26px] font-semibold leading-tight tracking-[-0.02em] text-zinc-900 mb-3">
+                <h2 className="serif text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
                   {localizedFeatured.title}
                 </h2>
                 <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{localizedFeatured.excerpt}</p>
@@ -171,7 +171,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   <div className="flex items-center gap-2">
                     <AuthorAvatar initial={localizedFeatured.authorInitial} />
                     <div>
-                      <p className="text-xs font-medium text-zinc-700">{localizedFeatured.author}</p>
+                      <p className="text-xs font-medium text-[var(--yh-muted)]">{localizedFeatured.author}</p>
                       <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(localizedFeatured.date, lang)} · {localizedFeatured.readTime}</p>
                     </div>
                   </div>
@@ -196,10 +196,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           </div>
           {featuredPosts.length > 1 && (
             <>
-              <button onClick={() => setHeroIndex((i) => (i - 1 + featuredPosts.length) % featuredPosts.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-white shadow-sm" aria-label="prev">
+              <button onClick={() => setHeroIndex((i) => (i - 1 + featuredPosts.length) % featuredPosts.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
                 ‹
               </button>
-              <button onClick={() => setHeroIndex((i) => (i + 1) % featuredPosts.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-white shadow-sm" aria-label="next">
+              <button onClick={() => setHeroIndex((i) => (i + 1) % featuredPosts.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
                 ›
               </button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -254,7 +254,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   setSearchQuery("");
                   setActiveCategory("All");
                 }}
-                className="mt-6 text-xs text-[var(--yh-muted)] underline underline-offset-4 hover:text-zinc-900 transition-colors"
+                className="mt-6 text-xs text-[var(--yh-muted)] underline underline-offset-4 hover:text-[var(--yh-text)] transition-colors"
               >
                 {t.clearFilters}
               </button>
@@ -274,7 +274,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       {label} · {abbr}
                     </span>
                     <span className="text-[11px] text-[var(--yh-muted)]">· {t.postsCount2(group.posts.length)}</span>
-                    <div className="flex-1 h-px bg-zinc-100 ml-2 hidden sm:block" />
+                    <div className="flex-1 h-px bg-[var(--yh-border)] ml-2 hidden sm:block" />
                     <button type="button" onClick={() => setActiveCategory(group.cat)} className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-colors">
                       {t.viewAllGrouped}
                     </button>
@@ -304,7 +304,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm font-medium text-zinc-900">
+                <p className="text-sm font-medium text-[var(--yh-text)]">
                   {t.browseTimeline}
                 </p>
                 <p className="text-xs text-[var(--yh-muted)] mt-1">

@@ -119,7 +119,7 @@ export default function ChangePasswordPage() {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
-                placeholder="您的名称"
+                placeholder={lang === "zh" ? "您的名称" : "Your name"}
               />
             </div>
 

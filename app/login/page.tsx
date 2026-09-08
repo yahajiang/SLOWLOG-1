@@ -40,7 +40,7 @@ function LoginPageInner() {
     <div className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-zinc-900 mb-2">{t.siteName}</h1>
+          <h1 className="text-2xl font-semibold text-[var(--yh-text)] mb-2">{t.siteName}</h1>
           <p className="text-sm text-[var(--yh-muted)]">{lang === "zh" ? "后台管理" : "Admin Panel"}</p>
         </div>
 

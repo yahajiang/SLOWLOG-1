@@ -106,15 +106,15 @@ export default function PostsPage() {
             <option value="all">{lang === "zh" ? "全部分类" : "All categories"}</option>
             {cats.map((c:any)=><option key={c.id} value={c.slug}>{c.nameZh||c.name}</option>)}
           </select>
-          <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{total} 篇 · 第 {page}/{totalPages} 页</span>
+          <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{lang === "zh" ? `${total} 篇 · 第 ${page}/${totalPages} 页` : `${total} posts · Page ${page}/${totalPages}`}</span>
         </div>
           {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-red-600 text-white rounded-none text-xs border border-red-600 hover:bg-red-700 font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)]">
         <div className="px-4 py-2 border-b border-[var(--dash-border)] flex items-center gap-3 text-xs text-[var(--dash-muted)] bg-[var(--dash-bg)]">
-          <label className="flex items-center gap-2"><input type="checkbox" checked={paged.length>0 && selected.size===paged.length} onChange={toggleAll} className="accent-[var(--dash-accent)]" /> 全选</label>
-          <span className="ml-auto">标题 / 分类 / 状态 · 操作</span>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={paged.length>0 && selected.size===paged.length} onChange={toggleAll} className="accent-[var(--dash-accent)]" /> {lang === "zh" ? "全选" : "All"}</label>
+          <span className="ml-auto">{lang === "zh" ? "标题 / 分类 / 状态 · 操作" : "Title / Category / Status · Actions"}</span>
         </div>
         <div className="divide-y divide-[var(--dash-border)]">
           {paged.map((p) => (
