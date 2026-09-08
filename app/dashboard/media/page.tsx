@@ -120,8 +120,8 @@ export default function MediaPage(){
                 <p className="text-xs font-medium truncate text-[var(--dash-text)]">{m.filename}</p>
                 <p className="text-[11px] text-[var(--dash-muted)]">{(m.size / 1024).toFixed(1)}KB · {m.width || "-"}×{m.height || "-"}</p>
                 <div className="flex gap-1 mt-2">
-                  <button onClick={() => copy(m.url)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">复制</button>
-                  <button onClick={() => del(m.id)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600 hover:border-red-200">删除</button>
+                  <button onClick={() => copy(m.url)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Copy"}</button>
+                  <button onClick={() => del(m.id)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600 hover:border-red-200">{lang === "zh" ? "删除" : "Delete"}</button>
                 </div>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function MediaPage(){
                 <p className="text-sm truncate text-[var(--dash-text)]">{m.filename}</p>
                 <p className="text-xs text-[var(--dash-muted)]">{m.mimeType} · {(m.size / 1024).toFixed(1)}KB</p>
               </div>
-              <button onClick={() => copy(m.url)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">复制</button>
+              <button onClick={() => copy(m.url)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Copy"}</button>
               <button onClick={() => del(m.id)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600">{lang === "zh" ? "删除" : "Delete"}</button>
             </div>
           ))}

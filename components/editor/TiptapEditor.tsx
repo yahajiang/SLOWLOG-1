@@ -157,7 +157,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
   const toolbarBtn = (icon: React.ReactNode, label: string, active: boolean, action: () => void) => (
     <button key={label} title={label} onMouseDown={(e) => e.preventDefault()} onClick={action}
-      className={`p-1.5 rounded transition-colors ${active ? "bg-[var(--yh-text)] text-[var(--yh-bg)]" : "text-[var(--yh-text)] hover:bg-zinc-100"}`}
+      className={`p-1.5 rounded transition-colors ${active ? "bg-[var(--yh-text)] text-[var(--yh-bg)]" : "text-[var(--yh-text)] hover:bg-[var(--yh-border)]"}`}
     >{icon}</button>
   )
 
@@ -172,13 +172,13 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           { icon: <Highlighter className="w-3.5 h-3.5" />, label: "高亮", action: () => editor.chain().focus().toggleHighlight().run(), active: editor.isActive("highlight") },
         ].map((item) => (
           <button key={item.label} title={item.label} onMouseDown={(e) => e.preventDefault()} onClick={item.action}
-            className={`p-1.5 rounded-none transition-colors ${item.active ? "bg-[var(--dash-card)] text-zinc-900" : "hover:bg-zinc-700"}`}>{item.icon}</button>
+            className={`p-1.5 rounded-none transition-colors ${item.active ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}>{item.icon}</button>
         ))}
         <div className="w-px h-4 bg-zinc-600 mx-0.5" />
         <button title="行内代码" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleCode().run()}
-          className={`p-1.5 rounded-none transition-colors ${editor.isActive("code") ? "bg-[var(--dash-card)] text-zinc-900" : "hover:bg-zinc-700"}`}><Code2 className="w-3.5 h-3.5" /></button>
+          className={`p-1.5 rounded-none transition-colors ${editor.isActive("code") ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}><Code2 className="w-3.5 h-3.5" /></button>
         <button title="链接" onMouseDown={(e) => e.preventDefault()} onClick={() => setLinkOpen(true)}
-          className={`p-1.5 rounded-none transition-colors ${editor.isActive("link") ? "bg-[var(--dash-card)] text-zinc-900" : "hover:bg-zinc-700"}`}><LinkIcon className="w-3.5 h-3.5" /></button>
+          className={`p-1.5 rounded-none transition-colors ${editor.isActive("link") ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}><LinkIcon className="w-3.5 h-3.5" /></button>
       </BubbleMenu>
 
       {/* FloatingMenu 空行 */}
@@ -194,7 +194,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 标题下拉 */}
           <div className="relative">
             <button title="标题" onMouseDown={(e) => e.preventDefault()} onClick={() => { setTitleOpen(!titleOpen); setListOpen(false); setAlignOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
-              className={`flex items-center gap-1 px-2 py-1.5 rounded-none text-sm transition-all duration-150 ${editor.isActive("heading") ? "bg-violet-100 text-violet-700" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              className={`flex items-center gap-1 px-2 py-1.5 rounded-none text-sm transition-all duration-150 ${editor.isActive("heading") ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)]" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)]"}`}>
               <Type className="w-4 h-4" />
               <span className="text-xs font-medium">{editor.isActive("heading", { level: 1 }) ? "H1" : editor.isActive("heading", { level: 2 }) ? "H2" : editor.isActive("heading", { level: 3 }) ? "H3" : editor.isActive("heading", { level: 4 }) ? "H4" : "标题"}</span>
               <ChevronDown className="w-3 h-3" />
@@ -229,7 +229,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
             { icon: <UnderlineIcon className="w-4 h-4" />, label: "下划线", active: editor.isActive("underline"), action: () => editor.chain().focus().toggleUnderline().run() },
           ].map((item) => (
             <button key={item.label} title={item.label} onMouseDown={(e) => e.preventDefault()} onClick={item.action}
-              className={`p-1.5 rounded-none transition-all duration-150 ${item.active ? "bg-amber-100 text-amber-700" : "text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700"}`}>
+              className={`p-1.5 rounded-none transition-all duration-150 ${item.active ? "bg-amber-100 text-amber-700" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700"}`}>
               {item.icon}
             </button>
           ))}
@@ -238,16 +238,16 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
           {/* 链接/图片 */}
           <button title="链接" onMouseDown={(e) => e.preventDefault()} onClick={() => setLinkOpen(true)}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150"><LinkIcon className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150"><LinkIcon className="w-4 h-4" /></button>
           <button title="图片" onMouseDown={(e) => e.preventDefault()} onClick={() => fileRef.current?.click()} disabled={uploading}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150 disabled:opacity-50"><Upload className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150 disabled:opacity-50"><Upload className="w-4 h-4" /></button>
 
           <div className="w-px h-4 bg-zinc-200 mx-0.5" />
 
           {/* 列表下拉 */}
           <div className="relative">
             <button title="列表" onMouseDown={(e) => e.preventDefault()} onClick={() => { setListOpen(!listOpen); setTitleOpen(false); setAlignOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
-              className={`flex items-center gap-1 px-2 py-1.5 rounded-none text-sm transition-all duration-150 ${editor.isActive("bulletList") || editor.isActive("orderedList") || editor.isActive("taskList") ? "bg-emerald-100 text-emerald-700" : "text-zinc-600 hover:bg-zinc-100"}`}>
+              className={`flex items-center gap-1 px-2 py-1.5 rounded-none text-sm transition-all duration-150 ${editor.isActive("bulletList") || editor.isActive("orderedList") || editor.isActive("taskList") ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)]" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)]"}`}>
               <List className="w-4 h-4" />
               <span className="text-xs font-medium">{editor.isActive("bulletList") ? "无序" : editor.isActive("orderedList") ? "有序" : editor.isActive("taskList") ? "任务" : "列表"}</span>
               <ChevronDown className="w-3 h-3" />
@@ -273,7 +273,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 文字颜色 */}
           <div className="relative">
             <button title="文字颜色" onMouseDown={(e) => e.preventDefault()} onClick={() => { setTextColorOpen(!textColorOpen); setTitleOpen(false); setListOpen(false); setAlignOpen(false); setHighlightColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150">
+              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150">
               <Paintbrush className="w-4 h-4" />
             </button>
             {textColorOpen && (
@@ -291,7 +291,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 背景高亮颜色 */}
           <div className="relative">
             <button title="背景高亮" onMouseDown={(e) => e.preventDefault()} onClick={() => { setHighlightColorOpen(!highlightColorOpen); setTitleOpen(false); setListOpen(false); setAlignOpen(false); setTextColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150">
+              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150">
               <Highlighter className="w-4 h-4" />
             </button>
             {highlightColorOpen && (
@@ -311,7 +311,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 对齐方式下拉 */}
           <div className="relative">
             <button title="对齐方式" onMouseDown={(e) => e.preventDefault()} onClick={() => { setAlignOpen(!alignOpen); setTitleOpen(false); setListOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150">
+              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150">
               <AlignLeft className="w-4 h-4" />
             </button>
             {alignOpen && (
@@ -334,22 +334,22 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
           {/* 表格/引用/代码/分割线/清除/撤销/重做 */}
           <button title="插入表格" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150"><TableIcon className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150"><TableIcon className="w-4 h-4" /></button>
           <button title="引用" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`p-1.5 rounded-none transition-all duration-150 ${editor.isActive("blockquote") ? "bg-cyan-100 text-cyan-700" : "text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700"}`}><Quote className="w-4 h-4" /></button>
+            className={`p-1.5 rounded-none transition-all duration-150 ${editor.isActive("blockquote") ? "bg-cyan-100 text-cyan-700" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700"}`}><Quote className="w-4 h-4" /></button>
           <button title="代码块" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`p-1.5 rounded-none transition-all duration-150 ${editor.isActive("codeBlock") ? "bg-cyan-100 text-cyan-700" : "text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700"}`}><Code2 className="w-4 h-4" /></button>
+            className={`p-1.5 rounded-none transition-all duration-150 ${editor.isActive("codeBlock") ? "bg-cyan-100 text-cyan-700" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700"}`}><Code2 className="w-4 h-4" /></button>
           <button title="分割线" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().setHorizontalRule().run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150"><Minus className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150"><Minus className="w-4 h-4" /></button>
           <button title="清除格式" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150"><Eraser className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150"><Eraser className="w-4 h-4" /></button>
 
           <div className="w-px h-4 bg-zinc-200 mx-0.5" />
 
           <button title="撤销" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"><Undo2 className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"><Undo2 className="w-4 h-4" /></button>
           <button title="重做" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-zinc-100 hover:text-zinc-700 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"><Redo2 className="w-4 h-4" /></button>
+            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-zinc-700 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"><Redo2 className="w-4 h-4" /></button>
       </div>
 
       {/* 编辑器内容 */}

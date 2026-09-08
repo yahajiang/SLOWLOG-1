@@ -28,7 +28,7 @@ const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor").th
     <div className="flex items-center justify-center h-96">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-2 border-[var(--dash-border)] border-t-[var(--dash-text)] rounded-none animate-spin" />
-        <p className="text-sm text-[var(--dash-muted)]">加载编辑器...</p>
+        <p className="text-sm text-[var(--dash-muted)]">{(typeof window !== "undefined" && localStorage.getItem("yh-lang") === "en") ? "Loading editor..." : "加载编辑器..."}</p>
       </div>
     </div>
   )
@@ -52,7 +52,7 @@ function PreviewPanel({ content, post, pageConfig, categories }: { content: any;
         <div className="flex items-center gap-3 pb-6 border-b border-[var(--yh-border)]">
           <div className="w-10 h-10 rounded-none bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
           <div>
-            <p className="text-sm font-semibold text-zinc-800">{post.author || "Yahajiang"}</p>
+            <p className="text-sm font-semibold text-[var(--yh-text)]">{post.author || "Yahajiang"}</p>
             <p className="text-xs text-[var(--yh-muted)]">{new Date().toLocaleDateString()} · {categories.find((c: any) => c.id === post.categoryId)?.name || "Design"}</p>
           </div>
         </div>

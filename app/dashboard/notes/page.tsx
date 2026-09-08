@@ -43,7 +43,7 @@ export default function NotesPage() {
         {notes.map(n=>(
           <div key={n.id} className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 flex justify-between gap-4 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow">
             <div className="flex-1">
-              <p className="text-sm text-[var(--dash-text)] leading-relaxed whitespace-pre-wrap break-words">{n.contentZh || n.content || "（空）"}</p>
+              <p className="text-sm text-[var(--dash-text)] leading-relaxed whitespace-pre-wrap break-words">{n.contentZh || n.content || (lang === "zh" ? "（空）" : "(empty)")}</p>
               <p className="text-xs text-[var(--dash-muted)] mt-2">{new Date(n.createdAt).toLocaleString()}</p>
             </div>
             <button onClick={()=>del(n.id)} className="text-xs text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-none border border-transparent hover:border-red-200 shrink-0">{lang === "zh" ? "删除" : "Delete"}</button>

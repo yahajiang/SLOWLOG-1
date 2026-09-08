@@ -50,7 +50,16 @@ export function PostClient({
     : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content
   const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined
-  const isDark = pageConfig?.theme === "dark"
+  const [sysDark, setSysDark] = useState(false)
+  useEffect(() => {
+    if (pageConfig?.theme !== "system") return
+    const mq = window.matchMedia("(prefers-color-scheme: dark)")
+    setSysDark(mq.matches)
+    const fn = (e: MediaQueryListEvent) => setSysDark(e.matches)
+    mq.addEventListener("change", fn)
+    return () => mq.removeEventListener("change", fn)
+  }, [pageConfig?.theme])
+  const isDark = pageConfig?.theme === "dark" || (pageConfig?.theme === "system" && sysDark)
   const isFullscreen = pageConfig?.layout === "fullscreen"
   const showTOC = !isFullscreen
 
@@ -92,7 +101,7 @@ export function PostClient({
   }
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[var(--yh-bg)] ${pageConfig?.theme === "dark" ? "dark" : ""} ${pageConfig?.theme === "light" ? "sl-force-light" : ""}`} style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor && pageConfig.backgroundColor !== "#FFFFFF" ? pageConfig.backgroundColor : undefined, color: isDark ? "#E5E5E7" : undefined, ...(pageConfig?.primaryColor ? { ["--yh-accent" as any]: pageConfig.primaryColor } : {}) } as any}>
+    <div className={`min-h-screen flex flex-col bg-[var(--yh-bg)] ${isDark ? "dark" : ""} ${pageConfig?.theme === "light" ? "sl-force-light" : ""}`} style={{ backgroundColor: isDark ? "#1C1C1E" : pageConfig?.backgroundColor && pageConfig.backgroundColor !== "#FFFFFF" ? pageConfig.backgroundColor : undefined, color: isDark ? "#E5E5E7" : undefined, ...(pageConfig?.primaryColor ? { ["--yh-accent" as any]: pageConfig.primaryColor } : {}) } as any}>
       <div className="h-[3px] w-full bg-[var(--yh-accent)]" />
       <Lightbox />
       <ReadingProgress />
@@ -225,17 +234,17 @@ export function PostClient({
                   prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-10 prose-h2:mb-2 prose-h2:scroll-mt-[88px] prose-h2:tracking-tight prose-h2:border-b prose-h2:border-[var(--yh-border)] prose-h2:pb-2
                   prose-h3:text-lg prose-h3:font-semibold prose-h3:mt-7 prose-h3:mb-1 prose-h4:text-base prose-h4:font-semibold prose-h4:mt-5 prose-h4:mb-1
                   prose-a:text-[var(--yh-accent)] prose-a:underline prose-a:underline-offset-4 prose-a:decoration-2 prose-a:hover:decoration-[var(--yh-accent)]
-                  prose-strong:font-semibold prose-strong:text-zinc-900
-                  prose-code:text-[13px] prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-none prose-code:font-mono prose-code:text-rose-600 prose-code:before:content-none prose-code:after:content-none
+                  prose-strong:font-semibold prose-strong:text-[var(--yh-text)]
+                  prose-code:text-[13px] prose-code:bg-[var(--yh-border)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-none prose-code:font-mono prose-code:text-rose-600 prose-code:before:content-none prose-code:after:content-none
                   prose-pre:bg-zinc-900 prose-pre:text-zinc-100 prose-pre:p-4 prose-pre:rounded-none prose-pre:overflow-x-auto prose-pre:border prose-pre:border-zinc-800 prose-pre:shadow-lg
-                  prose-blockquote:border-l-[3px] prose-blockquote:border-[var(--yh-accent)]/30 prose-blockquote:pl-5 prose-blockquote:text-zinc-600 prose-blockquote:italic prose-blockquote:bg-[var(--dash-card)]/50 prose-blockquote:py-1 prose-blockquote:pr-4 prose-blockquote:rounded-none
+                  prose-blockquote:border-l-[3px] prose-blockquote:border-[var(--yh-accent)]/30 prose-blockquote:pl-5 prose-blockquote:text-[var(--yh-muted)] prose-blockquote:italic prose-blockquote:bg-[var(--dash-card)]/50 prose-blockquote:py-1 prose-blockquote:pr-4 prose-blockquote:rounded-none
                   prose-ul:list-disc prose-ul:pl-6 prose-ul:marker:text-[var(--yh-muted)] prose-ol:list-decimal prose-ol:pl-6 prose-ol:marker:text-[var(--yh-muted)]
                   prose-li:text-[15px] prose-li:leading-[1.8] prose-li:mb-1
                   prose-hr:border-[var(--yh-border)] prose-hr:my-10
                   prose-img:rounded-none prose-img:my-7 prose-img:shadow-md prose-img:border prose-img:border-[var(--yh-border)]
                   prose-table:text-[14px] prose-table:border-collapse prose-table:w-full prose-table:my-7 prose-table:rounded-none prose-table:shadow-sm prose-table:border prose-table:border-[var(--yh-border)]
-                  prose-th:border-b-2 prose-th:border-[var(--yh-border)] prose-th:bg-[var(--dash-card)] prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-zinc-700 prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
-                  prose-td:border-b prose-td:border-[var(--yh-border)] prose-td:px-4 prose-td:py-3 prose-td:text-zinc-600 prose-td:align-top
+                  prose-th:border-b-2 prose-th:border-[var(--yh-border)] prose-th:bg-[var(--dash-card)] prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-[var(--yh-muted)] prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
+                  prose-td:border-b prose-td:border-[var(--yh-border)] prose-td:px-4 prose-td:py-3 prose-td:text-[var(--yh-muted)] prose-td:align-top
                   prose-thead:border-b-2 prose-thead:border-[var(--yh-border)]"
                   dangerouslySetInnerHTML={{ __html: post.html }}
                 />
