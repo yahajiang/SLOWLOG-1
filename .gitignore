@@ -35,3 +35,6 @@ dev.log
 .zcode/
 skills-lock.json
 backups/
+
+# content exports
+content-export/
