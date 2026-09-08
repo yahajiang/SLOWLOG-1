@@ -68,7 +68,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
                   >
                     <span className="mono text-[11px] text-[var(--yh-muted)] w-11 shrink-0">{md}</span>
                     <span className="text-sm truncate flex-1">{title}</span>
-                    <span className="mono text-[10px] px-2 py-0.5 border border-[var(--yh-border)] bg-white shrink-0">
+                    <span className="mono text-[10px] px-2 py-0.5 border border-[var(--yh-border)] bg-[var(--dash-card)] shrink-0">
                       {mCatLabel(p.category, t)}
                     </span>
                   </Link>

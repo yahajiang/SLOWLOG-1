@@ -72,7 +72,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                       document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }, 120);
                   }}
-                  className="flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none text-zinc-600 active:bg-zinc-100"
+                  className="flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none text-[var(--yh-muted)] active:bg-[var(--yh-border)]"
                 >
                   <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-zinc-300" />
                   {h.text}

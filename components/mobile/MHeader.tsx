@@ -36,7 +36,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
             <Link
               href="/m/dashboard"
               aria-label={t.navAdmin}
-              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-zinc-100/80 transition-colors rounded-none"
+              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
             >
               <Settings className="w-5 h-5" />
             </Link>
@@ -44,7 +44,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           {searchable && (
             <button
               onClick={() => setOpen((v) => !v)}
-              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-zinc-100/80 transition-colors rounded-none"
+              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
               aria-label="Search"
             >
               {open ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}

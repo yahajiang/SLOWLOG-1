@@ -18,7 +18,7 @@ export function MArticleCard({ post }: { post: any }) {
   return (
     <Link
       href={`/m/posts/${post.id}`}
-      className="group text-left w-full border border-[var(--yh-border)] bg-[var(--dash-card)] active:bg-zinc-50 flex flex-col overflow-hidden rounded-none"
+      className="group text-left w-full border border-[var(--yh-border)] bg-[var(--dash-card)] active:bg-[var(--yh-border)] flex flex-col overflow-hidden rounded-none"
     >
       <div className="relative overflow-hidden aspect-[16/9]">
         <ArticleArt post={post} />
@@ -27,7 +27,7 @@ export function MArticleCard({ post }: { post: any }) {
         </div>
       </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <h3 className="text-[15px] font-semibold leading-snug text-zinc-900 line-clamp-2">
+        <h3 className="text-[15px] font-semibold leading-snug text-[var(--yh-text)] line-clamp-2">
           {title}
         </h3>
         <p className="text-[13px] text-[var(--yh-muted)] leading-relaxed line-clamp-2">
