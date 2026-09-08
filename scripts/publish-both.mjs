@@ -62,7 +62,7 @@ async function main() {
     console.log(`  … attempt ${i}`);
     try {
       git("fetch slowlog1 main", { cwd: TMP, quiet: true });
-      git("merge slowlog1/main -m \"merge: 并入远程 README 蓝图与 LICENSE\"", { cwd: TMP, quiet: true });
+      git("merge -X ours slowlog1/main -m \"merge: 并入远程 README 蓝图与 LICENSE\"", { cwd: TMP, quiet: true });
       const p = git("push slowlog1 main", { cwd: TMP, quiet: true });
       console.log("  " + (p || "pushed"));
       pushed = true;

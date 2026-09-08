@@ -968,3 +968,6 @@ body::after {
 .dark article th { background-color: #1c1915 !important; color: #d4c8b8 !important; border-color: #2c2a26 !important }
 .dark article td { color: #c9c0b4 !important; border-color: #2c2a26 !important }
 .dark article table, .dark article th, .dark article td { --dash-card: #1c1915; --dash-border: #2c2a26; --yh-border: #2c2a26 }
+
+/* 暗色下文章页概览统计卡标签（server 组件硬编码标签的暗色适配） */
+.dark .stat-card-label { color: #8e8478 }
