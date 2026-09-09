@@ -64,7 +64,7 @@ export function MLogin() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-zinc-400 focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-muted)] focus:outline-none transition-colors rounded-none"
                 placeholder={lang === "zh" ? "请输入用户名" : "Enter username"}
                 autoFocus
               />
@@ -77,7 +77,7 @@ export function MLogin() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-zinc-400 focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-muted)] focus:outline-none transition-colors rounded-none"
                 placeholder={lang === "zh" ? "请输入密码" : "Enter password"}
               />
             </div>
@@ -89,7 +89,7 @@ export function MLogin() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="w-full py-3.5 bg-zinc-900 text-white text-sm tracking-widest uppercase hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
+              className="w-full py-3.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-sm tracking-widest uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
             >
               {loading ? (lang === "zh" ? "登录中..." : "Logging in...") : lang === "zh" ? "登录" : "Login"}
             </button>

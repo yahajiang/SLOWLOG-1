@@ -19,7 +19,7 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
   return (
     <div
       className="group relative pl-[29px] py-[14px] transition-all duration-500 hover:pl-9"
-      style={{ animationDelay: `${index * 80}ms` }}
+      style={{ animationDelay: `${Math.min(index, 10) * 50}ms` }}
     >
       {/* 时间线竖线 */}
       <div className="absolute left-[7px] top-0 bottom-0 w-px bg-gradient-to-b from-[var(--yh-accent)]/30 via-[var(--yh-border)] to-transparent" />
@@ -85,7 +85,7 @@ export function Thinking() {
             <div
               key={thought.id}
               className="animate-[fadeInUp_0.5s_var(--ease-out)_both]"
-              style={{ animationDelay: `${i * 80}ms` }}
+              style={{ animationDelay: `${Math.min(i, 10) * 50}ms` }}
             >
               <ThoughtItem thought={thought} lang={lang} index={i} />
             </div>

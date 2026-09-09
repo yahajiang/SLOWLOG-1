@@ -70,7 +70,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
 
             <Link
               href="/dashboard"
-              className="w-9 h-9 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-zinc-100/80 transition-colors rounded-none"
+              className="w-9 h-9 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-border)]/80 transition-colors rounded-none"
               title={t.navAdmin}
             >
               <Settings className="w-[18px] h-[18px]" />

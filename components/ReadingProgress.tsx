@@ -40,7 +40,7 @@ export function ReadingProgress() {
         if (el) el.textContent = mins <= 1 ? t.almostDone : t.readingRemaining(mins);
         // 侧栏进度卡同步
         const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
-        if (sideBar) sideBar.style.width = `${pct}%`;
+        if (sideBar) sideBar.style.transform = `scaleX(${pct / 100})`;
         const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null;
         if (sideText) sideText.textContent = `${Math.round(pct)}% · ${t.estimatedTime(mins)}`;
         // 段落高亮：当前视口中点附近的段落
@@ -75,9 +75,9 @@ export function ReadingProgress() {
     <>
       <div className={`fixed top-0 left-0 right-0 z-[60] h-[3px] pointer-events-none transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}>
         <div
-          className="h-full transition-[width] duration-150 ease-out"
+          className="h-full w-full origin-left transition-transform duration-150 ease-out"
           style={{
-            width: `${progress}%`,
+            transform: `scaleX(${progress / 100})`,
             background: "var(--yh-accent)",
           }}
         />

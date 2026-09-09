@@ -132,7 +132,7 @@ export function TableOfContents({
           </nav>
           <div className="mt-[26px] rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] p-[13px]">
             <p className="mono text-[12px] font-semibold">{t.readingProgress}</p>
-            <div className="h-[7px] rounded-none bg-[var(--yh-border)] mt-[9px] overflow-hidden"><div data-side-progress className="h-full w-[0%] rounded-none bg-[var(--yh-accent)] transition-[width] duration-150" /></div>
+            <div className="h-[7px] rounded-none bg-[var(--yh-border)] mt-[9px] overflow-hidden"><div data-side-progress className="h-full w-full origin-left scale-x-0 rounded-none bg-[var(--yh-accent)] transition-transform duration-150" /></div>
             <p data-side-progress-text className="mono text-[12px] text-[var(--yh-muted)] mt-[5px]">0% · {t.estimatedTime(readMinutes ?? 10)}</p>
           </div>
           <div className="mt-[18px] pt-[13px] border-t border-[var(--yh-border)] mono text-[12px] text-[var(--yh-muted)]">

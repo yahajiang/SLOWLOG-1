@@ -32,7 +32,7 @@ function MThoughts() {
   return (
     <section className="w-full mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-5">
-        <div className="h-px w-7 bg-zinc-900" />
+        <div className="h-px w-7 bg-[var(--yh-text)]" />
         <p className="text-[11px] uppercase tracking-widest text-[var(--yh-muted)] font-semibold">
           {t.thinking}
         </p>
@@ -101,7 +101,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           </div>
           <Link
             href="/m/archive"
-            className="text-xs tracking-widest uppercase border border-zinc-900 px-3 py-2 hover:bg-zinc-900 hover:text-white transition-colors shrink-0"
+            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
           >
             {t.viewAll}
           </Link>
@@ -217,7 +217,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </div>
             <Link
               href={`/m/posts/${featured.id}`}
-              className="flex items-center justify-center gap-1.5 w-full px-4 py-3 bg-zinc-900 text-white text-[12px] tracking-widest uppercase"
+              className="flex items-center justify-center gap-1.5 w-full px-4 py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-widest uppercase"
             >
               {t.readArticle} <ChevronRight className="w-4 h-4" />
             </Link>
@@ -227,7 +227,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
 
       <section id="posts" className="w-full mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-5">
-          <div className="h-px w-7 bg-zinc-900" />
+          <div className="h-px w-7 bg-[var(--yh-text)]" />
           <p className="text-[11px] uppercase tracking-widest text-[var(--yh-muted)] font-semibold">
             {showHero ? t.latestArticles : activeCategory === "All" ? t.allArticles : lang === "zh"
               ? dbCategories?.find((c: any) => c.name === activeCategory)?.nameZh || mCatLabel(activeCategory, t)

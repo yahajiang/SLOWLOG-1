@@ -47,6 +47,7 @@ function renderInline(node: any, idx: number): React.ReactNode {
 
 function CopyBtn({ code }: { code: string }) {
   const [copied, setCopied] = React.useState(false)
+  // legacy zinc/hex（历史还原豁免，勿模仿）：代码块 UI 始终深色，待令牌化，登记于 慢日志UI一致性基线.md
   return (
     <button
       onClick={async () => { try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1200) } catch {} }}

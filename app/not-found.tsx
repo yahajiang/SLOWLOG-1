@@ -12,7 +12,7 @@ export default function NotFound() {
           S
         </span>
         <div>
-          <p className="mono text-[64px] leading-none font-semibold tracking-[0.1em] text-zinc-200 select-none">
+          <p className="mono text-[64px] leading-none font-semibold tracking-[0.1em] text-[var(--yh-border)] select-none">
             404
           </p>
           <h1 className="text-xl font-semibold text-[var(--yh-text)] mt-4">
@@ -25,7 +25,7 @@ export default function NotFound() {
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <Link
             href="/"
-            className="px-6 py-2.5 bg-zinc-900 text-white text-[12px] tracking-[0.14em] uppercase hover:bg-[var(--yh-accent)] transition-colors min-h-[44px] flex items-center"
+            className="px-6 py-2.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.14em] uppercase hover:bg-[var(--yh-accent)] transition-colors min-h-[44px] flex items-center"
           >
             返回首页
           </Link>

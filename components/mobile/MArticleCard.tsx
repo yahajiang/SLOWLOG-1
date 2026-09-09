@@ -50,7 +50,7 @@ export function MArticleCard({ post }: { post: any }) {
           <p className="text-[11px] text-[var(--yh-muted)] truncate flex-1 min-w-0">
             {relative} · {post.readTime}
           </p>
-          <ChevronRight className="w-4 h-4 text-zinc-300 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[var(--yh-border)] shrink-0" />
         </div>
       </div>
     </Link>
