@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Cormorant_Garamond, JetBrains_Mono, Noto_Serif_SC, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
 import { Welcome } from "@/components/Welcome";
@@ -28,6 +28,14 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
   display: "swap",
   preload: true,
+});
+
+// 中文衬线（设计系统 v1.3）：标题/品牌中文走 Noto Serif SC，拉丁由 Cormorant 前置承接
+const notoSerifSC = Noto_Serif_SC({
+  weight: ["400", "600"],
+  variable: "--font-serif-sc",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -59,14 +67,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable}`} suppressHydrationWarning>
+    <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable} ${notoSerifSC.variable}`} suppressHydrationWarning>
       <head>
         {/* 关键样式内联：外链 CSS 被网络链路掐断时（国内访问 CF/Vercel 间歇失败），
             页面仍保持纸底/字色/字体的基本排版，不裸奔。
             ⚠️ 只允许 CSS 变量与 body 级规则——任何元素/通配选择器（如 *{margin:0}）
             都是未分层规则，会覆盖 @layer utilities 里的全部 Tailwind 工具类
             （曾导致 mx-auto/px-6 全线失效、容器贴左的线上回归） */}
-        <style dangerouslySetInnerHTML={{ __html: `:root{--yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#8e8e93;--yh-border:#e5e5e7;--yh-accent:oklch(.55 .15 250);--dash-bg:var(--yh-bg);--dash-card:#fff;--dash-border:var(--yh-border);--dash-text:var(--yh-text);--dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent)}body{background:var(--yh-bg);color:var(--yh-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}.welcome{position:fixed;inset:0;z-index:90;background:var(--yh-bg)}.html-returning .welcome{display:none}` }} />
+        <style dangerouslySetInnerHTML={{ __html: `:root{--yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#6e6e73;--yh-border:#e5e5e7;--yh-accent:#4a6fb5;--yh-accent:oklch(.55 .15 250);--dash-bg:var(--yh-bg);--dash-card:#fff;--dash-border:var(--yh-border);--dash-text:var(--yh-text);--dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent)}body{background:var(--yh-bg);color:var(--yh-text);font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}.welcome{position:fixed;inset:0;z-index:90;background:var(--yh-bg)}.html-returning .welcome{display:none}` }} />
         {/* 外链 CSS 加载失败时自动重载一次（sessionStorage 防循环）：
             探针读 .css-probe 的自定义属性——它只存在于外链 globals.css 中 */}
         <script
