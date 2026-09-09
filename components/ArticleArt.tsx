@@ -156,7 +156,7 @@ function LightTexture({ palette, intensity = "low" }: { palette: any; intensity?
   return (
     <>
       <div className="absolute inset-0" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 5px, ${palette.wash} 5px, ${palette.wash} 6px)`, opacity: op * 1.4 }} />
-      <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, ${palette.ink} 1px, transparent 0)`, backgroundSize: "24px 24px", opacity: op }} />
+      <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, ${palette.ink} 1px, transparent 0)`, animation: "motionBreath var(--motion-breath) ease-in-out infinite", backgroundSize: "24px 24px", opacity: op }} />
     </>
   );
 }
@@ -385,7 +385,7 @@ export const ArticleArt = memo(function ArticleArt({
     >
       {/* 纸纹 + 微噪点 */}
       <div className="absolute inset-0" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, ${palette.wash} 3px, ${palette.wash} 4px)`, opacity: catName === "Design" ? 0.20 : catName === "Plugin" ? 0.12 : 0.15 }} />
-      <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, ${palette.ink} 1px, transparent 0)`, backgroundSize: "20px 20px" }} />
+      <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, ${palette.ink} 1px, transparent 0)`, animation: "motionBreath var(--motion-breath) ease-in-out infinite", backgroundSize: "20px 20px" }} />
       {/* 顶部细发丝线（编辑感） */}
       <div className="absolute top-0 left-6 right-6 h-px opacity-[0.07]" style={{ backgroundColor: palette.ink }} />
 

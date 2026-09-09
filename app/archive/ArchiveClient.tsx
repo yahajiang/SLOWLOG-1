@@ -41,7 +41,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
             </button>
             <ThemeToggle />
             <LanguageSwitcher />
-            <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-white rounded-none">{t.backToHome}</Link>
+            <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">{t.backToHome}</Link>
           </div>
         </div>
       </div>

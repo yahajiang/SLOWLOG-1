@@ -11,6 +11,7 @@ export function TableOfContents({
   readMinutes?: number;
 }) {
   const [active, setActive] = useState("");
+  const [progress, setProgress] = useState(0);
   const isClickRef = React.useRef(false);
   const releaseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useLang();
@@ -56,6 +57,10 @@ export function TableOfContents({
       });
       const cur = headings[Math.min(curIdx, headings.length - 1)]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
+      // Motion 05 阅读：导轨进度 = 文档滚动比例
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      setProgress((prev) => (Math.abs(prev - p) < 0.005 ? prev : p));
     }
 
     function onScroll() {
@@ -95,7 +100,9 @@ export function TableOfContents({
             </p>
             <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">{headings.length}</span>
           </div>
-          <nav className="space-y-0.5 border-l border-[var(--yh-border)] pl-3">
+          <nav className="relative space-y-0.5 pl-3">
+            <span aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--yh-border)]" />
+            <span aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--yh-accent)] origin-top will-change-transform" style={{ transform: `scaleY(${progress})`, transition: "transform 150ms linear" }} />
             {headings.map((h, idx) => (
               <a
                 key={h.id || `heading-${idx}`}
@@ -115,21 +122,21 @@ export function TableOfContents({
                 className={`group flex items-center gap-2 text-[13px] leading-snug transition-all duration-200 border-l-2 -ml-[13px] pl-3 py-[5px] ${
                   active === h.id
                     ? "text-[var(--yh-accent)] border-[var(--yh-accent)] font-medium bg-[var(--yh-accent)]/[0.06] rounded-none"
-                    : "text-[var(--yh-muted)] border-transparent hover:text-[var(--yh-text)] hover:border-zinc-300 hover:bg-[var(--yh-bg)]/60 rounded-none"
+                    : "text-[var(--yh-muted)] border-transparent hover:text-[var(--yh-text)] hover:border-[var(--yh-border)] hover:bg-[var(--yh-bg)]/60 rounded-none"
                 }`}
               >
-                <span className={`w-1 h-1 rounded-full shrink-0 ${active === h.id ? "bg-[var(--yh-accent)]" : "bg-zinc-300 group-hover:bg-zinc-400"}`} />
+                <span className={`w-1 h-1 rounded-full shrink-0 ${active === h.id ? "bg-[var(--yh-accent)]" : "bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"}`} />
                 <span className="line-clamp-2">{h.text}</span>
               </a>
             ))}
           </nav>
           <div className="mt-[26px] rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] p-[13px]">
             <p className="mono text-[12px] font-semibold">{t.readingProgress}</p>
-            <div className="h-[7px] rounded-none bg-zinc-100 mt-[9px] overflow-hidden"><div data-side-progress className="h-full w-[0%] rounded-none bg-[var(--yh-accent)] transition-[width] duration-150" /></div>
+            <div className="h-[7px] rounded-none bg-[var(--yh-border)] mt-[9px] overflow-hidden"><div data-side-progress className="h-full w-[0%] rounded-none bg-[var(--yh-accent)] transition-[width] duration-150" /></div>
             <p data-side-progress-text className="mono text-[12px] text-[var(--yh-muted)] mt-[5px]">0% · {t.estimatedTime(readMinutes ?? 10)}</p>
           </div>
           <div className="mt-[18px] pt-[13px] border-t border-[var(--yh-border)] mono text-[12px] text-[var(--yh-muted)]">
-            <span className="inline-flex items-center gap-1.5"><span className="w-1 h-1 rounded-none bg-emerald-500 animate-pulse" /> {t.readingNow}</span>
+            <span className="inline-flex items-center gap-1.5"><span className="w-1 h-1 rounded-none bg-[var(--yh-accent)] motion-breath" /> {t.readingNow}</span>
           </div>
         </div>
       </aside>
