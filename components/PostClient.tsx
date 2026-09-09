@@ -115,7 +115,7 @@ export function PostClient({
             </span>
             <button
               onClick={jumpToResume}
-              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-zinc-900 text-white hover:bg-[var(--yh-accent)] transition-colors rounded-none whitespace-nowrap"
+              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-[var(--yh-text)] text-[var(--yh-bg)] hover:bg-[var(--yh-accent)] transition-colors rounded-none whitespace-nowrap"
             >
               {lang === "zh" ? "继续" : "Resume"}
             </button>
@@ -205,7 +205,7 @@ export function PostClient({
           <div className={`flex items-center gap-4 py-4 px-4 -mx-4 rounded-none mt-6 ${isDark ? "bg-[var(--dash-card)]/[0.04] border border-white/10" : "bg-[var(--dash-card)] border border-[var(--yh-border)]"}`}>
             <AuthorAvatar initial={post.authorInitial} size="lg" />
             <div className="min-w-0 flex-1">
-              <p className={`text-sm font-semibold truncate ${isDark ? "text-white" : "text-zinc-800"}`}>{post.author}</p>
+              <p className={`text-sm font-semibold truncate ${isDark ? "text-[var(--yh-bg)]" : "text-[var(--yh-text)]"}`}>{post.author}</p>
               <p className="text-xs text-[var(--yh-muted)] truncate">{relative} · {catLabel(post.category, t)} · {post.readTime}</p>
             </div>
             <div className="hidden sm:flex gap-1.5 flex-wrap justify-end max-w-[42%]">
@@ -296,7 +296,7 @@ export function PostClient({
                   <span className="mono text-[9px] tracking-[.14em] uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-1.5 py-px">{rp.category}</span>
                   <span className="mono text-[10px] text-[var(--yh-muted)]">{formatDisplayDate(rp.date, lang)}</span>
                 </div>
-                <p className="text-[13px] font-medium leading-snug text-zinc-900 group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
+                <p className="text-[13px] font-medium leading-snug text-[var(--yh-text)] group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
                   {lang === "zh" ? rp.titleZh || rp.title : rp.title}
                 </p>
                 <p className="text-[12px] text-[var(--yh-muted)] leading-relaxed line-clamp-2 mt-1.5">

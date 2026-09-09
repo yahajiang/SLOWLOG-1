@@ -13,9 +13,9 @@ export default function Loading() {
         </div>
         <div className="w-full max-w-lg bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none p-9 shadow-[var(--shadow-card)]">
           <div className="space-y-4">
-            <div className="h-3 w-full bg-[var(--yh-border)]/60 rounded-none animate-[shimmer_1.5s_var(--ease-out)_infinite]" style={{ backgroundImage: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)", backgroundSize: "200% 100%" }} />
-            <div className="h-3 w-3/4 bg-[var(--yh-border)]/40 rounded-none animate-[shimmer_1.5s_var(--ease-out)_infinite] [animation-delay:200ms]" style={{ backgroundImage: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)", backgroundSize: "200% 100%" }} />
-            <div className="h-3 w-1/2 bg-[var(--yh-border)]/30 rounded-none animate-[shimmer_1.5s_var(--ease-out)_infinite] [animation-delay:400ms]" style={{ backgroundImage: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)", backgroundSize: "200% 100%" }} />
+            <div className="h-3 w-full bg-[var(--yh-border)]/60 rounded-none overflow-hidden relative after:absolute after:inset-0 after:content-[''] after:animate-[shimmer_1.5s_var(--ease-out)_infinite] after:bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.6)_50%,transparent_100%)] after:bg-[length:200%_100%]" />
+            <div className="h-3 w-3/4 bg-[var(--yh-border)]/40 rounded-none overflow-hidden relative after:absolute after:inset-0 after:content-[''] after:animate-[shimmer_1.5s_var(--ease-out)_infinite] after:[animation-delay:200ms] after:bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.6)_50%,transparent_100%)] after:bg-[length:200%_100%]" />
+            <div className="h-3 w-1/2 bg-[var(--yh-border)]/30 rounded-none overflow-hidden relative after:absolute after:inset-0 after:content-[''] after:animate-[shimmer_1.5s_var(--ease-out)_infinite] after:[animation-delay:400ms] after:bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.6)_50%,transparent_100%)] after:bg-[length:200%_100%]" />
           </div>
           <div className="mt-9 flex items-center justify-center gap-3">
             <span className="w-2 h-2 rounded-none bg-[var(--yh-accent)] animate-[pulse_1.2s_var(--ease-out)_infinite]" />

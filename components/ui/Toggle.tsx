@@ -13,7 +13,7 @@ export function Toggle({
 }) {
   return (
     <label className={`inline-flex items-center gap-2 cursor-pointer select-none ${className}`}>
-      <div className={`relative inline-flex h-[18px] w-[32px] shrink-0 items-center rounded-none transition-colors ${checked ? "bg-[var(--dash-accent)]" : "bg-zinc-200"}`}>
+      <div className={`relative inline-flex h-[18px] w-[32px] shrink-0 items-center rounded-none transition-colors ${checked ? "bg-[var(--dash-accent)]" : "bg-[var(--yh-border)]"}`}>
         <span className={`pointer-events-none inline-block h-3.5 w-3.5 rounded-none bg-[var(--dash-card)] shadow-sm transition-transform ${checked ? "translate-x-[15px]" : "translate-x-[1px]"}`} />
       </div>
       <input type="checkbox" className="sr-only" checked={checked} {...props} />

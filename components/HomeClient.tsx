@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
@@ -63,6 +63,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
 
   const featuredPosts = useMemo(() => posts.filter((p) => p.featured), [posts])
   const [heroIndex, setHeroIndex] = useState(0)
+  const heroPaused = useRef(false)
   // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
   const [readMarks, setReadMarks] = useState<Record<string, number>>({});
   useEffect(() => {
@@ -81,10 +82,15 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       ? { ...featured, title: featured.titleZh || featured.title, excerpt: featured.excerptZh || featured.excerpt }
       : featured
     : null
-  // 多篇推荐时自动轮播
+  // 多篇推荐时自动轮播（reduced-motion 直接关闭；页签不可见 / 鼠标悬停时暂停）
   useEffect(() => {
     if (featuredPosts.length <= 1) return
-    const id = setInterval(() => setHeroIndex((i) => (i + 1) % featuredPosts.length), 5000)
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const id = setInterval(() => {
+      if (!document.hidden && !heroPaused.current) {
+        setHeroIndex((i) => (i + 1) % featuredPosts.length)
+      }
+    }, 5000)
     return () => clearInterval(id)
   }, [featuredPosts.length])
   useEffect(() => { setHeroIndex(0) }, [featuredPosts.length])
@@ -136,7 +142,11 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       </div>
 
       {showHero && localizedFeatured && (
-        <section className="border-b border-[var(--yh-border)] bg-[var(--dash-card)]/60 backdrop-blur-sm relative overflow-hidden">
+        <section
+          className="border-b border-[var(--yh-border)] bg-[var(--dash-card)]/60 backdrop-blur-sm relative overflow-hidden"
+          onMouseEnter={() => { heroPaused.current = true }}
+          onMouseLeave={() => { heroPaused.current = false }}
+        >
           <div className="max-w-[min(70%,1600px)] mx-auto px-6 py-8">
             <div className="flex flex-col md:flex-row md:items-center gap-5 animate-[fadeInUp_0.5s_var(--ease-out)_both]" key={heroIndex}>
               <div className="flex-1 min-w-0">
@@ -175,7 +185,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(localizedFeatured.date, lang)} · {localizedFeatured.readTime}</p>
                     </div>
                   </div>
-                  <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[11px] tracking-widest uppercase hover:bg-zinc-700 transition-colors duration-300 [transition-timing-function:var(--ease-spring)]">
+                  <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[11px] tracking-widest uppercase hover:bg-[var(--yh-accent)] transition-colors duration-300 [transition-timing-function:var(--ease-spring)]">
                     {t.readArticle} <ChevronRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -204,7 +214,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               </button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                 {featuredPosts.map((_, i) => (
-                  <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === heroIndex ? "bg-zinc-900" : "bg-zinc-300"}`} />
+                  <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
                 ))}
               </div>
             </>
@@ -215,7 +225,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       <section id="posts" className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="h-px w-8 bg-zinc-900" />
+            <div className="h-px w-8 bg-[var(--yh-text)]" />
             <p className="text-[11px] uppercase tracking-widest text-[var(--yh-muted)] font-semibold">
               {showHero
                 ? t.latestArticles
@@ -275,7 +285,8 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     </span>
                     <span className="text-[11px] text-[var(--yh-muted)]">· {t.postsCount2(group.posts.length)}</span>
                     <div className="flex-1 h-px bg-[var(--yh-border)] ml-2 hidden sm:block" />
-                    <button type="button" onClick={() => setActiveCategory(group.cat)} className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-colors">
+                    {/* legacy zinc（历史还原豁免，勿模仿）：待令牌化 hover:bg-[--yh-text]，登记于 慢日志UI一致性基线.md */}
+                    <button type="button" onClick={() => setActiveCategory(group.cat)} className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] hover:border-[var(--yh-text)] transition-colors">
                       {t.viewAllGrouped}
                     </button>
                   </div>
@@ -311,9 +322,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   {t.timelineDesc(posts.length)}
                 </p>
               </div>
+              {/* legacy zinc（历史还原豁免，勿模仿）：待令牌化 border/hover:bg-[--yh-text]，登记于 慢日志UI一致性基线.md */}
               <Link
                 href="/archive"
-                className="text-xs tracking-widest uppercase border border-zinc-900 px-4 py-2 hover:bg-zinc-900 hover:text-white transition-colors shrink-0"
+                className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-4 py-2 hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
               >
                 {t.viewAll}
               </Link>

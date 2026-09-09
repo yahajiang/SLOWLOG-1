@@ -38,7 +38,7 @@ export function Footer() {
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 w-11 h-11 rounded-none bg-[var(--yh-text)] text-white flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-all duration-300 z-50 animate-[fadeIn_0.3s_var(--ease-out)]"
+          className="fixed bottom-6 right-6 w-11 h-11 rounded-none bg-[var(--yh-text)] text-[var(--dash-bg)] flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-[background-color] duration-300 z-40 animate-[fadeIn_0.3s_var(--ease-out)]"
           aria-label="Back to top"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -23,10 +23,11 @@ export function FormField({
       </label>
       {children}
       {error ? (
-        <p className="h-3 text-[10px] text-red-500 leading-3">{error}</p>
+        <p className="h-3 text-[10px] text-red-500 leading-3 animate-[ffIn_0.2s_ease-out]">{error}</p>
       ) : hint ? (
-        <p className="h-3 text-[10px] text-[var(--dash-muted)]/60 leading-3">{hint}</p>
+        <p className="h-3 text-[10px] text-[var(--dash-muted)]/60 leading-3 animate-[ffIn_0.2s_ease-out]">{hint}</p>
       ) : null}
+      <style>{`@keyframes ffIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
     </div>
   )
 }

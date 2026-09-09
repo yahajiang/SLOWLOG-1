@@ -32,7 +32,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-white rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90 border border-zinc-800"
+        className="fixed bottom-6 right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90"
         aria-label="TOC"
       >
         <List className="w-5 h-5" />
@@ -47,7 +47,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-2">
-              <span className="w-10 h-1 rounded-none bg-zinc-200" />
+              <span className="w-10 h-1 rounded-none bg-[var(--yh-muted)]" />
             </div>
             <div className="px-4 pb-3 flex items-center justify-between">
               <p className="text-[11px] font-medium tracking-widest uppercase text-[var(--yh-muted)]">
@@ -74,7 +74,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                   }}
                   className="flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none text-[var(--yh-muted)] active:bg-[var(--yh-border)]"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-zinc-300" />
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-[var(--yh-border)]" />
                   {h.text}
                 </a>
               ))}
