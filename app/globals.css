@@ -7,10 +7,12 @@
 }
 
 :root {
+  color-scheme: light;
   --yh-bg: #fefdfa;
   --yh-text: #1c1c1e;
-  --yh-muted: #8e8e93;
+  --yh-muted: #6e6e73;
   --yh-border: #e5e5e7;
+  --yh-accent: #4a6fb5;
   --yh-accent: oklch(0.55 0.15 250);
   /* 统一后台令牌 - 映射前台编辑风，消除 #E85D4A/#FBF9F7 割裂 */
   --dash-bg: var(--yh-bg);
@@ -44,6 +46,29 @@
 
 html {
   scroll-behavior: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   UI 细节层（v1.3.1）：选区 / 输入 / 微排印
+   纸感延伸到浏览器原生部件——选区、光标、占位符用同一支墨
+   ============================================================ */
+::selection {
+  background: color-mix(in srgb, var(--yh-accent) 20%, transparent);
+}
+input, textarea {
+  caret-color: var(--yh-accent);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--yh-muted);
+  opacity: 1;
+}
+/* 标题两行时自动配平，段落防孤字（新内核生效，旧内核自然降级） */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+.prose p {
+  text-wrap: pretty;
 }
 
 body {
@@ -52,29 +77,30 @@ body {
                     radial-gradient(circle at 82% 18%, oklch(0.975 0.012 30 / 0.35) 0%, transparent 50%),
                     radial-gradient(circle at 50% 112%, oklch(0.965 0.01 80 / 0.3) 0%, transparent 55%);
   color: var(--yh-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
-/* MiSans only for large headings */
+/* 标题衬线栈：拉丁 Cormorant + 中文 Noto Serif SC（设计系统 v1.3 字体规范落地） */
 h1, h2, h3 {
-  font-family: "MiSans", sans-serif;
+  font-family: var(--font-serif), var(--font-serif-sc), Georgia, "Noto Serif SC", serif;
 }
 
-/* All numbers use MiSans */
+/* 数字统一 tabular-nums（等宽数字） */
 .num,
 .tabular-nums {
-  font-family: "MiSans", sans-serif;
+  font-family: var(--font-sans), -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   font-variant-numeric: tabular-nums;
 }
 
 /* Monospace fallback - use system monospace for code */
 code, pre, .font-mono {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 /* Serif fallback - use system serif for decorative elements */
-.font-serif {
-  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+.font-serif,
+.serif {
+  font-family: var(--font-serif), var(--font-serif-sc), Georgia, "Times New Roman", Times, serif;
 }
 
 /* Transitions tokens */
@@ -116,8 +142,9 @@ code, pre, .font-mono {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  /* 光带 translateX 扫过（compositor-only，符合总纲动效禁令） */
+  0% { transform: translateX(200%); }
+  100% { transform: translateX(-200%); }
 }
 
 @keyframes spin {
@@ -168,17 +195,18 @@ body::after {
 
 /* Stagger children animation utility */
 .stagger-children > * {
-  animation: slideInUp 0.5s var(--ease-out) both;
+  animation: pageIn 0.5s var(--ease-out) both;
 }
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
-.stagger-children > *:nth-child(7) { animation-delay: 360ms; }
-.stagger-children > *:nth-child(8) { animation-delay: 420ms; }
-.stagger-children > *:nth-child(9) { animation-delay: 480ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(n+10) { animation-delay: 450ms; }
 
 /* ============================================================
    Tiptap Editor Styles
@@ -664,7 +692,7 @@ body::after {
   backdrop-filter: blur(10px);
 }
 
-/* 分类标签选中态 */
+/* 分类标签选中态（下划线 scaleX 生长，compositor-only；当前无 tsx 使用，规则保留备用） */
 .category-tab {
   position: relative;
 }
@@ -672,15 +700,16 @@ body::after {
   content: "";
   position: absolute;
   bottom: -1px;
-  left: 50%;
-  width: 0;
+  left: 0;
+  width: 100%;
   height: 2px;
   background: var(--yh-accent);
-  transition: width 0.3s var(--ease-out), left 0.3s var(--ease-out);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s var(--ease-out);
 }
 .category-tab.active::after {
-  width: 100%;
-  left: 0;
+  transform: scaleX(1);
 }
 
 /* 图片 hover 缩放 */
@@ -865,12 +894,14 @@ body::after {
   --yh-text: #e8e4dc !important;
   --yh-muted: #8e8478 !important;
   --yh-border: #2c2a26 !important;
+  --yh-accent: #8ea6e8;
   --yh-accent: oklch(0.78 0.13 250);
   --dash-bg: #14110d !important;
   --dash-card: #1c1915 !important;
   --dash-border: #2c2a26 !important;
   --dash-text: #e8e4dc !important;
   --dash-muted: #8e8478 !important;
+  --dash-accent: #8ea6e8;
   --dash-accent: oklch(0.78 0.13 250);
   --dash-accent-soft: rgba(160, 180, 255, 0.08);
   color-scheme: dark;
@@ -945,10 +976,10 @@ body::after {
 
 /* 文章级强制浅色（pageConfig.theme=light 且全局为暗时） */
 .sl-force-light {
-  --yh-bg: #fefdfa; --yh-text: #1c1c1e; --yh-muted: #8e8e93; --yh-border: #e5e5e7;
-  --yh-accent: oklch(0.55 0.15 250);
+  --yh-bg: #fefdfa; --yh-text: #1c1c1e; --yh-muted: #6e6e73; --yh-border: #e5e5e7;
+  --yh-accent: #4a6fb5; --yh-accent: oklch(0.55 0.15 250);
   --dash-bg: #fefdfa; --dash-card: #fff; --dash-border: #e5e5e7;
-  --dash-text: #1c1c1e; --dash-muted: #8e8e93; --dash-accent: oklch(0.55 0.15 250);
+  --dash-text: #1c1c1e; --dash-muted: #6e6e73; --dash-accent: #4a6fb5; --dash-accent: oklch(0.55 0.15 250);
 }
 
 /* 暗色下文章表格定向适配（th/td 的灰阶类经映射层后仍白底的兜底写死） */
