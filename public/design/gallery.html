@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="kdGOM1aWjnxA0mnWrBlDXo">
+<head data-page-node-id="sCsGXIr5lYvFwcQg46Eofs">
+<meta charset="UTF-8" data-page-node-id="Yeehtd7hHU0zIMHJFnuOly">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="CkbODbylSOeUNolhUsN7Nr">
+<title>慢日志 · UI Design Prompt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="O7Ov2myXhj4OBKHYgH7gHI">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet" data-page-node-id="zoEHcfEyhqBvWov7qod0i1">
+<style>
+:root{
+  --yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#6e6e73;--yh-border:#e5e5e7;
+  --yh-accent:#4a6fb5;--yh-accent:oklch(0.55 0.15 250);--dash-card:#ffffff;
+  --shadow-card:0 1px 3px rgba(0,0,0,.04);--shadow-float:0 8px 30px -8px rgba(0,0,0,.15);--shadow-pop:0 20px 60px rgba(0,0,0,.12);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);
+}
+.dark{--yh-bg:#14110d;--yh-text:#e8e4dc;--yh-muted:#8e8478;--yh-border:#2c2a26;--yh-accent:#8ea6e8;--yh-accent:oklch(0.78 0.13 250);--dash-card:#1c1915}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--yh-bg);color:var(--yh-text);font-family:"Plus Jakarta Sans","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;transition:background .3s,color .3s}
+.serif{font-family:"Cormorant Garamond","Noto Serif SC","Songti SC",Georgia,serif}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:40;height:62px;background:color-mix(in srgb,var(--yh-bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--yh-border)}
+.h-in{max-width:1080px;margin:0 auto;height:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.h-in nav{display:flex;gap:22px;font-size:13px}
+.h-in nav a{color:var(--yh-muted)}.h-in nav a.on{color:var(--yh-text);font-weight:600}
+.logo-s{width:26px;height:26px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:12px;margin-right:8px;vertical-align:-6px}
+.wrap{max-width:1080px;margin:0 auto;padding:36px 24px 90px}
+h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-weight:600;letter-spacing:-0.02em}
+.sub{color:var(--yh-muted);font-size:12.5px;margin:4px 0 22px}
+.srch{position:relative;margin-bottom:16px}
+.srch input{width:100%;padding:12px 14px 12px 40px;font-size:14px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-text);border-radius:0;outline:none;font-family:inherit}
+.srch input:focus{border-color:var(--yh-accent)}
+.srch input:focus-visible{outline:2px solid var(--yh-accent);outline-offset:2px}
+.srch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--yh-muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.tab{font-size:12px;padding:6px 14px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;font-family:inherit;transition:all .15s}
+.tab:hover{color:var(--yh-text)}
+.tab.on{background:var(--yh-text);color:var(--yh-bg);border-color:var(--yh-text);font-weight:600}
+.cnt{font-size:11.5px;color:var(--yh-muted);margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:16px}
+.card{border:1px solid var(--yh-border);background:var(--dash-card);cursor:pointer;transition:transform .3s var(--ease-spring),box-shadow .3s var(--ease-out),border-color .2s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-float);border-color:var(--yh-muted)}
+.pv{height:150px;border-bottom:1px solid var(--yh-border);position:relative;overflow:hidden;background:var(--yh-bg);display:flex;align-items:center;justify-content:center;padding:16px}
+.pv *{font-family:inherit}
+/* 覆写还原：.pv *{inherit} 会把预览内 .mono/.serif 打成 sans，而模态 .m-pv 无此规则——补后置高特异规则，两处渲染一致 */
+.pv .mono,.m-pv .mono{font-family:"JetBrains Mono",ui-monospace,monospace}.pv .serif,.m-pv .serif{font-family:"Cormorant Garamond","Noto Serif SC","Songti SC",Georgia,serif}
+.ci{padding:14px 16px 16px}
+.tag{display:inline-block;font-size:10px;padding:1px 8px;border:1px solid var(--yh-border);color:var(--yh-muted);margin-bottom:8px}
+.ci h3{font-size:14px;font-weight:600;margin-bottom:5px}
+.ci p{font-size:12px;color:var(--yh-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;transition:opacity .2s var(--ease-out)}
+.modal-mask.open{display:flex;animation:g-maskIn .2s var(--ease-out)}
+.modal-mask.open .modal{animation:g-scaleIn .2s var(--ease-out)}
+.modal-mask.closing{opacity:0}
+@keyframes g-maskIn{from{opacity:0}to{opacity:1}}
+@keyframes g-scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.modal{background:var(--yh-bg);border:1px solid var(--yh-border);max-width:720px;width:100%;padding:28px;position:relative}
+.modal .x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:var(--yh-muted);cursor:pointer}
+.modal .x:hover{color:var(--yh-text)}
+
+@keyframes motionBreath{0%,100%{opacity:.92}50%{opacity:1}}
+@keyframes pv-shimmer{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
+@keyframes pv-toast{0%{opacity:0;transform:translateX(16px)}12%,80%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(16px)}}
+@keyframes pv-grow{0%{transform:scaleY(.12)}55%,100%{transform:scaleY(1)}}
+@keyframes pv-scale{0%{transform:scale(.94);opacity:.55}16%,84%{transform:scale(1);opacity:1}100%{transform:scale(.94);opacity:.55}}
+.breath{animation:motionBreath 3s ease-in-out infinite}
+.pv .shim,.m-pv .shim{animation:pv-shimmer 1.5s linear infinite}
+.pv .shim.d2,.m-pv .shim.d2{animation-delay:.2s}
+.pv .shim.d3,.m-pv .shim.d3{animation-delay:.4s}
+.pv .anim-toast,.m-pv .anim-toast{animation:pv-toast 3.6s var(--ease-out) infinite}
+.pv .anim-toast2,.m-pv .anim-toast2{animation:pv-toast 3.6s var(--ease-out) 1.8s infinite}
+.pv .tl-fill,.m-pv .tl-fill{transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite}
+.pv .dlg-anim,.m-pv .dlg-anim{animation:pv-scale 3.8s var(--ease-out) infinite}
+.pv-toc a{display:flex;gap:8px;padding:4px 0 4px 10px;color:var(--yh-muted);border-left:2px solid transparent;transition:all .3s;font-size:11.5px}
+.pv-toc a.on{color:var(--yh-accent);border-left-color:var(--yh-accent);font-weight:600}
+.pv-toc a .dot{width:4px;height:4px;border-radius:50%;background:var(--yh-border)}
+.pv-toc a.on .dot{background:var(--yh-accent)}
+.t3{flex:1;text-align:center;font-size:10px;padding:6px 0;border:1px solid var(--yh-border);color:var(--yh-muted);background:transparent;cursor:pointer;font-family:inherit;transition:all .2s}
+.t3.sel{background:var(--yh-text);color:var(--yh-bg);border-color:var(--yh-text);font-weight:600}
+.lg{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;padding:5px 12px;border:1px solid var(--yh-border);background:var(--dash-card);font-weight:500;color:var(--yh-text);cursor:pointer}
+.lg:hover{border-color:var(--yh-muted)}
+.statc{transition:transform .3s var(--ease-spring),box-shadow .3s var(--ease-out)}
+.statc:hover{transform:translateY(-2px);box-shadow:var(--shadow-float)}
+.mini-card{cursor:pointer;transition:transform .3s var(--ease-spring),box-shadow .3s var(--ease-out),border-color .2s}
+.mini-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-float);border-color:var(--yh-muted)}
+.mini-card:hover .mc-t{color:var(--yh-accent)}
+.mc-t{transition:color .2s}
+.pv .b-primary,.m-pv .b-primary{background:var(--yh-text);color:var(--yh-bg);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 18px;cursor:pointer;border:none;transition:background .2s}
+.pv .b-primary:hover,.m-pv .b-primary:hover{background:var(--yh-accent)}
+.pv .b-ghost,.m-pv .b-ghost{border:1px solid var(--yh-border);color:var(--yh-muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 18px;cursor:pointer;background:transparent;transition:all .2s}
+.pv .b-ghost:hover,.m-pv .b-ghost:hover{color:var(--yh-text);border-color:var(--yh-muted)}
+.pv .pv-srch,.m-pv .pv-srch{position:relative;width:100%;max-width:210px}
+.pv .pv-srch .ic,.m-pv .pv-srch .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--yh-muted);font-size:11px}
+
+.pv .rp-btn,.m-pv .rp-btn{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;padding:3px 8px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;position:absolute;top:8px;right:8px;z-index:5}
+.pv .rp-btn:hover,.m-pv .rp-btn:hover{color:var(--yh-text);border-color:var(--yh-muted)}
+.pv .arow,.m-pv .arow{transition:background .2s}
+.pv .arow:hover,.m-pv .arow:hover{background:color-mix(in srgb,var(--yh-bg) 55%,transparent)}
+.pv .arow .ar,.m-pv .arow .ar{opacity:0;transform:translateX(-4px);transition:all .2s;color:var(--yh-accent)}
+.pv .arow:hover .ar,.m-pv .arow:hover .ar{opacity:1;transform:translateX(0)}
+.seed-in{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 6px;border:1px solid #3A332E;background:transparent;color:#3A332E;outline:none;width:86px}
+.seed-in:focus{border-color:#C9A98A}
+.seed-in:focus-visible{outline:2px solid #C9A98A;outline-offset:2px}
+.pv .dlg-btn,.m-pv .dlg-btn{font-size:10px;padding:4px 10px;cursor:pointer;font-family:inherit;border-radius:0}
+
+.pv .pv-input,.m-pv .pv-input{width:100%;padding:9px 12px 9px 30px;font-size:12px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-text);outline:none;font-family:inherit}
+.pv .pv-input:focus,.m-pv .pv-input:focus{border-color:var(--yh-accent)}
+.pv .pv-input:focus-visible,.m-pv .pv-input:focus-visible{outline:2px solid var(--yh-accent);outline-offset:2px}
+@keyframes pv-ink{0%{opacity:0;transform:translateY(5px)}18%,72%{opacity:1;transform:none}88%,100%{opacity:0}}
+.pv-ink span{display:inline-block;opacity:0;animation:pv-ink 2.8s var(--ease-out) infinite}
+.pv .tglw,.m-pv .tglw{width:32px;height:18px;background:var(--yh-border);position:relative;display:inline-block;cursor:pointer;transition:background .2s;vertical-align:middle}
+.pv .tglw.on,.m-pv .tglw.on{background:var(--yh-accent)}
+.pv .tglw .kn,.m-pv .tglw .kn{position:absolute;top:2px;left:1px;width:14px;height:14px;background:var(--dash-card);box-shadow:inset 0 0 0 1px var(--yh-border),0 1px 2px rgba(0,0,0,.2);transition:transform .2s var(--ease-spring)}
+.pv .tglw.on .kn,.m-pv .tglw.on .kn{transform:translateX(15px)}
+.pv .sp-row:hover,.m-pv .sp-row:hover{background:color-mix(in srgb,var(--yh-bg) 55%,transparent)}
+.sp-row{cursor:pointer;transition:background .15s var(--ease-out)}
+.sp-row.sel{background:color-mix(in srgb,var(--yh-bg) 80%,var(--yh-accent))}
+.sp-row.sel>span:first-child{color:var(--yh-accent);font-weight:600}
+.pv .b-primary,.m-pv .b-primary,.pv .b-ghost,.m-pv .b-ghost{transition:color .2s var(--ease-out),background-color .2s var(--ease-out),transform .15s var(--ease-out)}
+.pv .b-primary:active,.m-pv .b-primary:active,.pv .b-ghost:active,.m-pv .b-ghost:active{transform:scale(0.97)}
+.mc-art{display:inline-block;transition:transform .3s var(--ease-out)}
+.card:hover .mc-art{transform:scale(1.06)}
+@keyframes g-ffIn{from{opacity:0}to{opacity:1}}
+@keyframes g-sbIn{from{transform:scale(0.92)}to{transform:scale(1)}}
+/* 封面内部轻微入场（与真代码 SVG 描边/呼吸同语言） */
+@keyframes g-cvFade{from{opacity:0;transform:translateY(4px)}}
+@keyframes g-cvLine{from{transform:scaleX(0)}}
+@keyframes g-cvRot{from{opacity:0;transform:rotate(-8deg)}}
+@keyframes g-cvPop{from{transform:scale(0)}}
+.pv .cv-fade,.m-pv .cv-fade{animation:g-cvFade .5s var(--ease-out) .1s backwards}
+.pv .cv-line,.m-pv .cv-line{transform-origin:left;animation:g-cvLine .6s var(--ease-out) .2s backwards}
+.pv .cv-rot,.m-pv .cv-rot{animation:g-cvRot .5s var(--ease-out) .3s backwards}
+.pv .cv-pop,.m-pv .cv-pop{animation:g-cvPop .4s var(--ease-spring) .5s backwards,g-pulse 3s ease-in-out 1s infinite}
+@keyframes g-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@keyframes g-cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* —— 页面级细节动效 —— */
+html{scroll-behavior:smooth}
+::selection{background:color-mix(in srgb,var(--yh-accent) 22%,transparent)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--yh-border);border:3px solid var(--yh-bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--yh-muted)}
+::-webkit-scrollbar-track{background:transparent}
+.wrap{animation:g-ffIn .4s var(--ease-out)}
+.card{animation:g-cardIn .35s var(--ease-out) backwards}
+.card:hover .mc-t{color:var(--yh-accent)}
+.mc-t{transition:color .2s var(--ease-out)}
+.pv .tglw:active .kn,.m-pv .tglw:active .kn{scale:.9}
+.m-body>*{animation:g-ffIn .3s var(--ease-out) backwards}
+.m-body>*:nth-child(2){animation-delay:60ms}
+.m-body>*:nth-child(3){animation-delay:120ms}
+.m-body>*:nth-child(4){animation-delay:180ms}
+.m-body>*:nth-child(5){animation-delay:240ms}
+/* 主题切换双图标（照搬主项目 ThemeToggle）：亮色月 / 暗色日，随 body.dark 显隐 */
+.ti-sun{display:none}
+body.dark .ti-moon{display:none}
+body.dark .ti-sun{display:inline}
+.pv .tagchip,.m-pv .tagchip{font-size:11px;padding:5px 12px;border:1px solid var(--yh-border);color:var(--yh-muted);transition:all .2s;cursor:pointer}
+.pv .tagchip:hover,.m-pv .tagchip:hover{background:var(--yh-accent);color:var(--yh-bg);border-color:var(--yh-accent)}
+
+
+
+.m-pv{height:210px;border:1px solid var(--yh-border);background:var(--yh-bg);display:flex;align-items:center;justify-content:center;padding:20px;margin:16px 0}
+.m-meta{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.prompt-box{position:relative;margin-top:10px}
+.prompt-box pre{font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.75;background:var(--dash-card);border:1px solid var(--yh-border);padding:18px;white-space:pre-wrap;overflow:auto;max-height:340px}
+.copy{position:absolute;top:10px;right:10px;font-size:11px;padding:5px 12px;border:1px solid var(--yh-border);background:var(--yh-bg);color:var(--yh-muted);cursor:pointer;font-family:inherit}
+.copy:hover{color:var(--yh-text);border-color:var(--yh-muted)}.copy-main{font-size:12px;font-weight:600;padding:8px 18px;background:var(--yh-accent);color:var(--yh-bg);border:none;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:opacity .2s;flex-shrink:0}.copy-main:hover{opacity:.85}.copy-main.ok{background:var(--yh-text)}
+.copy.ok{color:var(--yh-accent);border-color:var(--yh-accent)}
+.s-logo{width:26px;height:26px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:12px;margin-right:8px;vertical-align:middle;flex-shrink:0}
+.empty{text-align:center;padding:60px 0;color:var(--yh-muted)}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body data-page-node-id="vysKI60EuPPoBXT7bPnGUz">
+<header data-page-node-id="Om43lJlwa7Pwpliy2XlASo"><div class="h-in" data-page-node-id="Wl144KdvclDVJOXEje8IhB">
+  <a href="#" onclick="go('home');return false" style="font-size:14px;font-weight:600" data-page-node-id="GKgWhmeSlAF6tSOrV8LUV2"><span class="s-logo" data-page-node-id="vcR61y9HlT2WCt2yzoigiZ">S</span>慢日志 <span class="mono" style="font-size:11px;letter-spacing:.14em;color:var(--yh-muted)" data-page-node-id="TWGwO7WoV9kulhyKzojobg">UI PROMPT</span></a>
+  <nav data-page-node-id="hj94pj2mmbJ6HDezfLuvnA">
+    <a href="#" onclick="go('home');return false" class="on" data-page-node-id="sdAqX7Ld1xMZJ1PmnfKIez">组件</a>
+    <a href="#" onclick="openAbout();return false" data-page-node-id="UGXvftgeGP3sQc2gflVBPV">关于</a>
+    <a href="#" onclick="document.body.classList.toggle('dark');return false" title="切换主题" data-page-node-id="3Q1ALL4p7zfsUUN3LxIOYZ"><svg class="ti-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="ti-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></a>
+  </nav>
+</div></header>
+
+<div class="wrap" id="home" data-page-node-id="erliiFLgAcRlbYJMZlAvOX">
+  <h1 data-page-node-id="ClkwPBeGZBWjGzlkkgRjlm">UI 组件</h1>
+  <p class="sub" data-page-node-id="N2d2rwgMHoIrfkRW7P3Dju">26 个真实组件 · v1.3 与真代码同源 · 每条带六要素 AI 生成提示词 · 动画契约全覆盖 · 分类筛选 / 搜索 / 点卡片取提示词</p>
+  <div class="srch" data-page-node-id="43I4BvuDI9gYkGFtJWo4ld">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="YU6DRm5rG2nCtm4eQljXKJ"><circle cx="11" cy="11" r="7" data-page-node-id="D4DhEXrr9M2Xez7eS7LDKB"/><path d="M21 21l-4-4" data-page-node-id="hsOVjwqx6diTHKIjXSPyMl"/></svg>
+    <input id="q" type="text" placeholder="搜索组件名称或描述…" oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
+  </div>
+  <div class="tabs" id="tabs" data-page-node-id="TL2j1E1T9d18f1t3ZUs52q"></div>
+  <div class="cnt" id="cnt" data-page-node-id="F3dCnQ6Uz3VyrZS6oAy3pQ"></div>
+  <div class="grid" id="grid" data-page-node-id="AYJPrbjrRYM6uJEss6ZjLG"></div>
+  <div class="empty" id="empty" style="display:none" data-page-node-id="Vmo28jsLW8wnVj54mZ4eOE">没有匹配的组件 —— 换个关键词试试</div>
+</div>
+
+<div class="modal-mask" id="mask" onclick="if(event.target===this)closeM()" data-page-node-id="OWn3LeyTyRWqPapoyjcbBh">
+  <div class="modal" data-page-node-id="LxtUQYuiC9XJjgJrr078zX">
+    <button class="x" onclick="closeM()" data-page-node-id="sMdEWG0oiV70njaf7ydUlo">✕</button>
+    <div id="m-body" data-page-node-id="JwnrApFkcHEv3RL76wg8Qp"></div>
+  </div>
+</div>
+
+<script>
+const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。全部直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif="Cormorant Garamond","Noto Serif SC" 标题（拉丁走 Cormorant，中文标题必须走 Noto Serif SC，Google Fonts 按 unicode-range 子集加载，禁让中文跌回系统宋体）、sans=Plus Jakarta Sans 正文、mono=JetBrains Mono 元数据（11-12px/.14em/大写）。动效只动 transform/opacity（禁 background-position）；hover/active/focus 三态齐全；focus-visible 2px accent outline（禁裸 outline:none）；暗色全令牌化（dash-text 底上的按钮文字用 text-[--dash-bg] 反色，禁 text-white）。文章正文 17px/1.9（真代码真值）+ 行宽内容三档 max-w-2xl/3xl(默认)/5xl；阴影取 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100（⌘K 面板与 toast 同级 100，照抄代码真值）。`;
+
+const C = [
+ {id:"stat",name:"统计卡片",cat:"数据展示",desc:"概览页四联统计：PJS 粗体 tabular-nums 大数字 + tracking-widest 大写标签，hover 上浮 + shadow-float。",
+  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:210px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:22px;font-weight:700;font-family:'Plus Jakarta Sans',system-ui;font-variant-numeric:tabular-nums">128</div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--yh-muted);font-weight:500">文章总数</div></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div class="mono" style="font-size:20px;font-weight:500">7</div><div style="font-size:10px;color:var(--yh-muted)">分类数</div></div></div>`,
+  prompt:`${P_BASE}
+新建「统计卡片 StatCard」组件：
+- 还原 components/dashboard/StatCard.tsx：label 11px tracking-widest uppercase muted + value text-2xl font-bold tabular-nums（Plus Jakarta Sans）
+- 容器 --dash-card + --dash-border 直角 p-6 + shadow-card；hover: shadow-float + -translate-y-0.5（transition: transform/box-shadow 200ms var(--ease-spring)，时长取 200ms 档）
+- 入场：随父级网格 stagger（slideInUp 0.5s + index*50ms，封顶 10 项/500ms），无独立循环动画
+- props：{ label, value: string|number, sub? }；网格排列 4 联`},
+ {id:"toast",name:"Toast 通知",cat:"反馈",desc:"ToastProvider + useToast(msg, type)：右上 slideInRight 0.3s 入场，success emerald / error red / info 纸面三语义，2.5s 自动消失。",
+  pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">↻ 重播</button><div class="anim-toast" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;padding:9px 14px">✓ 已复制到剪贴板</div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">草稿已保存</div></div>`,
+  prompt:`${P_BASE}
+新建「Toast 通知」组件：
+- 还原 components/ui/Toast.tsx：ToastProvider + useToast(msg, type?: "success"|"error"|"info")
+- 容器 fixed top-4 right-4 z-[100] space-y-2 pointer-events-none；单条 min-w-240 max-w-360 px-4 py-3 rounded-none border + backdrop-blur + shadow-pop
+- 入场 slideInRight 0.3s var(--ease-out)（translateX(16px)→0）；2500ms 标记退场播 slideOutRight 0.3s（translateX→16px + 渐隐）后卸载
+- 三语义：success = emerald-50/border-emerald-200/text-emerald-800；error = red-50/red-200/red-700；info = --dash-card 系`},
+ {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，年份环节点，文章节点进入视口依次点亮。",
+  pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">↻ 重播</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 · 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 封面系统</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 编辑器</span></div></div>`,
+  prompt:`${P_BASE}
+新建「归档时间线 TimelineArchive」（还原 components/HomeClient.tsx 的时间线区）：
+- 结构：容器 relative pl-8；底层轴线 1px --yh-border + accent 生长层 scaleY(scroll 进度) origin-top，transform-only
+- 年份 = 环形节点（border-2 accent + --dash-card 底）+ mono 标题 + 延展横线；文章 = 7px 圆点节点 + 日期 + 标题行
+- IntersectionObserver 一次性点亮 .is-in（节点 accent 化 + 条目 translateX(-10px)→0 淡入，55ms 交错）
+- 渐进增强：容器 tl-armed 类由 JS 挂载，无 JS 完全静态可见；reduced-motion 走全局兜底`},
+ {id:"toc",name:"阅读目录导轨",cat:"数据展示",desc:"Motion 05：scroll-spy 激活当前节（accent 加粗+圆点），左缘导轨 scaleY 随滚动生长。",
+  pv:`<div class="pv-toc" style="width:100%;max-width:180px"><a href="#" onclick="tocClick(this)"><span class="dot"></span>为什么做</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>情感模型</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>记忆系统</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>关系演进</a></div>`,
+  prompt:`${P_BASE}
+新建「阅读目录导轨 TocRail」（还原 components/TableOfContents.tsx）：
+- 双层导轨：底层 1px --yh-border + accent 填充层 scaleY(阅读进度) origin-top，transition transform 150ms linear
+- 条目：scroll-spy 激活态 = accent 文字 + border-l-2 加粗 + 圆点点亮 + bg accent/[0.06]
+- 滚动监听 passive + setTimeout 16ms 节流；点击平滑滚动并锁定高亮 200ms 防闪跳
+- 正文异步渲染：轮询绑定正文标题（不依赖 headings id）`},
+ {id:"theme3",name:"主题三态切换",cat:"输入",desc:"跟随系统/浅色/深色三胶囊（ConfigPanel 与设置页）；头部另有 ☀/☾ 单图标切换（sl-theme 持久化 + theme-color meta 同步）。",
+  pv:`<div style="display:flex;gap:6px;width:100%;max-width:210px"><button type="button" class="t3" onclick="t3click(this)">系统</button><button type="button" class="t3 sel" onclick="t3click(this)">浅色</button><button type="button" class="t3" onclick="t3click(this)">深色</button></div>`,
+  prompt:`${P_BASE}
+新建「主题三态切换 ThemeSwitch3」（还原 components/ThemeToggle.tsx）：
+- 真代码现状：单击切换的 light/dark 二态按钮（html.dark 类 toggle + localStorage sl-theme 持久化）；三胶囊为设计演进形态，新做设置页可按下方三态实现
+- 三胶囊按钮组（system/light/dark），选中态 = bg-[--yh-text] text-[--yh-bg]，未选 = 描边 muted
+- system 态用 matchMedia('(prefers-color-scheme: dark)') 监听并联动（首帧内联脚本已有该跟随逻辑）
+- html.dark 类切换 + 零闪烁（首帧内联脚本预置）；切换动画只用背景/颜色 transition .2s var(--ease-out)；active:scale-[0.97] 微按压`},
+ {id:"cover",name:"封面构成器",cat:"数据展示",desc:"ArticleArt：文章 id 哈希 → 发版变体；族徽字/几何 SVG/横线基线，每篇一张脸。",
+  pv:`<div style="width:100%;max-width:190px;aspect-ratio:5/3;position:relative;background:#F5F3EF;border:1px solid var(--yh-border)"><span style="position:absolute;top:5px;left:8px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;color:#3A332E;border:1px solid #3A332E;padding:1px 5px">设计</span><span class="serif cv-fade" style="position:absolute;top:8px;left:12px;font-size:42px;line-height:1;color:#3A332E">每</span><span class="cv-rot" style="position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#E8E0D8;border:1px solid #3A332E"></span><span class="cv-line" style="position:absolute;bottom:8px;left:10px;right:10px;height:1px;background:#3A332E;opacity:.3"></span><input class="seed-in" style="position:absolute;bottom:20px;right:10px" value="slowlog" oninput="coverSeed(this)" title="改种子，看构图实时变化"><span class="cov-dot cv-pop" style="position:absolute;width:8px;height:8px;border-radius:50%;background:#C9A98A;left:118px;top:68px;transition:left .3s var(--ease-out),top .3s var(--ease-out)"></span><span class="mono cov-no" style="position:absolute;bottom:2px;left:14px;font-size:8px;letter-spacing:.2em;color:#3A332E">DSN · No.0 · seed:slowlog</span></div>`,
+  prompt:`${P_BASE}
+新建「封面构成器 ArticleArt」（还原 components/ArticleArt.tsx）：
+- 输入 seed（文章 id）做 FNV-1a 哈希 → variant（0..N）决定构图偏移与元素选择
+- 分类 palette（paper/ink/wash/accent）注入：族徽字（serif 大字）或 SVG 几何（rect/circle/line 1.2px 描边）
+- 元素：分类徽章（左上 mono 描边小签）+ 基线横线 + mono 元数据戳（≤9px 装饰戳 aria-hidden）；禁止点阵铺底与插画
+- 暗色下封面保留 paper 亮块（杂志封面自带底色，不随主题反转）
+- 同一 seed 永远同一构图；memo 包裹；5:3 比例自适应
+- 动画契约：SVG 主体场景入场**描边生长**（stroke-dasharray/dashoffset 420→0，0.9s ease-out，元素同步 0.5s 淡入）+ **双层循环**：容器 6s 轻呼吸浮动（cover-inner）+ 实心图形 4s 轻脉动（scale 1↔1.08，transform-box:fill-box 绕自身中心，延迟 1.2s 与描边衔接）——五 Motion「呼吸/生长」的 ambient 合规用法，reduced-motion 全局兜底；无 hover；无 JS 时静态可见（纯 CSS）`},
+ {id:"card",name:"文章卡片",cat:"数据展示",desc:"Motion 04 本体：封面 + 徽章 + 标题 + hover 仅 -2px 偏移，stagger 进场一次播完。",
+  pv:`<div class="mini-card" style="width:100%;max-width:200px;border:1px solid var(--yh-border);background:var(--dash-card)"><div style="height:56px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="serif mc-art" style="font-size:26px;color:#3A332E">记</span></div><div style="padding:10px 12px"><span style="font-size:9px;padding:1px 6px;border:1px solid #E8E0D8;color:#3A332E">设计</span><div class="mc-t" style="font-size:11.5px;font-weight:600;margin-top:6px">规则派生的封面系统</div></div></div>`,
+  prompt:`${P_BASE}
+新建「文章卡片 ArticleCard」（还原 components/ArticleCard.tsx）：
+- 结构：ArticleArt 封面 + 分类徽章 + serif 标题 + 摘要 + mono 日期；1px 边框直角纸面
+- hover：translateY(-2px) + shadow-float + border-color--yh-muted（仅此，禁止缩放/飞起），封面图 scale 1.04 内部裁切；过渡 transition: transform/box-shadow/border-color 200ms var(--ease-spring)；active:translate-y-0 按压回落
+- 入场：slideInUp 0.5s ease-out both + animation-delay index*50ms stagger（封顶 10 项/500ms，其余立即显示），只播一次
+- 整卡 Link 可点；group-hover 标题转 accent + 下划线 offset-4`},
+ {id:"badge",name:"分类徽章",cat:"数据展示",desc:"分类色板小面积点缀：paper 底 + ink 字 + wash 边，三值来自 ART_PALETTES。",
+  pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">工程</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0E0C0;background:#FFF7E8;color:#3A3330">前端</span><span style="font-size:9px;padding:2px 8px;border:1px solid #C8DCC8;background:#E8F3E8;color:#30362E">随笔</span></div>`,
+  prompt:`${P_BASE}
+新建「分类徽章 CategoryBadge」（还原 components/CategoryBadge.tsx）：
+- 样式由 ART_PALETTES[category] 内联注入：backgroundColor paper / color ink / borderColor wash，1px solid
+- 未知分类回退中性描边样式；mono 10px 字号可选缩写（CAT_ABBR）
+- 纯展示 memo 组件，面积克制（分类色只作点缀不做铺底）
+- 动画契约：静态组件——无 hover、无独立入场，出现随父级卡片 stagger`},
+ {id:"btn2",name:"双形态按钮",cat:"输入",desc:"Button.tsx 四变体：primary 实底(hover:opacity-90) / secondary 描边 / ghost / danger；公共站另有 --yh-text→accent hover 变体。",
+  pv:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" class="b-primary" onclick="btnClick(this,'处理中…')">阅读文章 →</button><button type="button" class="b-ghost" style="margin-left:8px" onclick="btnClick(this,'已收到 ✓')">查看全部</button></div>`,
+  prompt:`${P_BASE}
+新建「按钮 Button」变体（还原 components/ui/Button.tsx 四变体）：
+- primary = bg-[--dash-text] text-[--dash-bg] hover:opacity-90（暗色反色，禁 text-white）；secondary = --dash-card 描边 hover:bg-[--dash-bg]；ghost = 透明 hover:bg-[--dash-bg]；danger = red-600 系
+- 公共站按钮变体：bg-[--yh-text] → hover:bg-[--yh-accent]（404/CTA 用；真代码 HomeClient 此处仍是 zinc-900 历史态已登记基线，新代码一律用令牌）
+- 共性：直角、12px 大写 letter-spacing .14em、min-h 44px（触屏）、flex 居中
+- 过渡（真代码同款）：transition-[color,background-color,border-color,opacity,scale] duration-200 var(--ease-out) + active:scale-[0.98] 按压；focus-visible = 2px accent outline`},
+ {id:"search",name:"归档搜索框",cat:"输入",desc:"左置放大镜 + 聚焦 accent 边框 + placeholder 中文提示，受控输入实时过滤。",
+  pv:`<div style="position:relative;width:100%;max-width:210px"><div class="pv-srch"><span class="ic">⌕</span><input class="pv-input" type="text" placeholder="慢日志"></div></div>`,
+  prompt:`${P_BASE}
+新建「归档搜索框 ArchiveSearch」（归档页内组件，见 app/archive/ArchiveClient.tsx）：
+- 受控 input，左置 lucide Search 图标（absolute left-3），pl-10 预留
+- focus 转 border-[--yh-accent]；placeholder 用 --yh-muted；直角无圆角
+- 过渡：transition-colors 0.2s var(--ease-out)（border/背景平滑切换）；focus-visible = 2px accent outline
+- onChange 实时回调父级过滤（年份分组 + 标题/分类双字段匹配），不防抖也保持流畅`},
+ {id:"empty",name:"空状态",cat:"反馈",desc:"S 邮票小印 + serif 主句 + mono 提示，空而不冷，带轻微旋转的编辑感。",
+  pv:`<div style="text-align:center"><span style="display:inline-flex;width:30px;height:30px;border:1px solid var(--yh-border);background:var(--dash-card);align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;color:var(--yh-muted);transform:rotate(-4deg)">S</span><div style="font-size:12px;font-weight:600;margin-top:8px">没有匹配的文章</div><div style="font-size:10px;color:var(--yh-muted)">换个关键词试试</div><button type="button" onclick="esClick(this)" style="margin-top:10px;font-family:inherit;font-size:9px;letter-spacing:.1em;padding:4px 12px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;transition:all .2s var(--ease-out)">清除筛选</button></div>`,
+  prompt:`${P_BASE}
+新建「空状态 EmptyState」（还原 components/EmptyState.tsx）：
+- 结构：S 邮票小印（rotate -4deg + --yh-border/--dash-card）+ serif 感主句 + muted 提示行
+- 可选操作按钮插槽；整体居中，留白充足
+- 不用插画、不用 emoji，保持编辑排印气质
+- 动画契约：容器 fadeIn 0.3s ease-out 一次性入场；操作按钮 hover 过渡 0.2s；无循环动画`},
+ {id:"dlg",name:"操作对话框",cat:"反馈",desc:"ConfirmDialog：open/onOpenChange/variant=danger API；遮罩 maskIn + 面板 scaleIn 0.2s 入场，关闭 200ms 退场（渐隐+缩回 0.96）后卸载，Esc 关闭。",
+  pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:#dc2626;color:#fff;border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
+  prompt:`${P_BASE}
+新建「确认对话框 ConfirmDialog」：
+- 还原 components/ui/Dialog.tsx（导出 ConfirmDialog 与 PromptDialog）：props { open, onOpenChange, title, description, confirmText, cancelText, variant: "default"|"danger", onConfirm }
+- 遮罩 bg-black/40 + backdrop-blur-sm；面板 --dash-card + --dash-border max-w-md p-6 + scaleIn 0.2s ease-out
+- Esc 关闭 + 遮罩点击关闭；入场遮罩 maskIn 0.2s，关闭 200ms 退场（遮罩 transition 渐隐 + 面板 opacity-0 scale-[0.96]）后卸载；按钮组右对齐：取消 = 描边 hover:bg-[--dash-bg]，danger = bg-red-600 text-white hover:bg-red-700`},
+ {id:"load",name:"加载状态",cat:"反馈",desc:"S 圆印 + 品牌字 + shimmer 骨架卡（三行递减宽度）+ accent 呼吸点 + mono LOADING。后台另有 compact 变体。",
+  pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">慢日志 · SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
+  prompt:`${P_BASE}
+新建「加载状态 Loading」（路由级，还原 app/loading.tsx）：
+- 结构：S 圆印（--yh-text/--yh-bg 反色圆）+ mono 品牌字「慢日志 · SLOWLOG」→ shimmer 骨架卡（--dash-card + --yh-border，三行 100%/75%/50% 递减宽度，shimmer 1.5s 循环 + 200/400ms 递进延迟）→ accent 呼吸点 + mono LOADING（tracking .14em）
+- 骨架 shimmer：bar 内绝对定位光带（linear-gradient 透明→白→透明），transform: translateX(-120%→330%) 1.5s 循环（禁 background-position 动画）
+- 底部 mono tagline 收尾；变体 DashLoading（后台：S 圆标 + accent 呼吸点 + 「加载中」，compact 仅呼吸点+小字）
+- 编辑器局部加载用直角旋转环变体（dynamic ssr:false 闭包内读 yh-lang 取多语言提示语）`},
+ {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
+  pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="prog-i" style="position:absolute;left:0;top:0;height:100%;width:6%;background:var(--yh-accent)"></span></div><div class="mono prog-t" style="font-size:9px;color:var(--yh-muted);margin-top:6px">6% · 预计 10 min</div></div>`,
+  prompt:`${P_BASE}
+新建「阅读进度条 ReadingProgress」：
+- 还原 components/ReadingProgress.tsx：进度基于 article 元素矩形（rect.top/offsetHeight - viewport）而非全文档，fallback 全文档比例
+- requestAnimationFrame 节流 + cancelAnimationFrame；三处联动：顶部细线渐显（visible 态）+ 侧栏 data-side-progress 5px 条 + data-side-progress-text 百分比/剩余时间
+- 进度填充用 **transform: scaleX(pct) + origin-left**（transition-transform 150ms ease-out），**禁 width/left 动画**（合成器友好）；读写位置可续读（read-progress lib）`},
+ {id:"blockq",name:"引用块",cat:"数据展示",desc:"正文 prose 引用：accent 左缘 30% 透明 + 纸面底 + italic muted，文章气质件。",
+  pv:`<div style="width:100%;max-width:210px;border-left:3px solid color-mix(in srgb,var(--yh-accent) 30%,transparent);background:var(--dash-card);padding:10px 14px;font-size:11px;font-style:italic;color:var(--yh-muted)">慢不是速度，是注意力。</div>`,
+  prompt:`${P_BASE}
+为文章 prose 新增「引用块 blockquote」样式（样式落点：app/globals.css prose 层 + components/PostClient.tsx 的 prose-blockquote class 链）：
+- border-left 3px accent/30 + pl-5 + bg-[--dash-card]/50 + italic + text-[--yh-muted]
+- 全令牌化，暗色自动适配（.dark 作用域变量继承）；不写死 zinc-*
+- 动画契约：无独立动画——随文章 prose 一起 pageIn 入场
+- 适用 mdxContent 的 prose 增强 class 链`},
+ {id:"listview",name:"归档列表行",cat:"数据展示",desc:"日期 + 标题 + 徽章 + 阅读时长 + 箭头的五段行，hover 背景微亮 + 箭头滑入。",
+  pv:`<div style="width:100%;max-width:210px"><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid var(--yh-border);font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-03</span><span style="flex:1;truncate">规则派生的封面系统</span><span class="ar">→</span></div><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-01</span><span style="flex:1">左写右读：编辑器</span><span class="ar">→</span></div></div>`,
+  prompt:`${P_BASE}
+新建「归档列表行 ArchiveRow」（归档页内组件，见 app/archive/ArchiveClient.tsx）：
+- 五段结构：mono 日期(w-11) / 标题(flex-1 truncate) / 分类徽章 / 阅读时长 / ChevronRight
+- hover：bg-[--yh-bg]/50 + 标题转 accent 下划线 + 箭头 opacity 0→1 且 translateX 入场；过渡 transition-colors 0.2s var(--ease-out)（箭头 opacity/transform 0.2s）
+- 分隔线 --yh-border/50，末行去线；整行 Link 可点`},
+ {id:"langsw",name:"语言切换器",cat:"输入",desc:"单枚 mono 描边按钮：显示目标语言（中文态显示 EN），点击在 zh/en 间往返，yh-lang 持久化。",
+  pv:`<div><button type="button" class="lg" onclick="lgclick(this)">EN</button></div>`,
+  prompt:`${P_BASE}
+新建「语言切换器 LanguageSwitcher」（还原 components/LanguageSwitcher.tsx）：
+- 单枚 mono 12px 描边按钮（px-3 py-[5px] --yh-border/--dash-card），显示目标语言：中文态显示 EN，英文态显示 中
+- 点击 setLang 往返 zh/en，持久化 localStorage；标题与 UI 文案经 useLang 双语回退链（titleZh||title）
+- 与 ThemeToggle 并排置于头部；切换即时生效无需刷新
+- 过渡：hover:opacity-60 transition-opacity duration-200（对齐 Header 品牌字 hover 语言）；active:scale-[0.97] 微按压`},
+ {id:"searchpanel",name:"全局搜索面板",cat:"布局导航",desc:"⌘K 或「/」唤起：拼音双路索引、文章/分类/随想分组、命中高亮、键盘上下导航、Esc 关闭。站点招牌件。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);box-shadow:var(--shadow-pop)"><div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--yh-border)"><span class="mono" style="font-size:10px;color:var(--yh-muted)">⌕ 搜索标题或内容…</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:1px 5px;color:var(--yh-muted)">Esc</span></div><div class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted);padding:8px 12px 2px">文章</div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>规则派生的封面系统</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>分屏编辑器</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div></div>`,
+  prompt:`${P_BASE}
+新建「全局搜索面板 SearchPanel」（还原 components/SearchPanel.tsx）：
+- 唤起：⌘K 或「/」，createPortal 全屏遮罩；Esc 关闭；输入防抖索引
+- 结果按 文章/分类/随想 分组（mono 10px 大写组标），命中关键词高亮，行尾 kind 徽章 + meta
+- 键盘 ↑↓ 循环选择 + Enter 跳转；拼音双路索引（全拼/首字母）
+- sp-item hover 背景 --yh-bg/60（transition-colors 0.15s）；选中行 bg 过渡同步；面板 0.25s pageIn 入场，Esc 关闭时 0.15s 渐隐退场`},
+ {id:"breadcrumb",name:"面包屑",cat:"布局导航",desc:"站点名 → 分类 → 文章三级路径，斜杠分隔，可点层级 hover 转亮。",
+  pv:`<nav style="display:flex;gap:6px;font-size:11px;color:var(--yh-muted);align-items:center"><span>慢日志</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-text)">设计</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-accent)">规则派生的封面系统</span></nav>`,
+  prompt:`${P_BASE}
+新建「面包屑 Breadcrumb」（还原 components/Breadcrumb.tsx）：
+- props { items: { label, href? }[] }；首段固定站点名（useLang 取，try/catch 包裹防 SSR 上下文缺失）
+- 层级分隔符 --yh-border 色斜杠；可点层级 hover:text-[--yh-text]（transition-colors 0.15s）；末级 accent 强调
+- 12px muted 基调，mb-6 与正文留白；无独立入场动画（随页面 pageIn）`},
+ {id:"aavatar",name:"作者头像",cat:"数据展示",desc:"首字母圆形头像：AUTHOR_BG 按首字母分配底色（M 玫红/C 紫/Y 琥珀/D 蓝/R 绿/J 橙），sm/lg 双尺寸。",
+  pv:`<div style="display:flex;gap:8px"><span style="width:30px;height:30px;border-radius:50%;background:#FDF2F8;color:#BE185D;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">M</span><span style="width:30px;height:30px;border-radius:50%;background:#F5F3FF;color:#7C3AED;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">C</span><span style="width:30px;height:30px;border-radius:50%;background:#FFFBEB;color:#B45309;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">Y</span></div>`,
+  prompt:`${P_BASE}
+新建「作者头像 AuthorAvatar」（还原 components/AuthorAvatar.tsx）：
+- memo 组件；props { initial, size?: "sm"|"lg" }（sm=32px/lg=40px）
+- 底色查 AUTHOR_BG[initial]（M 玫红/C 紫/Y 琥珀/D 蓝/R 绿/J 橙），未知首字母回退 --yh-border/--yh-muted
+- rounded-full + font-semibold 居中首字母
+- 动画契约：静态组件——无 hover、无独立动画（出现随父级）`},
+ {id:"footer",name:"页脚",cat:"布局导航",desc:"S 圆印 + 品牌字 + 版本徽章（构建时注入 NEXT_PUBLIC_APP_VERSION）+ tagline，纸面描边收边。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);padding:10px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px"><span style="display:flex;gap:6px;align-items:center;font-size:10.5px;white-space:nowrap"><span style="width:16px;height:16px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:8px">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">v0.3.5</span></span><span class="mono" style="font-size:8px;color:var(--yh-muted)">慢下来，写点值得读的东西。</span></div>`,
+  prompt:`${P_BASE}
+新建「页脚 Footer」（还原 components/Footer.tsx）：
+- mt-auto 收底；--dash-card + 上边框 --yh-border；max-w-[min(70%,1600px)] 容器
+- 左：S 圆印（22px）+ 慢日志 · SLOWLOG + 版本徽章（process.env.NEXT_PUBLIC_APP_VERSION 回退 0.3.5）
+- 右：mono tagline；移动端纵向堆叠（flex-col lg:flex-row）
+- 动画契约：容器无入场动画；出口链接 hover:opacity-60 transition-opacity duration-200`},
+ {id:"tgl",name:"直角开关",cat:"输入",desc:"rounded-none 滑块：开 = accent 底右位，关 = 灰底左位，18×32 直角身份贯彻到开关。点击试试。",
+  pv:`<div style="display:flex;gap:14px;align-items:center"><button type="button" class="tglw on" onclick="tglclick(this)"><span class="kn"></span></button><button type="button" class="tglw" onclick="tglclick(this)"><span class="kn"></span></button><span style="font-size:10px;color:var(--yh-muted)">显示草稿</span></div>`,
+  prompt:`${P_BASE}
+新建「直角开关 Toggle」（还原 components/ui/Toggle.tsx）：
+- 32×18 直角轨道：开 = --dash-accent 底 + 滑块 translate-x-[15px]；关 = --yh-border 底左位
+- 滑块 14px --dash-card 直角 + shadow-sm，transition-transform spring
+- focus-visible：外层 2px accent outline（键盘切换可达）；状态动画均受 reduced-motion 全局兜底
+- props { label?, hint?, checked }；sr-only checkbox 无障碍；点击整行切换`},
+ {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：emerald 已发布 / amber 草稿 / sky 定时，文章列表与编辑器状态标。",
+  pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
+  prompt:`${P_BASE}
+新建「状态徽章 Badge」（还原 components/ui/Badge.tsx）：
+- tones = { emerald: "bg-emerald-50 text-emerald-700 border-emerald-200", amber: "bg-amber-50 …", sky: "bg-sky-50 …" }
+- props { tone = "emerald", children }；直角小签
+- 文章列表状态映射：published→emerald / draft→amber / scheduled→sky
+- 动画契约：静态小签；状态切换时 transition-colors 0.2s 平滑变色（出现随父级）`},
+ {id:"formgrp",name:"表单控件组",cat:"输入",desc:"FormField 标签/hint/error 三行契约 + Input/Select 直角纸面 focus accent，后台表单标配。",
+  pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:#ef4444">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
+  prompt:`${P_BASE}
+新建「表单控件组」：
+- FormField：label（11px medium muted，required 红星 text-red-500）+ children + error（10px red）+ hint（10px muted/60）三行契约，固定高度防跳动
+- Input/Select（还原 components/ui/Input.tsx / Select.tsx）：bg-[--dash-bg] focus:bg-[--dash-card] + --dash-border 直角，focus:border-[--dash-accent] + focus:ring-1 [--dash-accent]/20 + outline-none，placeholder 用 --dash-muted
+- 组合即得后台表单；错误态优先于 hint 显示
+- 过渡：Input/Select transition-colors 0.2s var(--ease-out)（focus 换底/描边平滑）；error/hint 行 ffIn 0.2s 淡入（对齐 FormField.tsx）`},
+ {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：墨字逐个浮现（步进延迟）+ 印章落款，1.4s 完整播完；localStorage slowlog-welcomed 首访一次。",
+  pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>慢</span><span>日</span><span>志</span><span style="color:var(--yh-muted);margin:0 4px">·</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">慢 下 来 ， 写 点 值 得 读 的</span></div></div>`,
+  prompt:`${P_BASE}
+新建「墨字入场 Welcome」（还原 components/Welcome.tsx）：
+- 全屏 --yh-bg 覆盖层（z-[90]，照抄 layout 内联 .welcome 真值，低于 toast 100），品牌墨字逐字 inkIn（0.4s ease-out + 60-80ms 步进延迟）+ tagline 次行
+- 总时长 1.4s（签名仪式，不受常态规范约束）；localStorage「slowlog-welcomed」永久记忆，首访播一次，老访客挂 html-returning 类直接 display:none
+- prefers-reduced-motion 直接隐藏；css-probe 失败自动 reload 兜底`},
+ {id:"tags",name:"标签组",cat:"数据展示",desc:"文章标签 chips：描边胶囊 hover 转 accent 实底白字，点击进 /tag/[tag] 聚合页。试试 hover。",
+  pv:`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="tagchip">设计系统</span><span class="tagchip">Tauri</span><span class="tagchip">情感引擎</span></div>`,
+  prompt:`${P_BASE}
+新建「标签组 Tags」（文章页内组件，见 components/PostClient.tsx 标签区）：
+- 每标签 Link → /tag/[encodeURIComponent(tag)]，样式 text-xs px-3 py-1.5 描边胶囊
+- 默认 --yh-muted 字；hover 转 accent 实底白字（transition-all .2s）
+- 暗色态：dark 分支 bg-[--dash-card]/5 border-white/10`},
+];
+
+const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
+let cur = "全部";
+document.getElementById("tabs").innerHTML = CATS.map(c=>{const n=c==="全部"?C.length:C.filter(x=>x.cat===c).length;return `<button class="tab${c===cur?" on":""}" onclick="setCat('${c}')" title="${c} · ${n} 个">${c}${`<span class="mono" style="font-size:8px;opacity:.55;margin-left:4px">${n}</span>`}`}).join("");
+
+function setCat(c){cur=c;document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",CATS[i]===c));render()}
+function render(){
+  const q=(document.getElementById("q").value||"").toLowerCase();
+  const list=C.filter(c=>(cur==="全部"||c.cat===cur)&&(!q||(c.name+c.desc+c.cat).toLowerCase().includes(q)));
+  document.getElementById("grid").innerHTML=list.map((c,i)=>`
+    <div class="card" style="animation-delay:${Math.min(i,12)*35}ms" onclick="openM('${c.id}')">
+      <div class="pv" onclick="pvGuard(event)">${c.pv}</div>
+      <div class="ci"><span class="tag">${c.cat}</span><h3>${c.name}</h3><p>${c.desc}</p></div>
+    </div>`).join("");
+  document.getElementById("cnt").textContent=`展示全部 ${list.length} 个组件`;
+  document.getElementById("empty").style.display=list.length?"none":"block";
+}
+function openM(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  document.getElementById("m-body").innerHTML=`
+    <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">${c.name}</h2>
+    <div class="m-meta"><span class="tag">${c.cat}</span></div>
+    <p style="font-size:13px;color:var(--yh-muted)">${c.desc}</p>
+    <div class="m-pv">${c.pv}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 0 10px">
+      <div class="kicker" style="margin:0">AI 生成提示词（复制给任何 AI 工具）</div>
+      <button class="copy-main" onclick="copyP(this,'pp')">⧉ 复制提示词</button>
+    </div>
+    <div class="prompt-box"><pre id="pp">${c.prompt.replace(/</g,"&lt;")}</pre></div>`;
+  document.getElementById("mask").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeM(){var m=document.getElementById("mask");m.classList.add("closing");setTimeout(function(){m.classList.remove("open","closing");document.body.style.overflow=""},200)}
+function openAbout(){
+  document.getElementById("m-body").innerHTML=`
+    <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">关于 · 慢日志 UI 组件画廊</h2>
+    <div class="m-meta"><span class="tag">v1.3 · 2026-09-09</span><span class="tag">与真代码同源</span></div>
+    <div style="font-size:12px;line-height:2;color:var(--yh-text);border:1px solid var(--yh-border);background:var(--yh-bg);padding:10px 14px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:.2em;color:var(--yh-muted);margin-bottom:4px" class="mono">慢日志 SLOWLOG · 项目速览（实测于代码库 2026-09-10）</div>
+      <div><b>定位</b>：个人博客——纸感排印做外衣，慢阅读做内胆，系统化做骨架；「安静的文字工作室」，slogan「慢下来，写点值得读的东西」。</div>
+      <div><b>规模实测</b>：当前版本 <span class="mono" style="font-size:11px">v0.3.5</span> · 21 个页面路由（桌面 9 + /m 移动 7 + 动态文章/标签）· 46 个组件 · 14 个 API 端点 · 14 个工程脚本（备份 / 双仓库推送 / MD 导入导出 / E2E / QA 截图 / 自动版本号）</div>
+      <div><b>技术栈</b>：Next.js 15.4 · React 19 · Tailwind v4 · Prisma 6 / Neon 六表（User/Category/Post/Note/Media/Setting）· Tiptap 3.6（17 扩展）· Vercel Blob 三级写出链 · 双语 674 行 i18n 键值 · 桌面 + /m 移动平行树</div>
+      <div><b>功能面</b>：首页杂志门面（分类 Tabs / Hero 轮播 / 随想折叠 / 时间线）· 归档搜索 · 文章阅读体系（pageConfig / TOC / 灯箱 / 代码块复制）· 后台写读同源 · 全文搜索 ⌘K · OG 分享图 · RSS · 内容备份 · 健康检查</div>
+      <div><b>链接</b>：在线预览 yahajiang.dpdns.org · GitHub <span class="mono" style="font-size:11px">yahajiang/SLOWLOG-1</span>（双仓库：私人全量 / 公开清洗）</div>
+    </div>
+    <p style="font-size:13px;color:var(--yh-muted);line-height:1.9">本画廊的 26 个组件全部还原自真实站点代码（<span class="mono" style="font-size:11px">Desktop/AstrBot插件/慢日志</span>），每条提示词六要素齐备：源码路径 / 结构 / 令牌样式 / 动画契约 / 无障碍与暗色 / P_BASE 全局注入——复制给任何 AI 工具，生成即与真站同源。</p>
+    <div style="font-size:12px;line-height:2.1;color:var(--yh-text)">
+      <div><b>配套文档</b>：《慢日志UI设计系统.html》（v1.3 实现版）· 《慢日志AI提示词-总纲.md》· 《慢日志UI一致性基线.md》</div>
+      <div><b>一致性闸门</b>：<span class="mono" style="font-size:11px">check-consistency.py</span> 84 项机器核对——改任何令牌后必须全 PASS 才收工</div>
+      <div><b>令牌真值速查</b>：muted <span class="mono" style="font-size:11px">#6E6E73</span> · accent <span class="mono" style="font-size:11px">#4A6FB5</span> 双声明回退 · 阴影三档 card/float/pop · z 阶梯 40/50/90/100</div>
+      <div><b>动画语言</b>：五 Motion（呼吸 / 生长 / 偏移 / 阅读 + Welcome 仪式），只动 transform/opacity，200–600ms，ease-out / spring，reduced-motion 全局兜底</div>
+      <div><b>版权</b>：© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0 开源（设计文档引用请注明出处）· 联系 yahajiang@gmail.com</div>
+    </div>`;
+  document.getElementById("mask").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function pvGuard(e){
+  if(e.target.closest('button,input,a,.t3,.lg,.seed-in,.arow')) e.stopPropagation();
+}
+function copyP(btn, srcId){
+  const t = document.getElementById(srcId || "pp").innerText;
+  const done=function(){btn.textContent="✓ 已复制";btn.classList.add("ok");setTimeout(function(){btn.textContent="复制提示词";btn.classList.remove("ok")},1600)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(function(){fb()})}else{fb()}
+  function fb(){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){}document.body.removeChild(ta)}
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+
+/* 动态预览驱动（reduced-motion 用户跳过轮询动画） */
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!REDUCED) setInterval(function(){
+  var n=Math.floor(Date.now()/1200);
+  document.querySelectorAll('.pv-toc').forEach(function(t){
+    if(t.dataset.pause && Date.now() < +t.dataset.pause) return;
+    var items=t.querySelectorAll('a');
+    items.forEach(function(a,i){a.classList.toggle('on',i===n%items.length)});
+  });
+},600);
+function go(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
+function btnClick(btn,txt){
+  if(btn.dataset.busy) return; btn.dataset.busy="1";
+  var old=btn.innerHTML;
+  btn.innerHTML=txt; btn.style.opacity=".5";
+  setTimeout(function(){ btn.innerHTML=old; btn.style.opacity=""; delete btn.dataset.busy; },900);
+}
+function ffInput(inp){
+  var line=inp.parentNode.querySelector(".ff-line"); if(!line) return;
+  if(!inp.value.trim()){ line.textContent="站点名称不能为空"; line.style.color="#ef4444"; }
+  else { line.textContent="显示在浏览器标签页"; line.style.color="var(--yh-muted)"; }
+  line.style.animation="none"; void line.offsetWidth; line.style.animation="g-ffIn .2s ease-out";
+}
+var SB=[
+  ["#ecfdf5","#a7f3d0","#065f46","已发布"],
+  ["#fffbeb","#fde68a","#92400e","草稿"],
+  ["#f0f9ff","#bae6fd","#0369a1","定时"]
+];
+function sbClick(el){
+  var i=((+(el.dataset.i||0))+1)%3; el.dataset.i=i;
+  el.style.background=SB[i][0]; el.style.borderColor=SB[i][1]; el.style.color=SB[i][2]; el.textContent=SB[i][3];
+  el.style.animation="none"; void el.offsetWidth; el.style.animation="g-sbIn .25s ease-out";
+}
+function esClick(btn){
+  if(btn.dataset.busy) return; btn.dataset.busy="1";
+  var old=btn.textContent;
+  btn.textContent="已清除 ✓"; btn.style.borderColor="var(--yh-accent)"; btn.style.color="var(--yh-accent)";
+  setTimeout(function(){ btn.textContent=old; btn.style.borderColor=""; btn.style.color=""; delete btn.dataset.busy; },1200);
+}
+function spClick(row){
+  document.querySelectorAll(".sp-row").forEach(function(r){ r.classList.remove("sel"); });
+  row.classList.add("sel");
+}
+function tglclick(btn){btn.classList.toggle('on')}
+function t3click(){/* 兜底占位：选中态由 document click 委托处理，防 onclick 报 ReferenceError */}
+function lgclick(){/* 兜底占位：文案切换由 document click 委托处理 */}
+function tocClick(el){
+  var t=el.closest('.pv-toc'); if(!t) return;
+  t.dataset.pause = String(Date.now()+4000);
+  t.querySelectorAll('a').forEach(function(a){a.classList.remove('on')});
+  el.classList.add('on');
+}
+function tlReplay(btn){
+  var box=btn.closest('.pv,.m-pv'); if(!box) return;
+  var f=box.querySelector('span[style*="pv-grow"]'); if(!f) return;
+  f.style.animation='none'; void f.offsetWidth; f.style.animation='';
+}
+function toastReplay(btn){
+  var box=btn.closest('.pv,.m-pv'); if(!box) return;
+  box.querySelectorAll('.anim-toast,.anim-toast2').forEach(function(el){
+    el.style.animation='none'; void el.offsetWidth; el.style.animation='';
+  });
+}
+function dlgBtn(btn,del){
+  var box=btn.closest('.pv,.m-pv'); if(!box) return;
+  var panel=box.querySelector('.dlg-anim'); if(!panel) return;
+  if(del){ panel.style.borderColor='#dc2626'; setTimeout(function(){panel.style.borderColor=''},400); }
+  panel.style.animation='none'; void panel.offsetWidth; panel.style.animation='';
+}
+function coverSeed(inp){
+  var seed=inp.value||'slowlog';
+  var h=0x811c9dc5;
+  for(var i=0;i<seed.length;i++){ h^=seed.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  var v=Math.abs(h)%7;
+  var pos=[[10,60],[60,20],[118,68],[92,38],[38,78],[136,52],[20,28]];
+  var box=inp.closest('.pv,.m-pv'); if(!box) return;
+  var dot=box.querySelector('.cov-dot'); if(dot){ dot.style.left=pos[v][0]+'px'; dot.style.top=pos[v][1]+'px'; }
+  var lb=box.querySelector('.cov-no'); if(lb){ lb.textContent='DSN · No.'+v; }
+}
+if(!REDUCED) setInterval(function(){
+  var t=(Date.now()%4000)/4000;
+  var p=t<.5 ? .06+(.68-.06)*(t/.5) : .68-(.68-.06)*((t-.5)/.5);
+  document.querySelectorAll('.prog-i').forEach(function(el){el.style.width=(p*100).toFixed(1)+'%'});
+  document.querySelectorAll('.prog-t').forEach(function(el){el.textContent=Math.round(p*100)+'% · 预计 '+Math.max(1,Math.round(10-p*7))+' min'});
+},60);
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('t3')){
+    e.target.parentNode.querySelectorAll('.t3').forEach(function(x){x.classList.remove('sel')});
+    e.target.classList.add('sel');
+  }
+  if(e.target.classList.contains('lg')){
+    e.target.textContent = e.target.textContent.trim()==='EN' ? '中' : 'EN';
+  }
+});
+render();
+</script>
+<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.3</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
+</body>
+</html>
