@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export function Header({ searchQuery, onSearchChange }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   useEffect(() => {
     function onScroll() {
@@ -63,6 +63,15 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
               >
                 {t.archiveTitle}
               </Link>
+              <a
+                href="/design/gallery.html"
+                target="_blank"
+                rel="noopener"
+                className="text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+                title={lang === "zh" ? "UI 组件画廊（新窗口）" : "UI component gallery (new tab)"}
+              >
+                {lang === "zh" ? "画廊" : "GALLERY"}
+              </a>
             </nav>
 
             <ThemeToggle />
