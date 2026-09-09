@@ -84,7 +84,16 @@ code, pre, .font-mono {
   --duration-fast: 200ms;
   --duration-normal: 400ms;
   --duration-slow: 600ms;
+  /* Motion System: 呼吸/Grow 常态规范（Welcome 1.4s 为签名仪式，不受此约束） */
+  --motion-breath: 6s;
+  --motion-grow: 550ms;
 }
+
+@keyframes motionBreath {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
+}
+.motion-breath { animation: motionBreath var(--motion-breath) ease-in-out infinite; }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
@@ -971,3 +980,13 @@ body::after {
 
 /* 暗色下文章页概览统计卡标签（server 组件硬编码标签的暗色适配） */
 .dark .stat-card-label { color: #8e8478 }
+
+/* Motion System：尊重系统减少动态设置（全局兜底，含所有新增动效） */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
