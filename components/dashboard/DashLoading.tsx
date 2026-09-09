@@ -22,7 +22,7 @@ export function DashLoading({
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <span className="w-[26px] h-[26px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px]">S</span>
+        <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px]">S</span>
         <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)]">慢日志 · SLOWLOG</span>
         <span className="w-1.5 h-1.5 bg-[var(--yh-accent)] animate-[pulse_1.2s_var(--ease-out)_infinite]" />
         <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)]/70">加载中</span>

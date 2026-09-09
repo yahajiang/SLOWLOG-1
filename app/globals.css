@@ -135,27 +135,6 @@ code, pre, .font-mono {
   to { opacity: 0; transform: translateX(-50%) translateY(16px); }
 }
 
-/* 封面微动效 */
-@keyframes coverFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes coverPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes coverRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes coverShimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
 /* 背景纹理 · 纸感三件套
    1) body::before 高频颗粒：feTurbulence 细噪，multiply 压出纸纤维截面
    2) body::after  低频云纹 + 边缘暖晕影：大尺度明暗不均，像老纸的驼纹与四周微黄

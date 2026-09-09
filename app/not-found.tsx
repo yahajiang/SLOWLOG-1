@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center flex flex-col items-center gap-6">
         <span
-          className="w-14 h-14 rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[20px] shadow-[0_10px_24px_rgba(0,0,0,0.16)] rotate-[-4deg]"
+          className="w-14 h-14 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[20px] shadow-[0_10px_24px_rgba(0,0,0,0.16)] rotate-[-4deg]"
           aria-hidden
         >
           S
