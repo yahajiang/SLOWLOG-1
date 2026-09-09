@@ -36,7 +36,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-60 transition-opacity">
-            <span className="w-[26px] h-[26px] rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+            <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
             <span className="flex items-baseline gap-1">
               <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
               <span className="mono text-[12px] tracking-[0.14em] uppercase">· SLOWLOG</span>

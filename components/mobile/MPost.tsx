@@ -135,7 +135,7 @@ export function MPost({
             <ChevronLeft className="w-6 h-6" />
           </Link>
           <span className="flex items-center gap-1.5 min-w-0">
-            <span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px] shrink-0">S</span>
+            <span className="w-6 h-6 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px] shrink-0">S</span>
             <span className="font-semibold text-[14px] tracking-tight truncate">慢日志</span>
           </span>
           <LanguageSwitcher />

@@ -42,7 +42,7 @@ export function MLogin() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link href="/m" className="inline-flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-zinc-900 text-white flex items-center justify-center serif italic text-[11px]">S</span>
+            <span className="w-7 h-7 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px]">S</span>
             <span className="font-semibold text-[15px]">慢日志 · SLOWLOG</span>
           </Link>
           <p className="text-sm text-[var(--yh-muted)] mt-3">{lang === "zh" ? "后台管理" : "Admin Panel"}</p>
