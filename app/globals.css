@@ -990,3 +990,10 @@ body::after {
     scroll-behavior: auto !important;
   }
 }
+
+/* Archive 真时间线（Motion 02 生长 + Motion 05 阅读）
+   tl-armed 由 JS 挂载：无 JS / 爬虫拿到完全可见的静态列表 */
+.tl-armed .tl-item { opacity: 0; transform: translateX(-10px); transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+.tl-armed .tl-item.is-in { opacity: 1; transform: none; }
+.tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
+.tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
