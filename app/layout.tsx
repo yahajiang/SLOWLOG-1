@@ -30,7 +30,6 @@ const cormorant = Cormorant_Garamond({
   preload: true,
 });
 
-// 中文衬线（设计系统 v1.3）：标题/品牌中文走 Noto Serif SC，拉丁由 Cormorant 前置承接
 const notoSerifSC = Noto_Serif_SC({
   weight: ["400", "600"],
   variable: "--font-serif-sc",

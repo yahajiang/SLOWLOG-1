@@ -2,7 +2,6 @@ import NextAuth from "next-auth"
 import { authConfig } from "@/lib/auth-config"
 import { NextResponse } from "next/server"
 
-// Edge-safe auth：只验 JWT，不碰 Prisma/pg
 const { auth } = NextAuth(authConfig)
 
 // 仅手机 UA 进移动版（平板/桌面走桌面版）；桌面端渲染零影响
@@ -25,7 +24,6 @@ export default auth((req) => {
     return NextResponse.redirect(new URL(newPath, req.nextUrl))
   }
 
-  // 移动端独立版：手机 UA 自动改写到 /m（地址栏不变），cookie view=desktop 可切回
   if (!pathname.startsWith("/m") && !pathname.startsWith("/api") && !pathname.startsWith("/dashboard")) {
     const optOut = req.cookies.get("view")?.value === "desktop"
     if (!optOut) {
@@ -47,8 +45,6 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/login", req.nextUrl))
   }
 
-  // 默认账户强制改密：已登录但 needsPasswordChange 时，只允许访问桌面改密页
-  // （移动后台无改密页，一律引导到 /dashboard/change-password）
   const needsChange = (req.auth?.user as any)?.needsPasswordChange
   if (needsChange) {
     if (pathname.startsWith("/m/dashboard")) {

@@ -1,6 +1,7 @@
 import { prisma } from "./prisma"
 import { unstable_cache } from "next/cache"
 import type { ContentCategory } from "./categories"
+import { slugifyHeading, dedupeHeadingId } from "./headings"
 
 export interface PostDTO {
   id: string
@@ -31,7 +32,6 @@ export interface PostDTO {
   publishedAt: Date | null
   createdAt: Date
   updatedAt: Date
-  // derived for legacy frontend compat
   category: ContentCategory
   displayDate: string
   headings: { id: string; text: string; level: number }[]
@@ -63,10 +63,7 @@ function extractHeadings(content: unknown): { id: string; text: string; level: n
       const level = n.attrs?.level || 2
       const text = (n.content || []).map((c: any) => c.text || "").join("").trim()
       if (text) {
-        let base = text.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g, "-").replace(/^-|-$/g, "") || `heading-${headings.length}`
-        const count = seen.get(base) || 0
-        seen.set(base, count + 1)
-        const id = count === 0 ? base : `${base}-${count}`
+        const id = dedupeHeadingId(slugifyHeading(text, headings.length), seen)
         headings.push({ id, text, level })
       }
     }
@@ -74,8 +71,6 @@ function extractHeadings(content: unknown): { id: string; text: string; level: n
   return headings
 }
 
-
-// 定时发布守卫：published 但未到时间 → 前台不可见（后台预览走 /api 独立查询）
 function scheduledGuard(row: any) {
   if (!row) return null
   if (row.status === "published" && row.publishedAt && new Date(row.publishedAt) > new Date()) return null
@@ -121,7 +116,6 @@ function mapPost(row: any): PostDTO {
 
 const getCachedPostRows = unstable_cache(
   async (status: string) => {
-    // 定时发布（v0.3 P1-8）：published 只放已到时间的（publishedAt 为空视为立即发布）
     const where: any = { status }
     if (status === "published") {
       where.OR = [{ publishedAt: null }, { publishedAt: { lte: new Date() } }]
@@ -133,7 +127,6 @@ const getCachedPostRows = unstable_cache(
       take: 100,
     })
   },
-  // Next.js 会把函数实参并入 cache key；此处仅让 key 名与语义对齐
   ["posts-by-status"],
   { revalidate: 60, tags: ["posts"] }
 )

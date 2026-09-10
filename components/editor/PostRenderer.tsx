@@ -1,8 +1,8 @@
 "use client"
 import React from "react"
 import type { PageConfig } from "@/lib/page-config"
+import { slugifyHeading, dedupeHeadingId } from "@/lib/headings"
 
-// 颜色白名单：仅允许 hex / rgb(a) / hsl(a) / 纯英文命名色，挡掉 expression(/url(/var( 等注入
 function safeColor(v: unknown): string | undefined {
   if (typeof v !== "string") return undefined
   const s = v.trim()
@@ -38,7 +38,6 @@ function renderInline(node: any, idx: number): React.ReactNode {
         el = <a key={idx + "-a"} href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined}>{el}</a>
       }
     }
-    // also handle legacy Tiptap marks stored as marks array vs direct?
     return <React.Fragment key={idx}>{el}</React.Fragment>
   }
   if (node.type === "hardBreak") return <br key={idx} />
@@ -47,7 +46,6 @@ function renderInline(node: any, idx: number): React.ReactNode {
 
 function CopyBtn({ code }: { code: string }) {
   const [copied, setCopied] = React.useState(false)
-  // legacy zinc/hex（历史还原豁免，勿模仿）：代码块 UI 始终深色，待令牌化，登记于 慢日志UI一致性基线.md
   return (
     <button
       onClick={async () => { try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1200) } catch {} }}
@@ -72,17 +70,14 @@ function LangBadge({ lang }: { lang: string }) {
   return <span className={`px-2.5 py-1 rounded-none text-[10px] font-semibold tracking-wider uppercase border ${cls}`}>{lang || "TEXT"}</span>
 }
 
-function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boolean, isFirstPara?: boolean, isDarkMode?: boolean): React.ReactNode {
+function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boolean, isFirstPara?: boolean, isDarkMode?: boolean, headingId?: string): React.ReactNode {
   const content = node.content || []
   const inline = content.map((c: any, i: number) => renderInline(c, i))
 
   switch (node.type) {
     case "heading": {
       const level = node.attrs?.level || 2
-      const text = content.map((c: any) => c.text || "").join("").trim()
-      const base = text.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g, "-").replace(/^-|-$/g, "") || `heading-${idx}`
-      // 简易去重：用 idx 保证唯一，实际与 posts.ts 的 seen 逻辑对齐
-      const id = base
+      const id = headingId || slugifyHeading(content.map((c: any) => c.text || "").join("").trim(), idx)
       const Tag = `h${level}` as any
       const cls =
         level === 1 ? "group text-3xl font-bold mt-[50px] mb-[18px] tracking-tight scroll-mt-[88px] flex items-center gap-2" :
@@ -194,6 +189,21 @@ export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { cont
   const nodes: any[] = doc.content || doc.root?.children || []
   if (!Array.isArray(nodes) || nodes.length === 0) return <p className="text-sm text-[var(--yh-muted)]">暂无内容</p>
 
+  const headingIds = new Map<number, string>()
+  {
+    const seen = new Map<string, number>()
+    let h = 0
+    nodes.forEach((n: any, i: number) => {
+      if (n.type === "heading") {
+        const text = (n.content || []).map((c: any) => c.text || "").join("").trim()
+        if (text) {
+          headingIds.set(i, dedupeHeadingId(slugifyHeading(text, h), seen))
+          h++
+        }
+      }
+    })
+  }
+
   const pc = pageConfig
   const isDarkMode = isDarkProp ?? (typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : false)
   const maxW = pc?.maxWidth === "narrow" ? "max-w-2xl" : pc?.maxWidth === "wide" ? "max-w-none" : "max-w-none"
@@ -207,7 +217,7 @@ export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { cont
       className={`max-w-none ${maxW} ${font} ${isDark(pc) ? "text-zinc-100" : "text-zinc-900"}`}
       style={{ backgroundColor: bg, ...(pc?.primaryColor ? { ["--yh-accent" as any]: pc.primaryColor } : {}) }}
     >
-      {nodes.map((n, i) => renderNode(n, i, pc?.primaryColor, false, i === firstParaIdx && pc?.fontFamily === "serif", isDark(pc)))}
+      {nodes.map((n, i) => renderNode(n, i, pc?.primaryColor, false, i === firstParaIdx && pc?.fontFamily === "serif", isDark(pc), headingIds.get(i)))}
     </div>
   )
 }
