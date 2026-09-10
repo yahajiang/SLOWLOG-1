@@ -3,6 +3,7 @@ import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { MPost } from "@/components/mobile/MPost";
 import { adaptPost } from "@/lib/madapt";
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const revalidate = 60;
 
@@ -20,7 +21,7 @@ export async function generateMetadata({
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) return { title: "文章未找到" };
   const post = adaptPost(raw)!;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+  const siteUrl = await getSiteUrl();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,

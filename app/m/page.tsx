@@ -3,15 +3,14 @@ import { getAllPosts } from "@/lib/posts";
 import { prisma } from "@/lib/prisma";
 import { MHome } from "@/components/mobile/MHome";
 import { adaptPost } from "@/lib/madapt";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 export const revalidate = 60;
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
 
 export const metadata: Metadata = {
   title: "慢日志",
   description: "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
-  alternates: { canonical: siteUrl },
+  alternates: { canonical: getSiteUrlSync() },
 };
 
 export default async function MobileHomePage() {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { PostClient } from "@/components/PostClient";
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const revalidate = 60;
 
@@ -45,7 +46,7 @@ export async function generateMetadata({
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) return { title: "文章未找到" };
   const post = toLegacy(raw)!;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+  const siteUrl = await getSiteUrl();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
@@ -83,7 +84,7 @@ export default async function PostPage({
   const others = all.filter((p) => !exclude.has(p.id) && p.category !== post.category);
   const relatedPosts = [...sameCat, ...others].slice(0, 3);
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+  const siteUrl = await getSiteUrl();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
