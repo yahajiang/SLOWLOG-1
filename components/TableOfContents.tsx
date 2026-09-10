@@ -50,17 +50,32 @@ export function TableOfContents({
     function sync() {
       timer = null;
       if (isClickRef.current || !bound) return;
-      // 按文档顺序对齐：最后一个越过 LINE 的元素索引 → 对应 headings 项
+      // 按文档顺序对齐：最后一个越过 LINE 的元素索引 → 对齐 headings 项
       let curIdx = 0;
       els.forEach((el, i) => {
         if (el.getBoundingClientRect().top <= 96) curIdx = i;
       });
-      const cur = headings[Math.min(curIdx, headings.length - 1)]?.id || "";
+      curIdx = Math.min(curIdx, headings.length - 1);
+      const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
-      // Motion 05 阅读：导轨进度 = 文档滚动比例
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      setProgress((prev) => (Math.abs(prev - p) < 0.005 ? prev : p));
+      // 导轨进度必须跟高亮标题同步：按标题区间插值，不用整页 scrollY
+      // （整页比例会把页脚/相关阅读算进去，出现「高亮第 3 条、蓝轨却拉到 80%」）
+      const p = railProgress(els, curIdx);
+      setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
+    }
+
+    /** TOC 蓝轨：在「当前标题 → 下一标题」的滚动区间内 0→1，再映射到 curIdx/n */
+    function railProgress(headingsEls: HTMLElement[], curIdx: number): number {
+      const n = headingsEls.length;
+      if (n === 0) return 0;
+      if (n === 1) return 1;
+      const line = window.scrollY + 96;
+      if (curIdx >= n - 1) return 1;
+      const curTop = headingsEls[curIdx].getBoundingClientRect().top + window.scrollY;
+      const nextTop = headingsEls[curIdx + 1].getBoundingClientRect().top + window.scrollY;
+      const span = Math.max(1, nextTop - curTop);
+      const local = Math.min(1, Math.max(0, (line - curTop) / span));
+      return (curIdx + local) / n;
     }
 
     function onScroll() {
@@ -110,6 +125,8 @@ export function TableOfContents({
                 onClick={(e) => {
                   e.preventDefault();
                   setActive(h.id);
+                  // 点击后蓝轨立即跟到该条，避免要等下一次滚动才同步
+                  setProgress((idx + 1) / Math.max(1, headings.length));
                   isClickRef.current = true;
                   if (releaseTimer.current) clearTimeout(releaseTimer.current);
                   const el = document.getElementById(h.id);
