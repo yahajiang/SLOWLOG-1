@@ -152,7 +152,7 @@ export function SearchPanel() {
         style={{
           display: "flex", alignItems: "center", gap: 10, padding: "9px 16px", cursor: "pointer",
           borderLeft: i === active ? "2px solid var(--yh-accent)" : "2px solid transparent",
-          background: i === active ? "#f8f6f1" : "transparent",
+          background: i === active ? "color-mix(in oklab, var(--yh-border) 45%, transparent)" : "transparent",
         }}
       >
         <span className="text-[13px] text-[var(--yh-text)] truncate">{highlight(r.title, query.trim())}</span>
@@ -175,9 +175,9 @@ export function SearchPanel() {
       <div
         onClick={(e) => e.stopPropagation()}
         className="animate-[pageIn_0.25s_var(--ease-out)_both]"
-        style={{ width: 520, maxWidth: "94%", background: "var(--yh-bg)", border: "1px solid #d8d6d0", overflow: "hidden" }}
+        style={{ width: 520, maxWidth: "94%", background: "var(--yh-bg)", border: "1px solid var(--yh-border)", overflow: "hidden", boxShadow: "var(--shadow-float, 0 12px 40px rgba(0,0,0,0.12))" }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", borderBottom: "1px solid #e8e6e0" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", borderBottom: "1px solid var(--yh-border)" }}>
           <span className="mono text-[13px] text-[var(--yh-muted)]">⌕</span>
           <input
             ref={inputRef}
@@ -198,13 +198,13 @@ export function SearchPanel() {
           {!loading && rendered}
           {!loading && qEmpty && (
             <div style={{ padding: 26, textAlign: "center" }}>
-              <div style={{ display: "inline-block", border: "1px dashed #c9c7c1", padding: "14px 22px", fontSize: 12, color: "var(--yh-muted)" }}>
-                {lang === "zh" ? <>没有找到「{query.trim()}」相关内容<br /><span style={{ fontSize: 11, color: "#a8a8ad" }}>试试更短的关键词</span></> : <>Nothing found for “{query.trim()}”<br /><span style={{ fontSize: 11, color: "#a8a8ad" }}>Try a shorter keyword</span></>}
+              <div style={{ display: "inline-block", border: "1px dashed var(--yh-border)", padding: "14px 22px", fontSize: 12, color: "var(--yh-muted)" }}>
+                {lang === "zh" ? <>没有找到「{query.trim()}」相关内容<br /><span style={{ fontSize: 11, color: "var(--yh-muted)", opacity: 0.75 }}>试试更短的关键词</span></> : <>Nothing found for “{query.trim()}”<br /><span style={{ fontSize: 11, color: "var(--yh-muted)", opacity: 0.75 }}>Try a shorter keyword</span></>}
               </div>
             </div>
           )}
         </div>
-        <div className="mono flex items-center gap-3.5" style={{ padding: "8px 16px", borderTop: "1px solid #e8e6e0", background: "#faf9f5", fontSize: 10, color: "var(--yh-muted)" }}>
+        <div className="mono flex items-center gap-3.5" style={{ padding: "8px 16px", borderTop: "1px solid var(--yh-border)", background: "color-mix(in oklab, var(--yh-border) 28%, transparent)", fontSize: 10, color: "var(--yh-muted)" }}>
           <span>↑↓ {lang === "zh" ? "导航" : "Nav"}</span>
           <span>Enter {lang === "zh" ? "打开" : "Open"}</span>
           <span>Esc {lang === "zh" ? "关闭" : "Close"}</span>

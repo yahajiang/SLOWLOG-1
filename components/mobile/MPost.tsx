@@ -34,7 +34,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
         aria-label="TOC"
       >
         <List className="w-5 h-5" />
-        <span className="absolute -top-1 -right-1 mono text-[10px] bg-[var(--yh-accent)] text-white w-5 h-5 rounded-none flex items-center justify-center border-2 border-white">
+        <span className="absolute -top-1 -right-1 mono text-[10px] bg-[var(--yh-accent)] text-[var(--yh-bg)] w-5 h-5 rounded-none flex items-center justify-center border-2 border-[var(--yh-bg)]">
           {headings.length}
         </span>
       </button>

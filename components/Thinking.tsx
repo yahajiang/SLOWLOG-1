@@ -29,7 +29,7 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
         <div className="absolute w-[5px] h-[5px] rounded-full bg-[var(--yh-border)] group-hover:bg-[var(--yh-accent)] transition-all duration-[320ms]" />
       </div>
       {/* 内容卡片 */}
-      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-none px-[18px] py-[14px] border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-white/80 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-[320ms]">
+      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-none px-[18px] py-[14px] border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-[var(--dash-card)]/90 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-[320ms]">
         <p className="text-[14.5px] text-[var(--yh-text)] leading-[1.85] tracking-wide">
           {text}
         </p>
