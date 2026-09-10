@@ -133,7 +133,8 @@ const getCachedPostRows = unstable_cache(
       take: 100,
     })
   },
-  ["posts-all"],
+  // Next.js 会把函数实参并入 cache key；此处仅让 key 名与语义对齐
+  ["posts-by-status"],
   { revalidate: 60, tags: ["posts"] }
 )
 
