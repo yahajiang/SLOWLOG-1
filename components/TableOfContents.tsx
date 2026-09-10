@@ -17,7 +17,6 @@ export function TableOfContents({
   const releaseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useLang();
 
-  // 依赖用 id 串（headings 数组每次渲染都是新引用，直接依赖会导致 effect 反复重建）
   const idsKey = headings.map((h) => h.id).join("|");
 
   useEffect(() => {
@@ -27,10 +26,6 @@ export function TableOfContents({
     let tries = 0;
     let els: HTMLElement[] = [];
 
-    // ⚠️ 正文由 dynamic 组件异步渲染——mount 时标题可能尚未存在，
-    // 必须轮询等待正文出现再绑定（否则目录高亮永不工作）。
-    // ⚠️ 不用 headings.id 做 getElementById——DB 保存的 id 与正文渲染的
-    // DOM id 是两套生成逻辑，可能字节级不同。直接抓正文标题按文档顺序对齐。
     function tryBind() {
       if (cancelled || bound) return;
       tries++;
@@ -51,7 +46,6 @@ export function TableOfContents({
     function sync() {
       timer = null;
       if (isClickRef.current || !bound) return;
-      // 按文档顺序对齐：最后一个越过 LINE 的元素索引 → 对齐 headings 项
       let curIdx = 0;
       els.forEach((el, i) => {
         if (el.getBoundingClientRect().top <= 96) curIdx = i;
@@ -59,7 +53,6 @@ export function TableOfContents({
       curIdx = Math.min(curIdx, headings.length - 1);
       const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
-      // 导轨进度必须跟高亮标题同步：按标题区间插值，不用整页 scrollY
       const p = railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
     }
@@ -97,7 +90,6 @@ export function TableOfContents({
         window.removeEventListener("resize", onScroll);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idsKey]);
 
   if (headings.length === 0) return null;

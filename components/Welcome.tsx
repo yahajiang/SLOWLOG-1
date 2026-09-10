@@ -5,9 +5,7 @@ import { useLang } from "@/lib/lang-context"
 import { pickTagline } from "@/lib/taglines"
 
 // 首访欢迎幕：「盖章仪式」编排——
-//   四角发丝线先落（纸面裁切感）→ S 圆标盖章回弹 → accent 下划线自左划出 →
 //   品牌字与格言「墨迹晕开」→ 整幕上移轻揭。
-// 仅首访播一次；回访者由内联脚本首帧前打 html-returning，CSS 直接隐藏。
 const KEY = "slowlog-welcomed"
 const LEAVE_AT = 2100
 const HIDE_AT = 2700
@@ -40,7 +38,6 @@ function InkText({
 export function Welcome() {
   const { t, lang } = useLang()
   const [phase, setPhase] = useState<"show" | "leave" | "hidden">("show")
-  // 水合安全：首帧用默认，mount 后再随机（避免 SSR/CSR 不一致）
   const [tagline, setTagline] = useState<string>(t.footerTagline)
 
   useEffect(() => {
