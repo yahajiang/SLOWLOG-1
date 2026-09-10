@@ -22,13 +22,13 @@ function getCategoryName(category: any): string {
 function FallbackCover({ initial, palette, variant }: { initial: string; palette: any; variant: number }) {
   const F: React.JSX.Element[] = [
     <div key={0} className="absolute inset-0">
-      <span className="absolute -top-6 left-6 serif italic leading-none select-none text-[8rem] tracking-tighter" style={{ color: palette.ink }}>{initial}</span>
+      <span className="absolute -top-6 left-6 serif italic leading-none select-none text-[8rem] tracking-tighter" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
       <span className="absolute bottom-4 right-6 block rounded-none mix-blend-multiply h-16 w-16" style={{ backgroundColor: palette.wash, border: `1px solid ${palette.ink}` }} />
-      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
-      <span className="absolute bottom-7 left-6 mono text-[11px] tracking-[0.2em]" style={{ color: palette.ink }}>No. {variant}</span>
+      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
+      <span className="absolute bottom-7 left-6 mono text-[11px] tracking-[0.2em]" style={{ color: palette.ink, opacity: 0.28 }}>No. {variant}</span>
     </div>,
     <div key={1} className="absolute inset-0">
-      <div className="absolute inset-4" style={{ backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: "28px 28px", opacity: 0.55 }} />
+      <div className="absolute inset-4" style={{ backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: "28px 28px", opacity: 0.2 }} />
       <span className="absolute top-1/3 left-6 h-2 w-2 rounded-none" style={{ backgroundColor: palette.ink }} />
       <span className="absolute bottom-6 right-8 h-10 w-10 rounded-none border" style={{ borderColor: palette.ink }} />
     </div>,
@@ -40,25 +40,25 @@ function FallbackCover({ initial, palette, variant }: { initial: string; palette
     <div key={3} className="absolute inset-0">
       <span className="absolute top-6 h-20 w-20 rounded-none mix-blend-multiply left-6" style={{ backgroundColor: palette.wash }} />
       <span className="absolute top-10 h-20 w-20 rounded-none mix-blend-multiply left-1/2" style={{ backgroundColor: palette.ink, opacity: 0.22 }} />
-      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.45 }} />
-      <span className="absolute bottom-8 left-6 serif italic text-sm" style={{ color: palette.ink }}>{initial}</span>
+      <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.26 }} />
+      <span className="absolute bottom-8 left-6 serif italic text-sm" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
     </div>,
     <div key={4} className="absolute inset-0 flex items-center justify-center">
-      <span className="serif italic leading-none select-none text-7xl" style={{ color: palette.ink }}>{initial}</span>
+      <span className="serif italic leading-none select-none text-7xl" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
     </div>,
     <div key={5} className="absolute inset-0 flex flex-col items-center justify-center gap-3">
       <span className="w-10 h-px" style={{ backgroundColor: palette.ink }} />
-      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink }}>{initial}</span>
+      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
       <span className="w-10 h-px" style={{ backgroundColor: palette.ink }} />
     </div>,
     <div key={6} className="absolute inset-0 flex items-center justify-center gap-3">
       <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
-      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink }}>{initial}</span>
+      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
       <span className="w-6 h-px" style={{ backgroundColor: palette.ink }} />
     </div>,
     <div key={7} className="absolute inset-0 flex items-center justify-center gap-4">
       <span className="w-12 h-12 rounded-none border-2" style={{ borderColor: palette.ink }} />
-      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink }}>{initial}</span>
+      <span className="serif italic leading-none select-none text-6xl" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
       <span className="w-12 h-12 rounded-none border-2" style={{ borderColor: palette.ink }} />
     </div>,
   ];
@@ -126,7 +126,7 @@ function PluginSymbol({ symbol, palette, variant, variant4 }: { symbol: TagSymbo
     return (
       <span className={`${badgeBase} w-11 h-9 border rounded-[6px] bg-[var(--dash-card)]/90 overflow-hidden flex flex-col shadow-sm`} style={style}>
         <span className="h-[10px] border-b flex items-center gap-[3px] px-1.5" style={{ borderColor: c, backgroundColor: w }}>
-          <span className="w-1.5 h-1.5 rounded-none" style={{ backgroundColor: c, opacity: 0.5 }} />
+          <span className="w-1.5 h-1.5 rounded-none" style={{ backgroundColor: c, opacity: 0.28 }} />
           <span className="w-1.5 h-1.5 rounded-none" style={{ backgroundColor: c, opacity: 0.25 }} />
         </span>
         <span className="flex-1 flex">
@@ -389,7 +389,7 @@ export const ArticleArt = memo(function ArticleArt({
 
       {/* 标签 → 主体场景区（位于中央偏下，与右下角标形成呼应） */}
       <TagScene symbol={symbol as TagSymbol | null} palette={palette} variant={variant} />
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 mono text-[8px] tracking-[0.2em] opacity-40" style={{ color: palette.ink }}>{tagPrimary ? tagPrimary.toUpperCase() : abbr}</div>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 mono text-[8px] tracking-[0.2em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>{tagPrimary ? tagPrimary.toUpperCase() : abbr}</div>
 
       {/* ---------- Design：编辑杂志感 · v2：族徽+轻纹理+5-7元素 ---------- */}
       {catName === "Design" && (
@@ -404,7 +404,7 @@ export const ArticleArt = memo(function ArticleArt({
               <span className={`absolute top-3 ${dotPos} w-1 h-1 rounded-none`} style={{ backgroundColor: palette.accent }} />
               <span className="absolute -bottom-1 right-10 w-10 h-[2px] opacity-20" style={{ backgroundColor: palette.ink }} />
               <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
-              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>{abbr} · {noNum} — · ED.</span>
+              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink, opacity: 0.28 }}>{abbr} · {noNum} — · ED.</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -414,10 +414,10 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute inset-6 border opacity-10 rounded-[10px]" style={{ borderColor: palette.ink }} />
               <span className="absolute bottom-4 right-7 w-12 h-12 rounded-none border shadow-sm" style={{ borderColor: palette.ink, background: `radial-gradient(circle at 35% 35%, white, ${palette.wash})` }} />
               <span className="absolute bottom-4 right-7 w-12 h-12 rounded-none border translate-x-1 -translate-y-1 opacity-25" style={{ borderColor: palette.ink }} />
-              <span className="absolute top-6 right-6 mono text-[7px] tracking-[0.2em] border px-1.5 py-0.5 rounded-none" style={{ borderColor: palette.ink, color: palette.ink, opacity: 0.6 }}>VOL. {noNum.slice(0,2)}</span>
+              <span className="absolute top-6 right-6 mono text-[7px] tracking-[0.2em] border px-1.5 py-0.5 rounded-none" style={{ borderColor: palette.ink, color: palette.ink, opacity: 0.2 }}>VOL. {noNum.slice(0,2)}</span>
               <span className={`absolute top-3 ${dotPos} w-1 h-1 rounded-none opacity-60`} style={{ backgroundColor: palette.ink }} />
               <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
-              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>{abbr} · {noNum} ◇ · ED.</span>
+              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink, opacity: 0.28 }}>{abbr} · {noNum} ◇ · ED.</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -426,15 +426,15 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute top-0 left-0 right-0 h-[36%] opacity-[0.06]" style={{ background: `linear-gradient(180deg, ${palette.wash}, transparent)` }} />
               <span className="absolute top-7 left-6 right-6 flex items-center gap-3">
                 <span className="h-px flex-1" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
-                <span className="serif italic text-2xl tracking-tight" style={{ color: palette.ink }}>{initial}</span>
-                <span className="mono text-[8px] tracking-[0.2em] border px-2 py-0.5 rounded-none" style={{ borderColor: palette.ink, opacity: 0.35, color: palette.ink }}>{abbr}</span>
+                <span className="serif italic text-2xl tracking-tight" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
+                <span className="mono text-[8px] tracking-[0.2em] border px-2 py-0.5 rounded-none" style={{ borderColor: palette.ink, opacity: 0.22, color: palette.ink }}>{abbr}</span>
                 <span className="h-px flex-1" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
               </span>
-              <span className="absolute bottom-0 left-0 right-0 h-[28%] opacity-40" style={{ background: `radial-gradient(ellipse at 75% 100%, ${palette.wash} 0%, transparent 65%)` }} />
+              <span className="absolute bottom-0 left-0 right-0 h-[28%] opacity-30" style={{ background: `radial-gradient(ellipse at 75% 100%, ${palette.wash} 0%, transparent 65%)` }} />
               <span className="absolute bottom-4 right-6 w-11 h-11 rounded-none shadow-sm flex items-center justify-center mono text-[8px]" style={{ backgroundColor: variant % 2 === 0 ? palette.wash : "white", border: `1px solid ${palette.ink}`, color: palette.ink }}>{noNum.slice(-2)}</span>
               <span className={`absolute top-3 ${dotPos} w-1 h-1 rounded-none`} style={{ backgroundColor: palette.accent, opacity: 0.8 }} />
               <span className="absolute bottom-5 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
-              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>{abbr} · {noNum} ◇ · ED.</span>
+              <span className="absolute bottom-[26px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink, opacity: 0.28 }}>{abbr} · {noNum} ◇ · ED.</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -446,13 +446,13 @@ export const ArticleArt = memo(function ArticleArt({
         <>
           <LightTexture palette={palette} intensity="low" />
           <div className="absolute inset-4 rounded-[8px] border opacity-30" style={{ borderColor: palette.wash, backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: `${gridSize} ${gridSize}` }} />
-          <span className="absolute top-[18px] left-[18px] mono text-[6px] tracking-[0.12em] opacity-30" style={{ color: palette.ink }}>00 — 04 — 08</span>
+          <span className="absolute top-[18px] left-[18px] mono text-[6px] tracking-[0.12em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>—</span>
           {variant3 === 0 && (
             <>
               <span className="absolute top-[34%] left-6 right-10 h-px" style={{ backgroundColor: palette.ink, opacity: 0.28 }} />
               <span className={`absolute top-[31%] ${dotPos} h-2 w-2 rotate-45 shadow-sm`} style={{ backgroundColor: palette.ink, borderRadius: variant % 3 === 0 ? "9999px" : "1px" }} />
               {variant % 2 === 0 && <span className="absolute top-[46%] left-6 right-16 h-px opacity-12" style={{ backgroundColor: palette.ink }} />}
-              <span className="absolute top-6 right-6 w-1 h-1 rounded-none opacity-40" style={{ backgroundColor: palette.accent }} />
+              <span className="absolute top-6 right-6 w-1 h-1 rounded-none opacity-30" style={{ backgroundColor: palette.accent }} />
             </>
           )}
           {variant3 === 1 && (
@@ -470,9 +470,9 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute top-[34%] left-6 right-10 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
             </>
           )}
-          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em] select-none flex items-center gap-1.5" style={{ color: palette.ink }}>
+          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em] select-none flex items-center gap-1.5" style={{ color: palette.ink, opacity: 0.28 }}>
             <span>{abbr} · {noNum}</span>
-            <span className="opacity-40">·</span>
+            <span className="opacity-30">·</span>
             <span className="opacity-70">{symbol ? symbol : "plug"}</span>
           </span>
           <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
@@ -491,7 +491,7 @@ export const ArticleArt = memo(function ArticleArt({
                 <g opacity="0.35"><line x1="58" y1="60" x2="58" y2="12" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="2 3"/><text x="60" y="10" fontSize="6" fill={palette.ink} fontFamily="JetBrains Mono">EL.58</text></g>
               </svg>
               <span className={`absolute top-[34%] ${dotPos} w-1.5 h-1.5 rounded-none`} style={{ backgroundColor: palette.accent }} />
-              <span className="absolute top-6 left-6 mono text-[6px] tracking-[0.15em] border px-1.5 py-0.5 rounded bg-[var(--dash-card)]/80" style={{ borderColor: palette.ink, opacity: 0.35, color: palette.ink }}>CONTOUR · {dotPos.replace(/[^0-9]/g,'')}</span>
+              <span className="absolute top-6 left-6 mono text-[6px] tracking-[0.15em] border px-1.5 py-0.5 rounded bg-[var(--dash-card)]/80" style={{ borderColor: palette.ink, opacity: 0.22, color: palette.ink }}>CONTOUR · {dotPos.replace(/[^0-9]/g,'')}</span>
               <span className="absolute bottom-6 right-7 w-8 h-8 rounded-none border opacity-60 shadow-sm" style={{ borderColor: palette.ink, background: `radial-gradient(circle at 30% 30%, white, ${palette.wash})` }} />
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
@@ -501,9 +501,9 @@ export const ArticleArt = memo(function ArticleArt({
               <div className="absolute inset-4 rounded-[8px] border" style={{ borderColor: palette.wash, backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: `22px 22px`, opacity: variant % 2 === 0 ? 0.42 : 0.28 }} />
               <div className="absolute top-7 left-6 flex gap-1.5 items-center">
                 <span className="w-1.5 h-1.5 rounded-none animate-pulse" style={{ backgroundColor: palette.accent }} />
-                <span className="mono text-[7px] tracking-[0.15em]" style={{ color: palette.ink }}>3 NODES · {dotPos === "left-[22%]" ? "A" : dotPos === "left-[38%]" ? "B" : dotPos === "left-[52%]" ? "C" : "D"}</span>
+                <span className="mono text-[7px] tracking-[0.15em]" style={{ color: palette.ink, opacity: 0.28 }}>3 NODES · {dotPos === "left-[22%]" ? "A" : dotPos === "left-[38%]" ? "B" : dotPos === "left-[52%]" ? "C" : "D"}</span>
               </div>
-              <span className={`absolute top-1/2 ${dotPos} w-1 h-1 rounded-none opacity-40`} style={{ backgroundColor: palette.ink }} />
+              <span className={`absolute top-1/2 ${dotPos} w-1 h-1 rounded-none opacity-30`} style={{ backgroundColor: palette.ink }} />
               <span className="absolute bottom-6 right-8 w-9 h-9 border flex items-center justify-center text-[10px] shadow-sm bg-[var(--dash-card)]/70" style={{ borderColor: palette.ink, clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)", transform: variant % 2 === 0 ? "rotate(12deg)" : undefined }}>⬢</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
@@ -517,11 +517,11 @@ export const ArticleArt = memo(function ArticleArt({
                 <circle cx={variant4 % 2 === 0 ? 52 : 126} cy={variant4 % 2 === 0 ? 44 : 62} r="2.2" fill={palette.accent} />
                 <text x="38" y="48" fontSize="6" fill={palette.ink} opacity="0.5" fontFamily="JetBrains Mono">ARCH-0{variant4 + 2}</text>
               </svg>
-              <span className="absolute top-6 right-6 mono text-[6px] tracking-[0.15em] opacity-30" style={{ color: palette.ink }}>SCALE 1:2{variant4}0</span>
+              <span className="absolute top-6 right-6 mono text-[6px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>SCALE 1:2{variant4}0</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
-          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em] select-none" style={{ color: palette.ink }}>{abbr} · {noNum} {variant % 2 ? "⬢" : "—"} · {variant4}</span>
+          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em] select-none" style={{ color: palette.ink, opacity: 0.28 }}>{abbr} · {noNum} {variant % 2 ? "⬢" : "—"} · {variant4}</span>
         </>
       )}
 
@@ -538,7 +538,7 @@ export const ArticleArt = memo(function ArticleArt({
                   <span className="w-2 h-2 rounded-none" style={{ backgroundColor: "#E8AFAF" }} />
                   <span className="w-2 h-2 rounded-none" style={{ backgroundColor: "#E8D9A0" }} />
                   <span className="w-2 h-2 rounded-none" style={{ backgroundColor: "#A8D8B0" }} />
-                  <span className="ml-2 flex-1 h-2 rounded-none opacity-40" style={{ backgroundColor: palette.wash }} />
+                  <span className="ml-2 flex-1 h-2 rounded-none opacity-30" style={{ backgroundColor: palette.wash }} />
                   <span className={`ml-1 w-1.5 h-1.5 rounded-none ${variant4 === 0 ? "opacity-100" : "opacity-30"}`} style={{ backgroundColor: palette.accent }} />
                 </span>
                 {/* 3. 内容行 1 */}
@@ -550,10 +550,10 @@ export const ArticleArt = memo(function ArticleArt({
                 {/* 6. 状态栏 */}
                 <span className="absolute bottom-2 left-3 right-3 h-1.5 rounded-none" style={{ backgroundColor: palette.accent, opacity: 0.28 }} />
                 {/* 7. URL 标签 */}
-                <span className="absolute top-2 right-2 mono text-[6px] opacity-40" style={{ color: palette.ink }}>localhost:3000</span>
+                <span className="absolute top-2 right-2 mono text-[6px] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>localhost:3000</span>
               </span>
               {/* 8. 底栏 */}
-              <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>FRT · {noNum} ▭ WIN</span>
+              <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>FRT · {noNum} ▭ WIN</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -577,23 +577,23 @@ export const ArticleArt = memo(function ArticleArt({
               {/* 2. 状态点 */}
               <span className="absolute top-3 left-3 w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent }} />
               {/* 3. 状态文字 */}
-              <span className="absolute bottom-7 left-7 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>FRT · {noNum} ⊞ GRID</span>
+              <span className="absolute bottom-7 left-7 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>FRT · {noNum} ⊞ GRID</span>
               {/* 4. 4. 5. 装饰点 */}
-              <span className="absolute bottom-7 right-7 w-1 h-1 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.4 }} />
-              <span className="absolute bottom-9 right-9 w-1 h-1 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.3 }} />
+              <span className="absolute bottom-7 right-7 w-1 h-1 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.24 }} />
+              <span className="absolute bottom-9 right-9 w-1 h-1 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.2 }} />
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
           {variant3 === 2 && (
             <>
               {/* 1. 顶部徽标 */}
-              <span className={`absolute top-7 mono text-[11px] tracking-[0.28em] ${shiftClass} border px-2 py-0.5 rounded-none bg-[var(--dash-card)] shadow-sm`} style={{ color: palette.ink, borderColor: palette.wash, opacity: variant % 2 === 0 ? 1 : 0.85 }}>frontend · No.{noNum}</span>
+              <span className={`absolute top-7 mono text-[11px] tracking-[0.28em] ${shiftClass} border px-2 py-0.5 rounded-none bg-[var(--dash-card)] shadow-sm`} style={{ color: palette.ink, borderColor: palette.wash, opacity: variant % 2 === 0 ? 0.4 : 0.28 }}>frontend · No.{noNum}</span>
               {/* 2. 角点 */}
               <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent }} />
               {/* 3. 巨字 */}
-              <span className="absolute bottom-8 left-7 serif italic text-2xl tracking-tight" style={{ color: palette.ink }}>{initial}</span>
+              <span className="absolute bottom-8 left-7 serif italic text-2xl tracking-tight" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
               {/* 4. 字号标 */}
-              <span className="absolute bottom-7 left-16 mono text-[8px] tracking-[0.15em] opacity-40" style={{ color: palette.ink }}>Aa · {12 + variant4 * 2}px</span>
+              <span className="absolute bottom-7 left-16 mono text-[8px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>Aa · {12 + variant4 * 2}px</span>
               {/* 5. 度量小格 */}
               <span className="absolute bottom-7 right-16 flex gap-0.5">
                 {[0, 1, 2, 3].map((i) => (
@@ -603,7 +603,7 @@ export const ArticleArt = memo(function ArticleArt({
               {/* 6. 底分割线 */}
               <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
               {/* 7. 类别小标 */}
-              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>FRT · {noNum} COMP</span>
+              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>FRT · {noNum} COMP</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -620,7 +620,7 @@ export const ArticleArt = memo(function ArticleArt({
               <span className={`absolute top-5 w-5 h-5 bg-[var(--dash-card)] border shadow-sm rotate-45 translate-x-2 -translate-y-2 ${dotPos === "left-[22%]" ? "right-14" : dotPos === "left-[38%]" ? "right-10" : dotPos === "left-[52%]" ? "right-6" : "right-8"}`} style={{ borderColor: palette.wash }} />
               <span className="absolute top-8 left-8 right-10 h-px" style={{ backgroundColor: palette.wash, opacity: 0.9 - variant4 * 0.15 }} />
               <span className="absolute top-11 left-8 right-12 h-px opacity-60" style={{ backgroundColor: palette.wash }} />
-              <span className="absolute top-14 left-8 h-px opacity-40" style={{ backgroundColor: palette.wash, width: `${68 + variant4 * 4}%` }} />
+              <span className="absolute top-14 left-8 h-px opacity-30" style={{ backgroundColor: palette.wash, width: `${68 + variant4 * 4}%` }} />
               <span className="absolute bottom-7 right-10 mono text-[7px] tracking-[0.15em] rotate-[-4deg] border px-1 py-0.5 rounded bg-amber-50 shadow-sm" style={{ borderColor: palette.wash, color: palette.ink, transform: `rotate(${-4 + variant4}deg)` }}>TAPE · {variant4}</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
@@ -628,11 +628,11 @@ export const ArticleArt = memo(function ArticleArt({
           {variant3 === 1 && (
             <>
               <span className="absolute top-6 left-6 right-6 bottom-10 bg-[var(--dash-card)]/90 rounded-[8px] border p-3 shadow-sm" style={{ borderColor: palette.wash }}>
-                <span className="flex items-center gap-2 mb-2"><span className="w-3 h-3 rounded border flex items-center justify-center" style={{ borderColor: variant4 <= 1 ? palette.accent : palette.ink, backgroundColor: variant4 <= 1 ? palette.accent : "transparent", opacity: variant4 <= 1 ? 1 : 0.4 }}><span className="text-white text-[8px] leading-none" style={{ opacity: variant4 <= 1 ? 1 : 0 }}>✓</span></span><span className="h-1.5 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.18, width: `${14 + variant4 * 2}rem` }} /><span className="ml-auto mono text-[7px] tracking-[0.15em] opacity-40" style={{ color: palette.ink }}>{variant4 <= 1 ? "DONE" : "TODO"}</span></span>
+                <span className="flex items-center gap-2 mb-2"><span className="w-3 h-3 rounded border flex items-center justify-center" style={{ borderColor: variant4 <= 1 ? palette.accent : palette.ink, backgroundColor: variant4 <= 1 ? palette.accent : "transparent", opacity: variant4 <= 1 ? 1 : 0.4 }}><span className="text-white text-[8px] leading-none" style={{ opacity: variant4 <= 1 ? 1 : 0 }}>✓</span></span><span className="h-1.5 rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.18, width: `${14 + variant4 * 2}rem` }} /><span className="ml-auto mono text-[7px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>{variant4 <= 1 ? "DONE" : "TODO"}</span></span>
                 <span className="flex items-center gap-2 mb-2"><span className="w-3 h-3 rounded border" style={{ borderColor: palette.ink, opacity: variant4 <= 2 ? 0.4 : 0.15 }} /><span className="h-1.5 w-12 rounded-none" style={{ backgroundColor: palette.wash, opacity: 0.7 - variant4 * 0.1 }} /></span>
-                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded border" style={{ borderColor: palette.ink, opacity: 0.2 }} /><span className="h-1.5 rounded-none" style={{ backgroundColor: palette.wash, opacity: 0.55, width: `${5 + variant4}rem` }} /></span>
+                <span className="flex items-center gap-2"><span className="w-3 h-3 rounded border" style={{ borderColor: palette.ink, opacity: 0.2 }} /><span className="h-1.5 rounded-none" style={{ backgroundColor: palette.wash, opacity: 0.2, width: `${5 + variant4}rem` }} /></span>
               </span>
-              <span className={`absolute top-6 ${dotPos} w-1.5 h-1.5 rounded-none opacity-40`} style={{ backgroundColor: palette.accent }} />
+              <span className={`absolute top-6 ${dotPos} w-1.5 h-1.5 rounded-none opacity-30`} style={{ backgroundColor: palette.accent }} />
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -644,11 +644,11 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute top-8 left-12 right-8 h-px" style={{ backgroundColor: palette.wash, width: `${82 - variant4 * 4}%` }} />
               <span className="absolute top-11 left-12 right-10 h-px opacity-60" style={{ backgroundColor: palette.wash }} />
               <span className="absolute top-14 left-12 right-12 h-px opacity-35" style={{ backgroundColor: palette.wash }} />
-              <span className="absolute top-6 right-10 mono text-[6px] tracking-[0.15em] opacity-40" style={{ color: palette.ink }}>RULED · {variant4}</span>
+              <span className="absolute top-6 right-10 mono text-[6px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>RULED · {variant4}</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
-          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>{abbr} · {noNum} — · {variant4}</span>
+          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>{abbr} · {noNum} — · {variant4}</span>
           <span className="absolute bottom-6 right-6 w-2 h-2 rounded-none opacity-50" style={{ backgroundColor: variant % 2 === 0 ? palette.accent : palette.ink }} />
         </>
       )}
@@ -659,7 +659,7 @@ export const ArticleArt = memo(function ArticleArt({
           <LightTexture palette={palette} intensity="low" />
           {variant3 === 0 && (
             <>
-              <span className="absolute -top-6 -right-8 w-32 h-32 rounded-none" style={{ background: `radial-gradient(circle at 40% 40%, ${palette.wash}, transparent 65%)`, opacity: 0.35 + variant4 * 0.05 }} />
+              <span className="absolute -top-6 -right-8 w-32 h-32 rounded-none" style={{ background: `radial-gradient(circle at 40% 40%, ${palette.wash}, transparent 65%)`, opacity: 0.22 + variant4 * 0.05 }} />
               <span className="absolute -bottom-4 -left-6 w-20 h-20 rounded-none" style={{ background: `radial-gradient(circle at 60% 60%, ${palette.accent}, transparent 60%)`, opacity: 0.18 }} />
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 180" preserveAspectRatio="none" aria-hidden>
                 <path d="M 10 102 Q 80 62 160 102 T 310 102" fill="none" stroke={palette.ink} strokeWidth="1.1" opacity={0.18 + variant4 * 0.02} />
@@ -669,7 +669,7 @@ export const ArticleArt = memo(function ArticleArt({
               <circle cx={42 + variant4 * 8} cy={36 + variant4 * 2} r="2.2" fill={palette.accent} opacity="0.9" />
               <circle cx={84 - variant4 * 4} cy={46} r="1.2" fill={palette.ink} opacity="0.15" />
               <span className="absolute top-7 right-6 mono text-[7px] tracking-[0.15em] border px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] shadow-sm" style={{ borderColor: palette.wash, color: palette.ink }}>FIELD · {variant4}</span>
-              <span className="absolute bottom-7 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>LIFE · {noNum} 〜</span>
+              <span className="absolute bottom-7 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>LIFE · {noNum} 〜</span>
               <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
@@ -680,12 +680,12 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute top-12 left-12 w-16 h-16 rounded-none border -ml-6 opacity-45 shadow-sm" style={{ borderColor: palette.ink, backgroundColor: "white", transform: `translateX(${-variant4}px)` }} />
               <span className={`absolute top-[40%] ${dotPos} w-2 h-2 rounded-none shadow-sm`} style={{ backgroundColor: palette.accent }} />
               <span className={`absolute top-[40%] ${dotPos} w-2 h-2 rounded-none animate-ping opacity-15`} style={{ backgroundColor: palette.accent }} />
-              <span className="absolute bottom-10 left-6 right-6 h-px" style={{ backgroundColor: palette.wash, opacity: 0.5 + variant4 * 0.1 }} />
+              <span className="absolute bottom-10 left-6 right-6 h-px" style={{ backgroundColor: palette.wash, opacity: 0.28 + variant4 * 0.1 }} />
               {[0, 1, 2, 3].map((i) => (
-                <span key={i} className="absolute bottom-9" style={{ left: `${25 + i * 16}%`, width: 1, height: 4, backgroundColor: palette.ink, opacity: 0.3 }} />
+                <span key={i} className="absolute bottom-9" style={{ left: `${25 + i * 16}%`, width: 1, height: 4, backgroundColor: palette.ink, opacity: 0.2 }} />
               ))}
-              <span className="absolute bottom-7 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>LIFE · {noNum} ~</span>
-              <span className="absolute bottom-7 right-6 mono text-[9px] opacity-50" style={{ color: palette.ink }}>DAILY · {variant4}</span>
+              <span className="absolute bottom-7 left-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>LIFE · {noNum} ~</span>
+              <span className="absolute bottom-7 right-6 mono text-[9px] opacity-50" style={{ color: palette.ink, opacity: 0.28 }}>DAILY · {variant4}</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -697,11 +697,11 @@ export const ArticleArt = memo(function ArticleArt({
                   <span key={i} className="w-1 h-1 rounded-none" style={{ backgroundColor: (i + variant4) % 3 === 0 ? palette.ink : palette.wash }} />
                 ))}
               </div>
-              <span className="absolute bottom-9 left-6 serif italic text-2xl tracking-tight" style={{ color: palette.ink }}>{initial}</span>
-              <span className="absolute bottom-9 left-12 mono text-[8px] tracking-[0.15em] opacity-40" style={{ color: palette.ink }}>LIFE LOG · {variant4}</span>
+              <span className="absolute bottom-9 left-6 serif italic text-2xl tracking-tight" style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
+              <span className="absolute bottom-9 left-12 mono text-[8px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>LIFE LOG · {variant4}</span>
               <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent }} />
               <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
-              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>LIFE · {noNum} LOG</span>
+              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>LIFE · {noNum} LOG</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -720,11 +720,11 @@ export const ArticleArt = memo(function ArticleArt({
               <span className="absolute left-6 right-6 top-[40%] h-px opacity-25" style={{ backgroundColor: palette.ink }} />
               <span className="absolute left-6 right-6 top-[40%] translate-y-[2px] h-px opacity-15" style={{ backgroundColor: palette.ink }} />
               {/* 3. 巨衬线 Aa */}
-              <span className={`absolute top-[28%] ${shiftClass} serif italic leading-none select-none text-7xl font-light`} style={{ color: palette.ink }}>{initial}</span>
+              <span className={`absolute top-[28%] ${shiftClass} serif italic leading-none select-none text-7xl font-light`} style={{ color: palette.ink, opacity: 0.28 }}>{initial}</span>
               {/* 4. 字号小标 */}
-              <span className="absolute top-6 right-6 serif italic text-xs opacity-50" style={{ color: palette.ink }}>Aa · 56pt</span>
+              <span className="absolute top-6 right-6 serif italic text-xs opacity-50" style={{ color: palette.ink, opacity: 0.28 }}>Aa · 56pt</span>
               {/* 5. pt 度量 */}
-              <span className="absolute bottom-[34px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink }}>TYPE · {noNum} · x-height {40 + variant4 * 4}</span>
+              <span className="absolute bottom-[34px] left-6 mono text-[10px] tracking-[0.2em] select-none" style={{ color: palette.ink, opacity: 0.28 }}>TYPE · {noNum} · x-height {40 + variant4 * 4}</span>
               {/* 6. 底部细发丝线 */}
               <span className="absolute bottom-6 left-6 right-6 h-px opacity-20" style={{ backgroundColor: palette.ink }} />
               {/* 7. 角点 */}
@@ -739,22 +739,22 @@ export const ArticleArt = memo(function ArticleArt({
               {/* 2. 引号内主字 */}
               <span className="absolute top-12 left-16 serif italic text-5xl tracking-tight select-none" style={{ color: palette.ink, transform: `translateX(${variant4 * 2}px)` }}>{initial}</span>
               {/* 3. 引用样本 */}
-              <span className="absolute bottom-8 left-16 mono text-[8px] tracking-[0.1em] opacity-40" style={{ color: palette.ink }}>"The quick brown fox · {variant4}px"</span>
+              <span className="absolute bottom-8 left-16 mono text-[8px] tracking-[0.1em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>"The quick brown fox · {variant4}px"</span>
               {/* 4. 度量竖线 */}
               <span className="absolute left-12 top-12 bottom-12 w-px opacity-20" style={{ backgroundColor: palette.ink }} />
               {/* 5. 度量数字 */}
-              <span className="absolute left-4 top-12 mono text-[7px] opacity-40" style={{ color: palette.ink, writingMode: "vertical-rl" as any }}>56pt</span>
+              <span className="absolute left-4 top-12 mono text-[7px] opacity-30" style={{ color: palette.ink, writingMode: "vertical-rl" as any }}>56pt</span>
               {/* 6. 底分割线 */}
               <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
               {/* 7. 类别小标 */}
-              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>TYP · {noNum} · {variant4}</span>
+              <span className="absolute bottom-[26px] right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>TYP · {noNum} · {variant4}</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
           {variant3 === 2 && (
             <>
               {/* 1. 双栏栏标 */}
-              <div className="absolute top-6 left-6 right-6 bottom-10 grid grid-cols-2 gap-3 opacity-40">
+              <div className="absolute top-6 left-6 right-6 bottom-10 grid grid-cols-2 gap-3 opacity-30">
                 <span className="border-l-2 pl-2.5 flex flex-col gap-1.5" style={{ borderColor: variant4 % 2 === 0 ? palette.wash : palette.ink }}>
                   <span className="h-1.5 w-full rounded-none" style={{ backgroundColor: palette.ink, opacity: 0.22 }} />
                   <span className="h-1 rounded-none" style={{ backgroundColor: palette.wash, width: `${68 + variant4 * 4}%` }} />
@@ -766,16 +766,16 @@ export const ArticleArt = memo(function ArticleArt({
                 </span>
               </div>
               {/* 2. 栏标签 */}
-              <span className="absolute top-9 left-7 mono text-[6px] opacity-50" style={{ color: palette.ink }}>{12 + variant4} COL</span>
-              <span className="absolute top-9 left-[50%] ml-1 mono text-[6px] opacity-50" style={{ color: palette.ink }}>{8 + variant4} COL</span>
+              <span className="absolute top-9 left-7 mono text-[6px] opacity-50" style={{ color: palette.ink, opacity: 0.28 }}>{12 + variant4} COL</span>
+              <span className="absolute top-9 left-[50%] ml-1 mono text-[6px] opacity-50" style={{ color: palette.ink, opacity: 0.28 }}>{8 + variant4} COL</span>
               {/* 3. 大字 Aa */}
-              <span className="absolute bottom-7 left-6 serif italic text-2xl" style={{ color: palette.ink }}>Aa</span>
+              <span className="absolute bottom-7 left-6 serif italic text-2xl" style={{ color: palette.ink, opacity: 0.28 }}>Aa</span>
               {/* 4. 字号对照 */}
-              <span className="absolute bottom-7 right-20 mono text-[8px] tracking-[0.15em] opacity-50" style={{ color: palette.ink }}>16 · 24 · 40</span>
+              <span className="absolute bottom-7 right-20 mono text-[8px] tracking-[0.15em] opacity-50" style={{ color: palette.ink, opacity: 0.28 }}>·</span>
               {/* 5. 底分割线 */}
               <span className="absolute bottom-6 left-6 right-6 h-px" style={{ backgroundColor: palette.ink, opacity: 0.18 }} />
               {/* 6. 类别小标 */}
-              <span className="absolute bottom-6 right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink }}>TYP · {noNum} GRID</span>
+              <span className="absolute bottom-6 right-6 mono text-[10px] tracking-[0.18em]" style={{ color: palette.ink, opacity: 0.28 }}>TYP · {noNum} GRID</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
             </>
           )}
@@ -786,3 +786,4 @@ export const ArticleArt = memo(function ArticleArt({
     </div>
   );
 });
+

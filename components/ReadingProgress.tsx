@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
@@ -73,7 +73,7 @@ export function ReadingProgress() {
 
   return (
     <>
-      <div className={`fixed top-0 left-0 right-0 z-[60] h-[3px] pointer-events-none transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}>
+      <div className={`fixed top-0 left-0 right-0 z-[60] h-[2px] pointer-events-none transition-opacity duration-300 ${visible ? "opacity-60" : "opacity-0"}`}>
         <div
           className="h-full w-full origin-left transition-transform duration-150 ease-out"
           style={{
