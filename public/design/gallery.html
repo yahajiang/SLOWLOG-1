@@ -467,12 +467,12 @@ function render(){
 function openM(id){
   const c=C.find(x=>x.id===id);if(!c)return;
   document.getElementById("m-body").innerHTML=`
-    <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">${c.name}</h2>
+    <h2 class="m-h2">${c.name}</h2>
     <div class="m-meta"><span class="tag">${c.cat}</span></div>
-    <p style="font-size:13px;color:var(--yh-muted)">${c.desc}</p>
+    <p class="m-desc">${c.desc}</p>
     <div class="m-pv">${c.pv}</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 0 10px">
-      <div class="kicker" style="margin:0">AI 生成提示词（复制给任何 AI 工具）</div>
+    <div class="m-head">
+      <div class="kicker">AI 生成提示词（复制给任何 AI 工具）</div>
       <button class="copy-main" onclick="copyP(this,'pp')">⧉ 复制提示词</button>
     </div>
     <div class="prompt-box"><pre id="pp">${c.prompt.replace(/</g,"&lt;")}</pre></div>`;
