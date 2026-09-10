@@ -39,3 +39,6 @@ backups/
 
 # content exports
 content-export/
+
+# QA screenshot artifacts
+scripts/qa-screens/
