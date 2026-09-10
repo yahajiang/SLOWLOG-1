@@ -42,3 +42,8 @@ content-export/
 
 # QA screenshot artifacts
 scripts/qa-screens/
+
+# local server logs
+.dev-server*.log
+.dev-server*.err
+.dev-server.log.err
