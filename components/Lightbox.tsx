@@ -52,7 +52,7 @@ export function Lightbox() {
         <img
           src={src}
           alt={alt}
-          className="max-w-full max-h-[85vh] object-contain rounded-none shadow-2xl transition-transform duration-200"
+          className="max-w-full max-h-[85vh] object-contain rounded-none shadow-2xl transition-transform duration-[300ms] ease-[var(--ease-out)]"
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
         />
         <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 rounded-none px-2 py-1.5 backdrop-blur-sm">
