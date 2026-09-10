@@ -117,7 +117,7 @@ code, pre, .font-mono {
 }
 
 @keyframes motionBreath {
-  0%, 100% { opacity: 0.92; }
+  0%, 100% { opacity: 0.88; }
   50% { opacity: 1; }
 }
 .motion-breath { animation: motionBreath var(--motion-breath) ease-in-out infinite; }
@@ -1016,10 +1016,9 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面 SVG 主体场景：常态轻呼吸（6s 浮动，五 Motion 之「呼吸」）+ 入场描边生长（「生长」）
-   + 实心图形 4s 轻脉动循环（与容器浮动错峰）。cover-inner 类此前只挂在 TagScene 上而无样式定义，此处落地 */
+/* 封面 SVG 主体场景：幅度较上一版约 +25%（用户要求更显眼），时长不变 */
 .cover-inner { animation: cover-float var(--motion-breath) ease-in-out infinite }
-@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-3px) } }
+@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
 .cover-inner svg > * { animation: cover-el-in var(--duration-normal) var(--ease-out) backwards }
 .cover-inner svg [stroke] { stroke-dasharray: 420; stroke-dashoffset: 420; animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards }
 @keyframes cover-el-in { from { opacity: 0 } }
@@ -1028,4 +1027,9 @@ body::after {
   transform-box: fill-box; transform-origin: center;
   animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards, cover-pulse 5s ease-in-out 1.2s infinite;
 }
-@keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.04) } }
+@keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.05) } }
+/* 呼吸幅度：0.92→0.88（约 +25%） */
+@keyframes motionBreathBoost {
+  0%, 100% { opacity: 0.88; }
+  50% { opacity: 1; }
+}
