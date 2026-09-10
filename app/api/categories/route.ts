@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag } from "next/cache"
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/lib/auth"
+import { auth, passwordChangeRequired } from "@/lib/auth"
 
 const getCachedCategories = unstable_cache(
   async () => {
@@ -23,6 +23,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   const body = await req.json()
   if (!body.name || !body.slug) return NextResponse.json({ error: "名称和slug必填" }, { status: 400 })
   const cat = await prisma.category.create({ data: { name: body.name, nameZh: body.nameZh, slug: body.slug, description: body.description, coverImageUrl: body.coverImageUrl } })

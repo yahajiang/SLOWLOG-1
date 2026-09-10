@@ -6,6 +6,11 @@ import bcrypt from "bcryptjs"
 const DEFAULT_EMAIL = "admin@slowlog.dev"
 const DEFAULT_PASSWORD = "admin123"
 
+/** 默认密码会话在改密前禁止一切写操作与后台页 */
+export function passwordChangeRequired(session: unknown): boolean {
+  return !!(session as any)?.user?.needsPasswordChange
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
   trustHost: true,
