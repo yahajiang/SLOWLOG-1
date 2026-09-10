@@ -5,6 +5,7 @@ import { LogOut, MonitorSmartphone } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { useLang } from "@/lib/lang-context";
 
 /** 移动端更多：分类查看＋媒体查看＋退出＋桌面版切换 */
 export default function MobileMorePage() {
@@ -12,6 +13,7 @@ export default function MobileMorePage() {
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t, lang } = useLang();
 
   useEffect(() => {
     Promise.all([
@@ -28,7 +30,7 @@ export default function MobileMorePage() {
 
   const copyMedia = async (url: string) => {
     await navigator.clipboard.writeText(url);
-    toast("已复制链接", "success");
+    toast(t.toastCopiedLink, "success");
   };
 
   function goDesktop() {
@@ -38,17 +40,17 @@ export default function MobileMorePage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">更多</h1>
+      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashMore}</h1>
 
       <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
-        <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">分类查看</h2>
+        <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashBrowseCats}</h2>
         {loading ? (
           <div className="divide-y divide-[var(--dash-border)]">
             <ListItemSkeleton />
             <ListItemSkeleton />
           </div>
         ) : cats.length === 0 ? (
-          <p className="p-6 text-center text-sm text-[var(--dash-muted)]">暂无分类</p>
+          <p className="p-6 text-center text-sm text-[var(--dash-muted)]">{t.dashNoCats}</p>
         ) : (
           <div className="divide-y divide-[var(--dash-border)]">
             {cats.map((c) => (
@@ -57,7 +59,7 @@ export default function MobileMorePage() {
                   {c.name} {c.nameZh && <span className="text-[var(--dash-muted)]">/ {c.nameZh}</span>}
                 </p>
                 <span className="text-xs text-[var(--dash-muted)] tabular-nums">
-                  {c._count?.posts ?? 0} 篇
+                  {t.dashPostsCount(c._count?.posts ?? 0)}
                 </span>
               </div>
             ))}
@@ -66,7 +68,7 @@ export default function MobileMorePage() {
       </section>
 
       <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
-        <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">媒体查看（近 9 张）</h2>
+        <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashBrowseMedia}</h2>
         {loading ? (
           <div className="grid grid-cols-3 gap-2 p-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -74,7 +76,7 @@ export default function MobileMorePage() {
             ))}
           </div>
         ) : media.length === 0 ? (
-          <p className="p-6 text-center text-sm text-[var(--dash-muted)]">暂无图片</p>
+          <p className="p-6 text-center text-sm text-[var(--dash-muted)]">{t.dashNoImages}</p>
         ) : (
           <div className="grid grid-cols-3 gap-2 p-4">
             {media.map((m) => (
@@ -90,7 +92,7 @@ export default function MobileMorePage() {
             ))}
           </div>
         )}
-        <p className="px-4 pb-3 text-[11px] text-[var(--dash-muted)]">点按图片复制链接 · 完整管理请使用桌面版</p>
+        <p className="px-4 pb-3 text-[11px] text-[var(--dash-muted)]">{t.dashMediaHint}</p>
       </section>
 
       <section className="space-y-2.5">
@@ -99,14 +101,14 @@ export default function MobileMorePage() {
           onClick={goDesktop}
           className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm rounded-none min-h-[48px]"
         >
-          <MonitorSmartphone className="w-4 h-4" /> 桌面版后台
+          <MonitorSmartphone className="w-4 h-4" /> {t.dashDesktopAdmin}
         </button>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/m/login" })}
           className="w-full flex items-center justify-center gap-2 py-3 text-sm text-red-600 bg-[var(--dash-card)] border border-red-200 rounded-none min-h-[48px]"
         >
-          <LogOut className="w-4 h-4" /> 退出登录
+          <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>
       </section>
     </div>
