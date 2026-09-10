@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useLang } from "@/lib/lang-context"
 import { pickTagline } from "@/lib/taglines"
 
