@@ -16,7 +16,6 @@ import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import type { PageConfig } from "@/lib/page-config";
-import { catLabel } from "@/components/HomeClient";
 import { ChevronRight, Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
@@ -183,16 +182,14 @@ export function PostClient({
             )}
           </div>
 
-          <h1 className={`text-[32px] font-semibold leading-[1.15] tracking-[-0.02em] mb-3 text-balance ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>
+          <h1 className={`text-[32px] font-semibold leading-[1.15] tracking-[-0.02em] mb-3 text-balance ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "var(--yh-text)" : pageConfig?.primaryColor || undefined }}>
             {post.title}
           </h1>
-          {/* 一行 meta：作者 · 时间 · 分类 · 时长（去掉与顶栏重复的 badge 行） */}
+          {/* 一行 meta：分类由顶栏 badge 承担，此处不再重复 */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--yh-muted)] mb-3">
             <span>{post.author}</span>
             <span className="opacity-40">·</span>
             <span>{relative}</span>
-            <span className="opacity-40">·</span>
-            <span>{catLabel(post.category, t)}</span>
             <span className="opacity-40">·</span>
             <span>{post.readTime}</span>
           </div>
