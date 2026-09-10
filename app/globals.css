@@ -1028,8 +1028,3 @@ body::after {
   animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards, cover-pulse 5s ease-in-out 1.2s infinite;
 }
 @keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.05) } }
-/* 呼吸幅度：0.92→0.88（约 +25%） */
-@keyframes motionBreathBoost {
-  0%, 100% { opacity: 0.88; }
-  50% { opacity: 1; }
-}
