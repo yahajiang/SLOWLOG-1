@@ -62,6 +62,15 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   );
 
   const featuredPosts = useMemo(() => posts.filter((p) => p.featured), [posts])
+  // Hero 候选池：全部 → 推荐文章；选中某分类 → 该分类的推荐，无推荐则取其最新一篇。
+  // 目的：切换分类时 hero 不再整块消失（原本视觉断层），而是平滑换成该分类的 spotlight。
+  const heroPool = useMemo(() => {
+    if (searchQuery.trim() !== "") return []
+    if (activeCategory === "All") return featuredPosts
+    const inCat = posts.filter((p) => p.category === activeCategory)
+    const catFeatured = inCat.filter((p) => p.featured)
+    return catFeatured.length > 0 ? catFeatured : inCat.slice(0, 1)
+  }, [posts, featuredPosts, activeCategory, searchQuery])
   const [heroIndex, setHeroIndex] = useState(0)
   const heroPaused = useRef(false)
   // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
@@ -76,25 +85,28 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
     } catch {}
     setReadMarks(m);
   }, [posts]);
-  const featured = featuredPosts[heroIndex] || null
+  const featured = heroPool.length > 0 ? heroPool[heroIndex % heroPool.length] : null
   const localizedFeatured = featured
     ? lang === "zh"
       ? { ...featured, title: featured.titleZh || featured.title, excerpt: featured.excerptZh || featured.excerpt }
       : featured
     : null
-  // 多篇推荐时自动轮播（reduced-motion 直接关闭；页签不可见 / 鼠标悬停时暂停）
+  // 多篇候选时自动轮播（reduced-motion 直接关闭；页签不可见 / 鼠标悬停时暂停）
   useEffect(() => {
-    if (featuredPosts.length <= 1) return
+    if (heroPool.length <= 1) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const id = setInterval(() => {
       if (!document.hidden && !heroPaused.current) {
-        setHeroIndex((i) => (i + 1) % featuredPosts.length)
+        setHeroIndex((i) => (i + 1) % heroPool.length)
       }
     }, 5000)
     return () => clearInterval(id)
-  }, [featuredPosts.length])
-  useEffect(() => { setHeroIndex(0) }, [featuredPosts.length])
-  const showHero = activeCategory === "All" && searchQuery.trim() === "" && localizedFeatured
+  }, [heroPool.length])
+  // 切换分类 / 候选池变化时回到第一篇，避免沿用旧下标导致 hero 内容错位
+  useEffect(() => { setHeroIndex(0) }, [activeCategory, heroPool.length])
+  const showHero = searchQuery.trim() === "" && !!localizedFeatured
+  // 随想 / 时间线属首页专属区块，切到具体分类时不跟随 hero 一起出现
+  const showHomeExtras = showHero && activeCategory === "All"
   const gridPosts = localizedFiltered
 
   // All 且无搜索时：按分类分 Section
@@ -119,25 +131,31 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       <div className="flex-1 flex flex-col">
 
       <div className="sticky top-[63px] z-30 bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
-        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
-          {allCats.map((cat) => {
-            const dbCat = dbCategories?.find((c: any) => c.name === cat)
-            const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : catLabel(cat, t)
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-200 ${
-                  activeCategory === cat
-                    ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
-                    : "border-transparent text-[var(--yh-muted)] hover:text-[var(--yh-text)] font-medium"
-                }`}
-              >
-                {label}
-              </button>
-            )
-          })}
+        <div className="relative">
+          {/* 窄屏放开 70% 宽度约束：否则平板/小窗口下分类条被压成一条，只能横向溢出。
+              lg 及以上恢复与正文同宽，保持对齐。 */}
+          <div className="w-full lg:max-w-[min(70%,1600px)] mx-auto px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
+            {allCats.map((cat) => {
+              const dbCat = dbCategories?.find((c: any) => c.name === cat)
+              const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : catLabel(cat, t)
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3 md:px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-200 ${
+                    activeCategory === cat
+                      ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
+                      : "border-transparent text-[var(--yh-muted)] hover:text-[var(--yh-text)] font-medium"
+                  }`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+          {/* 右缘渐隐：给「还能往右滑」一个视觉线索（仅窄屏出现） */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[var(--yh-bg)] to-transparent lg:hidden" />
         </div>
       </div>
 
@@ -152,19 +170,22 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-3">
                   <CategoryBadge category={localizedFeatured.category} />
-                  <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
-                  {featuredPosts.length > 1 && (
+                  {/* 仅真·推荐文章才打「推荐」标；分类 spotlight 可能是回退出的最新一篇，不能谎标 */}
+                  {localizedFeatured.featured && (
+                    <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
+                  )}
+                  {heroPool.length > 1 && (
                     <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
                       <button
-                        onClick={() => setHeroIndex((i) => (i - 1 + featuredPosts.length) % featuredPosts.length)}
+                        onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)}
                         className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
                         aria-label="上一篇推荐"
                       >
                         ‹
                       </button>
-                      {heroIndex + 1} / {featuredPosts.length}
+                      {heroIndex + 1} / {heroPool.length}
                       <button
-                        onClick={() => setHeroIndex((i) => (i + 1) % featuredPosts.length)}
+                        onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)}
                         className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
                         aria-label="下一篇推荐"
                       >
@@ -204,16 +225,16 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               </div>
             </div>
           </div>
-          {featuredPosts.length > 1 && (
+          {heroPool.length > 1 && (
             <>
-              <button onClick={() => setHeroIndex((i) => (i - 1 + featuredPosts.length) % featuredPosts.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
+              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
                 ‹
               </button>
-              <button onClick={() => setHeroIndex((i) => (i + 1) % featuredPosts.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
+              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
                 ›
               </button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {featuredPosts.map((_, i) => (
+                {heroPool.map((_, i) => (
                   <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
                 ))}
               </div>
@@ -227,11 +248,13 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-[var(--yh-text)]" />
             <p className="text-[11px] uppercase tracking-widest text-[var(--yh-muted)] font-semibold">
-              {showHero
-                ? t.latestArticles
-                : activeCategory === "All"
-                  ? t.allArticles
-                  : lang === "zh" ? (dbCategories?.find((c: any) => c.name === activeCategory)?.nameZh || catLabel(activeCategory, t)) : catLabel(activeCategory, t)}
+              {activeCategory !== "All"
+                ? lang === "zh"
+                  ? dbCategories?.find((c: any) => c.name === activeCategory)?.nameZh || catLabel(activeCategory, t)
+                  : catLabel(activeCategory, t)
+                : showHero
+                  ? t.latestArticles
+                  : t.allArticles}
             </p>
             <span className="text-[11px] text-[var(--yh-muted)]">
               · {localizedFiltered.length}
@@ -308,9 +331,9 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         )}
       </section>
 
-      {showHero && <Thinking />}
+      {showHomeExtras && <Thinking />}
 
-      {showHero && (
+      {showHomeExtras && (
         <section className="w-full max-w-[min(63%,1440px)] mx-auto px-6 pb-7">
           <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
