@@ -1,10 +1,9 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { ArticleArt } from "./ArticleArt";
 import { CategoryBadge } from "./CategoryBadge";
-import { AuthorAvatar } from "./AuthorAvatar";
 import type { Post } from "@/lib/types";
 import { useLang } from "@/lib/lang-context";
 import { useRelativeTime } from "@/lib/relative-time";
@@ -41,7 +40,7 @@ export function ArticleCard({
           <CategoryBadge category={post.category} />
         </div>
       </div>
-      <div className="p-3 flex flex-col gap-2 flex-1">
+      <div className="p-3 pt-2.5 flex flex-col gap-1.5 flex-1">
         <h3 className="text-[13px] font-semibold leading-snug text-[var(--yh-text)] group-hover:text-[var(--yh-accent)] transition-colors duration-200 line-clamp-2">
           {post.title}
         </h3>
@@ -49,25 +48,16 @@ export function ArticleCard({
           {post.excerpt}
         </p>
 
-        <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
-          {post.tags.slice(0, 2).map((tag) => (
-            <span
-              key={tag}
-              className="mono text-[11px] tracking-[0.14em] text-[var(--yh-muted)] bg-[var(--dash-card)] border border-[var(--yh-border)] px-1.5 py-0.5 rounded-none truncate max-w-[80px]"
-            >
-              {tag}
-            </span>
-          ))}
-          {post.tags.length > 2 && <span className="mono text-[11px] tracking-[0.14em] text-[var(--yh-muted)] px-1 py-0.5">+{post.tags.length - 2}</span>}
-        </div>
+        {post.tags[0] && (
+          <span className="mono text-[10px] tracking-[0.12em] text-[var(--yh-muted)]/70 truncate max-w-[120px]">
+            {post.tags[0]}
+          </span>
+        )}
 
-        <div className="flex items-center gap-2 pt-2.5 border-t border-[var(--yh-border)]/80">
-          <AuthorAvatar initial={post.authorInitial} />
-          <div className="flex-1 min-w-0">
-            <p className="text-[12px] text-[var(--yh-muted)] truncate">
-              {relative} · {post.readTime}
-            </p>
-          </div>
+        <div className="flex items-center gap-2 pt-2 mt-auto border-t border-[var(--yh-border)]/60">
+          <p className="text-[11px] text-[var(--yh-muted)] truncate flex-1 min-w-0">
+            {relative} · {post.readTime}
+          </p>
           {REPO_MAP[post.id] ? (
             <a
               href={REPO_MAP[post.id]}

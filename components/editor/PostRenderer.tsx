@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import React from "react"
 import type { PageConfig } from "@/lib/page-config"
 
@@ -104,6 +104,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
     case "codeBlock": {
       const lang = node.attrs?.language || ""
       const code = content.map((c: any) => c.text || "").join("")
+      const lines = code.replace(/\n$/, "").split("\n")
       // 截图样式：深色 macOS 窗口 - 始终深色，保证可读性
       return (
         <div key={idx} className="my-[29px] rounded-none overflow-hidden border border-[#2a2a2e] shadow-[0_8px_30px_rgba(0,0,0,0.25)] bg-[#1E1E1E]">
@@ -118,7 +119,16 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
             </div>
             <CopyBtn code={code} />
           </div>
-          <pre data-language={lang} className="bg-[#1E1E1E] text-[#d4d4d4] p-[18px] overflow-x-auto m-0 border-0"><code className="text-[13.5px] leading-[1.7] font-mono !bg-transparent !border-0 !p-0 !rounded-none !text-[#d4d4d4]" style={{ background: 'transparent', color: '#d4d4d4' }}>{code}</code></pre>
+          <div className="overflow-x-auto bg-[#1E1E1E]">
+            <pre data-language={lang} className="bg-[#1E1E1E] text-[#d4d4d4] p-[18px] m-0 border-0 min-w-max">
+              <code className="text-[13.5px] leading-[1.7] font-mono !bg-transparent !border-0 !p-0 !rounded-none !text-[#d4d4d4] grid grid-cols-[auto_1fr] gap-x-4" style={{ background: 'transparent', color: '#d4d4d4' }}>
+                <span className="select-none text-right text-[#6e6e73]/70 tabular-nums" aria-hidden>
+                  {lines.map((_: string, i: number) => `${i + 1}`).join("\n")}
+                </span>
+                <span>{code}</span>
+              </code>
+            </pre>
+          </div>
         </div>
       )
     }

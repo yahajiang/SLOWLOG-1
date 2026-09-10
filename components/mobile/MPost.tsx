@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink, List, X } fro
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { Lightbox } from "@/components/Lightbox";
 import { MFooter } from "./MFooter";
@@ -184,24 +183,19 @@ export function MPost({
             <p className="text-[15px] leading-[1.75] text-[var(--yh-muted)] italic">{post.excerpt}</p>
           </div>
 
-          <div className="flex items-center gap-3 py-3 px-3 -mx-1 rounded-none mt-4 bg-[var(--dash-card)] border border-[var(--yh-border)]">
-            <AuthorAvatar initial={post.authorInitial} />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold truncate text-[var(--yh-text)]">{post.author}</p>
-              <p className="text-xs text-[var(--yh-muted)] truncate">
-                {relative} · {mCatLabel(post.category, t)} · {post.readTime}
-              </p>
-            </div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--yh-muted)] mt-3 mb-1">
+            <span>{post.author}</span>
+            <span className="opacity-40">·</span>
+            <span>{relative}</span>
+            <span className="opacity-40">·</span>
+            <span>{mCatLabel(post.category, t)}</span>
+            <span className="opacity-40">·</span>
+            <span>{post.readTime}</span>
           </div>
           {post.tags?.length > 0 && (
-            <div className="flex gap-1.5 flex-wrap mt-3">
-              {post.tags.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="text-[11px] px-2 py-1 rounded-none border text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)]"
-                >
-                  #{tag}
-                </span>
+            <div className="flex gap-x-2 gap-y-1 flex-wrap mt-2 mb-1">
+              {post.tags.slice(0, 3).map((tag: string) => (
+                <span key={tag} className="text-[11px] text-[var(--yh-muted)]/75">#{tag}</span>
               ))}
             </div>
           )}

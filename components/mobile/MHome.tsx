@@ -225,7 +225,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
 
       {showHero && (
         <section className="border-b border-[var(--yh-border)] bg-[var(--dash-card)]/60">
-          <div className="px-4 py-6">
+          <div className="px-4 py-8">
             <div className="border border-[var(--yh-border)] overflow-hidden rounded-none mb-4">
               <ArticleArt post={featured} tall />
             </div>
