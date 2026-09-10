@@ -1,14 +1,28 @@
 ---
 feature: security-p0p1
-status: designed
+status: delivered
 updated: 2026-09-10
 branch: fix/security-p0p1
-commits:  # filled at delivery
+commits: 442acb1..97228b9
 ---
 
 # Security & Correctness P0/P1
 
 ## Report
+
+**What was built** — 三块安全/正确性修复合入 `fix/security-p0p1`：
+
+1. **Site origin 白名单**：新增 `lib/site-url.ts`，origin 只来自 `NEXT_PUBLIC_SITE_URL`，不读 Host/X-Forwarded-Host。RSS、sitemap、桌面/移动 metadata、JSON-LD、OG 底栏全部接入；删除硬编码 `yahajiang.dpdns.org`。
+2. **强制改密闭环**：middleware matcher 覆盖 `/m/dashboard/:path*`；默认密码会话被导向 `/dashboard/change-password`；`/m/dashboard` layout 二次拦截；posts/categories/thoughts/media/settings 全部写 API 返回 403。
+3. **命名与卫生**：`posts` 缓存 key 改为语义名；`scripts/qa-screens/` 进 gitignore。
+
+**Verification** — `npx tsc --noEmit` PASS（exit 0）。独立 review：APPROVE，无 ship-blocking 缺陷。
+
+**Journey log**
+- 原 WIP 把 origin 改成「请求头优先」会引入 Host 注入；方向（统一真相源）对，实现反转为 env-only。
+- 缓存键「污染」经核实 Next.js `unstable_cache` 会把实参并入 key，并非真 bug，只做命名澄清。
+- 桌面 dashboard layout 若对 `needsPasswordChange` 做 redirect，会与改密页死循环——强制改密只能放 middleware（并排除 change-password）。
+- `/api/auth/update` 仍无 403 守卫（可改自己密码，非内容写），review 标为 non-blocking follow-up。
 
 ## [S1] Problem
 
@@ -21,17 +35,17 @@ commits:  # filled at delivery
 
 ### S2.1 Site origin 唯一真相源
 
-- `lib/site-url.ts` 导出 `getSiteUrl()` / `getSiteUrlSync()`。
+- `lib/site-url.ts` 导出 `getSiteUrl()` / `getSiteUrlSync()` / `getSiteHost()`。
 - **只信任** `NEXT_PUBLIC_SITE_URL`；未配置或仍是 `https://example.com` 占位时回退 `https://example.com`。
-- **不读取**请求头 Host / X-Forwarded-Host 作为 origin（防注入）。换域名 = 改 env + 重新部署，这是正确 SEO 行为（canonical 永远指向首选域）。
-- 调用方：rss.xml、sitemap、桌面/移动 metadata、文章 JSON-LD、OG 图底栏域名（展示用 host，不含协议）。
+- **不读取**请求头 Host / X-Forwarded-Host 作为 origin（防注入）。换域名 = 改 env + 重新部署。
+- 调用方：rss.xml、sitemap、桌面/移动 metadata、文章 JSON-LD、OG 图底栏域名。
 
 ### S2.2 强制改密闭环
 
 - middleware `matcher` 增加 `/m/dashboard/:path*`。
 - 未登录：`/dashboard*` → `/login`；`/m/dashboard*` → `/m/login`。
-- `needsPasswordChange`：桌面/移动 → `/dashboard/change-password`（移动无改密页）；桌面 layout 不做二次 redirect（改密页在 layout 内会死循环），由 middleware 保证排除 change-password。
-- 所有写 API（POST/PUT/DELETE）：auth 后若 `needsPasswordChange` 则 403，响应体提示先改密。
+- `needsPasswordChange`：桌面/移动 → `/dashboard/change-password`；桌面 layout 不做二次 redirect（防死循环）。
+- 写 API：auth 后若 `needsPasswordChange` 则 403。
 
 ### S2.3 缓存键
 
@@ -39,15 +53,15 @@ commits:  # filled at delivery
 
 ### S2.4 范围边界
 
-- 不引入 Setting 表存 origin（后续可选）。
+- 不引入 Setting 表存 origin。
 - 不新建移动改密页。
-- 不重做 hero 分类 spotlight（产品改动，另 commit / 另 PR）。
+- 不重做 hero 分类 spotlight。
 
 ## [S3] Out of Scope
 
 - 桌面/移动 hero 逻辑抽取
 - 类型 `any` 全面清理
-- 测试框架选型与全量用例（仅对本次修复写最小回归测试若时间允许）
+- 测试框架选型与全量用例
 - 默认密码 seed 随机化
 
 ## Tasks
@@ -57,4 +71,4 @@ commits:  # filled at delivery
 - [x] T3: middleware + `/m/dashboard` layout + 写 API 强制改密 — acceptance: matcher 含 `/m/dashboard`；默认密码会话无法写 API、无法使用移动后台 (covers: S2.2)
 - [x] T4: 修正 `getCachedPostRows` 缓存键命名 — acceptance: key 名为 posts-by-status (covers: S2.3)
 - [x] T5: `.gitignore` 增加 `scripts/qa-screens/` — acceptance: 截图产物不被 track (covers: S2.4)
-- [ ] T6: 本地 typecheck/build 验证 — acceptance: `npx tsc --noEmit` 或 `npm run build` 通过 (covers: S2.1–S2.3)
+- [x] T6: 本地 typecheck — acceptance: `npx tsc --noEmit` 通过 (covers: S2.1–S2.3)
