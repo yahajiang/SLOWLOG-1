@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { ArticleArt } from "@/components/ArticleArt";
@@ -155,8 +155,28 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
     });
   }, [posts, activeCategory, searchQuery]);
 
-  const featured = useMemo(() => posts.find((p) => p.featured) || posts[0] || null, [posts]);
-  const showHero = activeCategory === "All" && searchQuery.trim() === "" && featured;
+  // 与桌面端同策略：切分类时 hero 保留为该分类的 spotlight（原本会整块消失造成断层）
+  const featured = useMemo(() => {
+    if (searchQuery.trim() !== "") return null;
+    if (activeCategory === "All") return posts.find((p) => p.featured) || posts[0] || null;
+    const inCat = posts.filter((p: any) => p.category === activeCategory);
+    return inCat.find((p: any) => p.featured) || inCat[0] || null;
+  }, [posts, activeCategory, searchQuery]);
+  const showHero = !!featured;
+
+  // 选中分类后把它滚进视野：横向分类条在窄屏放不下全部，否则用户看不到自己刚点的那一项
+  const catBarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const bar = catBarRef.current;
+    if (!bar) return;
+    const active = bar.querySelector<HTMLElement>('[data-active="true"]');
+    if (!active) return;
+    // 用 rect 相对位移计算，不依赖 offsetParent（滚动容器本身未定位，offsetLeft 会算错）
+    const barRect = bar.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const delta = activeRect.left - barRect.left - bar.clientWidth / 2 + activeRect.width / 2;
+    bar.scrollTo({ left: bar.scrollLeft + delta, behavior: "smooth" });
+  }, [activeCategory]);
   const heroTitle = featured ? (lang === "zh" ? featured.titleZh || featured.title : featured.title) : "";
   const heroExcerpt = featured ? (lang === "zh" ? featured.excerptZh || featured.excerpt : featured.excerpt) : "";
   const heroDate = featured ? formatDisplayDate(featured.date, lang) : "";
@@ -166,28 +186,37 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
       <MHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} showAdmin />
 
       <div className="sticky top-14 z-30 bg-[var(--yh-bg)]/90 backdrop-blur-xl border-b border-[var(--yh-border)]">
-        <div className="flex items-center gap-1 overflow-x-auto px-4 h-11" style={{ scrollbarWidth: "none" }}>
-          {allCats.map((cat) => {
-            const dbCat = dbCategories?.find((c: any) => c.name === cat);
-            const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : mCatLabel(cat, t);
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors min-h-[44px] ${
-                  activeCategory === cat
-                    ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
-                    : "border-transparent text-[var(--yh-muted)] font-medium"
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
+        <div className="flex items-center">
+          {/* 分类横滑区：flex-1 + min-w-0 保证自己能被压缩，不把归档入口顶出屏幕 */}
+          <div className="relative flex-1 min-w-0">
+            <div ref={catBarRef} className="flex items-center gap-1 overflow-x-auto px-4 h-11" style={{ scrollbarWidth: "none" }}>
+              {allCats.map((cat) => {
+                const dbCat = dbCategories?.find((c: any) => c.name === cat);
+                const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : mCatLabel(cat, t);
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    data-active={activeCategory === cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-3 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors min-h-[44px] ${
+                      activeCategory === cat
+                        ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
+                        : "border-transparent text-[var(--yh-muted)] font-medium"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            {/* 右缘渐隐：横滑可滚动的视觉线索，否则用户不知道右边还有 */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[var(--yh-bg)] to-transparent" />
+          </div>
+          {/* 归档入口移出滚动区，常驻可见 */}
           <Link
             href="/m/archive"
-            className="ml-1 px-3 py-1.5 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] shrink-0 self-center"
+            className="shrink-0 mr-3 px-3 py-1.5 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
           >
             {t.archiveTitle} →
           </Link>
@@ -202,7 +231,10 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </div>
             <div className="flex items-center gap-2 mb-2">
               <CategoryBadge category={featured.category} />
-              <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
+              {/* 仅真·推荐文章才打「推荐」标；分类 spotlight 是回退出来的最新一篇，不能谎标 */}
+              {featured.featured && (
+                <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
+              )}
             </div>
             <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2">
               {heroTitle}
