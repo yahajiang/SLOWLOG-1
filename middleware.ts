@@ -35,18 +35,35 @@ export default auth((req) => {
     }
   }
 
-  // 未认证用户重定向到登录页
+  // 未认证用户重定向到登录页（移动后台走 /m/login）
+  if (pathname.startsWith("/m/dashboard") && !req.auth) {
+    return NextResponse.redirect(new URL("/m/login", req.nextUrl))
+  }
   if (pathname.startsWith("/dashboard") && !req.auth) {
     return NextResponse.redirect(new URL("/login", req.nextUrl))
   }
 
-  // 默认账户强制改密：已登录但 needsPasswordChange 时，只允许访问改密页
+  // 默认账户强制改密：已登录但 needsPasswordChange 时，只允许访问桌面改密页
+  // （移动后台无改密页，一律引导到 /dashboard/change-password）
   const needsChange = (req.auth?.user as any)?.needsPasswordChange
-  if (needsChange && pathname.startsWith("/dashboard") && pathname !== "/dashboard/change-password") {
-    return NextResponse.redirect(new URL("/dashboard/change-password", req.nextUrl))
+  if (needsChange) {
+    if (pathname.startsWith("/m/dashboard")) {
+      return NextResponse.redirect(new URL("/dashboard/change-password", req.nextUrl))
+    }
+    if (pathname.startsWith("/dashboard") && pathname !== "/dashboard/change-password") {
+      return NextResponse.redirect(new URL("/dashboard/change-password", req.nextUrl))
+    }
   }
 })
 
 export const config = {
-  matcher: ["/", "/archive/:path*", "/posts/:path*", "/login", "/dashboard/:path*", "/admin/:path*"],
+  matcher: [
+    "/",
+    "/archive/:path*",
+    "/posts/:path*",
+    "/login",
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/m/dashboard/:path*",
+  ],
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/lib/auth"
+import { auth, passwordChangeRequired } from "@/lib/auth"
 
 export async function GET() {
   let s = await prisma.setting.findUnique({ where: { id: "singleton" } })
@@ -17,6 +17,7 @@ const ALLOWED_FIELDS = [
 export async function PUT(req: NextRequest) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   try {
     const body = await req.json()
     // 白名单过滤：只允许已知字段

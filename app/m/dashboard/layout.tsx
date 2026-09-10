@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
+import { auth, passwordChangeRequired } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { MDashNav } from "@/components/mobile/MDashNav";
 
@@ -15,6 +15,8 @@ export default async function MobileDashboardLayout({
 }) {
   const session = await auth();
   if (!session) redirect("/m/login");
+  // 默认密码：强制去桌面改密页（移动无改密 UI）
+  if (passwordChangeRequired(session)) redirect("/dashboard/change-password");
   return (
     <div data-m="1" className="min-h-screen bg-[var(--dash-bg)] flex flex-col">
       <div className="sticky top-0 z-40 bg-[var(--dash-card)]/95 backdrop-blur-xl border-b border-[var(--dash-border)]">

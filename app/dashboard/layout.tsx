@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/Sidebar"
 
+// 强制改密由 middleware 负责（需排除 /dashboard/change-password，layout 内无法按路径区分，避免死循环）
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session) redirect("/login")
