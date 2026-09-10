@@ -59,7 +59,6 @@ export function TableOfContents({
       const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
       // 导轨进度必须跟高亮标题同步：按标题区间插值，不用整页 scrollY
-      // （整页比例会把页脚/相关阅读算进去，出现「高亮第 3 条、蓝轨却拉到 80%」）
       const p = railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
     }
@@ -80,12 +79,10 @@ export function TableOfContents({
 
     function onScroll() {
       if (isClickRef.current) {
-        // 点击锁定：平滑滚动停止 180ms 后自动释放（长距离滚动不闪跳）
         if (releaseTimer.current) clearTimeout(releaseTimer.current);
         releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 180);
         return;
       }
-      // setTimeout 触发（rAF 在部分 headless/后台环境不触发）
       if (timer === null) timer = setTimeout(sync, 16);
     }
 
@@ -105,65 +102,98 @@ export function TableOfContents({
   if (headings.length === 0) return null;
 
   return (
-    <>
-      {/* 桌面端：宽栏常驻侧边目录 - 向左放宽 280px 直角 */}
-      <aside className="hidden lg:block w-[308px] shrink-0 border border-[var(--yh-border)] bg-[var(--dash-card)] rounded-none shadow-sm p-[26px] -ml-8">
-        <div className="sticky top-[88px]">
-          <div className="flex items-center justify-between mb-[13px]">
-            <p className="mono text-[12px] font-medium tracking-[0.14em] uppercase text-[var(--yh-muted)]/60">
-              {t.onThisPage}
-            </p>
-            <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">{headings.length}</span>
-          </div>
-          <nav className="relative space-y-0.5 pl-3">
-            <span aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--yh-border)]" />
-            <span aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--yh-accent)] origin-top will-change-transform" style={{ transform: `scaleY(${progress})`, transition: "transform 150ms linear" }} />
-            {headings.map((h, idx) => (
-              <a
-                key={h.id || `heading-${idx}`}
-                href={`#${h.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActive(h.id);
-                  // 点击后蓝轨立即跟到该条，避免要等下一次滚动才同步
-                  setProgress((idx + 1) / Math.max(1, headings.length));
-                  isClickRef.current = true;
-                  if (releaseTimer.current) clearTimeout(releaseTimer.current);
-                  const el = document.getElementById(h.id);
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    history.pushState(null, "", `#${h.id}`);
-                  }
-                  releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
-                }}
-                className={`group flex items-center gap-2 text-[13px] leading-snug transition-all duration-200 border-l-2 -ml-[13px] pl-3 py-[5px] ${
-                  active === h.id
-                    ? "text-[var(--yh-accent)] border-[var(--yh-accent)] font-medium bg-[var(--yh-accent)]/[0.06] rounded-none"
-                    : "text-[var(--yh-muted)] border-transparent hover:text-[var(--yh-text)] hover:border-[var(--yh-border)] hover:bg-[var(--yh-bg)]/60 rounded-none"
-                }`}
-              >
-                <span className={`w-1 h-1 rounded-full shrink-0 ${active === h.id ? "bg-[var(--yh-accent)]" : "bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"}`} />
-                <span className="line-clamp-2">{h.text}</span>
-              </a>
-            ))}
-          </nav>
-          <div className="mt-[26px] rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] p-[13px]">
-            <p className="mono text-[12px] font-semibold">{t.readingProgress}</p>
-            <div className="h-[7px] rounded-none bg-[var(--yh-border)] mt-[9px] overflow-hidden">
-              {/* 勿用 Tailwind scale-*：v4 走 scale 属性，会与 ReadingProgress 写入的 transform 冲突导致进度条永远 0 */}
-              <div
-                data-side-progress
-                className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)] transition-transform duration-150 will-change-transform"
-                style={{ transform: "scaleX(0)" }}
-              />
-            </div>
-            <p data-side-progress-text className="mono text-[12px] text-[var(--yh-muted)] mt-[5px]">0% · {t.estimatedTime(readMinutes ?? 10)}</p>
-          </div>
-          <div className="mt-[18px] pt-[13px] border-t border-[var(--yh-border)] mono text-[12px] text-[var(--yh-muted)]">
-            <span className="inline-flex items-center gap-1.5"><span className="w-1 h-1 rounded-none bg-[var(--yh-accent)] motion-breath" /> {t.readingNow}</span>
-          </div>
+    <aside className="hidden lg:block w-[308px] shrink-0 -ml-8">
+      <div className="sticky top-[88px] border border-[var(--yh-border)] bg-[var(--dash-card)]/95 backdrop-blur-sm shadow-[0_1px_2px_rgba(0,0,0,0.03)] p-5">
+        {/* 标题行 */}
+        <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[var(--yh-border)]/70">
+          <p className="mono text-[11px] font-medium tracking-[0.16em] uppercase text-[var(--yh-muted)]">
+            {t.onThisPage}
+          </p>
+          <span className="mono text-[10px] tabular-nums text-[var(--yh-muted)]/70">
+            {headings.length}
+          </span>
         </div>
-      </aside>
-    </>
+
+        {/* 目录 + 左侧进度导轨 */}
+        <nav className="relative pl-4">
+          <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
+          <span
+            aria-hidden
+            className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)] origin-top will-change-transform"
+            style={{ transform: `scaleY(${progress})`, transition: "transform 160ms linear" }}
+          />
+          <ul className="space-y-0.5" role="list">
+            {headings.map((h, idx) => {
+              const isActive = active === h.id;
+              return (
+                <li key={h.id || `heading-${idx}`}>
+                  <a
+                    href={`#${h.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActive(h.id);
+                      setProgress((idx + 1) / Math.max(1, headings.length));
+                      isClickRef.current = true;
+                      if (releaseTimer.current) clearTimeout(releaseTimer.current);
+                      const el = document.getElementById(h.id);
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        history.pushState(null, "", `#${h.id}`);
+                      }
+                      releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
+                    }}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-200 ${
+                      isActive
+                        ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
+                        : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/70"
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      className={`shrink-0 rounded-full transition-all duration-200 ${
+                        isActive
+                          ? "w-1.5 h-1.5 bg-[var(--yh-accent)]"
+                          : "w-1 h-1 bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"
+                      }`}
+                    />
+                    <span className="line-clamp-2">{h.text}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* 阅读进度 */}
+        <div className="mt-5 pt-4 border-t border-[var(--yh-border)]/70">
+          <div className="flex items-baseline justify-between mb-2.5">
+            <p className="mono text-[11px] tracking-[0.06em] text-[var(--yh-muted)] font-medium">
+              {t.readingProgress}
+            </p>
+          </div>
+          <div className="h-[4px] rounded-none bg-[var(--yh-border)]/80 overflow-hidden">
+            {/* 勿用 Tailwind scale-*：v4 走 scale 属性，会与 ReadingProgress 写入的 transform 冲突 */}
+            <div
+              data-side-progress
+              className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/90 transition-transform duration-150 will-change-transform"
+              style={{ transform: "scaleX(0)" }}
+            />
+          </div>
+          <p
+            data-side-progress-text
+            className="mono text-[11px] tabular-nums text-[var(--yh-muted)]/85 mt-2"
+          >
+            0% · {t.estimatedTime(readMinutes ?? 10)}
+          </p>
+        </div>
+
+        {/* 阅读中 */}
+        <div className="mt-3.5 flex items-center gap-2 mono text-[11px] text-[var(--yh-muted)]/80">
+          <span className="w-1 h-1 rounded-full bg-[var(--yh-accent)] motion-breath shrink-0" />
+          <span className="truncate">{t.readingNow}</span>
+        </div>
+      </div>
+    </aside>
   );
 }
