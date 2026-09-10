@@ -12,6 +12,7 @@ export function TableOfContents({
 }) {
   const [active, setActive] = useState("");
   const [progress, setProgress] = useState(0);
+  const [expanded, setExpanded] = useState(true);
   const isClickRef = React.useRef(false);
   const releaseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useLang();
@@ -104,18 +105,34 @@ export function TableOfContents({
   return (
     <aside className="hidden lg:block w-[308px] shrink-0 -ml-8">
       <div className="sticky top-[88px] border border-[var(--yh-border)] bg-[var(--dash-card)]/95 backdrop-blur-sm shadow-[0_1px_2px_rgba(0,0,0,0.03)] p-5">
-        {/* 标题行 */}
+        {/* 标题行 + 折叠开关 */}
         <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[var(--yh-border)]/70">
-          <p className="mono text-[11px] font-medium tracking-[0.16em] uppercase text-[var(--yh-muted)]">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="mono text-[11px] font-medium tracking-[0.16em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors duration-[180ms] ease-[var(--ease-out)] flex items-center gap-1.5"
+          >
             {t.onThisPage}
-          </p>
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-[250ms] ease-[var(--ease-out)]"
+              style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}
+            >
+              ▾
+            </span>
+          </button>
           <span className="mono text-[10px] tabular-nums text-[var(--yh-muted)]/70">
             {headings.length}
           </span>
         </div>
 
-        {/* 目录 + 左侧进度导轨 */}
-        <nav className="relative pl-4">
+        {/* 目录列表：可折叠 · 展开 250ms / 收起 200ms */}
+        <div
+          className={`overflow-hidden transition-all ease-[var(--ease-out)] ${expanded ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"}`}
+          style={{ transitionDuration: expanded ? "250ms" : "200ms" }}
+        >
+        <nav className="relative pl-4 pt-1">
           <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
           <span
             aria-hidden
@@ -144,7 +161,7 @@ export function TableOfContents({
                       releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
                     }}
                     aria-current={isActive ? "true" : undefined}
-                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-200 ${
+                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-[180ms] ease-[var(--ease-out)] ${
                       isActive
                         ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
                         : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/70"
@@ -152,7 +169,7 @@ export function TableOfContents({
                   >
                     <span
                       aria-hidden
-                      className={`shrink-0 rounded-full transition-all duration-200 ${
+                      className={`shrink-0 rounded-full transition-all duration-[180ms] ease-[var(--ease-out)] ${
                         isActive
                           ? "w-1.5 h-1.5 bg-[var(--yh-accent)]"
                           : "w-1 h-1 bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"
@@ -165,6 +182,7 @@ export function TableOfContents({
             })}
           </ul>
         </nav>
+        </div>
 
         {/* 阅读进度 */}
         <div className="mt-5 pt-4 border-t border-[var(--yh-border)]/70">

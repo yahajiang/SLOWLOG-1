@@ -103,15 +103,21 @@ code, pre, .font-mono {
   font-family: var(--font-serif), var(--font-serif-sc), Georgia, "Times New Roman", Times, serif;
 }
 
-/* Transitions tokens — 以静音排印为主：位移极小，以透明度/线条生长表达「仪式」 */
+/* ============================================================
+   Motion Spec（全站规范 · 以规范表为准）
+   轻柔自然 · 小位移 · 低幅度 · 慢入快出 · Ease-out 为主
+   避免：bounce、强 glow、复杂 3D、大幅缩放
+   ============================================================ */
 :root {
-  /* spring 过冲再收到 1.12：几乎无弹跳，保留一丝回弹 */
-  --ease-spring: cubic-bezier(0.34, 1.12, 0.64, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* 动效缓动：统一柔和 Ease；spring 过冲收在 1.15 以下 */
+  --ease-spring: cubic-bezier(0.34, 1.15, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  /* 时长对齐规范表：fast 即时反馈 / normal 内容与卡片 / slow 页面与 Hero */
   --duration-fast: 180ms;
-  --duration-normal: 360ms;
-  --duration-slow: 520ms;
-  --motion-breath: 6s;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --motion-breath: 8s;
   --motion-grow: 480ms;
 }
 
@@ -121,9 +127,24 @@ code, pre, .font-mono {
 }
 .motion-breath { animation: motionBreath var(--motion-breath) ease-in-out infinite; }
 
-/* 静音排印入场：几乎只靠 opacity，位移 2–3px */
+/* 页面进入：淡入 + 轻微上移 8px · 500ms · ease-out */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 分类切换内容：淡入 + 6px · 300ms */
+@keyframes categoryIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.category-enter {
+  animation: categoryIn var(--duration-normal) var(--ease-out) both;
+}
+
+/* 卡片/列表入场：300ms · 6px */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(3px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -133,31 +154,51 @@ code, pre, .font-mono {
 }
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.985); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Hero 交叠淡入：优先透明度，辅以极轻上移（杂志落墨感） */
+/* Hero：标题优先 · ~550ms · 轻微错峰 */
 @keyframes inkSettle {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .hero-swap {
-  animation: inkSettle var(--duration-slow) var(--ease-out) both;
+  animation: inkSettle 550ms var(--ease-out) both;
 }
-/* 段落/元信息略晚半拍，形成阅读仪式节奏 */
-.hero-swap-delay-1 { animation-delay: 60ms; }
-.hero-swap-delay-2 { animation-delay: 120ms; }
+.hero-swap-delay-1 { animation-delay: 80ms; }
+.hero-swap-delay-2 { animation-delay: 160ms; }
 
-/* 视口触发入场（Reveal） */
+/* 设计推荐轮播：淡入 + 轻微 X 位移 */
+@keyframes heroSlide {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.hero-slide {
+  animation: heroSlide 400ms var(--ease-out) both;
+}
+
+/* TOC 折叠展开：max-height + opacity · 250ms */
+@keyframes tocExpand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.toc-list-enter {
+  animation: tocExpand 250ms var(--ease-out) both;
+}
+.toc-list-collapse {
+  animation: tocExpand 200ms var(--ease-out) reverse both;
+}
+
+/* 视口触发入场（Reveal）· 250–450ms 区间取 300ms */
 [data-reveal="0"] { opacity: 0; }
 [data-reveal="1"] {
-  animation: fadeInUp var(--duration-normal) var(--ease-out) both;
+  animation: fadeInUp 300ms var(--ease-out) both;
 }
 
 @keyframes shimmer {
@@ -883,24 +924,17 @@ body::after {
   .welcome { display: none; }
 }
 
-/* 页面入场动画：to 帧必须 transform:none——动画结束不残留 containing block，
-   文章页内的 fixed 元素（灯箱、阅读进度条）才不会被 wrapper 困住 */
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: none; }
-}
 .page-enter {
   /* wrapper 仅作动画容器，不干预布局 */
 }
-/* 路由切换连贯性：template 的直接子节点（loading 骨架与正片）先后各自淡入，
-   新节点插入时 CSS 动画自动重播，骨架 → 正片的交接因此有过渡 */
+/* 路由切换：页面自然展开 500ms · translateY 8px */
 .page-enter > * {
-  animation: pageIn var(--duration-normal) var(--ease-out) both;
+  animation: pageIn 500ms var(--ease-out) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .page-enter > * { animation: none; }
   .stagger-children > * { animation: none; }
-  .hero-swap, .hero-swap-delay-1, .hero-swap-delay-2 { animation: none; }
+  .hero-swap, .hero-swap-delay-1, .hero-swap-delay-2, .hero-slide, .category-enter { animation: none; }
   [data-reveal="0"], [data-reveal="1"] { animation: none; opacity: 1; }
 }
 
