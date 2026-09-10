@@ -31,7 +31,7 @@ export function ArticleCard({
     <Reveal delay={Math.min(index, 8) * 45} className="h-full">
       <Link
         href={`/posts/${post.id}`}
-        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:shadow-[var(--shadow-float)] hover:-translate-y-[1.5px] flex flex-col overflow-hidden rounded-none transition-[transform,box-shadow] duration-[320ms] [transition-timing-function:var(--ease-spring)] transform-gpu [backface-visibility:hidden]`}
+        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:shadow-[var(--shadow-float)] hover:-translate-y-px flex flex-col overflow-hidden rounded-none transition-[transform,box-shadow] duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)] transform-gpu [backface-visibility:hidden]`}
       >
       <div className="relative overflow-hidden aspect-[16/9]">
         <div className="h-full w-full transition-transform duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)] group-hover:scale-[1.03]">
