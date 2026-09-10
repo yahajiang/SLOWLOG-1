@@ -17,7 +17,7 @@ import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import type { PageConfig } from "@/lib/page-config";
 import { catLabel } from "@/components/HomeClient";
-import { ChevronRight, Clock, Calendar, ExternalLink, Search } from "lucide-react";
+import { ChevronRight, Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
   loading: () => <div className="animate-pulse h-96 bg-[var(--dash-card)]/30 rounded-none" />,
@@ -164,18 +164,9 @@ export function PostClient({
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <CategoryBadge category={post.category} />
             <span className="text-[var(--yh-border)]">·</span>
-            <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
-              <Clock className="w-3 h-3" />{post.readTime}
-            </span>
-            <span className="text-[var(--yh-border)]">·</span>
-            <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
-              <Calendar className="w-3 h-3" />{formatDisplayDate(post.date, lang)}
-            </span>
             <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-[var(--yh-muted)]" data-reading-meta>
-              <span className="text-[var(--yh-border)]">·</span>
-              <span className="mono">{post.readTime}</span>
-              <span className="opacity-40">·</span>
-              <span className="opacity-60" data-remaining>{t.readingRemaining(10)}</span>
+              <Clock className="w-3 h-3" />
+              <span data-remaining>{t.readingRemaining(10)}</span>
             </span>
             {((prismaRaw as any)?.repoUrl || (rawPost as any)?.repoUrl || REPO_MAP[rawPost.id]) && (
               <>
@@ -195,7 +186,7 @@ export function PostClient({
           <h1 className={`text-[32px] font-semibold leading-[1.15] tracking-[-0.02em] mb-3 text-balance ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>
             {post.title}
           </h1>
-          {/* 一行 meta：替代厚重作者卡，尽快进入正文 */}
+          {/* 一行 meta：作者 · 时间 · 分类 · 时长（去掉与顶栏重复的 badge 行） */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--yh-muted)] mb-3">
             <span>{post.author}</span>
             <span className="opacity-40">·</span>
