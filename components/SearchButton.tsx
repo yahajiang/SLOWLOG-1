@@ -8,7 +8,7 @@ export function SearchButton() {
   return (
     <button
       onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
-      className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-white text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+      className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
       aria-label="全局搜索"
       title="全局搜索（/）"
     >
