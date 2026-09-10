@@ -472,20 +472,21 @@ function closeM(){var m=document.getElementById("mask");m.classList.add("closing
 function openAbout(){
   document.getElementById("m-body").innerHTML=`
     <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">关于 · 慢日志 UI 组件画廊</h2>
-    <div class="m-meta"><span class="tag">v1.4 · 2026-09-10</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta"><span class="tag">v1.4 · 2026-09-11</span><span class="tag">31 组件</span><span class="tag">与真代码同源</span></div>
     <div style="font-size:12px;line-height:2;color:var(--yh-text);border:1px solid var(--yh-border);background:var(--yh-bg);padding:10px 14px;margin-bottom:12px">
-      <div style="font-size:10px;letter-spacing:.2em;color:var(--yh-muted);margin-bottom:4px" class="mono">慢日志 SLOWLOG · 项目速览（实测于代码库 2026-09-10）</div>
-      <div><b>定位</b>：个人博客——纸感排印做外衣，慢阅读做内胆，系统化做骨架；「安静的文字工作室」，slogan「慢下来，写点值得读的东西」。</div>
-      <div><b>规模实测</b>：当前版本 <span class="mono" style="font-size:11px">v0.3.5</span> · 21 个页面路由（桌面 9 + /m 移动 7 + 动态文章/标签）· 46 个组件 · 14 个 API 端点 · 14 个工程脚本（备份 / 双仓库推送 / MD 导入导出 / E2E / QA 截图 / 自动版本号）</div>
-      <div><b>技术栈</b>：Next.js 15.4 · React 19 · Tailwind v4 · Prisma 6 / Neon 六表（User/Category/Post/Note/Media/Setting）· Tiptap 3.6（17 扩展）· Vercel Blob 三级写出链 · 双语 674 行 i18n 键值 · 桌面 + /m 移动平行树</div>
-      <div><b>功能面</b>：首页杂志门面（分类 Tabs / Hero 轮播 / 随想折叠 / 时间线）· 归档搜索 · 文章阅读体系（pageConfig / TOC / 灯箱 / 代码块复制）· 后台写读同源 · 全文搜索 ⌘K · OG 分享图 · RSS · 内容备份 · 健康检查</div>
-      <div><b>链接</b>：在线预览 yahajiang.dpdns.org · GitHub <span class="mono" style="font-size:11px">yahajiang/SLOWLOG-1</span>（双仓库：私人全量 / 公开清洗）</div>
+      <div style="font-size:10px;letter-spacing:.2em;color:var(--yh-muted);margin-bottom:4px" class="mono">慢日志 SLOWLOG · 项目速览</div>
+      <div><b>定位</b>：个人博客——纸感排印外衣、慢阅读内胆、系统化骨架；slogan「慢下来，写点值得读的东西」；格言池随机展示品牌句。</div>
+      <div><b>规模</b>：应用包 <span class="mono" style="font-size:11px">v0.3.5</span> · 约 60 个 app 路由文件 + 49 个组件 · 双语（zh/en）前台 + 后台 · Prisma 六表 · 桌面 /m 平行树</div>
+      <div><b>技术栈</b>：Next.js 15.4 · React 19 · Tailwind v4 令牌 · Prisma 6 / Neon · Tiptap 3 · Vercel Blob · NextAuth Credentials · 安全 origin 只信 env</div>
+      <div><b>功能面</b>：杂志首页（Hero spotlight / 分类 / 随想 / 时间线）· 归档 · 阅读（TOC 导轨 / 灯箱 / 代码块行号 / 相关推荐）· ⌘K 搜索 · 移动后台 · OG / RSS / Sitemap · 强制改密闭环 · 组件画廊</div>
+      <div><b>仓库</b>：私有 slowlog（含数据）· 公开 <span class="mono" style="font-size:11px">yahajiang/SLOWLOG-1</span>（纯源码）· 本地预览 <span class="mono" style="font-size:11px">localhost:3000</span> · <span class="mono" style="font-size:11px">/design/gallery.html</span></div>
     </div>
-    <p style="font-size:13px;color:var(--yh-muted);line-height:1.9">本画廊组件均还原自真实站点代码（<span class="mono" style="font-size:11px">Desktop/AstrBot插件/慢日志</span>）。提示词含：源码路径 / 结构 / 令牌样式 / 动画契约 / 无障碍与暗色 / P_BASE——复制给 AI 即可与真站同源。</p>
+    <p style="font-size:13px;color:var(--yh-muted);line-height:1.9">31 条组件提示词均对齐当前真站代码（源码路径 / 结构 / 令牌 / 动画契约 / 无障碍暗色 / P_BASE）。点卡片复制即可交给任意 AI 生成同源 UI。</p>
     <div style="font-size:12px;line-height:2.1;color:var(--yh-text)">
-      <div><b>近期更新</b>：安全 Host 白名单 · 强制改密闭环 · 视口 Reveal · 随机格言池 · TOC 标题 id 去重 · 代码块行号 · 后台中英双语 · 纸感背景四层</div>
-      <div><b>动画语言</b>：180/300/500ms 三档 · ease-out · spring≤1.15 · 只动 transform/opacity · reduced-motion 全局兜底 · 禁 scale-* 与 JS transform 同节点</div>
-      <div><b>版权</b>：© 2026 Yahajiang · 慢日志 SlowLog · yahajiang@gmail.com</div>
+      <div><b>设计契约</b>：直角 + 1px 边 + 纸面卡片；动效 180/300/500ms · ease-out · spring≤1.15 · 只动 transform/opacity · reduced-motion 兜底 · 禁 Tailwind scale-* 与 JS transform 同节点</div>
+      <div><b>近期落地</b>：Host 白名单 · 强制改密 · 视口 Reveal · 随机格言 · TOC id 去重 · 代码行号 · 后台中英 · 纸感背景四层 · 文章头 meta 去重 · 正文 max-w-3xl</div>
+      <div><b>画廊组件数</b>：31（含 Reveal / 格言池 / 代码块 / 文章头 meta / 仪表盘首页）</div>
+      <div><b>版权</b>：© 2026 Yahajiang · SlowLog · yahajiang@gmail.com</div>
     </div>`;
   document.getElementById("mask").classList.add("open");
   document.body.style.overflow="hidden";
