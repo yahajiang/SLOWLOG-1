@@ -9,7 +9,6 @@ import { getReadProgress, saveReadProgress, clearReadProgress } from "@/lib/read
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { CategoryBadge } from "./CategoryBadge";
-import { AuthorAvatar } from "./AuthorAvatar";
 import { ReadingProgress } from "./ReadingProgress";
 import { TableOfContents } from "./TableOfContents";
 import { Footer } from "./Footer";
@@ -193,28 +192,29 @@ export function PostClient({
             )}
           </div>
 
-          <h1 className={`text-[32px] font-semibold leading-[1.15] tracking-[-0.02em] mb-4 text-balance ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>
+          <h1 className={`text-[32px] font-semibold leading-[1.15] tracking-[-0.02em] mb-3 text-balance ${pageConfig?.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}>
             {post.title}
           </h1>
-          {/* 引言 — 斜体 + 左侧细线 */}
-          <div className="border-l-[3px] pl-[18px] my-6" style={{ borderColor: isDark ? "rgba(255,255,255,0.15)" : "color-mix(in oklab, var(--yh-accent) 18%, transparent)" }}>
-            <p className={`text-[17px] leading-[1.75] ${isDark ? "text-[var(--yh-muted)]" : "text-[var(--yh-muted)]"} italic`}>{post.excerpt}</p>
+          {/* 一行 meta：替代厚重作者卡，尽快进入正文 */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--yh-muted)] mb-3">
+            <span>{post.author}</span>
+            <span className="opacity-40">·</span>
+            <span>{relative}</span>
+            <span className="opacity-40">·</span>
+            <span>{catLabel(post.category, t)}</span>
+            <span className="opacity-40">·</span>
+            <span>{post.readTime}</span>
           </div>
-
-          {/* 厚重作者卡 */}
-          <div className={`flex items-center gap-4 py-4 px-4 -mx-4 rounded-none mt-6 ${isDark ? "bg-[var(--dash-card)]/[0.04] border border-white/10" : "bg-[var(--dash-card)] border border-[var(--yh-border)]"}`}>
-            <AuthorAvatar initial={post.authorInitial} size="lg" />
-            <div className="min-w-0 flex-1">
-              <p className={`text-sm font-semibold truncate ${isDark ? "text-[var(--yh-bg)]" : "text-[var(--yh-text)]"}`}>{post.author}</p>
-              <p className="text-xs text-[var(--yh-muted)] truncate">{relative} · {catLabel(post.category, t)} · {post.readTime}</p>
-            </div>
-            <div className="hidden sm:flex gap-1.5 flex-wrap justify-end max-w-[42%]">
-              {post.tags.map((tag) => (
-                <span key={tag} className={`text-[10px] px-2 py-1 rounded-none border ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)]"}`}>
-                  #{tag}
-                </span>
+          {post.tags?.length > 0 && (
+            <div className="flex flex-wrap gap-x-2 gap-y-1 mb-4">
+              {post.tags.slice(0, 3).map((tag) => (
+                <span key={tag} className={`text-[11px] ${isDark ? "text-zinc-400" : "text-[var(--yh-muted)]/75"}`}>#{tag}</span>
               ))}
             </div>
+          )}
+          {/* 引言 — 斜体 + 左侧细线 */}
+          <div className="border-l-[3px] pl-4 my-5" style={{ borderColor: isDark ? "rgba(255,255,255,0.15)" : "color-mix(in oklab, var(--yh-accent) 18%, transparent)" }}>
+            <p className="text-[16px] leading-[1.75] text-[var(--yh-muted)] italic">{post.excerpt}</p>
           </div>
         </div>
       </section>
@@ -223,12 +223,12 @@ export function PostClient({
       <section className={`pb-16 ${isDark ? "bg-[var(--yh-bg)]" : ""}`}>
         <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
           <div className={`${isFullscreen ? "flex gap-8 max-w-6xl mx-auto" : "grid lg:grid-cols-[1fr_308px] gap-8"}`}>
-            <article className={`min-w-0 ${isFullscreen ? "max-w-5xl mx-auto flex-1" : pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-5xl" : "max-w-5xl"} ${isFullscreen ? "pt-8" : ""}`}>
+            <article className={`min-w-0 ${isFullscreen ? "max-w-3xl mx-auto flex-1" : pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-4xl" : "max-w-3xl"} ${isFullscreen ? "pt-8" : ""}`}>
               {content ? (
                 <PostRenderer content={content} pageConfig={pageConfig} isDark={isDark || pageConfig?.theme === "dark"} />
               ) : (
                 <div
-                  className="prose prose-zinc max-w-5xl
+                  className="prose prose-zinc max-w-none
                   prose-p:text-[17px] prose-p:leading-[1.9] prose-p:text-[var(--yh-text)]/85 prose-p:mb-5 prose-p:font-light
                   prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-3 prose-h1:tracking-tight
                   prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-10 prose-h2:mb-2 prose-h2:scroll-mt-[88px] prose-h2:tracking-tight prose-h2:border-b prose-h2:border-[var(--yh-border)] prose-h2:pb-2

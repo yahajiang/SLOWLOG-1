@@ -78,11 +78,19 @@ export default async function PostPage({
 
   const allRaw = await getAllPosts();
   const all = allRaw.map((p) => toLegacy(p)!);
-  // 相关文章（v0.3 P1-6）：同分类优先，不足 3 篇用最新其他分类补足，排除当前
+  // 相关文章：同分类∩同标签 > 同分类 > 同标签 > 最新；最多 3 篇
   const exclude = new Set([post.id]);
-  const sameCat = all.filter((p) => !exclude.has(p.id) && p.category === post.category);
-  const others = all.filter((p) => !exclude.has(p.id) && p.category !== post.category);
-  const relatedPosts = [...sameCat, ...others].slice(0, 3);
+  const curTags = new Set((post.tags || []).map((t: string) => String(t).toLowerCase()));
+  const scored = all
+    .filter((p) => !exclude.has(p.id))
+    .map((p: any) => {
+      const tags = (p.tags || []).map((t: string) => String(t).toLowerCase());
+      const overlap = tags.filter((t: string) => curTags.has(t)).length;
+      const sameCat = p.category === post.category ? 1 : 0;
+      return { p, score: sameCat * 10 + overlap * 3, createdAt: p.createdAt };
+    })
+    .sort((a, b) => b.score - a.score || +new Date(b.createdAt) - +new Date(a.createdAt));
+  const relatedPosts = scored.slice(0, 3).map((s) => s.p);
 
   const siteUrl = await getSiteUrl();
   const jsonLd = {

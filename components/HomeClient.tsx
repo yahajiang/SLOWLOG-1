@@ -165,7 +165,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           onMouseEnter={() => { heroPaused.current = true }}
           onMouseLeave={() => { heroPaused.current = false }}
         >
-          <div className="max-w-[min(70%,1600px)] mx-auto px-6 py-8">
+          <div className="max-w-[min(70%,1600px)] mx-auto px-6 py-12 md:py-16">
             <div className="flex flex-col md:flex-row md:items-center gap-5 animate-[fadeInUp_0.5s_var(--ease-out)_both]" key={heroIndex}>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-3">
@@ -194,7 +194,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     </span>
                   )}
                 </div>
-                <h2 className="serif text-[26px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
+                <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
                   {localizedFeatured.title}
                 </h2>
                 <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{localizedFeatured.excerpt}</p>

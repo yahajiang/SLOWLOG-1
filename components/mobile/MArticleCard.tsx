@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { ArticleArt } from "@/components/ArticleArt";
 import { CategoryBadge } from "@/components/CategoryBadge";
-import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { useLang } from "@/lib/lang-context";
 import { useRelativeTime } from "@/lib/relative-time";
 
@@ -33,20 +32,12 @@ export function MArticleCard({ post }: { post: any }) {
         <p className="text-[13px] text-[var(--yh-muted)] leading-relaxed line-clamp-2">
           {excerpt}
         </p>
-        {(post.tags?.length ?? 0) > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            {post.tags.slice(0, 3).map((tag: string) => (
-              <span
-                key={tag}
-                className="mono text-[10px] tracking-[0.14em] text-[var(--yh-muted)] bg-[var(--dash-card)] border border-[var(--yh-border)] px-1.5 py-0.5 rounded-none truncate max-w-[100px]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        {post.tags?.[0] && (
+          <span className="mono text-[10px] tracking-[0.12em] text-[var(--yh-muted)]/70 truncate max-w-[140px]">
+            {post.tags[0]}
+          </span>
         )}
-        <div className="flex items-center gap-2 pt-2.5 border-t border-[var(--yh-border)]/80">
-          <AuthorAvatar initial={post.authorInitial} />
+        <div className="flex items-center gap-2 pt-2 mt-auto border-t border-[var(--yh-border)]/60">
           <p className="text-[11px] text-[var(--yh-muted)] truncate flex-1 min-w-0">
             {relative} · {post.readTime}
           </p>
