@@ -1,5 +1,9 @@
-import { auth } from "@/lib/auth"
+import NextAuth from "next-auth"
+import { authConfig } from "@/lib/auth-config"
 import { NextResponse } from "next/server"
+
+// Edge-safe auth：只验 JWT，不碰 Prisma/pg
+const { auth } = NextAuth(authConfig)
 
 // 仅手机 UA 进移动版（平板/桌面走桌面版）；桌面端渲染零影响
 const MOBILE_UA_RE = /Android.*Mobile|iPhone|iPod|Windows Phone/i

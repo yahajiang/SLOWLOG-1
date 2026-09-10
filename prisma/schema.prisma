@@ -1,7 +1,8 @@
 // Prisma schema - SlowLog Blog (Tiptap + 双语)
 generator client {
-  provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../lib/generated/prisma"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
