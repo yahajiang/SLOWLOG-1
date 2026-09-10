@@ -18,7 +18,7 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
 
   return (
     <div
-      className="group relative pl-[29px] py-[14px] transition-all duration-[320ms] hover:pl-9"
+      className="group relative pl-[29px] py-[14px] transition-all duration-[var(--duration-normal)]"
       style={{ animationDelay: `${Math.min(index, 10) * 50}ms` }}
     >
       {/* 时间线竖线 */}
