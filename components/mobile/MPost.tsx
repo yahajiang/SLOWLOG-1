@@ -68,7 +68,8 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                     e.preventDefault();
                     setOpen(false);
                     setTimeout(() => {
-                      document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                      document.getElementById(h.id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
                     }, 120);
                   }}
                   className="flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none text-[var(--yh-muted)] active:bg-[var(--yh-border)]"
