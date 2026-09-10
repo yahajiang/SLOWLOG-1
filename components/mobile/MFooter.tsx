@@ -12,7 +12,7 @@ interface MFooterProps {
 /** 移动端脚页：Logo 双语锁死 + 版本 + 链接纵向堆叠 + 桌面版切换 */
 export function MFooter({ desktopHref }: MFooterProps) {
   const { t, lang } = useLang();
-  const [tagline, setTagline] = useState(t.siteSlogan);
+  const [tagline, setTagline] = useState(t.footerTagline);
 
   useEffect(() => {
     setTagline(pickTagline(lang));

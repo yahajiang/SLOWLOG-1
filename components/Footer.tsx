@@ -7,7 +7,7 @@ import { pickTagline } from "@/lib/taglines";
 export function Footer() {
   const { t, lang } = useLang();
   const [showTop, setShowTop] = useState(false);
-  const [tagline, setTagline] = useState(t.siteSlogan);
+  const [tagline, setTagline] = useState(t.footerTagline);
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 400);
