@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
+import { authConfig } from "./auth-config"
 
 const DEFAULT_EMAIL = "admin@slowlog.dev"
 const DEFAULT_PASSWORD = "admin123"
@@ -12,13 +12,13 @@ export function passwordChangeRequired(session: unknown): boolean {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
-  trustHost: true,
-  session: { strategy: "jwt" },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
       async authorize(creds) {
+        // 惰性加载：避免 middleware/edge 打包链拉入 pg
+        const { prisma } = await import("./prisma")
         const email = (creds?.email as string)?.toLowerCase().trim()
         const password = creds?.password as string
         if (!email || !password) return null
@@ -33,19 +33,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = (user as any).id
-        token.needsPasswordChange = (user as any).needsPasswordChange || false
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token?.id) (session.user as any).id = token.id
-      ;(session.user as any).needsPasswordChange = token.needsPasswordChange || false
-      return session
-    },
-  },
-  pages: { signIn: "/login" },
 })
