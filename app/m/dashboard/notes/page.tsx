@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { useLang } from "@/lib/lang-context";
 
 interface Note {
   id: string;
@@ -20,6 +21,7 @@ export default function MobileNotesPage() {
   const [sending, setSending] = useState(false);
   const [delId, setDelId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t, lang } = useLang();
 
   const fetchNotes = () =>
     fetch("/api/thoughts")
@@ -44,7 +46,7 @@ export default function MobileNotesPage() {
 
   const submit = async () => {
     if (!input.trim() || input.length > 500) {
-      toast("内容需 1-500 字", "error");
+      toast(lang === "zh" ? "内容需 1-500 字" : "Content must be 1-500 characters", "error");
       return;
     }
     setSending(true);
@@ -53,8 +55,8 @@ export default function MobileNotesPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: input }),
     });
-    if (!r.ok) toast("发布失败", "error");
-    else toast("已发布", "success");
+    if (!r.ok) toast(t.toastPublishFail, "error");
+    else toast(t.toastPublished, "success");
     setInput("");
     setSending(false);
     fetchNotes();
@@ -63,19 +65,19 @@ export default function MobileNotesPage() {
   const confirmDel = async () => {
     if (!delId) return;
     await fetch(`/api/thoughts/${delId}`, { method: "DELETE" });
-    toast("已删除", "success");
+    toast(t.dashDeleted, "success");
     setDelId(null);
     fetchNotes();
   };
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">随想速记</h1>
+      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashNotes}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 space-y-2.5">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="写点什么... (≤500字)"
+          placeholder={lang === "zh" ? "写点什么... (≤500字)" : "Write something... (≤500 chars)"}
           maxLength={500}
           rows={3}
           className="w-full px-4 py-3 text-base border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
@@ -83,9 +85,9 @@ export default function MobileNotesPage() {
         <button
           onClick={submit}
           disabled={sending || !input.trim()}
-          className="w-full py-3 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px]"
+          className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px]"
         >
-          发布
+          {t.dashPublishAction}
         </button>
       </div>
       {loading ? (
@@ -103,7 +105,7 @@ export default function MobileNotesPage() {
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-[var(--dash-text)] leading-relaxed whitespace-pre-wrap break-words">
-                  {n.contentZh || n.content || "（空）"}
+                  {lang === "zh" ? n.contentZh || n.content : n.content}
                 </p>
                 <p className="text-xs text-[var(--dash-muted)] mt-2">
                   {new Date(n.createdAt).toLocaleString()}
@@ -113,21 +115,21 @@ export default function MobileNotesPage() {
                 onClick={() => setDelId(n.id)}
                 className="text-xs text-[var(--dash-muted)] px-3 min-h-[44px] self-start shrink-0"
               >
-                删除
+                {t.dashDelete}
               </button>
             </div>
           ))}
           {notes.length === 0 && (
-            <p className="text-sm text-[var(--dash-muted)] text-center py-12">暂无随想</p>
+            <p className="text-sm text-[var(--dash-muted)] text-center py-12">{t.noThoughts}</p>
           )}
         </div>
       )}
       <ConfirmDialog
         open={!!delId}
         onOpenChange={(v) => !v && setDelId(null)}
-        title="删除随想？"
-        description="物理删除，不可恢复。"
-        confirmText="删除"
+        title={t.deleteThoughtConfirm}
+        description={lang === "zh" ? "物理删除，不可恢复。" : "This will be permanently deleted."}
+        confirmText={t.dashDelete}
         variant="danger"
         onConfirm={confirmDel}
       />

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -20,7 +20,7 @@ export default function ChangePasswordPage() {
     setError("")
 
     if (!newEmail.trim() || !newPassword.trim() || !newName.trim()) {
-      setError("请填写所有字段")
+      setError(lang === "zh" ? "请填写所有字段" : "Fill all fields")
       return
     }
     if (newPassword.length < 8) {
@@ -53,7 +53,7 @@ export default function ChangePasswordPage() {
       await signOut({ redirect: false })
       router.push("/login?changed=1")
     } catch {
-      setError("网络错误")
+      setError(lang === "zh" ? "网络错误" : "Network error")
       setLoading(false)
     }
   }
@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium block mb-2">
-                新邮箱
+                {lang === "zh" ? "新邮箱" : "New email"}
               </label>
               <input
                 type="email"

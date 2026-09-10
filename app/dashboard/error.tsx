@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { useLang } from "@/lib/lang-context"
 
 export default function DashboardError({
   error,
@@ -9,6 +10,7 @@ export default function DashboardError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const { t, lang } = useLang()
   useEffect(() => {
     console.error("Dashboard error:", error)
   }, [error])
@@ -16,15 +18,15 @@ export default function DashboardError({
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-6">
       <div className="max-w-md text-center">
-        <h2 className="text-lg font-semibold text-[var(--dash-text)] mb-2">出错了</h2>
+        <h2 className="text-lg font-semibold text-[var(--dash-text)] mb-2">{t.dashOpFail}</h2>
         <p className="text-sm text-[var(--dash-muted)] mb-4">
-          {error.message || "页面加载出错，请稍后重试。"}
+          {error.message || t.dashErrorPage}
         </p>
         <button
           onClick={reset}
-          className="px-4 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium"
+          className="px-4 py-2 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none hover:opacity-90 font-medium"
         >
-          重试
+          {lang === "zh" ? "重试" : "Retry"}
         </button>
       </div>
     </div>
