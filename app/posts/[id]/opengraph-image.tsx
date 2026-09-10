@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og"
 import { getPostById, getPostBySlug } from "@/lib/posts"
+import { getSiteHost } from "@/lib/site-url"
 
 // OG 分享图（v0.3 蓝图 Chapter 02 实现）：
 // 纸底颗粒 + S 印章 + 品牌行 + 分类徽章 + accent 下划线 + 大字标题 + 元信息 + 底栏格言/域名。
@@ -70,7 +71,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
         {/* 底栏 */}
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "baseline", borderTop: "1px solid #dddad2", paddingTop: 22 }}>
           <div style={{ fontSize: 19, color: "#8e8e93", fontStyle: "italic" }}>慢下来，写点值得读的东西。</div>
-          <div style={{ fontSize: 16, color: "#b0aead", letterSpacing: "0.08em" }}>yahajiang.dpdns.org</div>
+          <div style={{ fontSize: 16, color: "#b0aead", letterSpacing: "0.08em" }}>{getSiteHost()}</div>
         </div>
       </div>
     ),

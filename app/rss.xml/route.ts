@@ -1,10 +1,12 @@
 import { getAllPosts } from "@/lib/posts";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+  // origin 只来自 env（防 Host 注入），见 lib/site-url.ts
+  const siteUrl = await getSiteUrl();
   let posts: any[] = []
   try { posts = await getAllPosts() } catch { posts = [] }
   const items = posts

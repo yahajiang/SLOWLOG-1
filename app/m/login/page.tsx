@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MLogin } from "@/components/mobile/MLogin";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "登录 · 慢日志",
   description: "慢日志后台登录",
-  alternates: { canonical: `${siteUrl}/login` },
+  alternates: { canonical: `${getSiteUrlSync()}/login` },
   robots: { index: false, follow: false },
 };
 

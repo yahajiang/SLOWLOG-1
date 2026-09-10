@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { MArchive } from "@/components/mobile/MArchive";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
-
 export const metadata: Metadata = {
   title: "归档 · 慢日志",
   description: "按年份浏览全部文章",
-  alternates: { canonical: `${siteUrl}/archive` },
+  alternates: { canonical: `${getSiteUrlSync()}/archive` },
 };
 
 export default async function MobileArchivePage() {
