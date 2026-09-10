@@ -103,16 +103,17 @@ code, pre, .font-mono {
   font-family: var(--font-serif), var(--font-serif-sc), Georgia, "Times New Roman", Times, serif;
 }
 
-/* Transitions tokens */
+/* Transitions tokens — 克制纸感 × 少量生命力 */
 :root {
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* spring 过冲从 1.56 收到 1.35：保留一点回弹，去掉弹跳感 */
+  --ease-spring: cubic-bezier(0.34, 1.35, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 200ms;
-  --duration-normal: 400ms;
-  --duration-slow: 600ms;
-  /* Motion System: 呼吸/Grow 常态规范（Welcome 1.4s 为签名仪式，不受此约束） */
+  --duration-fast: 180ms;
+  --duration-normal: 320ms;
+  --duration-slow: 480ms;
+  /* Motion System: 呼吸/Grow（Welcome 1.4s 为签名仪式，不受此约束） */
   --motion-breath: 6s;
-  --motion-grow: 550ms;
+  --motion-grow: 480ms;
 }
 
 @keyframes motionBreath {
@@ -122,7 +123,7 @@ code, pre, .font-mono {
 .motion-breath { animation: motionBreath var(--motion-breath) ease-in-out infinite; }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -132,13 +133,19 @@ code, pre, .font-mono {
 }
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* 视口触发入场（Reveal）：未 show 时隐藏；show 后播 fadeInUp */
+[data-reveal="0"] { opacity: 0; }
+[data-reveal="1"] {
+  animation: fadeInUp var(--duration-normal) var(--ease-out) both;
 }
 
 @keyframes shimmer {
@@ -867,7 +874,7 @@ body::after {
 /* 页面入场动画：to 帧必须 transform:none——动画结束不残留 containing block，
    文章页内的 fixed 元素（灯箱、阅读进度条）才不会被 wrapper 困住 */
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 .page-enter {
@@ -876,11 +883,12 @@ body::after {
 /* 路由切换连贯性：template 的直接子节点（loading 骨架与正片）先后各自淡入，
    新节点插入时 CSS 动画自动重播，骨架 → 正片的交接因此有过渡 */
 .page-enter > * {
-  animation: pageIn 0.45s var(--ease-out) both;
+  animation: pageIn var(--duration-normal) var(--ease-out) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .page-enter > * { animation: none; }
   .stagger-children > * { animation: none; }
+  [data-reveal="0"], [data-reveal="1"] { animation: none; opacity: 1; }
 }
 
 /* ============================================================
@@ -1010,14 +1018,14 @@ body::after {
 
 /* 封面 SVG 主体场景：常态轻呼吸（6s 浮动，五 Motion 之「呼吸」）+ 入场描边生长（「生长」）
    + 实心图形 4s 轻脉动循环（与容器浮动错峰）。cover-inner 类此前只挂在 TagScene 上而无样式定义，此处落地 */
-.cover-inner { animation: cover-float 6s ease-in-out infinite }
-@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
-.cover-inner svg > * { animation: cover-el-in 0.5s var(--ease-out) backwards }
-.cover-inner svg [stroke] { stroke-dasharray: 420; stroke-dashoffset: 420; animation: cover-el-in 0.5s var(--ease-out) backwards, cover-draw 0.9s var(--ease-out) 0.15s forwards }
+.cover-inner { animation: cover-float var(--motion-breath) ease-in-out infinite }
+@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-3px) } }
+.cover-inner svg > * { animation: cover-el-in var(--duration-normal) var(--ease-out) backwards }
+.cover-inner svg [stroke] { stroke-dasharray: 420; stroke-dashoffset: 420; animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards }
 @keyframes cover-el-in { from { opacity: 0 } }
 @keyframes cover-draw { to { stroke-dashoffset: 0 } }
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box; transform-origin: center;
-  animation: cover-el-in 0.5s var(--ease-out) backwards, cover-draw 0.9s var(--ease-out) 0.15s forwards, cover-pulse 4s ease-in-out 1.2s infinite;
+  animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards, cover-pulse 5s ease-in-out 1.2s infinite;
 }
-@keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.08) } }
+@keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.04) } }

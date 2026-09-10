@@ -18,18 +18,18 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
 
   return (
     <div
-      className="group relative pl-[29px] py-[14px] transition-all duration-500 hover:pl-9"
+      className="group relative pl-[29px] py-[14px] transition-all duration-[320ms] hover:pl-9"
       style={{ animationDelay: `${Math.min(index, 10) * 50}ms` }}
     >
       {/* 时间线竖线 */}
       <div className="absolute left-[7px] top-0 bottom-0 w-px bg-gradient-to-b from-[var(--yh-accent)]/30 via-[var(--yh-border)] to-transparent" />
       {/* 时间线圆点 - 带脉动效果 */}
       <div className="absolute left-0 top-5 flex items-center justify-center">
-        <div className="w-[15px] h-[15px] rounded-full border-2 border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:border-[var(--yh-accent)] group-hover:bg-[var(--yh-accent)]/10 transition-all duration-500 group-hover:scale-110" />
-        <div className="absolute w-[5px] h-[5px] rounded-full bg-[var(--yh-border)] group-hover:bg-[var(--yh-accent)] transition-all duration-500" />
+        <div className="w-[15px] h-[15px] rounded-full border-2 border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:border-[var(--yh-accent)] group-hover:bg-[var(--yh-accent)]/10 transition-all duration-[320ms] group-hover:scale-110" />
+        <div className="absolute w-[5px] h-[5px] rounded-full bg-[var(--yh-border)] group-hover:bg-[var(--yh-accent)] transition-all duration-[320ms]" />
       </div>
       {/* 内容卡片 */}
-      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-none px-[18px] py-[14px] border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-white/80 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-500">
+      <div className="relative bg-[var(--yh-bg)]/50 backdrop-blur-sm rounded-none px-[18px] py-[14px] border border-transparent group-hover:border-[var(--yh-border)]/50 group-hover:bg-white/80 group-hover:shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] transition-all duration-[320ms]">
         <p className="text-[14.5px] text-[var(--yh-text)] leading-[1.85] tracking-wide">
           {text}
         </p>

@@ -137,7 +137,8 @@ export function TableOfContents({
                       if (releaseTimer.current) clearTimeout(releaseTimer.current);
                       const el = document.getElementById(h.id);
                       if (el) {
-                        el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                        el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
                         history.pushState(null, "", `#${h.id}`);
                       }
                       releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
