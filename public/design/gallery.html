@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-page-node-id="kdGOM1aWjnxA0mnWrBlDXo">
 <head data-page-node-id="sCsGXIr5lYvFwcQg46Eofs">
 <meta charset="UTF-8" data-page-node-id="Yeehtd7hHU0zIMHJFnuOly">
 <meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="CkbODbylSOeUNolhUsN7Nr">
-<title>鎱㈡棩蹇?路 UI Design Prompt</title>
+<title>慢日志 · UI Design Prompt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="O7Ov2myXhj4OBKHYgH7gHI">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet" data-page-node-id="zoEHcfEyhqBvWov7qod0i1">
 <style>
@@ -43,7 +43,7 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-float);border-color:var(--yh-muted)}
 .pv{height:150px;border-bottom:1px solid var(--yh-border);position:relative;overflow:hidden;background:var(--yh-bg);display:flex;align-items:center;justify-content:center;padding:16px}
 .pv *{font-family:inherit}
-/* 瑕嗗啓杩樺師锛?pv *{inherit} 浼氭妸棰勮鍐?.mono/.serif 鎵撴垚 sans锛岃€屾ā鎬?.m-pv 鏃犳瑙勫垯鈥斺€旇ˉ鍚庣疆楂樼壒寮傝鍒欙紝涓ゅ娓叉煋涓€鑷?*/
+/* 覆写还原：.pv *{inherit} 会把预览内 .mono/.serif 打成 sans，而模态 .m-pv 无此规则——补后置高特异规则，两处渲染一致 */
 .pv .mono,.m-pv .mono{font-family:"JetBrains Mono",ui-monospace,monospace}.pv .serif,.m-pv .serif{font-family:"Cormorant Garamond","Noto Serif SC","Songti SC",Georgia,serif}
 .ci{padding:14px 16px 16px}
 .tag{display:inline-block;font-size:10px;padding:1px 8px;border:1px solid var(--yh-border);color:var(--yh-muted);margin-bottom:8px}
@@ -124,7 +124,7 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .card:hover .mc-art{transform:scale(1.06)}
 @keyframes g-ffIn{from{opacity:0}to{opacity:1}}
 @keyframes g-sbIn{from{transform:scale(0.92)}to{transform:scale(1)}}
-/* 灏侀潰鍐呴儴杞诲井鍏ュ満锛堜笌鐪熶唬鐮?SVG 鎻忚竟/鍛煎惛鍚岃瑷€锛?*/
+/* 封面内部轻微入场（与真代码 SVG 描边/呼吸同语言） */
 @keyframes g-cvFade{from{opacity:0;transform:translateY(4px)}}
 @keyframes g-cvLine{from{transform:scaleX(0)}}
 @keyframes g-cvRot{from{opacity:0;transform:rotate(-8deg)}}
@@ -135,7 +135,7 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .pv .cv-pop,.m-pv .cv-pop{animation:g-cvPop .4s var(--ease-spring) .5s backwards,g-pulse 3s ease-in-out 1s infinite}
 @keyframes g-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 @keyframes g-cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-/* 鈥斺€?椤甸潰绾х粏鑺傚姩鏁?鈥斺€?*/
+/* —— 页面级细节动效 —— */
 html{scroll-behavior:smooth}
 ::selection{background:color-mix(in srgb,var(--yh-accent) 22%,transparent)}
 ::-webkit-scrollbar{width:10px;height:10px}
@@ -152,7 +152,7 @@ html{scroll-behavior:smooth}
 .m-body>*:nth-child(3){animation-delay:120ms}
 .m-body>*:nth-child(4){animation-delay:180ms}
 .m-body>*:nth-child(5){animation-delay:240ms}
-/* 涓婚鍒囨崲鍙屽浘鏍囷紙鐓ф惉涓婚」鐩?ThemeToggle锛夛細浜壊鏈?/ 鏆楄壊鏃ワ紝闅?body.dark 鏄鹃殣 */
+/* 主题切换双图标（照搬主项目 ThemeToggle）：亮色月 / 暗色日，随 body.dark 显隐 */
 .ti-sun{display:none}
 body.dark .ti-moon{display:none}
 body.dark .ti-sun{display:inline}
@@ -169,15 +169,12 @@ body.dark .ti-sun{display:inline}
 .m-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--yh-border)}
 .ab-card{border:1px solid var(--yh-border);background:var(--dash-card);padding:14px 16px;margin-bottom:12px}
 .ab-k{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--yh-muted);margin-bottom:6px}
-.ab-row{font-size:12.5px;line-height:1.85;color:var(--yh-text)}
-.ab-row b{font-weight:600}
 .ab-list{font-size:12.5px;line-height:2;color:var(--yh-text)}
 .ab-list>div{padding:3px 0;border-bottom:1px solid color-mix(in srgb,var(--yh-border) 50%,transparent)}
 .ab-list>div:last-child{border-bottom:none}
 .ab-list b{font-weight:600}
 .ab-lead{font-size:13px;color:var(--yh-muted);line-height:1.85;margin:0 0 4px}
 .prompt-box{position:relative;margin-top:10px}
-
 .prompt-box pre{font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.75;background:var(--dash-card);border:1px solid var(--yh-border);padding:18px;white-space:pre-wrap;overflow:auto;max-height:340px}
 .copy{position:absolute;top:10px;right:10px;font-size:11px;padding:5px 12px;border:1px solid var(--yh-border);background:var(--yh-bg);color:var(--yh-muted);cursor:pointer;font-family:inherit}
 .copy:hover{color:var(--yh-text);border-color:var(--yh-muted)}.copy-main{font-size:12px;font-weight:600;padding:8px 18px;background:var(--yh-accent);color:var(--yh-bg);border:none;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:opacity .2s;flex-shrink:0}.copy-main:hover{opacity:.85}.copy-main.ok{background:var(--yh-text)}
@@ -189,272 +186,293 @@ body.dark .ti-sun{display:inline}
 </head>
 <body data-page-node-id="vysKI60EuPPoBXT7bPnGUz">
 <header data-page-node-id="Om43lJlwa7Pwpliy2XlASo"><div class="h-in" data-page-node-id="Wl144KdvclDVJOXEje8IhB">
-  <a href="#" onclick="go('home');return false" style="font-size:14px;font-weight:600" data-page-node-id="GKgWhmeSlAF6tSOrV8LUV2"><span class="s-logo" data-page-node-id="vcR61y9HlT2WCt2yzoigiZ">S</span>鎱㈡棩蹇?<span class="mono" style="font-size:11px;letter-spacing:.14em;color:var(--yh-muted)" data-page-node-id="TWGwO7WoV9kulhyKzojobg">UI PROMPT</span></a>
+  <a href="#" onclick="go('home');return false" style="font-size:14px;font-weight:600" data-page-node-id="GKgWhmeSlAF6tSOrV8LUV2"><span class="s-logo" data-page-node-id="vcR61y9HlT2WCt2yzoigiZ">S</span>慢日志 <span class="mono" style="font-size:11px;letter-spacing:.14em;color:var(--yh-muted)" data-page-node-id="TWGwO7WoV9kulhyKzojobg">UI PROMPT</span></a>
   <nav data-page-node-id="hj94pj2mmbJ6HDezfLuvnA">
-    <a href="#" onclick="go('home');return false" class="on" data-page-node-id="sdAqX7Ld1xMZJ1PmnfKIez">缁勪欢</a>
-    <a href="#" onclick="openAbout();return false" data-page-node-id="UGXvftgeGP3sQc2gflVBPV">鍏充簬</a>
-    <a href="#" onclick="document.body.classList.toggle('dark');return false" title="鍒囨崲涓婚" data-page-node-id="3Q1ALL4p7zfsUUN3LxIOYZ"><svg class="ti-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="ti-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></a>
+    <a href="#" onclick="go('home');return false" class="on" data-page-node-id="sdAqX7Ld1xMZJ1PmnfKIez">组件</a>
+    <a href="#" onclick="openAbout();return false" data-page-node-id="UGXvftgeGP3sQc2gflVBPV">关于</a>
+    <a href="#" onclick="document.body.classList.toggle('dark');return false" title="切换主题" data-page-node-id="3Q1ALL4p7zfsUUN3LxIOYZ"><svg class="ti-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="ti-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></a>
   </nav>
 </div></header>
 
 <div class="wrap" id="home" data-page-node-id="erliiFLgAcRlbYJMZlAvOX">
-  <h1>UI 缁勪欢</h1>
-  <p class="sub">v1.4 路 涓庣湡浠ｇ爜鍚屾簮 路 鍚?Reveal / 鏍艰█姹?/ 浠ｇ爜鍧楄鍙?路 鍔ㄦ晥濂戠害 180/300/500ms 路 鍒嗙被绛涢€?/ 鎼滅储 / 鐐瑰崱鐗囧彇鎻愮ず璇?/p>
+  <h1>UI 组件</h1>
+  <p class="sub">v1.4 · 与真代码同源 · 含 Reveal / 格言池 / 代码块行号 · 动效契约 180/300/500ms · 分类筛选 / 搜索 / 点卡片取提示词</p>
   <div class="srch" data-page-node-id="43I4BvuDI9gYkGFtJWo4ld">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="YU6DRm5rG2nCtm4eQljXKJ"><circle cx="11" cy="11" r="7" data-page-node-id="D4DhEXrr9M2Xez7eS7LDKB"/><path d="M21 21l-4-4" data-page-node-id="hsOVjwqx6diTHKIjXSPyMl"/></svg>
-    <input id="q" type="text" placeholder="鎼滅储缁勪欢鍚嶇О鎴栨弿杩扳€? oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
+    <input id="q" type="text" placeholder="搜索组件名称或描述…" oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
   </div>
   <div class="tabs" id="tabs" data-page-node-id="TL2j1E1T9d18f1t3ZUs52q"></div>
   <div class="cnt" id="cnt" data-page-node-id="F3dCnQ6Uz3VyrZS6oAy3pQ"></div>
   <div class="grid" id="grid" data-page-node-id="AYJPrbjrRYM6uJEss6ZjLG"></div>
-  <div class="empty" id="empty" style="display:none" data-page-node-id="Vmo28jsLW8wnVj54mZ4eOE">娌℃湁鍖归厤鐨勭粍浠?鈥斺€?鎹釜鍏抽敭璇嶈瘯璇?/div>
+  <div class="empty" id="empty" style="display:none" data-page-node-id="Vmo28jsLW8wnVj54mZ4eOE">没有匹配的组件 —— 换个关键词试试</div>
 </div>
 
 <div class="modal-mask" id="mask" onclick="if(event.target===this)closeM()" data-page-node-id="OWn3LeyTyRWqPapoyjcbBh">
   <div class="modal" data-page-node-id="LxtUQYuiC9XJjgJrr078zX">
-    <button class="x" onclick="closeM()" data-page-node-id="sMdEWG0oiV70njaf7ydUlo">鉁?/button>
+    <button class="x" onclick="closeM()" data-page-node-id="sMdEWG0oiV70njaf7ydUlo">✕</button>
     <div id="m-body" data-page-node-id="JwnrApFkcHEv3RL76wg8Qp"></div>
   </div>
 </div>
 
 <script>
-const P_BASE = `鍩轰簬鎱㈡棩蹇楄璁¤瑷€锛歂ext.js 15 + Tailwind + CSS 浠ょ墝锛?-yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card锛?dark 鏁翠綋瑕嗙洊锛夈€傜洿瑙?rounded-none銆?px var(--yh-border)銆佺焊闈?var(--dash-card)銆俿erif=Cormorant Garamond+Noto Serif SC 鏍囬锛泂ans=Plus Jakarta Sans锛沵ono=JetBrains Mono锛?1鈥?2px/.14em/澶у啓锛夈€傚姩鏁堟椂闀挎。锛歠ast 180ms / normal 300ms / slow 500ms锛沞ase-out cubic-bezier(0.22,1,0.36,1)锛泂pring 杩囧啿鈮?.15銆傚彧鍔?transform/opacity锛沨over/active/focus 涓夋€侀綈鍏紱focus-visible 2px accent锛涙殫鑹插叏浠ょ墝鍖栵紙dash-text 搴曚笂鐨勬寜閽敤 dash-bg 鍙嶈壊锛岀 text-white锛夈€傛鏂?17px/1.9锛涜瀹介粯璁?max-w-3xl锛涢槾褰?--shadow-card/float/pop锛泎-index header40/modal50/Welcome90/toast100銆俽educed-motion 鍏ㄥ眬鍏滃簳銆俙;
+const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif=Cormorant Garamond+Noto Serif SC 标题；sans=Plus Jakarta Sans；mono=JetBrains Mono（11–12px/.14em/大写）。动效时长档：fast 180ms / normal 300ms / slow 500ms；ease-out cubic-bezier(0.22,1,0.36,1)；spring 过冲≤1.15。只动 transform/opacity；hover/active/focus 三态齐全；focus-visible 2px accent；暗色全令牌化（dash-text 底上的按钮用 dash-bg 反色，禁 text-white）。正文 17px/1.9；行宽默认 max-w-3xl；阴影 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100。reduced-motion 全局兜底。`;
 
 const C = [
- {id:"stat",name:"缁熻鍗＄墖",cat:"鏁版嵁灞曠ず",desc:"姒傝椤靛洓鑱旂粺璁★細PJS 绮椾綋 tabular-nums 澶ф暟瀛?+ tracking-widest 澶у啓鏍囩锛宧over 涓婃诞 + shadow-float銆?,
-  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:210px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:22px;font-weight:700;font-family:'Plus Jakarta Sans',system-ui;font-variant-numeric:tabular-nums">128</div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--yh-muted);font-weight:500">鏂囩珷鎬绘暟</div></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div class="mono" style="font-size:20px;font-weight:500">7</div><div style="font-size:10px;color:var(--yh-muted)">鍒嗙被鏁?/div></div></div>`,
+ {id:"stat",name:"统计卡片",cat:"数据展示",desc:"概览页四联统计：PJS 粗体 tabular-nums 大数字 + tracking-widest 大写标签，hover 上浮 + shadow-float。",
+  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:210px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:22px;font-weight:700;font-family:'Plus Jakarta Sans',system-ui;font-variant-numeric:tabular-nums">128</div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--yh-muted);font-weight:500">文章总数</div></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div class="mono" style="font-size:20px;font-weight:500">7</div><div style="font-size:10px;color:var(--yh-muted)">分类数</div></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岀粺璁″崱鐗?StatCard銆嶏紙杩樺師 components/dashboard/DashboardHome/StatCard锛夛細
+新建「统计卡片 StatCard」（还原 components/dashboard/DashboardHome/StatCard）：
 - label 11px tracking-widest uppercase muted + value text-2xl font-bold tabular-nums
-- 瀹瑰櫒 --dash-card + --dash-border 鐩磋 p-6 + shadow-card
-- hover锛氫粎 shadow-float锛坱ransition-shadow 300ms var(--ease-out)锛夛紝**涓嶅啀涓婃诞**
-- 浠〃鐩橀椤?client 鍖栵紙DashboardHome锛夋帴 useLang 涓嫳锛涚綉鏍?2/4 鍒楄嚜閫傚簲`},
- {id:"toast",name:"Toast 閫氱煡",cat:"鍙嶉",desc:"ToastProvider + useToast(msg, type)锛氬彸涓?slideInRight 0.3s 鍏ュ満锛宻uccess emerald / error red / info 绾搁潰涓夎涔夛紝2.5s 鑷姩娑堝け銆?,
-  pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">鈫?閲嶆挱</button><div class="anim-toast" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;padding:9px 14px">鉁?宸插鍒跺埌鍓创鏉?/div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">鑽夌宸蹭繚瀛?/div></div>`,
+- 容器 --dash-card + --dash-border 直角 p-6 + shadow-card
+- hover：仅 shadow-float（transition-shadow 300ms var(--ease-out)），**不再上浮**
+- 仪表盘首页 client 化（DashboardHome）接 useLang 中英；网格 2/4 列自适应`},
+ {id:"toast",name:"Toast 通知",cat:"反馈",desc:"ToastProvider + useToast(msg, type)：右上 slideInRight 0.3s 入场，success emerald / error red / info 纸面三语义，2.5s 自动消失。",
+  pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">↻ 重播</button><div class="anim-toast" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;padding:9px 14px">✓ 已复制到剪贴板</div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">草稿已保存</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆孴oast 閫氱煡銆嶏紙杩樺師 components/ui/Toast.tsx锛夛細
+新建「Toast 通知」（还原 components/ui/Toast.tsx）：
 - ToastProvider + useToast(msg, type?: "success"|"error"|"info")
-- fixed top-4 right-4 z-[100]锛涙潯 min-w-240 max-w-360 px-4 py-3 鐩磋 border + backdrop-blur + shadow-pop
-- 鍏ュ満 slideInRight **0.28s** ease-out锛坱ranslateX **10px**鈫?锛夛紱2500ms 鍚?slideOutRight 0.28s 閫€鍦?- 璇箟鑹诧細success emerald / error red / info 绾搁潰锛涙枃瀛楃敤 dash-bg 鍙嶈壊鎸夐挳鍦烘櫙绂?text-white`},
- {id:"timeline",name:"褰掓。鏃堕棿绾?,cat:"鏁版嵁灞曠ず",desc:"Motion 02+05锛氳酱绾块殢婊氬姩 scaleY 鐢熼暱锛屽勾浠界幆鑺傜偣锛屾枃绔犺妭鐐硅繘鍏ヨ鍙ｄ緷娆＄偣浜€?,
-  pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">鈫?閲嶆挱</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 路 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 灏侀潰绯荤粺</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 缂栬緫鍣?/span></div></div>`,
+- fixed top-4 right-4 z-[100]；条 min-w-240 max-w-360 px-4 py-3 直角 border + backdrop-blur + shadow-pop
+- 入场 slideInRight **0.28s** ease-out（translateX **10px**→0）；2500ms 后 slideOutRight 0.28s 退场
+- 语义色：success emerald / error red / info 纸面；文字用 dash-bg 反色按钮场景禁 text-white`},
+ {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，年份环节点，文章节点进入视口依次点亮。",
+  pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">↻ 重播</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 · 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 封面系统</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 编辑器</span></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽綊妗ｆ椂闂寸嚎 TimelineArchive銆嶏細
-- 杞寸嚎 1px border + accent scaleY(闃呰杩涘害) 路 transform-only
-- 骞翠唤鐜妭鐐?+ 鏂囩珷鍦嗙偣锛汭O 鐐逛寒 is-in锛坱ranslateX -10鈫? 路 55ms 浜ら敊锛?- tl-armed 娓愯繘澧炲己锛況educed-motion 闈欐€佸彲瑙乣},
- {id:"toc",name:"闃呰鐩綍瀵艰建",cat:"鏁版嵁灞曠ず",desc:"Motion 05锛歴croll-spy 婵€娲诲綋鍓嶈妭锛坅ccent 鍔犵矖+鍦嗙偣锛夛紝宸︾紭瀵艰建 scaleY 闅忔粴鍔ㄧ敓闀裤€?,
-  pv:`<div class="pv-toc" style="width:100%;max-width:180px"><a href="#" onclick="tocClick(this)"><span class="dot"></span>涓轰粈涔堝仛</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>鎯呮劅妯″瀷</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>璁板繂绯荤粺</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>鍏崇郴婕旇繘</a></div>`,
+新建「归档时间线 TimelineArchive」：
+- 轴线 1px border + accent scaleY(阅读进度) · transform-only
+- 年份环节点 + 文章圆点；IO 点亮 is-in（translateX -10→0 · 55ms 交错）
+- tl-armed 渐进增强；reduced-motion 静态可见`},
+ {id:"toc",name:"阅读目录导轨",cat:"数据展示",desc:"Motion 05：scroll-spy 激活当前节（accent 加粗+圆点），左缘导轨 scaleY 随滚动生长。",
+  pv:`<div class="pv-toc" style="width:100%;max-width:180px"><a href="#" onclick="tocClick(this)"><span class="dot"></span>为什么做</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>情感模型</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>记忆系统</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>关系演进</a></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岄槄璇荤洰褰?TocRail銆嶏紙杩樺師 components/TableOfContents.tsx锛夛細
-- 鍙屽眰瀵艰建锛氬簳灞?1px 杈?+ accent 濉厖 scaleY锛?*杩涘害鎸夋爣棰樺尯闂存彃鍊?*锛堜笌楂樹寒鏍囬鍚屾锛岀鐢ㄦ暣椤?scrollY锛?- 楂樹寒锛歛ccent 鏂囧瓧 + bg accent/7% + 鍦嗙偣鍙樺ぇ锛泃ransition-colors 180ms ease-out
-- 瀵艰建 transition 160ms linear锛涚偣鍑诲悗绔嬪嵆鎺ㄨ繘瀵艰建
-- 鏍囬 id 涓?lib/headings.ts 鍏辩敤 slug+鍘婚噸锛堥噸鍚嶆爣棰?foo / foo-1锛?- 鍙姌鍙狅細鏍囬琛?toggle锛屽睍寮€ 250ms / 鏀惰捣 200ms max-height+opacity
-- 姝ｆ枃寮傛锛氳疆璇㈢粦瀹氭爣棰橈紝涓嶄緷璧?DB id 瀛楅潰鐩哥瓑`},
- {id:"theme3",name:"涓婚涓夋€佸垏鎹?,cat:"杈撳叆",desc:"璺熼殢绯荤粺/娴呰壊/娣辫壊涓夎兌鍥婏紙ConfigPanel 涓庤缃〉锛夛紱澶撮儴鍙︽湁 鈽€/鈽?鍗曞浘鏍囧垏鎹紙sl-theme 鎸佷箙鍖?+ theme-color meta 鍚屾锛夈€?,
-  pv:`<div style="display:flex;gap:6px;width:100%;max-width:210px"><button type="button" class="t3" onclick="t3click(this)">绯荤粺</button><button type="button" class="t3 sel" onclick="t3click(this)">娴呰壊</button><button type="button" class="t3" onclick="t3click(this)">娣辫壊</button></div>`,
+新建「阅读目录 TocRail」（还原 components/TableOfContents.tsx）：
+- 双层导轨：底层 1px 边 + accent 填充 scaleY，**进度按标题区间插值**（与高亮标题同步，禁用整页 scrollY）
+- 高亮：accent 文字 + bg accent/7% + 圆点变大；transition-colors 180ms ease-out
+- 导轨 transition 160ms linear；点击后立即推进导轨
+- 标题 id 与 lib/headings.ts 共用 slug+去重（重名标题 foo / foo-1）
+- 可折叠：标题行 toggle，展开 250ms / 收起 200ms max-height+opacity
+- 正文异步：轮询绑定标题，不依赖 DB id 字面相等`},
+ {id:"theme3",name:"主题三态切换",cat:"输入",desc:"跟随系统/浅色/深色三胶囊（ConfigPanel 与设置页）；头部另有 ☀/☾ 单图标切换（sl-theme 持久化 + theme-color meta 同步）。",
+  pv:`<div style="display:flex;gap:6px;width:100%;max-width:210px"><button type="button" class="t3" onclick="t3click(this)">系统</button><button type="button" class="t3 sel" onclick="t3click(this)">浅色</button><button type="button" class="t3" onclick="t3click(this)">深色</button></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屼富棰樹笁鎬?ThemeSwitch3銆嶏細
-- 涓夎兌鍥?system/light/dark锛涢€変腑 yh-text/yh-bg
-- system 鐢?matchMedia锛沨tml.dark + sl-theme
-- 棣栧抚鍐呰仈鑴氭湰闃茬櫧闂紱transition 180ms`},
- {id:"cover",name:"灏侀潰鏋勬垚鍣?,cat:"鏁版嵁灞曠ず",desc:"ArticleArt锛氭枃绔?id 鍝堝笇 鈫?鍙戠増鍙樹綋锛涙棌寰藉瓧/鍑犱綍 SVG/妯嚎鍩虹嚎锛屾瘡绡囦竴寮犺劯銆?,
-  pv:`<div style="width:100%;max-width:190px;aspect-ratio:5/3;position:relative;background:#F5F3EF;border:1px solid var(--yh-border)"><span style="position:absolute;top:5px;left:8px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;color:#3A332E;border:1px solid #3A332E;padding:1px 5px">璁捐</span><span class="serif cv-fade" style="position:absolute;top:8px;left:12px;font-size:42px;line-height:1;color:#3A332E">姣?/span><span class="cv-rot" style="position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#E8E0D8;border:1px solid #3A332E"></span><span class="cv-line" style="position:absolute;bottom:8px;left:10px;right:10px;height:1px;background:#3A332E;opacity:.3"></span><input class="seed-in" style="position:absolute;bottom:20px;right:10px" value="slowlog" oninput="coverSeed(this)" title="鏀圭瀛愶紝鐪嬫瀯鍥惧疄鏃跺彉鍖?><span class="cov-dot cv-pop" style="position:absolute;width:8px;height:8px;border-radius:50%;background:#C9A98A;left:118px;top:68px;transition:left .3s var(--ease-out),top .3s var(--ease-out)"></span><span class="mono cov-no" style="position:absolute;bottom:2px;left:14px;font-size:8px;letter-spacing:.2em;color:#3A332E">DSN 路 No.0 路 seed:slowlog</span></div>`,
+新建「主题三态 ThemeSwitch3」：
+- 三胶囊 system/light/dark；选中 yh-text/yh-bg
+- system 用 matchMedia；html.dark + sl-theme
+- 首帧内联脚本防白闪；transition 180ms`},
+ {id:"cover",name:"封面构成器",cat:"数据展示",desc:"ArticleArt：文章 id 哈希 → 发版变体；族徽字/几何 SVG/横线基线，每篇一张脸。",
+  pv:`<div style="width:100%;max-width:190px;aspect-ratio:5/3;position:relative;background:#F5F3EF;border:1px solid var(--yh-border)"><span style="position:absolute;top:5px;left:8px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;color:#3A332E;border:1px solid #3A332E;padding:1px 5px">设计</span><span class="serif cv-fade" style="position:absolute;top:8px;left:12px;font-size:42px;line-height:1;color:#3A332E">每</span><span class="cv-rot" style="position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#E8E0D8;border:1px solid #3A332E"></span><span class="cv-line" style="position:absolute;bottom:8px;left:10px;right:10px;height:1px;background:#3A332E;opacity:.3"></span><input class="seed-in" style="position:absolute;bottom:20px;right:10px" value="slowlog" oninput="coverSeed(this)" title="改种子，看构图实时变化"><span class="cov-dot cv-pop" style="position:absolute;width:8px;height:8px;border-radius:50%;background:#C9A98A;left:118px;top:68px;transition:left .3s var(--ease-out),top .3s var(--ease-out)"></span><span class="mono cov-no" style="position:absolute;bottom:2px;left:14px;font-size:8px;letter-spacing:.2em;color:#3A332E">DSN · No.0 · seed:slowlog</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽皝闈㈡瀯鎴愬櫒 ArticleArt銆嶏紙杩樺師 components/ArticleArt.tsx锛夛細
-- seed锛堟枃绔?id锛塅NV-1a 鈫?variant 鍐冲畾鏋勫浘锛涘垎绫?palette锛坧aper/ink/wash/accent锛夊唴鑱?- 鍏冪礌锛氬垎绫诲窘绔?+ 鍩虹嚎 + mono 瑁呴グ鎴筹紙opacity鈮?.35銆乫ontSize鈮?锛屽幓鏃犱俊鎭噺鏁板瓧涓诧級锛涚鐐归樀閾哄簳
-- 鏆楄壊淇濈暀 paper 浜潡锛沵emo锛?:3
-- 鍔ㄧ敾锛氭弿杈圭敓闀?dashoffset 420鈫? @ 480ms锛涘鍣ㄦ诞鍔?translateY **-4px @ 8s** breath锛涘疄蹇?pulse **scale 1鈫?.05 @ 5s**锛況educed-motion 鍏滃簳锛涙棤 hover锛涙棤 JS 闈欐€佸彲瑙乣},
- {id:"card",name:"鏂囩珷鍗＄墖",cat:"鏁版嵁灞曠ず",desc:"Motion 04 鏈綋锛氬皝闈?+ 寰界珷 + 鏍囬 + hover 浠?-2px 鍋忕Щ锛宻tagger 杩涘満涓€娆℃挱瀹屻€?,
-  pv:`<div class="mini-card" style="width:100%;max-width:200px;border:1px solid var(--yh-border);background:var(--dash-card)"><div style="height:56px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="serif mc-art" style="font-size:26px;color:#3A332E">璁?/span></div><div style="padding:10px 12px"><span style="font-size:9px;padding:1px 6px;border:1px solid #E8E0D8;color:#3A332E">璁捐</span><div class="mc-t" style="font-size:11.5px;font-weight:600;margin-top:6px">瑙勫垯娲剧敓鐨勫皝闈㈢郴缁?/div></div></div>`,
+新建「封面构成器 ArticleArt」（还原 components/ArticleArt.tsx）：
+- seed（文章 id）FNV-1a → variant 决定构图；分类 palette（paper/ink/wash/accent）内联
+- 元素：分类徽章 + 基线 + mono 装饰戳（opacity≤0.35、fontSize≥8，去无信息量数字串）；禁点阵铺底
+- 暗色保留 paper 亮块；memo；5:3
+- 动画：描边生长 dashoffset 420→0 @ 480ms；容器浮动 translateY **-4px @ 8s** breath；实心 pulse **scale 1↔1.05 @ 5s**；reduced-motion 兜底；无 hover；无 JS 静态可见`},
+ {id:"card",name:"文章卡片",cat:"数据展示",desc:"Motion 04 本体：封面 + 徽章 + 标题 + hover 仅 -2px 偏移，stagger 进场一次播完。",
+  pv:`<div class="mini-card" style="width:100%;max-width:200px;border:1px solid var(--yh-border);background:var(--dash-card)"><div style="height:56px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="serif mc-art" style="font-size:26px;color:#3A332E">记</span></div><div style="padding:10px 12px"><span style="font-size:9px;padding:1px 6px;border:1px solid #E8E0D8;color:#3A332E">设计</span><div class="mc-t" style="font-size:11.5px;font-weight:600;margin-top:6px">规则派生的封面系统</div></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屾枃绔犲崱鐗?ArticleCard銆嶏紙杩樺師 components/ArticleCard.tsx + Reveal锛夛細
-- 缁撴瀯锛歊eveal 鍖呰９ + ArticleArt 灏侀潰 + 鍒嗙被寰界珷 + 鏍囬 + 鎽樿 鈮? 鏍囩 + 搴曟爮銆岀浉瀵规椂闂?路 闃呰鏃堕暱銆嶏紱**鏃犱綔鑰呭ご鍍?*
-- hover锛歵ranslateY(-2px) + shadow-float锛?50ms ease-out锛涘皝闈?scale 1.01 / 300ms锛涙爣棰?accent 200ms锛涚澶?translateX 3px / 200ms
-- 鍏ュ満锛?*瑙嗗彛瑙﹀彂**锛圛ntersectionObserver锛塮adeInUp 300ms + delay index*45ms锛況educed-motion 鐩存帴鍙
-- 鏁村崱 Link 鍙偣`},
- {id:"badge",name:"鍒嗙被寰界珷",cat:"鏁版嵁灞曠ず",desc:"鍒嗙被鑹叉澘灏忛潰绉偣缂€锛歱aper 搴?+ ink 瀛?+ wash 杈癸紝涓夊€兼潵鑷?ART_PALETTES銆?,
-  pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">璁捐</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">宸ョ▼</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0E0C0;background:#FFF7E8;color:#3A3330">鍓嶇</span><span style="font-size:9px;padding:2px 8px;border:1px solid #C8DCC8;background:#E8F3E8;color:#30362E">闅忕瑪</span></div>`,
+新建「文章卡片 ArticleCard」（还原 components/ArticleCard.tsx + Reveal）：
+- 结构：Reveal 包裹 + ArticleArt 封面 + 分类徽章 + 标题 + 摘要 ≤1 标签 + 底栏「相对时间 · 阅读时长」；**无作者头像**
+- hover：translateY(-2px) + shadow-float，250ms ease-out；封面 scale 1.01 / 300ms；标题 accent 200ms；箭头 translateX 3px / 200ms
+- 入场：**视口触发**（IntersectionObserver）fadeInUp 300ms + delay index*45ms；reduced-motion 直接可见
+- 整卡 Link 可点`},
+ {id:"badge",name:"分类徽章",cat:"数据展示",desc:"分类色板小面积点缀：paper 底 + ink 字 + wash 边，三值来自 ART_PALETTES。",
+  pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">工程</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0E0C0;background:#FFF7E8;color:#3A3330">前端</span><span style="font-size:9px;padding:2px 8px;border:1px solid #C8DCC8;background:#E8F3E8;color:#30362E">随笔</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽垎绫诲窘绔?CategoryBadge銆嶏紙杩樺師 components/CategoryBadge.tsx锛夛細
-- 鏍峰紡鐢?ART_PALETTES[category] 鍐呰仈娉ㄥ叆锛歜ackgroundColor paper / color ink / borderColor wash锛?px solid
-- 鏈煡鍒嗙被鍥為€€涓€ф弿杈规牱寮忥紱mono 10px 瀛楀彿鍙€夌缉鍐欙紙CAT_ABBR锛?- 绾睍绀?memo 缁勪欢锛岄潰绉厠鍒讹紙鍒嗙被鑹插彧浣滅偣缂€涓嶅仛閾哄簳锛?- 鍔ㄧ敾濂戠害锛氶潤鎬佺粍浠垛€斺€旀棤 hover銆佹棤鐙珛鍏ュ満锛屽嚭鐜伴殢鐖剁骇鍗＄墖 stagger`},
- {id:"btn2",name:"鍙屽舰鎬佹寜閽?,cat:"杈撳叆",desc:"Button.tsx 鍥涘彉浣擄細primary 瀹炲簳(hover:opacity-90) / secondary 鎻忚竟 / ghost / danger锛涘叕鍏辩珯鍙︽湁 --yh-text鈫抋ccent hover 鍙樹綋銆?,
-  pv:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" class="b-primary" onclick="btnClick(this,'澶勭悊涓€?)">闃呰鏂囩珷 鈫?/button><button type="button" class="b-ghost" style="margin-left:8px" onclick="btnClick(this,'宸叉敹鍒?鉁?)">鏌ョ湅鍏ㄩ儴</button></div>`,
+新建「分类徽章 CategoryBadge」（还原 components/CategoryBadge.tsx）：
+- 样式由 ART_PALETTES[category] 内联注入：backgroundColor paper / color ink / borderColor wash，1px solid
+- 未知分类回退中性描边样式；mono 10px 字号可选缩写（CAT_ABBR）
+- 纯展示 memo 组件，面积克制（分类色只作点缀不做铺底）
+- 动画契约：静态组件——无 hover、无独立入场，出现随父级卡片 stagger`},
+ {id:"btn2",name:"双形态按钮",cat:"输入",desc:"Button.tsx 四变体：primary 实底(hover:opacity-90) / secondary 描边 / ghost / danger；公共站另有 --yh-text→accent hover 变体。",
+  pv:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" class="b-primary" onclick="btnClick(this,'处理中…')">阅读文章 →</button><button type="button" class="b-ghost" style="margin-left:8px" onclick="btnClick(this,'已收到 ✓')">查看全部</button></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屾寜閽?Button銆嶏紙ui/Button + 鍏叡绔?CTA锛夛細
-- primary = bg-dash-text text-dash-bg hover:opacity-90锛泂econdary/ghost/danger 鍚?ui/Button
-- 鍏叡绔?CTA锛歜g-yh-text 鈫?hover:bg-yh-accent
-- 鐩磋銆?2px 澶у啓 .14em銆乵in-h 44px
-- 杩囨浮锛歝olor/background/border/opacity **180鈥?00ms ease-out**锛沘ctive scale 0.97鈥?.98锛沠ocus-visible 2px accent`},
- {id:"search",name:"褰掓。鎼滅储妗?,cat:"杈撳叆",desc:"宸︾疆鏀惧ぇ闀?+ 鑱氱劍 accent 杈规 + placeholder 涓枃鎻愮ず锛屽彈鎺ц緭鍏ュ疄鏃惰繃婊ゃ€?,
-  pv:`<div style="position:relative;width:100%;max-width:210px"><div class="pv-srch"><span class="ic">鈱?/span><input class="pv-input" type="text" placeholder="鎱㈡棩蹇?></div></div>`,
+新建「按钮 Button」（ui/Button + 公共站 CTA）：
+- primary = bg-dash-text text-dash-bg hover:opacity-90；secondary/ghost/danger 同 ui/Button
+- 公共站 CTA：bg-yh-text → hover:bg-yh-accent
+- 直角、12px 大写 .14em、min-h 44px
+- 过渡：color/background/border/opacity **180–300ms ease-out**；active scale 0.97–0.98；focus-visible 2px accent`},
+ {id:"search",name:"归档搜索框",cat:"输入",desc:"左置放大镜 + 聚焦 accent 边框 + placeholder 中文提示，受控输入实时过滤。",
+  pv:`<div style="position:relative;width:100%;max-width:210px"><div class="pv-srch"><span class="ic">⌕</span><input class="pv-input" type="text" placeholder="慢日志"></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽綊妗ｆ悳绱㈡ ArchiveSearch銆嶏細
-- 鍙楁帶 input + 宸︾疆 Search 鍥炬爣 + pl-10
-- focus border-accent锛沠ocus-visible 2px accent
-- 杩囨浮 **180鈥?00ms ease-out**锛沷nChange 鐖剁骇杩囨护锛堟爣棰?鍒嗙被锛塦},
- {id:"empty",name:"绌虹姸鎬?,cat:"鍙嶉",desc:"S 閭エ灏忓嵃 + serif 涓诲彞 + mono 鎻愮ず锛岀┖鑰屼笉鍐凤紝甯﹁交寰棆杞殑缂栬緫鎰熴€?,
-  pv:`<div style="text-align:center"><span style="display:inline-flex;width:30px;height:30px;border:1px solid var(--yh-border);background:var(--dash-card);align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;color:var(--yh-muted);transform:rotate(-4deg)">S</span><div style="font-size:12px;font-weight:600;margin-top:8px">娌℃湁鍖归厤鐨勬枃绔?/div><div style="font-size:10px;color:var(--yh-muted)">鎹釜鍏抽敭璇嶈瘯璇?/div><button type="button" onclick="esClick(this)" style="margin-top:10px;font-family:inherit;font-size:9px;letter-spacing:.1em;padding:4px 12px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;transition:all .2s var(--ease-out)">娓呴櫎绛涢€?/button></div>`,
+新建「归档搜索框 ArchiveSearch」：
+- 受控 input + 左置 Search 图标 + pl-10
+- focus border-accent；focus-visible 2px accent
+- 过渡 **180–200ms ease-out**；onChange 父级过滤（标题/分类）`},
+ {id:"empty",name:"空状态",cat:"反馈",desc:"S 邮票小印 + serif 主句 + mono 提示，空而不冷，带轻微旋转的编辑感。",
+  pv:`<div style="text-align:center"><span style="display:inline-flex;width:30px;height:30px;border:1px solid var(--yh-border);background:var(--dash-card);align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;color:var(--yh-muted);transform:rotate(-4deg)">S</span><div style="font-size:12px;font-weight:600;margin-top:8px">没有匹配的文章</div><div style="font-size:10px;color:var(--yh-muted)">换个关键词试试</div><button type="button" onclick="esClick(this)" style="margin-top:10px;font-family:inherit;font-size:9px;letter-spacing:.1em;padding:4px 12px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;transition:all .2s var(--ease-out)">清除筛选</button></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岀┖鐘舵€?EmptyState銆嶏紙杩樺師 components/EmptyState.tsx锛夛細
-- 缁撴瀯锛歋 閭エ灏忓嵃锛坮otate -4deg + --yh-border/--dash-card锛? serif 鎰熶富鍙?+ muted 鎻愮ず琛?- 鍙€夋搷浣滄寜閽彃妲斤紱鏁翠綋灞呬腑锛岀暀鐧藉厖瓒?- 涓嶇敤鎻掔敾銆佷笉鐢?emoji锛屼繚鎸佺紪杈戞帓鍗版皵璐?- 鍔ㄧ敾濂戠害锛氬鍣?fadeIn 0.3s ease-out 涓€娆℃€у叆鍦猴紱鎿嶄綔鎸夐挳 hover 杩囨浮 0.2s锛涙棤寰幆鍔ㄧ敾`},
- {id:"dlg",name:"鎿嶄綔瀵硅瘽妗?,cat:"鍙嶉",desc:"ConfirmDialog锛歰pen/onOpenChange/variant=danger API锛涢伄缃?maskIn + 闈㈡澘 scaleIn 0.2s 鍏ュ満锛屽叧闂?200ms 閫€鍦猴紙娓愰殣+缂╁洖 0.96锛夊悗鍗歌浇锛孍sc 鍏抽棴銆?,
-  pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">纭鍒犻櫎锛?/div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">姝ゆ搷浣滀笉鍙仮澶嶏紝鏂囩珷灏嗘案涔呭垹闄ゃ€?/div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">鍙栨秷</button><button type="button" class="dlg-btn" style="background:#dc2626;color:#fff;border:none" onclick="dlgBtn(this,true)">鍒犻櫎</button></div></div>`,
+新建「空状态 EmptyState」（还原 components/EmptyState.tsx）：
+- 结构：S 邮票小印（rotate -4deg + --yh-border/--dash-card）+ serif 感主句 + muted 提示行
+- 可选操作按钮插槽；整体居中，留白充足
+- 不用插画、不用 emoji，保持编辑排印气质
+- 动画契约：容器 fadeIn 0.3s ease-out 一次性入场；操作按钮 hover 过渡 0.2s；无循环动画`},
+ {id:"dlg",name:"操作对话框",cat:"反馈",desc:"ConfirmDialog：open/onOpenChange/variant=danger API；遮罩 maskIn + 面板 scaleIn 0.2s 入场，关闭 200ms 退场（渐隐+缩回 0.96）后卸载，Esc 关闭。",
+  pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:#dc2626;color:#fff;border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岀‘璁ゅ璇濇 ConfirmDialog銆嶏細
-- open/onOpenChange/variant锛涢伄缃?black/40 + blur锛涢潰鏉?scaleIn 200ms锛涘叧闂?200ms 閫€鍦哄悗鍗歌浇
-- Esc/閬僵鐐瑰嚮鍏抽棴锛沝anger=red-600锛涙寜閽彇娑?鎻忚竟`},
- {id:"load",name:"鍔犺浇鐘舵€?,cat:"鍙嶉",desc:"S 鍦嗗嵃 + 鍝佺墝瀛?+ shimmer 楠ㄦ灦鍗★紙涓夎閫掑噺瀹藉害锛? accent 鍛煎惛鐐?+ mono LOADING銆傚悗鍙板彟鏈?compact 鍙樹綋銆?,
-  pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">鎱㈡棩蹇?路 SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
+新建「确认对话框 ConfirmDialog」：
+- open/onOpenChange/variant；遮罩 black/40 + blur；面板 scaleIn 200ms；关闭 200ms 退场后卸载
+- Esc/遮罩点击关闭；danger=red-600；按钮取消=描边`},
+ {id:"load",name:"加载状态",cat:"反馈",desc:"S 圆印 + 品牌字 + shimmer 骨架卡（三行递减宽度）+ accent 呼吸点 + mono LOADING。后台另有 compact 变体。",
+  pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">慢日志 · SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽姞杞界姸鎬?Loading銆嶏紙杩樺師 app/loading.tsx锛夛細
-- 绾哥汗搴?+ S 鍦嗗嵃闃村奖 + 鍝佺墝 mono 琛?+ accent 娓愰殣鐭嚎
-- 楠ㄦ灦鍗★細涓夎閿欏嘲 shimmer 1.8s ease-in-out + 鐭?accent 瑁呴グ绾?+ 搴曢儴銆屽姞杞戒腑銆?.6s 鍛煎惛鐐?- 搴曢儴闅忔満鏍艰█锛坙ib/taglines.ts pickTagline锛宮ount 鍚庢娊锛岄伩鍏嶆按鍚堜笉涓€鑷达級
-- 鍙樹綋 DashLoading compact锛涚紪杈戝櫒 dynamic loading 鐢?dashLoadingEditor 璇峘},
- {id:"progress",name:"闃呰杩涘害鏉?,cat:"鍙嶉",desc:"article 鐩稿璁＄畻闃呰姣斾緥锛坮AF 鑺傛祦锛夛細椤堕儴缁嗙嚎娓愭樉 + 渚ф爮 5px 鏉?+ mono 鐧惧垎姣?鍓╀綑鏃堕棿涓夊鑱斿姩銆?,
-  pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="prog-i" style="position:absolute;left:0;top:0;height:100%;width:6%;background:var(--yh-accent)"></span></div><div class="mono prog-t" style="font-size:9px;color:var(--yh-muted);margin-top:6px">6% 路 棰勮 10 min</div></div>`,
+新建「加载状态 Loading」（还原 app/loading.tsx）：
+- 纸纹底 + S 圆印阴影 + 品牌 mono 行 + accent 渐隐短线
+- 骨架卡：三行错峰 shimmer 1.8s ease-in-out + 短 accent 装饰线 + 底部「加载中」1.6s 呼吸点
+- 底部随机格言（lib/taglines.ts pickTagline，mount 后抽，避免水合不一致）
+- 变体 DashLoading compact；编辑器 dynamic loading 用 dashLoadingEditor 词`},
+ {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
+  pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="prog-i" style="position:absolute;left:0;top:0;height:100%;width:6%;background:var(--yh-accent)"></span></div><div class="mono prog-t" style="font-size:9px;color:var(--yh-muted);margin-top:6px">6% · 预计 10 min</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岄槄璇昏繘搴︽潯 ReadingProgress銆嶏紙杩樺師 components/ReadingProgress.tsx锛夛細
-- 鍩轰簬 article 鐭╁舰 + rAF 鑺傛祦锛涗笁澶勮仈鍔細椤堕儴缁嗙嚎锛?*h-2px opacity-60**锛? 渚ф爮 data-side-progress scaleX + data-side-progress-text
-- 濉厖 **transform: scaleX + origin-left**锛宼ransition **280ms ease-out**锛涚 width 鍔ㄧ敾
-- **鍕垮鍚屼竴鑺傜偣浣跨敤 Tailwind scale-* 涓?JS transform**锛坴4 scale 灞炴€т細鍐茬獊锛夛紱渚ф爮鍒濆€?inline transform:scaleX(0)
-- 娈佃惤褰撳墠闃呰 opacity 寰皟锛涜鍐?localStorage 缁`},
- {id:"blockq",name:"寮曠敤鍧?,cat:"鏁版嵁灞曠ず",desc:"姝ｆ枃 prose 寮曠敤锛歛ccent 宸︾紭 30% 閫忔槑 + 绾搁潰搴?+ italic muted锛屾枃绔犳皵璐ㄤ欢銆?,
-  pv:`<div style="width:100%;max-width:210px;border-left:3px solid color-mix(in srgb,var(--yh-accent) 30%,transparent);background:var(--dash-card);padding:10px 14px;font-size:11px;font-style:italic;color:var(--yh-muted)">鎱笉鏄€熷害锛屾槸娉ㄦ剰鍔涖€?/div>`,
+新建「阅读进度条 ReadingProgress」（还原 components/ReadingProgress.tsx）：
+- 基于 article 矩形 + rAF 节流；三处联动：顶部细线（**h-2px opacity-60**）+ 侧栏 data-side-progress scaleX + data-side-progress-text
+- 填充 **transform: scaleX + origin-left**，transition **280ms ease-out**；禁 width 动画
+- **勿对同一节点使用 Tailwind scale-* 与 JS transform**（v4 scale 属性会冲突）；侧栏初值 inline transform:scaleX(0)
+- 段落当前阅读 opacity 微调；读写 localStorage 续读`},
+ {id:"blockq",name:"引用块",cat:"数据展示",desc:"正文 prose 引用：accent 左缘 30% 透明 + 纸面底 + italic muted，文章气质件。",
+  pv:`<div style="width:100%;max-width:210px;border-left:3px solid color-mix(in srgb,var(--yh-accent) 30%,transparent);background:var(--dash-card);padding:10px 14px;font-size:11px;font-style:italic;color:var(--yh-muted)">慢不是速度，是注意力。</div>`,
   prompt:`${P_BASE}
-涓烘枃绔?prose 鏂板銆屽紩鐢ㄥ潡 blockquote銆嶆牱寮忥紙鏍峰紡钀界偣锛歛pp/globals.css prose 灞?+ components/PostClient.tsx 鐨?prose-blockquote class 閾撅級锛?- border-left 3px accent/30 + pl-5 + bg-[--dash-card]/50 + italic + text-[--yh-muted]
-- 鍏ㄤ护鐗屽寲锛屾殫鑹茶嚜鍔ㄩ€傞厤锛?dark 浣滅敤鍩熷彉閲忕户鎵匡級锛涗笉鍐欐 zinc-*
-- 鍔ㄧ敾濂戠害锛氭棤鐙珛鍔ㄧ敾鈥斺€旈殢鏂囩珷 prose 涓€璧?pageIn 鍏ュ満
-- 閫傜敤 mdxContent 鐨?prose 澧炲己 class 閾綻},
- {id:"listview",name:"褰掓。鍒楄〃琛?,cat:"鏁版嵁灞曠ず",desc:"鏃ユ湡 + 鏍囬 + 寰界珷 + 闃呰鏃堕暱 + 绠ご鐨勪簲娈佃锛宧over 鑳屾櫙寰寒 + 绠ご婊戝叆銆?,
-  pv:`<div style="width:100%;max-width:210px"><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid var(--yh-border);font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-03</span><span style="flex:1;truncate">瑙勫垯娲剧敓鐨勫皝闈㈢郴缁?/span><span class="ar">鈫?/span></div><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-01</span><span style="flex:1">宸﹀啓鍙宠锛氱紪杈戝櫒</span><span class="ar">鈫?/span></div></div>`,
+为文章 prose 新增「引用块 blockquote」样式（样式落点：app/globals.css prose 层 + components/PostClient.tsx 的 prose-blockquote class 链）：
+- border-left 3px accent/30 + pl-5 + bg-[--dash-card]/50 + italic + text-[--yh-muted]
+- 全令牌化，暗色自动适配（.dark 作用域变量继承）；不写死 zinc-*
+- 动画契约：无独立动画——随文章 prose 一起 pageIn 入场
+- 适用 mdxContent 的 prose 增强 class 链`},
+ {id:"listview",name:"归档列表行",cat:"数据展示",desc:"日期 + 标题 + 徽章 + 阅读时长 + 箭头的五段行，hover 背景微亮 + 箭头滑入。",
+  pv:`<div style="width:100%;max-width:210px"><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid var(--yh-border);font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-03</span><span style="flex:1;truncate">规则派生的封面系统</span><span class="ar">→</span></div><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-01</span><span style="flex:1">左写右读：编辑器</span><span class="ar">→</span></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽綊妗ｅ垪琛ㄨ ArchiveRow銆嶏細
-- mono 鏃ユ湡 / 鏍囬 truncate / 寰界珷 / 鏃堕暱 / ChevronRight
-- hover锛歜g-yh-bg/50 + 绠ご translateX 3px 路 **200ms ease-out**
-- 鍒嗛殧绾?border/50锛涙暣琛屽彲鐐筦},
- {id:"langsw",name:"璇█鍒囨崲鍣?,cat:"杈撳叆",desc:"鍗曟灇 mono 鎻忚竟鎸夐挳锛氭樉绀虹洰鏍囪瑷€锛堜腑鏂囨€佹樉绀?EN锛夛紝鐐瑰嚮鍦?zh/en 闂村線杩旓紝yh-lang 鎸佷箙鍖栥€?,
+新建「归档列表行 ArchiveRow」：
+- mono 日期 / 标题 truncate / 徽章 / 时长 / ChevronRight
+- hover：bg-yh-bg/50 + 箭头 translateX 3px · **200ms ease-out**
+- 分隔线 border/50；整行可点`},
+ {id:"langsw",name:"语言切换器",cat:"输入",desc:"单枚 mono 描边按钮：显示目标语言（中文态显示 EN），点击在 zh/en 间往返，yh-lang 持久化。",
   pv:`<div><button type="button" class="lg" onclick="lgclick(this)">EN</button></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岃瑷€鍒囨崲鍣?LanguageSwitcher銆嶏細
-- mono 鎻忚竟鎸夐挳锛涗腑鏂囨€佹樉绀?EN锛岃嫳鏂囨€佹樉绀?涓紱localStorage yh-lang
-- 涓?ThemeToggle 骞舵帓锛涘嵆鏃剁敓鏁?- hover opacity-60 路 **180ms**`},
- {id:"searchpanel",name:"鍏ㄥ眬鎼滅储闈㈡澘",cat:"甯冨眬瀵艰埅",desc:"鈱楰 鎴栥€?銆嶅敜璧凤細鎷奸煶鍙岃矾绱㈠紩銆佹枃绔?鍒嗙被/闅忔兂鍒嗙粍銆佸懡涓珮浜€侀敭鐩樹笂涓嬪鑸€丒sc 鍏抽棴銆傜珯鐐规嫑鐗屼欢銆?,
-  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);box-shadow:var(--shadow-pop)"><div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--yh-border)"><span class="mono" style="font-size:10px;color:var(--yh-muted)">鈱?鎼滅储鏍囬鎴栧唴瀹光€?/span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:1px 5px;color:var(--yh-muted)">Esc</span></div><div class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted);padding:8px 12px 2px">鏂囩珷</div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>瑙勫垯娲剧敓鐨勫皝闈㈢郴缁?/span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">鏂囩珷</span></div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>鍒嗗睆缂栬緫鍣?/span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">鏂囩珷</span></div></div>`,
+新建「语言切换器 LanguageSwitcher」：
+- mono 描边按钮；中文态显示 EN，英文态显示 中；localStorage yh-lang
+- 与 ThemeToggle 并排；即时生效
+- hover opacity-60 · **180ms**`},
+ {id:"searchpanel",name:"全局搜索面板",cat:"布局导航",desc:"⌘K 或「/」唤起：拼音双路索引、文章/分类/随想分组、命中高亮、键盘上下导航、Esc 关闭。站点招牌件。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);box-shadow:var(--shadow-pop)"><div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--yh-border)"><span class="mono" style="font-size:10px;color:var(--yh-muted)">⌕ 搜索标题或内容…</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:1px 5px;color:var(--yh-muted)">Esc</span></div><div class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted);padding:8px 12px 2px">文章</div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>规则派生的封面系统</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>分屏编辑器</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽叏灞€鎼滅储闈㈡澘 SearchPanel銆嶏細
-- 鈱楰 /銆?銆嶏紱Portal 鍏ㄥ睆閬僵锛汦sc锛涘垎缁?鏂囩珷/鍒嗙被/闅忔兂锛涒啈鈫?Enter
-- 鎷奸煶鍙岃矾绱㈠紩锛涙縺娲昏 color-mix(yh-border 45%, transparent)
-- 闈㈡澘搴?杈规/搴曟爮鍏ㄧ敤 --yh-* token锛堟殫鑹插彲鐢級
-- 鍏ュ満 pageIn 250ms锛涘叧闂?150ms 娓愰殣`},
- {id:"breadcrumb",name:"闈㈠寘灞?,cat:"甯冨眬瀵艰埅",desc:"绔欑偣鍚?鈫?鍒嗙被 鈫?鏂囩珷涓夌骇璺緞锛屾枩鏉犲垎闅旓紝鍙偣灞傜骇 hover 杞寒銆?,
-  pv:`<nav style="display:flex;gap:6px;font-size:11px;color:var(--yh-muted);align-items:center"><span>鎱㈡棩蹇?/span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-text)">璁捐</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-accent)">瑙勫垯娲剧敓鐨勫皝闈㈢郴缁?/span></nav>`,
+新建「全局搜索面板 SearchPanel」：
+- ⌘K /「/」；Portal 全屏遮罩；Esc；分组 文章/分类/随想；↑↓ Enter
+- 拼音双路索引；激活行 color-mix(yh-border 45%, transparent)
+- 面板底/边框/底栏全用 --yh-* token（暗色可用）
+- 入场 pageIn 250ms；关闭 150ms 渐隐`},
+ {id:"breadcrumb",name:"面包屑",cat:"布局导航",desc:"站点名 → 分类 → 文章三级路径，斜杠分隔，可点层级 hover 转亮。",
+  pv:`<nav style="display:flex;gap:6px;font-size:11px;color:var(--yh-muted);align-items:center"><span>慢日志</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-text)">设计</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-accent)">规则派生的封面系统</span></nav>`,
   prompt:`${P_BASE}
-鏂板缓銆岄潰鍖呭睉 Breadcrumb銆嶏細
-- items { label, href? }锛涢娈电珯鐐瑰悕锛坲seLang锛?- 鍒嗛殧 --yh-border 鏂滄潬锛涙湯绾?accent锛?2px muted
-- 鏃犵嫭绔嬪叆鍦篳},
- {id:"aavatar",name:"浣滆€呭ご鍍?,cat:"鏁版嵁灞曠ず",desc:"棣栧瓧姣嶅渾褰㈠ご鍍忥細AUTHOR_BG 鎸夐瀛楁瘝鍒嗛厤搴曡壊锛圡 鐜孩/C 绱?Y 鐞ョ弨/D 钃?R 缁?J 姗欙級锛宻m/lg 鍙屽昂瀵搞€?,
+新建「面包屑 Breadcrumb」：
+- items { label, href? }；首段站点名（useLang）
+- 分隔 --yh-border 斜杠；末级 accent；12px muted
+- 无独立入场`},
+ {id:"aavatar",name:"作者头像",cat:"数据展示",desc:"首字母圆形头像：AUTHOR_BG 按首字母分配底色（M 玫红/C 紫/Y 琥珀/D 蓝/R 绿/J 橙），sm/lg 双尺寸。",
   pv:`<div style="display:flex;gap:8px"><span style="width:30px;height:30px;border-radius:50%;background:#FDF2F8;color:#BE185D;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">M</span><span style="width:30px;height:30px;border-radius:50%;background:#F5F3FF;color:#7C3AED;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">C</span><span style="width:30px;height:30px;border-radius:50%;background:#FFFBEB;color:#B45309;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">Y</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屼綔鑰呭ご鍍?AuthorAvatar銆嶏細
-- memo锛沬nitial + size sm/lg锛汚UTHOR_BG 鏌ヨ壊
-- **浠?Hero 浣跨敤**锛涙枃绔犲崱鐗?璇︽儏椤典笉鍐嶆樉绀哄ご鍍?- 鏃犵嫭绔嬪姩鐢籤},
- {id:"footer",name:"椤佃剼",cat:"甯冨眬瀵艰埅",desc:"S 鍦嗗嵃 + 鍝佺墝瀛?+ 鐗堟湰寰界珷锛堟瀯寤烘椂娉ㄥ叆 NEXT_PUBLIC_APP_VERSION锛? tagline锛岀焊闈㈡弿杈规敹杈广€?,
-  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);padding:10px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px"><span style="display:flex;gap:6px;align-items:center;font-size:10.5px;white-space:nowrap"><span style="width:16px;height:16px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:8px">S</span><b>鎱㈡棩蹇?路 SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">v0.3.5</span></span><span class="mono" style="font-size:8px;color:var(--yh-muted)">鎱笅鏉ワ紝鍐欑偣鍊煎緱璇荤殑涓滆タ銆?/span></div>`,
+新建「作者头像 AuthorAvatar」：
+- memo；initial + size sm/lg；AUTHOR_BG 查色
+- **仅 Hero 使用**；文章卡片/详情页不再显示头像
+- 无独立动画`},
+ {id:"footer",name:"页脚",cat:"布局导航",desc:"S 圆印 + 品牌字 + 版本徽章（构建时注入 NEXT_PUBLIC_APP_VERSION）+ tagline，纸面描边收边。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);padding:10px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px"><span style="display:flex;gap:6px;align-items:center;font-size:10.5px;white-space:nowrap"><span style="width:16px;height:16px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:8px">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">v0.3.5</span></span><span class="mono" style="font-size:8px;color:var(--yh-muted)">慢下来，写点值得读的东西。</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岄〉鑴?Footer銆嶏細
-- mt-auto锛沝ash-card + 涓婅竟妗嗭紱瀹瑰櫒 max-w-[min(70%,1600px)]
-- 宸︼細S 鍦嗗嵃 + 鍝佺墝 + 鐗堟湰寰界珷锛涘彸锛?*闅忔満鏍艰█** pickTagline(lang)锛坢ount 鍚?set锛孲SR 鍒濆€?footerTagline锛?- 閾炬帴 mailto/GitHub/RSS锛涚Щ鍔ㄧ flex-col lg:flex-row
-- hover opacity-60 路 180ms`},
- {id:"tgl",name:"鐩磋寮€鍏?,cat:"杈撳叆",desc:"rounded-none 婊戝潡锛氬紑 = accent 搴曞彸浣嶏紝鍏?= 鐏板簳宸︿綅锛?8脳32 鐩磋韬唤璐交鍒板紑鍏炽€傜偣鍑昏瘯璇曘€?,
-  pv:`<div style="display:flex;gap:14px;align-items:center"><button type="button" class="tglw on" onclick="tglclick(this)"><span class="kn"></span></button><button type="button" class="tglw" onclick="tglclick(this)"><span class="kn"></span></button><span style="font-size:10px;color:var(--yh-muted)">鏄剧ず鑽夌</span></div>`,
+新建「页脚 Footer」：
+- mt-auto；dash-card + 上边框；容器 max-w-[min(70%,1600px)]
+- 左：S 圆印 + 品牌 + 版本徽章；右：**随机格言** pickTagline(lang)（mount 后 set，SSR 初值 footerTagline）
+- 链接 mailto/GitHub/RSS；移动端 flex-col lg:flex-row
+- hover opacity-60 · 180ms`},
+ {id:"tgl",name:"直角开关",cat:"输入",desc:"rounded-none 滑块：开 = accent 底右位，关 = 灰底左位，18×32 直角身份贯彻到开关。点击试试。",
+  pv:`<div style="display:flex;gap:14px;align-items:center"><button type="button" class="tglw on" onclick="tglclick(this)"><span class="kn"></span></button><button type="button" class="tglw" onclick="tglclick(this)"><span class="kn"></span></button><span style="font-size:10px;color:var(--yh-muted)">显示草稿</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岀洿瑙掑紑鍏?Toggle銆嶏細
-- 32脳18 鐩磋锛涘紑=dash-accent 婊戝潡 +15px锛涘叧=yh-border
-- 婊戝潡 dash-card 鐩磋锛泃ransition-transform spring鈮?.15
-- focus-visible 2px accent锛況educed-motion 鍏滃簳
+新建「直角开关 Toggle」：
+- 32×18 直角；开=dash-accent 滑块 +15px；关=yh-border
+- 滑块 dash-card 直角；transition-transform spring≤1.15
+- focus-visible 2px accent；reduced-motion 兜底
 - props { label?, hint?, checked } + sr-only checkbox`},
- {id:"sbadge",name:"鐘舵€佸窘绔?,cat:"鏁版嵁灞曠ず",desc:"ui/Badge 涓?tone锛歟merald 宸插彂甯?/ amber 鑽夌 / sky 瀹氭椂锛屾枃绔犲垪琛ㄤ笌缂栬緫鍣ㄧ姸鎬佹爣銆?,
-  pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;transition:background .2s,border-color .2s,color .2s">宸插彂甯?/span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;transition:background .2s,border-color .2s,color .2s">鑽夌</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;transition:background .2s,border-color .2s,color .2s">瀹氭椂</span></div>`,
+ {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：emerald 已发布 / amber 草稿 / sky 定时，文章列表与编辑器状态标。",
+  pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岀姸鎬佸窘绔?Badge銆嶏細
-- tones emerald/amber/sky锛沺rops { tone, children }
-- published鈫抏merald / draft鈫抋mber / scheduled鈫抯ky
-- 闈欐€佺锛涚姸鎬佸垏鎹?transition-colors 200ms`},
- {id:"formgrp",name:"琛ㄥ崟鎺т欢缁?,cat:"杈撳叆",desc:"FormField 鏍囩/hint/error 涓夎濂戠害 + Input/Select 鐩磋绾搁潰 focus accent锛屽悗鍙拌〃鍗曟爣閰嶃€?,
-  pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">绔欑偣鍚嶇О <span style="color:#ef4444">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="鎱㈡棩蹇? oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">鏄剧ず鍦ㄦ祻瑙堝櫒鏍囩椤?/div></div>`,
+新建「状态徽章 Badge」：
+- tones emerald/amber/sky；props { tone, children }
+- published→emerald / draft→amber / scheduled→sky
+- 静态签；状态切换 transition-colors 200ms`},
+ {id:"formgrp",name:"表单控件组",cat:"输入",desc:"FormField 标签/hint/error 三行契约 + Input/Select 直角纸面 focus accent，后台表单标配。",
+  pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:#ef4444">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岃〃鍗曟帶浠剁粍銆嶏細
-- FormField锛歭abel / children / error / hint锛況equired 绾㈡槦
-- Input/Select锛歞ash-bg 鈫?focus dash-card + border accent + ring accent/20
-- focus-visible 2px锛涜繃娓?180鈥?00ms ease-out
-- 閿欒浼樺厛浜?hint锛涘浐瀹氶珮搴﹂槻璺砢},
- {id:"welcome",name:"澧ㄥ瓧鍏ュ満",cat:"鍔ㄦ晥",desc:"绛惧悕浠紡锛氳璁㈢嚎+鏆栨檿+鍗扮珷+澧ㄥ瓧鏅曞紑锛涙牸瑷€闅忔満锛涢璁夸竴娆°€?,
-  pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>鎱?/span><span>鏃?/span><span>蹇?/span><span style="color:var(--yh-muted);margin:0 4px">路</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">绾镐笂鏈夊瓧 路 蹇冮噷鏈夌┖</span></div></div>`,
+新建「表单控件组」：
+- FormField：label / children / error / hint；required 红星
+- Input/Select：dash-bg → focus dash-card + border accent + ring accent/20
+- focus-visible 2px；过渡 180–200ms ease-out
+- 错误优先于 hint；固定高度防跳`},
+ {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：装订线+暖晕+印章+墨字晕开；格言随机；首访一次。",
+  pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>慢</span><span>日</span><span>志</span><span style="color:var(--yh-muted);margin:0 4px">·</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">纸上有字 · 心里有空</span></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屽ⅷ瀛楀叆鍦?Welcome銆嶏紙杩樺師 components/Welcome.tsx锛夛細
-- 鍥涜瑁呰绾?鈫?鏆栨檿 鈫?S 鍗扮珷 stampIn 0.55s spring(56px) 鈫?accent 涓嬪垝绾?鈫?鍝佺墝/鏍艰█ ink 鏅曞紑(delay 720/1180) 鈫?寰瓧 SLOW
-- LEAVE 2100 / HIDE 2700锛沨tml-returning / reduced-motion 闅愯棌锛沺ickTagline 闅忔満鏍艰█`},
- {id:"tags",name:"鏍囩缁?,cat:"鏁版嵁灞曠ず",desc:"鏍囩 chips锛氭弿杈硅兌鍥?hover 杞?accent锛涜繘 /tag/[tag]銆?,
-  pv:`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="tagchip">璁捐绯荤粺</span><span class="tagchip">Tauri</span><span class="tagchip">鎯呮劅寮曟搸</span></div>`,
+新建「墨字入场 Welcome」（还原 components/Welcome.tsx）：
+- 四角装订线 → 暖晕 → S 印章 stampIn 0.55s spring(56px) → accent 下划线 → 品牌/格言 ink 晕开(delay 720/1180) → 微字 SLOW
+- LEAVE 2100 / HIDE 2700；html-returning / reduced-motion 隐藏；pickTagline 随机格言`},
+ {id:"tags",name:"标签组",cat:"数据展示",desc:"标签 chips：描边胶囊 hover 转 accent；进 /tag/[tag]。",
+  pv:`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="tagchip">设计系统</span><span class="tagchip">Tauri</span><span class="tagchip">情感引擎</span></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屾爣绛剧粍 Tags銆嶏紙PostClient 鏍囩鍖猴級锛?- Link 鈫?/tag/[tag]锛泃ext-xs px-3 py-1.5 鎻忚竟锛沨over accent锛涙殫鑹?dash-card/5`},
- {id:"reveal",name:"瑙嗗彛鍏ュ満 Reveal",cat:"鍔ㄦ晥",desc:"鍒楄〃鍏ュ満锛氭粴鍏ヨ鍙?fadeInUp 300ms + index脳45ms锛況educed-motion 鐩村嚭銆?,
-  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:200px"><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) both">鏂囩珷 A</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .08s both">鏂囩珷 B</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .16s both">鏂囩珷 C</div></div>`,
+新建「标签组 Tags」（PostClient 标签区）：
+- Link → /tag/[tag]；text-xs px-3 py-1.5 描边；hover accent；暗色 dash-card/5`},
+ {id:"reveal",name:"视口入场 Reveal",cat:"动效",desc:"列表入场：滚入视口 fadeInUp 300ms + index×45ms；reduced-motion 直出。",
+  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:200px"><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) both">文章 A</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .08s both">文章 B</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .16s both">文章 C</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岃鍙ｅ叆鍦?Reveal銆嶏紙components/Reveal.tsx锛夛細
-- props { delay?; className? }锛汭O threshold .08 / rootMargin -8%
-- [data-reveal=0] opacity0 鈫?[1] fadeInUp 300ms + delay锛況educed-motion 鐩存帴 shown`},
- {id:"tagline",name:"闅忔満鏍艰█姹?,cat:"鍔ㄦ晥",desc:"lib/taglines.ts 涓嫳鍚?8 鏉★紱娆㈣繋/鍔犺浇/椤佃剼 mount 鍚庨殢鏈恒€?,
-  pv:`<div style="width:100%;max-width:210px;text-align:center;padding:10px 0"><span class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--yh-muted)">pickTagline(lang)</span><div style="margin-top:8px;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:14px;font-style:italic;color:var(--yh-text)">绾镐笂鏈夊瓧锛屽績閲屾湁绌恒€?/div></div>`,
+新建「视口入场 Reveal」（components/Reveal.tsx）：
+- props { delay?; className? }；IO threshold .08 / rootMargin -8%
+- [data-reveal=0] opacity0 → [1] fadeInUp 300ms + delay；reduced-motion 直接 shown`},
+ {id:"tagline",name:"随机格言池",cat:"动效",desc:"lib/taglines.ts 中英各 8 条；欢迎/加载/页脚 mount 后随机。",
+  pv:`<div style="width:100%;max-width:210px;text-align:center;padding:10px 0"><span class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--yh-muted)">pickTagline(lang)</span><div style="margin-top:8px;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:14px;font-style:italic;color:var(--yh-text)">纸上有字，心里有空。</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆岄殢鏈烘牸瑷€銆嶏紙lib/taglines.ts锛夛細
-- ZH/EN 鍚?8 鏉★紱pickTagline(lang) 闅忔満鍙?- Welcome/loading/Footer/MFooter useEffect mount 鍚?set锛汼SR 鍒濆€?footerTagline锛涘垏璇█閲嶆娊`},
- {id:"code",name:"浠ｇ爜鍧?,cat:"鏁版嵁灞曠ず",desc:"mac 绐楅グ + 璇█寰界珷 + 澶嶅埗 + 琛屽彿 gutter锛涙í婊氥€?,
-  pv:`<div style="width:100%;max-width:230px;border:1px solid #2a2a2e;background:#1E1E1E"><div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#2d2d30;border-bottom:1px solid #3a3a3e"><span style="display:flex;gap:4px"><i style="width:8px;height:8px;background:#ff5f56;display:inline-block"></i><i style="width:8px;height:8px;background:#ffbd2e;display:inline-block"></i><i style="width:8px;height:8px;background:#27ca3f;display:inline-block"></i></span><span class="mono" style="font-size:8px;color:#7eb8f7">PY</span><span class="mono" style="font-size:8px;color:#9ca3af;border:1px solid #3a3a3e;padding:1px 6px">澶嶅埗</span></div><pre style="margin:0;padding:10px 12px;font-size:10px;line-height:1.7;color:#d4d4d4;overflow:auto"><span style="color:#6e6e73">1</span>  class A:&#10;<span style="color:#6e6e73">2</span>      pass</pre></div>`,
+新建「随机格言」（lib/taglines.ts）：
+- ZH/EN 各 8 条；pickTagline(lang) 随机取
+- Welcome/loading/Footer/MFooter useEffect mount 后 set；SSR 初值 footerTagline；切语言重抽`},
+ {id:"code",name:"代码块",cat:"数据展示",desc:"mac 窗饰 + 语言徽章 + 复制 + 行号 gutter；横滚。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid #2a2a2e;background:#1E1E1E"><div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#2d2d30;border-bottom:1px solid #3a3a3e"><span style="display:flex;gap:4px"><i style="width:8px;height:8px;background:#ff5f56;display:inline-block"></i><i style="width:8px;height:8px;background:#ffbd2e;display:inline-block"></i><i style="width:8px;height:8px;background:#27ca3f;display:inline-block"></i></span><span class="mono" style="font-size:8px;color:#7eb8f7">PY</span><span class="mono" style="font-size:8px;color:#9ca3af;border:1px solid #3a3a3e;padding:1px 6px">复制</span></div><pre style="margin:0;padding:10px 12px;font-size:10px;line-height:1.7;color:#d4d4d4;overflow:auto"><span style="color:#6e6e73">1</span>  class A:&#10;<span style="color:#6e6e73">2</span>      pass</pre></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屼唬鐮佸潡 CodeBlock銆嶏紙PostRenderer codeBlock锛夛細
-- 娣辫壊澹?+ mac 鐐?+ LangBadge + CopyBtn锛堝鍒剁函 code 涓嶅惈琛屽彿锛?- grid-cols-[auto_1fr] 琛屽彿 gutter + code锛沷verflow-x-auto
-- 澶嶅埗銆屸湏 宸插鍒躲€?.2s锛涚 scale-* 涓?JS transform 鍚岃妭鐐筦},
- {id:"postmeta",name:"鏂囩珷澶翠竴琛?meta",cat:"鏁版嵁灞曠ず",desc:"椤舵爮寰界珷+鍓╀綑鏃堕棿锛涙爣棰樹笅 浣滆€吢锋椂闂绰锋椂闀裤€傚垎绫诲彧闈犲窘绔狅紝鏃犻噸澶嶃€?,
-  pv:`<div style="width:100%;max-width:210px"><div style="display:flex;gap:6px;align-items:center;margin-bottom:8px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">璁捐</span><span class="mono" style="font-size:9px;color:var(--yh-muted)">鍓╀綑绾?8 min</span></div><div style="font-size:13px;font-weight:600;margin-bottom:4px">瑙勫垯娲剧敓鐨勫皝闈㈢郴缁?/div><div style="font-size:10px;color:var(--yh-muted)">Yahajiang 路 鍒氬垰 路 5 min</div></div>`,
+新建「代码块 CodeBlock」（PostRenderer codeBlock）：
+- 深色壳 + mac 点 + LangBadge + CopyBtn（复制纯 code 不含行号）
+- grid-cols-[auto_1fr] 行号 gutter + code；overflow-x-auto
+- 复制「✓ 已复制」1.2s；禁 scale-* 与 JS transform 同节点`},
+ {id:"postmeta",name:"文章头一行 meta",cat:"数据展示",desc:"顶栏徽章+剩余时间；标题下 作者·时间·时长。分类只靠徽章，无重复。",
+  pv:`<div style="width:100%;max-width:210px"><div style="display:flex;gap:6px;align-items:center;margin-bottom:8px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span class="mono" style="font-size:9px;color:var(--yh-muted)">剩余约 8 min</span></div><div style="font-size:13px;font-weight:600;margin-bottom:4px">规则派生的封面系统</div><div style="font-size:10px;color:var(--yh-muted)">Yahajiang · 刚刚 · 5 min</div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屾枃绔犲ご meta銆嶏紙PostClient/MPost锛夛細
-- 椤舵爮锛欳ategoryBadge + data-remaining 鍓╀綑鏃堕棿 + 鍙€変粨搴撻摼鎺?- 鏍囬涓嬩竴琛岋細浣滆€?路 鐩稿鏃堕棿 路 闃呰鏃堕暱锛?*涓嶅啀閲嶅鍒嗙被/鏃堕暱**锛?- 鏍囩鏈€澶?3 涓急鍖栵紱鏆楄壊鏍囬鑹茬敤 var(--yh-text)`},
- {id:"dashhome",name:"浠〃鐩橀椤?,cat:"甯冨眬瀵艰埅",desc:"DashboardHome client锛氬洓缁熻鍗?+ 杩戞湡鏂囩珷 + 蹇嵎鍏ュ彛锛涙帴 useLang 涓嫳銆?,
-  pv:`<div style="width:100%;max-width:220px"><div style="font-size:12px;font-weight:600;margin-bottom:8px">姒傝浣犵殑鍐呭</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">8</div><div style="font-size:8px;color:var(--yh-muted);letter-spacing:.08em;text-transform:uppercase">鏂囩珷鎬绘暟</div></div><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">6</div><div style="font-size:8px;color:var(--yh-muted)">宸插彂甯?/div></div></div></div>`,
+新建「文章头 meta」（PostClient/MPost）：
+- 顶栏：CategoryBadge + data-remaining 剩余时间 + 可选仓库链接
+- 标题下一行：作者 · 相对时间 · 阅读时长（**不再重复分类/时长**）
+- 标签最多 3 个弱化；暗色标题色用 var(--yh-text)`},
+ {id:"dashhome",name:"仪表盘首页",cat:"布局导航",desc:"DashboardHome client：四统计卡 + 近期文章 + 快捷入口；接 useLang 中英。",
+  pv:`<div style="width:100%;max-width:220px"><div style="font-size:12px;font-weight:600;margin-bottom:8px">概览你的内容</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">8</div><div style="font-size:8px;color:var(--yh-muted);letter-spacing:.08em;text-transform:uppercase">文章总数</div></div><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">6</div><div style="font-size:8px;color:var(--yh-muted)">已发布</div></div></div></div>`,
   prompt:`${P_BASE}
-鏂板缓銆屼华琛ㄧ洏棣栭〉 DashboardHome銆嶏紙components/dashboard/DashboardHome.tsx锛夛細
-- server 鎷夋暟 鈫?client 缁勪欢鎺?useLang
-- 缁熻锛歵otal/published/draft/views锛涜繎鏈熸枃绔犲垪琛紱蹇嵎鍏ュ彛 鏂板缓鏂囩珷/闅忔兂
-- 涓嫳鐢?dash* 璇嶅吀閿紙闈炵‖缂栫爜涓枃锛夛紱stat hover 浠?shadow-float`},
+新建「仪表盘首页 DashboardHome」（components/dashboard/DashboardHome.tsx）：
+- server 拉数 → client 组件接 useLang
+- 统计：total/published/draft/views；近期文章列表；快捷入口 新建文章/随想
+- 中英用 dash* 词典键（非硬编码中文）；stat hover 仅 shadow-float`},
 ];
 
-const CATS = ["鍏ㄩ儴","甯冨眬瀵艰埅","鏁版嵁灞曠ず","鍙嶉","杈撳叆","鍔ㄦ晥"];
-let cur = "鍏ㄩ儴";
-document.getElementById("tabs").innerHTML = CATS.map(c=>{const n=c==="鍏ㄩ儴"?C.length:C.filter(x=>x.cat===c).length;return `<button class="tab${c===cur?" on":""}" onclick="setCat('${c}')" title="${c} 路 ${n} 涓?>${c}${`<span class="mono" style="font-size:8px;opacity:.55;margin-left:4px">${n}</span>`}`}).join("");
+const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
+let cur = "全部";
+document.getElementById("tabs").innerHTML = CATS.map(c=>{const n=c==="全部"?C.length:C.filter(x=>x.cat===c).length;return `<button class="tab${c===cur?" on":""}" onclick="setCat('${c}')" title="${c} · ${n} 个">${c}${`<span class="mono" style="font-size:8px;opacity:.55;margin-left:4px">${n}</span>`}`}).join("");
 
 function setCat(c){cur=c;document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("on",CATS[i]===c));render()}
 function render(){
   const q=(document.getElementById("q").value||"").toLowerCase();
-  const list=C.filter(c=>(cur==="鍏ㄩ儴"||c.cat===cur)&&(!q||(c.name+c.desc+c.cat).toLowerCase().includes(q)));
+  const list=C.filter(c=>(cur==="全部"||c.cat===cur)&&(!q||(c.name+c.desc+c.cat).toLowerCase().includes(q)));
   document.getElementById("grid").innerHTML=list.map((c,i)=>`
     <div class="card" style="animation-delay:${Math.min(i,12)*35}ms" onclick="openM('${c.id}')">
       <div class="pv" onclick="pvGuard(event)">${c.pv}</div>
       <div class="ci"><span class="tag">${c.cat}</span><h3>${c.name}</h3><p>${c.desc}</p></div>
     </div>`).join("");
-  document.getElementById("cnt").textContent=`灞曠ず鍏ㄩ儴 ${list.length} 涓粍浠禶;
+  document.getElementById("cnt").textContent=`展示全部 ${list.length} 个组件`;
   document.getElementById("empty").style.display=list.length?"none":"block";
 }
 function openM(id){
   const c=C.find(x=>x.id===id);if(!c)return;
   document.getElementById("m-body").innerHTML=`
-    <h2 class="m-h2">${c.name}</h2>
+    <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">${c.name}</h2>
     <div class="m-meta"><span class="tag">${c.cat}</span></div>
-    <p class="m-desc">${c.desc}</p>
+    <p style="font-size:13px;color:var(--yh-muted)">${c.desc}</p>
     <div class="m-pv">${c.pv}</div>
-    <div class="m-head">
-      <div class="kicker">AI 生成提示词（复制给任何 AI 工具）</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 0 10px">
+      <div class="kicker" style="margin:0">AI 生成提示词（复制给任何 AI 工具）</div>
       <button class="copy-main" onclick="copyP(this,'pp')">⧉ 复制提示词</button>
     </div>
     <div class="prompt-box"><pre id="pp">${c.prompt.replace(/</g,"&lt;")}</pre></div>`;
@@ -491,13 +509,13 @@ function pvGuard(e){
 }
 function copyP(btn, srcId){
   const t = document.getElementById(srcId || "pp").innerText;
-  const done=function(){btn.textContent="鉁?宸插鍒?;btn.classList.add("ok");setTimeout(function(){btn.textContent="澶嶅埗鎻愮ず璇?;btn.classList.remove("ok")},1600)};
+  const done=function(){btn.textContent="✓ 已复制";btn.classList.add("ok");setTimeout(function(){btn.textContent="复制提示词";btn.classList.remove("ok")},1600)};
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(function(){fb()})}else{fb()}
   function fb(){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){}document.body.removeChild(ta)}
 }
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
 
-/* 鍔ㄦ€侀瑙堥┍鍔紙reduced-motion 鐢ㄦ埛璺宠繃杞鍔ㄧ敾锛?*/
+/* 动态预览驱动（reduced-motion 用户跳过轮询动画） */
 var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(!REDUCED) setInterval(function(){
   var n=Math.floor(Date.now()/1200);
@@ -516,14 +534,14 @@ function btnClick(btn,txt){
 }
 function ffInput(inp){
   var line=inp.parentNode.querySelector(".ff-line"); if(!line) return;
-  if(!inp.value.trim()){ line.textContent="绔欑偣鍚嶇О涓嶈兘涓虹┖"; line.style.color="#ef4444"; }
-  else { line.textContent="鏄剧ず鍦ㄦ祻瑙堝櫒鏍囩椤?; line.style.color="var(--yh-muted)"; }
+  if(!inp.value.trim()){ line.textContent="站点名称不能为空"; line.style.color="#ef4444"; }
+  else { line.textContent="显示在浏览器标签页"; line.style.color="var(--yh-muted)"; }
   line.style.animation="none"; void line.offsetWidth; line.style.animation="g-ffIn .2s ease-out";
 }
 var SB=[
-  ["#ecfdf5","#a7f3d0","#065f46","宸插彂甯?],
-  ["#fffbeb","#fde68a","#92400e","鑽夌"],
-  ["#f0f9ff","#bae6fd","#0369a1","瀹氭椂"]
+  ["#ecfdf5","#a7f3d0","#065f46","已发布"],
+  ["#fffbeb","#fde68a","#92400e","草稿"],
+  ["#f0f9ff","#bae6fd","#0369a1","定时"]
 ];
 function sbClick(el){
   var i=((+(el.dataset.i||0))+1)%3; el.dataset.i=i;
@@ -533,7 +551,7 @@ function sbClick(el){
 function esClick(btn){
   if(btn.dataset.busy) return; btn.dataset.busy="1";
   var old=btn.textContent;
-  btn.textContent="宸叉竻闄?鉁?; btn.style.borderColor="var(--yh-accent)"; btn.style.color="var(--yh-accent)";
+  btn.textContent="已清除 ✓"; btn.style.borderColor="var(--yh-accent)"; btn.style.color="var(--yh-accent)";
   setTimeout(function(){ btn.textContent=old; btn.style.borderColor=""; btn.style.color=""; delete btn.dataset.busy; },1200);
 }
 function spClick(row){
@@ -541,8 +559,8 @@ function spClick(row){
   row.classList.add("sel");
 }
 function tglclick(btn){btn.classList.toggle('on')}
-function t3click(){/* 鍏滃簳鍗犱綅锛氶€変腑鎬佺敱 document click 濮旀墭澶勭悊锛岄槻 onclick 鎶?ReferenceError */}
-function lgclick(){/* 鍏滃簳鍗犱綅锛氭枃妗堝垏鎹㈢敱 document click 濮旀墭澶勭悊 */}
+function t3click(){/* 兜底占位：选中态由 document click 委托处理，防 onclick 报 ReferenceError */}
+function lgclick(){/* 兜底占位：文案切换由 document click 委托处理 */}
 function tocClick(el){
   var t=el.closest('.pv-toc'); if(!t) return;
   t.dataset.pause = String(Date.now()+4000);
@@ -574,13 +592,13 @@ function coverSeed(inp){
   var pos=[[10,60],[60,20],[118,68],[92,38],[38,78],[136,52],[20,28]];
   var box=inp.closest('.pv,.m-pv'); if(!box) return;
   var dot=box.querySelector('.cov-dot'); if(dot){ dot.style.left=pos[v][0]+'px'; dot.style.top=pos[v][1]+'px'; }
-  var lb=box.querySelector('.cov-no'); if(lb){ lb.textContent='DSN 路 No.'+v; }
+  var lb=box.querySelector('.cov-no'); if(lb){ lb.textContent='DSN · No.'+v; }
 }
 if(!REDUCED) setInterval(function(){
   var t=(Date.now()%4000)/4000;
   var p=t<.5 ? .06+(.68-.06)*(t/.5) : .68-(.68-.06)*((t-.5)/.5);
   document.querySelectorAll('.prog-i').forEach(function(el){el.style.width=(p*100).toFixed(1)+'%'});
-  document.querySelectorAll('.prog-t').forEach(function(el){el.textContent=Math.round(p*100)+'% 路 棰勮 '+Math.max(1,Math.round(10-p*7))+' min'});
+  document.querySelectorAll('.prog-t').forEach(function(el){el.textContent=Math.round(p*100)+'% · 预计 '+Math.max(1,Math.round(10-p*7))+' min'});
 },60);
 document.addEventListener('click',function(e){
   if(e.target.classList.contains('t3')){
@@ -588,11 +606,11 @@ document.addEventListener('click',function(e){
     e.target.classList.add('sel');
   }
   if(e.target.classList.contains('lg')){
-    e.target.textContent = e.target.textContent.trim()==='EN' ? '涓? : 'EN';
+    e.target.textContent = e.target.textContent.trim()==='EN' ? '中' : 'EN';
   }
 });
 render();
 </script>
-<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>鎱㈡棩蹇?路 SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.3</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">漏 2026 Yahajiang 路 鎱㈡棩蹇?SlowLog 路 GPL-3.0</span></div></footer>
+<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.3</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
 </body>
 </html>
