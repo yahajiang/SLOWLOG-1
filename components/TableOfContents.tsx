@@ -114,13 +114,13 @@ export function TableOfContents({
           </span>
         </div>
 
-        {/* 目录 + 左侧进度导轨 */}
+        {/* 目录 + 左侧进度导轨：与正文同档「静音排印」——导轨弱化、高亮只换色 */}
         <nav className="relative pl-4">
-          <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
+          <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]/80" />
           <span
             aria-hidden
-            className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)] origin-top will-change-transform"
-            style={{ transform: `scaleY(${progress})`, transition: "transform 160ms linear" }}
+            className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)]/45 origin-top will-change-transform"
+            style={{ transform: `scaleY(${progress})`, transition: "transform 280ms var(--ease-out)" }}
           />
           <ul className="space-y-0.5" role="list">
             {headings.map((h, idx) => {
@@ -144,17 +144,17 @@ export function TableOfContents({
                       releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
                     }}
                     aria-current={isActive ? "true" : undefined}
-                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-200 ${
+                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] ${
                       isActive
-                        ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
-                        : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/70"
+                        ? "text-[var(--yh-accent)] font-medium"
+                        : "text-[var(--yh-muted)] hover:text-[var(--yh-text)]"
                     }`}
                   >
                     <span
                       aria-hidden
-                      className={`shrink-0 rounded-full transition-all duration-200 ${
+                      className={`shrink-0 rounded-full transition-colors duration-[var(--duration-fast)] ${
                         isActive
-                          ? "w-1.5 h-1.5 bg-[var(--yh-accent)]"
+                          ? "w-1 h-1 bg-[var(--yh-accent)]"
                           : "w-1 h-1 bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"
                       }`}
                     />
@@ -173,11 +173,11 @@ export function TableOfContents({
               {t.readingProgress}
             </p>
           </div>
-          <div className="h-[4px] rounded-none bg-[var(--yh-border)]/80 overflow-hidden">
+          <div className="h-[3px] rounded-none bg-[var(--yh-border)]/70 overflow-hidden">
             {/* 勿用 Tailwind scale-*：v4 走 scale 属性，会与 ReadingProgress 写入的 transform 冲突 */}
             <div
               data-side-progress
-              className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/90 transition-transform duration-150 will-change-transform"
+              className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/55 transition-transform duration-[280ms] ease-[var(--ease-out)] will-change-transform"
               style={{ transform: "scaleX(0)" }}
             />
           </div>
@@ -189,9 +189,9 @@ export function TableOfContents({
           </p>
         </div>
 
-        {/* 阅读中 */}
+        {/* 阅读中：静态点，不呼吸 */}
         <div className="mt-3.5 flex items-center gap-2 mono text-[11px] text-[var(--yh-muted)]/80">
-          <span className="w-1 h-1 rounded-full bg-[var(--yh-accent)] motion-breath shrink-0" />
+          <span className="w-1 h-1 rounded-full bg-[var(--yh-accent)]/70 shrink-0" />
           <span className="truncate">{t.readingNow}</span>
         </div>
       </div>
