@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
+import { useLang } from "@/lib/lang-context";
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
@@ -23,24 +24,25 @@ export function MDashHome({ data }: {
   };
 }) {
   const { toast } = useToast();
+  const { t, lang } = useLang();
   const { total, published, draft, totalViews, recent } = data;
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">仪表盘</h1>
-        <p className="text-sm text-[var(--dash-muted)] mt-1">概览你的内容</p>
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashOverview}</h1>
+        <p className="text-sm text-[var(--dash-muted)] mt-1">{t.dashHomeSub}</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Stat label="文章总数" value={total} />
-        <Stat label="已发布" value={published} />
-        <Stat label="草稿" value={draft} />
-        <Stat label="总访问量" value={totalViews} />
+        <Stat label={t.dashTotalPosts} value={total} />
+        <Stat label={t.dashPublished} value={published} />
+        <Stat label={t.dashDraft} value={draft} />
+        <Stat label={t.dashTotalViews} value={totalViews} />
       </div>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-[var(--dash-text)]">近期文章</h2>
+          <h2 className="text-sm font-semibold text-[var(--dash-text)]">{t.dashRecentPosts}</h2>
           <Link href="/m/dashboard/posts" className="text-xs text-[var(--dash-accent)] min-h-[44px] flex items-center px-2">
-            查看全部
+            {t.dashViewAll}
           </Link>
         </div>
         <div className="divide-y divide-[var(--dash-border)]">
@@ -48,13 +50,16 @@ export function MDashHome({ data }: {
             <button
               key={p.id}
               type="button"
-              onClick={() => toast("完整编辑请使用桌面版", "success")}
+              onClick={() => toast(t.dashEditOnDesktop, "success")}
               className="w-full flex items-center justify-between gap-2 py-3 px-1 -mx-1 rounded-none text-left min-h-[56px]"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-[var(--dash-text)] truncate">{p.titleZh || p.title}</p>
+                <p className="text-sm font-medium text-[var(--dash-text)] truncate">
+                  {lang === "zh" ? p.titleZh || p.title : p.title}
+                </p>
                 <p className="text-xs text-[var(--dash-muted)] mt-0.5">
-                  {p.category?.nameZh || p.category?.name || "-"} · {p.status}
+                  {(lang === "zh" ? p.category?.nameZh || p.category?.name : p.category?.name) || "-"} ·{" "}
+                  {p.status === "published" ? t.dashPublished : p.status === "draft" ? t.dashDraft : p.status}
                 </p>
               </div>
               <span className="text-xs text-[var(--dash-muted)] shrink-0">
@@ -62,24 +67,26 @@ export function MDashHome({ data }: {
               </span>
             </button>
           ))}
-          {recent.length === 0 && <p className="text-sm text-[var(--dash-muted)] py-8 text-center">暂无文章</p>}
+          {recent.length === 0 && (
+            <p className="text-sm text-[var(--dash-muted)] py-8 text-center">{t.dashNoPosts}</p>
+          )}
         </div>
       </div>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
-        <h2 className="text-sm font-semibold mb-3 text-[var(--dash-text)]">快速入口</h2>
+        <h2 className="text-sm font-semibold mb-3 text-[var(--dash-text)]">{t.dashQuickActions}</h2>
         <div className="space-y-2.5">
           <button
             type="button"
-            onClick={() => toast("新建文章请使用桌面版", "success")}
-            className="block w-full py-3 bg-[var(--dash-text)] text-white text-sm text-center rounded-none font-medium min-h-[48px]"
+            onClick={() => toast(t.dashNewOnDesktop, "success")}
+            className="block w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm text-center rounded-none font-medium min-h-[48px]"
           >
-            新建文章
+            {t.dashNewPost}
           </button>
           <Link
             href="/m/dashboard/notes"
             className="flex items-center justify-center w-full py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm text-center rounded-none min-h-[48px]"
           >
-            新建随想
+            {t.dashNewThought}
           </Link>
         </div>
       </div>

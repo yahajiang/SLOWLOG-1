@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { useLang } from "@/lib/lang-context";
 
 /** 移动端文章管理：搜索/状态筛选/上下架/删除/复制链接（编辑走桌面版） */
 export default function MobilePostsPage() {
@@ -13,6 +14,7 @@ export default function MobilePostsPage() {
   const [loading, setLoading] = useState(true);
   const [delId, setDelId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t, lang } = useLang();
 
   const load = useCallback(async () => {
     const params = new URLSearchParams();
@@ -26,20 +28,20 @@ export default function MobilePostsPage() {
 
   useEffect(() => {
     setLoading(true);
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       load();
     }, 300);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [load]);
 
   const confirmDel = useCallback(async () => {
     if (!delId) return;
     const r = await fetch(`/api/posts/${delId}`, { method: "DELETE" });
-    if (r.ok) toast("已删除", "success");
-    else toast("删除失败", "error");
+    if (r.ok) toast(t.dashDeleted, "success");
+    else toast(t.dashOpFail, "error");
     setDelId(null);
     await load();
-  }, [delId, toast, load]);
+  }, [delId, toast, load, t]);
 
   const togglePublish = useCallback(
     async (p: any) => {
@@ -49,33 +51,33 @@ export default function MobilePostsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: ns }),
       });
-      if (r.ok) toast(ns === "published" ? "已发布" : "已下架为草稿", "success");
-      else toast("操作失败", "error");
+      if (r.ok) toast(ns === "published" ? t.toastPublished : t.toastUnpublished, "success");
+      else toast(t.dashOpFail, "error");
       await load();
     },
-    [toast, load]
+    [toast, load, t]
   );
 
   const copyLink = useCallback(
     async (id: string) => {
       await navigator.clipboard.writeText(`${location.origin}/posts/${id}`);
-      toast("链接已复制", "success");
+      toast(t.toastCopiedLink, "success");
     },
-    [toast]
+    [toast, t]
   );
 
   const editNotice = useCallback(() => {
-    toast("完整编辑请使用桌面版", "success");
-  }, [toast]);
+    toast(t.dashEditOnDesktop, "success");
+  }, [toast, t]);
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">文章</h1>
+      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashPosts}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 space-y-2.5">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索标题、摘要、标签..."
+          placeholder={t.dashSearchFull}
           className="w-full px-4 py-3 text-base border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
         />
         <div className="flex gap-2">
@@ -84,12 +86,14 @@ export default function MobilePostsPage() {
             onChange={(e) => setStatus(e.target.value)}
             className="flex-1 px-3 py-3 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px]"
           >
-            <option value="all">全部状态</option>
-            <option value="published">已发布</option>
-            <option value="draft">草稿</option>
-            <option value="archived">归档</option>
+            <option value="all">{t.dashAll}</option>
+            <option value="published">{t.dashPublished}</option>
+            <option value="draft">{t.dashDraft}</option>
+            <option value="archived">{lang === "zh" ? "归档" : "Archived"}</option>
           </select>
-          <span className="text-xs text-[var(--dash-muted)] self-center tabular-nums">{posts.length} 篇</span>
+          <span className="text-xs text-[var(--dash-muted)] self-center tabular-nums">
+            {t.dashPostsCount(posts.length)}
+          </span>
         </div>
       </div>
 
@@ -101,17 +105,18 @@ export default function MobilePostsPage() {
             ))}
           </div>
         ) : posts.length === 0 ? (
-          <div className="p-12 text-center text-sm text-[var(--dash-muted)]">没有匹配的文章</div>
+          <div className="p-12 text-center text-sm text-[var(--dash-muted)]">{t.dashEmptyFiltered}</div>
         ) : (
           <div className="divide-y divide-[var(--dash-border)]">
             {posts.map((p) => (
               <div key={p.id} className="p-4 space-y-2.5">
                 <button type="button" onClick={editNotice} className="w-full text-left min-h-[44px]">
                   <span className="text-[15px] font-medium text-[var(--dash-text)] line-clamp-2">
-                    {p.titleZh || p.title || "未命名"}
+                    {(lang === "zh" ? p.titleZh || p.title : p.title) || t.dashUntitled}
                   </span>
                   <span className="text-xs text-[var(--dash-muted)] mt-1 block truncate">
-                    {p.category?.nameZh || p.category?.name || "未分类"} · {p.status} ·{" "}
+                    {(lang === "zh" ? p.category?.nameZh || p.category?.name : p.category?.name) || t.dashUncategorized} ·{" "}
+                    {p.status === "published" ? t.dashPublished : p.status === "draft" ? t.dashDraft : p.status} ·{" "}
                     {new Date(p.createdAt).toLocaleDateString()}
                   </span>
                 </button>
@@ -120,25 +125,25 @@ export default function MobilePostsPage() {
                     onClick={() => togglePublish(p)}
                     className="text-xs px-2 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] font-medium min-h-[44px]"
                   >
-                    {p.status === "published" ? "下架" : "发布"}
+                    {p.status === "published" ? t.dashUnpublish : t.dashPublishAction}
                   </button>
                   <button
                     onClick={() => copyLink(p.id)}
                     className="text-xs px-2 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[44px]"
                   >
-                    链接
+                    {t.dashLink}
                   </button>
                   <button
                     onClick={editNotice}
                     className="text-xs px-2 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[44px]"
                   >
-                    编辑
+                    {t.dashEdit}
                   </button>
                   <button
                     onClick={() => setDelId(p.id)}
                     className="text-xs px-2 py-2.5 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 min-h-[44px]"
                   >
-                    删除
+                    {t.dashDelete}
                   </button>
                 </div>
               </div>
@@ -149,9 +154,9 @@ export default function MobilePostsPage() {
       <ConfirmDialog
         open={!!delId}
         onOpenChange={(v) => !v && setDelId(null)}
-        title="确定删除？"
-        description="将物理删除，不可恢复。"
-        confirmText="删除"
+        title={t.editorDeleteConfirm}
+        description={t.editorDeleteDesc("")}
+        confirmText={t.dashDelete}
         variant="danger"
         onConfirm={confirmDel}
       />

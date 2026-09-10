@@ -182,6 +182,37 @@ export const dict = {
     dashView: "查看",
     dashNewCat: "新建",
     dashSearchPh: "搜索标题…",
+    // 后台仪表盘 / 移动后台
+    dashHomeSub: "概览你的内容",
+    dashTotalPosts: "文章总数",
+    dashTotalViews: "总访问量",
+    dashRecentPosts: "近期文章",
+    dashViewAll: "查看全部",
+    dashNoPosts: "暂无文章",
+    dashQuickActions: "快速入口",
+    dashNewThought: "新建随想",
+    dashMore: "更多",
+    dashBrowseCats: "分类查看",
+    dashBrowseMedia: "媒体查看（近 9 张）",
+    dashNoCats: "暂无分类",
+    dashNoImages: "暂无图片",
+    dashPostsCount: (n: number) => `${n} 篇`,
+    dashMediaHint: "点按图片复制链接 · 完整管理请使用桌面版",
+    dashDesktopAdmin: "桌面版后台",
+    dashEditOnDesktop: "完整编辑请使用桌面版",
+    dashNewOnDesktop: "新建文章请使用桌面版",
+    dashSearchFull: "搜索标题、摘要、标签...",
+    dashEmptyFiltered: "没有匹配的文章",
+    dashSaved: "已保存",
+    dashNeedTag: "请至少填写一个标签（逗号分隔）",
+    dashNeedCategory: "请选择分类",
+    dashTitlePh: "输入标题...",
+    dashExcerpt: "摘要",
+    dashExcerptPh: "一句话概括...",
+    dashLoadingEditor: "加载编辑器...",
+    dashFillAll: "请填写所有字段",
+    dashNetworkError: "网络错误",
+    dashErrorPage: "页面加载出错，请稍后重试。",
     editorBack: "← 返回列表",
     editorSaveDraft: "保存草稿",
     editorSaving: "保存中...",
@@ -432,7 +463,44 @@ export const dict = {
     dashOpFail: "Operation failed",
     dashCopyDraft: "Copied as draft",
     dashCopyFail: "Copy failed",
+    dashFeature: "Feature",
+    dashUnfeature: "Unfeature",
+    dashUnpublishBtn: "Unpublish",
+    dashLink: "Link",
+    dashView: "View",
+    dashNewCat: "New",
     dashSearchPh: "Search titles…",
+    // Dashboard / mobile admin
+    dashHomeSub: "Content overview",
+    dashTotalPosts: "Total posts",
+    dashTotalViews: "Total views",
+    dashRecentPosts: "Recent posts",
+    dashViewAll: "View all",
+    dashNoPosts: "No posts yet",
+    dashQuickActions: "Quick actions",
+    dashNewThought: "New thought",
+    dashMore: "More",
+    dashBrowseCats: "Browse categories",
+    dashBrowseMedia: "Media (latest 9)",
+    dashNoCats: "No categories",
+    dashNoImages: "No images",
+    dashPostsCount: (n: number) => `${n} posts`,
+    dashMediaHint: "Tap image to copy link · Full media on desktop",
+    dashDesktopAdmin: "Desktop admin",
+    dashEditOnDesktop: "Full editing on desktop",
+    dashNewOnDesktop: "Create posts on desktop",
+    dashSearchFull: "Search title, excerpt, tags...",
+    dashEmptyFiltered: "No matching posts",
+    dashSaved: "Saved",
+    dashNeedTag: "At least one tag (comma-separated)",
+    dashNeedCategory: "Select a category",
+    dashTitlePh: "Enter a title...",
+    dashExcerpt: "Excerpt",
+    dashExcerptPh: "One-line summary...",
+    dashLoadingEditor: "Loading editor...",
+    dashFillAll: "Fill all fields",
+    dashNetworkError: "Network error",
+    dashErrorPage: "Something went wrong. Please try again.",
     editorBack: "← Back to list",
     editorSaveDraft: "Save draft",
     editorSaving: "Saving...",
@@ -649,6 +717,52 @@ export type Dict = {
   dashFocus: string;
   dashBrand: string;
   dashSearchPh: string;
+  dashFeature: string;
+  dashUnfeature: string;
+  dashUnpublishBtn: string;
+  dashLink: string;
+  dashView: string;
+  dashNewCat: string;
+  dashRecommend: string;
+  dashUnrecommend: string;
+  dashUnpublish: string;
+  dashPublishAction: string;
+  dashEdit: string;
+  dashDuplicate: string;
+  dashDeleted: string;
+  dashOpFail: string;
+  dashCopyDraft: string;
+  dashCopyFail: string;
+  dashHomeSub: string;
+  dashTotalPosts: string;
+  dashTotalViews: string;
+  dashRecentPosts: string;
+  dashViewAll: string;
+  dashNoPosts: string;
+  dashQuickActions: string;
+  dashNewThought: string;
+  dashMore: string;
+  dashBrowseCats: string;
+  dashBrowseMedia: string;
+  dashNoCats: string;
+  dashNoImages: string;
+  dashPostsCount: (n: number) => string;
+  dashMediaHint: string;
+  dashDesktopAdmin: string;
+  dashEditOnDesktop: string;
+  dashNewOnDesktop: string;
+  dashSearchFull: string;
+  dashEmptyFiltered: string;
+  dashSaved: string;
+  dashNeedTag: string;
+  dashNeedCategory: string;
+  dashTitlePh: string;
+  dashExcerpt: string;
+  dashExcerptPh: string;
+  dashLoadingEditor: string;
+  dashFillAll: string;
+  dashNetworkError: string;
+  dashErrorPage: string;
   editorBack: string;
   editorSaveDraft: string;
   editorSaving: string;
@@ -674,11 +788,12 @@ export type Dict = {
   toastPublishFail: string;
   toastScheduleFail: string;
   toastDeleted: string;
-  dashOpFail: string;
   toastPublished: string;
   toastUnpublished: string;
   toastCopiedDraft: string;
   toastCopyFail: string;
+  toastCopiedLink: string;
+  dashAll: string;
   emptyFiltered: string;
   emptyFilteredHint: string;
   catAll: string;
