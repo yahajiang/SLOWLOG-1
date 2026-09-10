@@ -11,7 +11,8 @@
   --yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#6e6e73;--yh-border:#e5e5e7;
   --yh-accent:#4a6fb5;--yh-accent:oklch(0.55 0.15 250);--dash-card:#ffffff;
   --shadow-card:0 1px 3px rgba(0,0,0,.04);--shadow-float:0 8px 30px -8px rgba(0,0,0,.15);--shadow-pop:0 20px 60px rgba(0,0,0,.12);
-  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.34,1.15,0.64,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
+  --duration-fast:180ms;--duration-normal:300ms;--duration-slow:500ms;--motion-breath:8s;
 }
 .dark{--yh-bg:#14110d;--yh-text:#e8e4dc;--yh-muted:#8e8478;--yh-border:#2c2a26;--yh-accent:#8ea6e8;--yh-accent:oklch(0.78 0.13 250);--dash-card:#1c1915}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -58,9 +59,10 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .modal .x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:var(--yh-muted);cursor:pointer}
 .modal .x:hover{color:var(--yh-text)}
 
-@keyframes motionBreath{0%,100%{opacity:.92}50%{opacity:1}}
+@keyframes motionBreath{0%,100%{opacity:.88}50%{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pv-shimmer{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
-@keyframes pv-toast{0%{opacity:0;transform:translateX(16px)}12%,80%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(16px)}}
+@keyframes pv-toast{0%{opacity:0;transform:translateX(10px)}12%,80%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(10px)}}
 @keyframes pv-grow{0%{transform:scaleY(.12)}55%,100%{transform:scaleY(1)}}
 @keyframes pv-scale{0%{transform:scale(.94);opacity:.55}16%,84%{transform:scale(1);opacity:1}100%{transform:scale(.94);opacity:.55}}
 .breath{animation:motionBreath 3s ease-in-out infinite}
@@ -182,8 +184,8 @@ body.dark .ti-sun{display:inline}
 </div></header>
 
 <div class="wrap" id="home" data-page-node-id="erliiFLgAcRlbYJMZlAvOX">
-  <h1 data-page-node-id="ClkwPBeGZBWjGzlkkgRjlm">UI 组件</h1>
-  <p class="sub" data-page-node-id="N2d2rwgMHoIrfkRW7P3Dju">26 个真实组件 · v1.3 与真代码同源 · 每条带六要素 AI 生成提示词 · 动画契约全覆盖 · 分类筛选 / 搜索 / 点卡片取提示词</p>
+  <h1>UI 组件</h1>
+  <p class="sub">v1.4 · 与真代码同源 · 含 Reveal / 格言池 / 代码块行号 · 动效契约 180/300/500ms · 分类筛选 / 搜索 / 点卡片取提示词</p>
   <div class="srch" data-page-node-id="43I4BvuDI9gYkGFtJWo4ld">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="YU6DRm5rG2nCtm4eQljXKJ"><circle cx="11" cy="11" r="7" data-page-node-id="D4DhEXrr9M2Xez7eS7LDKB"/><path d="M21 21l-4-4" data-page-node-id="hsOVjwqx6diTHKIjXSPyMl"/></svg>
     <input id="q" type="text" placeholder="搜索组件名称或描述…" oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
@@ -202,67 +204,65 @@ body.dark .ti-sun{display:inline}
 </div>
 
 <script>
-const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。全部直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif="Cormorant Garamond","Noto Serif SC" 标题（拉丁走 Cormorant，中文标题必须走 Noto Serif SC，Google Fonts 按 unicode-range 子集加载，禁让中文跌回系统宋体）、sans=Plus Jakarta Sans 正文、mono=JetBrains Mono 元数据（11-12px/.14em/大写）。动效只动 transform/opacity（禁 background-position）；hover/active/focus 三态齐全；focus-visible 2px accent outline（禁裸 outline:none）；暗色全令牌化（dash-text 底上的按钮文字用 text-[--dash-bg] 反色，禁 text-white）。文章正文 17px/1.9（真代码真值）+ 行宽内容三档 max-w-2xl/3xl(默认)/5xl；阴影取 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100（⌘K 面板与 toast 同级 100，照抄代码真值）。`;
+const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif=Cormorant Garamond+Noto Serif SC 标题；sans=Plus Jakarta Sans；mono=JetBrains Mono（11–12px/.14em/大写）。动效时长档：fast 180ms / normal 300ms / slow 500ms；ease-out cubic-bezier(0.22,1,0.36,1)；spring 过冲≤1.15。只动 transform/opacity；hover/active/focus 三态齐全；focus-visible 2px accent；暗色全令牌化（dash-text 底上的按钮用 dash-bg 反色，禁 text-white）。正文 17px/1.9；行宽默认 max-w-3xl；阴影 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100。reduced-motion 全局兜底。`;
 
 const C = [
  {id:"stat",name:"统计卡片",cat:"数据展示",desc:"概览页四联统计：PJS 粗体 tabular-nums 大数字 + tracking-widest 大写标签，hover 上浮 + shadow-float。",
   pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:210px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:22px;font-weight:700;font-family:'Plus Jakarta Sans',system-ui;font-variant-numeric:tabular-nums">128</div><div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--yh-muted);font-weight:500">文章总数</div></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div class="mono" style="font-size:20px;font-weight:500">7</div><div style="font-size:10px;color:var(--yh-muted)">分类数</div></div></div>`,
   prompt:`${P_BASE}
-新建「统计卡片 StatCard」组件：
-- 还原 components/dashboard/StatCard.tsx：label 11px tracking-widest uppercase muted + value text-2xl font-bold tabular-nums（Plus Jakarta Sans）
-- 容器 --dash-card + --dash-border 直角 p-6 + shadow-card；hover: shadow-float + -translate-y-0.5（transition: transform/box-shadow 200ms var(--ease-spring)，时长取 200ms 档）
-- 入场：随父级网格 stagger（slideInUp 0.5s + index*50ms，封顶 10 项/500ms），无独立循环动画
-- props：{ label, value: string|number, sub? }；网格排列 4 联`},
+新建「统计卡片 StatCard」（还原 components/dashboard/DashboardHome/StatCard）：
+- label 11px tracking-widest uppercase muted + value text-2xl font-bold tabular-nums
+- 容器 --dash-card + --dash-border 直角 p-6 + shadow-card
+- hover：仅 shadow-float（transition-shadow 300ms var(--ease-out)），**不再上浮**
+- 仪表盘首页 client 化（DashboardHome）接 useLang 中英；网格 2/4 列自适应`},
  {id:"toast",name:"Toast 通知",cat:"反馈",desc:"ToastProvider + useToast(msg, type)：右上 slideInRight 0.3s 入场，success emerald / error red / info 纸面三语义，2.5s 自动消失。",
   pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">↻ 重播</button><div class="anim-toast" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;padding:9px 14px">✓ 已复制到剪贴板</div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">草稿已保存</div></div>`,
   prompt:`${P_BASE}
-新建「Toast 通知」组件：
-- 还原 components/ui/Toast.tsx：ToastProvider + useToast(msg, type?: "success"|"error"|"info")
-- 容器 fixed top-4 right-4 z-[100] space-y-2 pointer-events-none；单条 min-w-240 max-w-360 px-4 py-3 rounded-none border + backdrop-blur + shadow-pop
-- 入场 slideInRight 0.3s var(--ease-out)（translateX(16px)→0）；2500ms 标记退场播 slideOutRight 0.3s（translateX→16px + 渐隐）后卸载
-- 三语义：success = emerald-50/border-emerald-200/text-emerald-800；error = red-50/red-200/red-700；info = --dash-card 系`},
+新建「Toast 通知」（还原 components/ui/Toast.tsx）：
+- ToastProvider + useToast(msg, type?: "success"|"error"|"info")
+- fixed top-4 right-4 z-[100]；条 min-w-240 max-w-360 px-4 py-3 直角 border + backdrop-blur + shadow-pop
+- 入场 slideInRight **0.28s** ease-out（translateX **10px**→0）；2500ms 后 slideOutRight 0.28s 退场
+- 语义色：success emerald / error red / info 纸面；文字用 dash-bg 反色按钮场景禁 text-white`},
  {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，年份环节点，文章节点进入视口依次点亮。",
   pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">↻ 重播</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 · 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 封面系统</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 编辑器</span></div></div>`,
   prompt:`${P_BASE}
-新建「归档时间线 TimelineArchive」（还原 components/HomeClient.tsx 的时间线区）：
-- 结构：容器 relative pl-8；底层轴线 1px --yh-border + accent 生长层 scaleY(scroll 进度) origin-top，transform-only
-- 年份 = 环形节点（border-2 accent + --dash-card 底）+ mono 标题 + 延展横线；文章 = 7px 圆点节点 + 日期 + 标题行
-- IntersectionObserver 一次性点亮 .is-in（节点 accent 化 + 条目 translateX(-10px)→0 淡入，55ms 交错）
-- 渐进增强：容器 tl-armed 类由 JS 挂载，无 JS 完全静态可见；reduced-motion 走全局兜底`},
+新建「归档时间线 TimelineArchive」：
+- 轴线 1px border + accent scaleY(阅读进度) · transform-only
+- 年份环节点 + 文章圆点；IO 点亮 is-in（translateX -10→0 · 55ms 交错）
+- tl-armed 渐进增强；reduced-motion 静态可见`},
  {id:"toc",name:"阅读目录导轨",cat:"数据展示",desc:"Motion 05：scroll-spy 激活当前节（accent 加粗+圆点），左缘导轨 scaleY 随滚动生长。",
   pv:`<div class="pv-toc" style="width:100%;max-width:180px"><a href="#" onclick="tocClick(this)"><span class="dot"></span>为什么做</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>情感模型</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>记忆系统</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>关系演进</a></div>`,
   prompt:`${P_BASE}
-新建「阅读目录导轨 TocRail」（还原 components/TableOfContents.tsx）：
-- 双层导轨：底层 1px --yh-border + accent 填充层 scaleY(阅读进度) origin-top，transition transform 150ms linear
-- 条目：scroll-spy 激活态 = accent 文字 + border-l-2 加粗 + 圆点点亮 + bg accent/[0.06]
-- 滚动监听 passive + setTimeout 16ms 节流；点击平滑滚动并锁定高亮 200ms 防闪跳
-- 正文异步渲染：轮询绑定正文标题（不依赖 headings id）`},
+新建「阅读目录 TocRail」（还原 components/TableOfContents.tsx）：
+- 双层导轨：底层 1px 边 + accent 填充 scaleY，**进度按标题区间插值**（与高亮标题同步，禁用整页 scrollY）
+- 高亮：accent 文字 + bg accent/7% + 圆点变大；transition-colors 180ms ease-out
+- 导轨 transition 160ms linear；点击后立即推进导轨
+- 标题 id 与 lib/headings.ts 共用 slug+去重（重名标题 foo / foo-1）
+- 可折叠：标题行 toggle，展开 250ms / 收起 200ms max-height+opacity
+- 正文异步：轮询绑定标题，不依赖 DB id 字面相等`},
  {id:"theme3",name:"主题三态切换",cat:"输入",desc:"跟随系统/浅色/深色三胶囊（ConfigPanel 与设置页）；头部另有 ☀/☾ 单图标切换（sl-theme 持久化 + theme-color meta 同步）。",
   pv:`<div style="display:flex;gap:6px;width:100%;max-width:210px"><button type="button" class="t3" onclick="t3click(this)">系统</button><button type="button" class="t3 sel" onclick="t3click(this)">浅色</button><button type="button" class="t3" onclick="t3click(this)">深色</button></div>`,
   prompt:`${P_BASE}
-新建「主题三态切换 ThemeSwitch3」（还原 components/ThemeToggle.tsx）：
-- 真代码现状：单击切换的 light/dark 二态按钮（html.dark 类 toggle + localStorage sl-theme 持久化）；三胶囊为设计演进形态，新做设置页可按下方三态实现
-- 三胶囊按钮组（system/light/dark），选中态 = bg-[--yh-text] text-[--yh-bg]，未选 = 描边 muted
-- system 态用 matchMedia('(prefers-color-scheme: dark)') 监听并联动（首帧内联脚本已有该跟随逻辑）
-- html.dark 类切换 + 零闪烁（首帧内联脚本预置）；切换动画只用背景/颜色 transition .2s var(--ease-out)；active:scale-[0.97] 微按压`},
+新建「主题三态 ThemeSwitch3」：
+- 三胶囊 system/light/dark；选中 yh-text/yh-bg
+- system 用 matchMedia；html.dark + sl-theme
+- 首帧内联脚本防白闪；transition 180ms`},
  {id:"cover",name:"封面构成器",cat:"数据展示",desc:"ArticleArt：文章 id 哈希 → 发版变体；族徽字/几何 SVG/横线基线，每篇一张脸。",
   pv:`<div style="width:100%;max-width:190px;aspect-ratio:5/3;position:relative;background:#F5F3EF;border:1px solid var(--yh-border)"><span style="position:absolute;top:5px;left:8px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;color:#3A332E;border:1px solid #3A332E;padding:1px 5px">设计</span><span class="serif cv-fade" style="position:absolute;top:8px;left:12px;font-size:42px;line-height:1;color:#3A332E">每</span><span class="cv-rot" style="position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#E8E0D8;border:1px solid #3A332E"></span><span class="cv-line" style="position:absolute;bottom:8px;left:10px;right:10px;height:1px;background:#3A332E;opacity:.3"></span><input class="seed-in" style="position:absolute;bottom:20px;right:10px" value="slowlog" oninput="coverSeed(this)" title="改种子，看构图实时变化"><span class="cov-dot cv-pop" style="position:absolute;width:8px;height:8px;border-radius:50%;background:#C9A98A;left:118px;top:68px;transition:left .3s var(--ease-out),top .3s var(--ease-out)"></span><span class="mono cov-no" style="position:absolute;bottom:2px;left:14px;font-size:8px;letter-spacing:.2em;color:#3A332E">DSN · No.0 · seed:slowlog</span></div>`,
   prompt:`${P_BASE}
 新建「封面构成器 ArticleArt」（还原 components/ArticleArt.tsx）：
-- 输入 seed（文章 id）做 FNV-1a 哈希 → variant（0..N）决定构图偏移与元素选择
-- 分类 palette（paper/ink/wash/accent）注入：族徽字（serif 大字）或 SVG 几何（rect/circle/line 1.2px 描边）
-- 元素：分类徽章（左上 mono 描边小签）+ 基线横线 + mono 元数据戳（≤9px 装饰戳 aria-hidden）；禁止点阵铺底与插画
-- 暗色下封面保留 paper 亮块（杂志封面自带底色，不随主题反转）
-- 同一 seed 永远同一构图；memo 包裹；5:3 比例自适应
-- 动画契约：SVG 主体场景入场**描边生长**（stroke-dasharray/dashoffset 420→0，0.9s ease-out，元素同步 0.5s 淡入）+ **双层循环**：容器 6s 轻呼吸浮动（cover-inner）+ 实心图形 4s 轻脉动（scale 1↔1.08，transform-box:fill-box 绕自身中心，延迟 1.2s 与描边衔接）——五 Motion「呼吸/生长」的 ambient 合规用法，reduced-motion 全局兜底；无 hover；无 JS 时静态可见（纯 CSS）`},
+- seed（文章 id）FNV-1a → variant 决定构图；分类 palette（paper/ink/wash/accent）内联
+- 元素：分类徽章 + 基线 + mono 装饰戳（opacity≤0.35、fontSize≥8，去无信息量数字串）；禁点阵铺底
+- 暗色保留 paper 亮块；memo；5:3
+- 动画：描边生长 dashoffset 420→0 @ 480ms；容器浮动 translateY **-4px @ 8s** breath；实心 pulse **scale 1↔1.05 @ 5s**；reduced-motion 兜底；无 hover；无 JS 静态可见`},
  {id:"card",name:"文章卡片",cat:"数据展示",desc:"Motion 04 本体：封面 + 徽章 + 标题 + hover 仅 -2px 偏移，stagger 进场一次播完。",
   pv:`<div class="mini-card" style="width:100%;max-width:200px;border:1px solid var(--yh-border);background:var(--dash-card)"><div style="height:56px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="serif mc-art" style="font-size:26px;color:#3A332E">记</span></div><div style="padding:10px 12px"><span style="font-size:9px;padding:1px 6px;border:1px solid #E8E0D8;color:#3A332E">设计</span><div class="mc-t" style="font-size:11.5px;font-weight:600;margin-top:6px">规则派生的封面系统</div></div></div>`,
   prompt:`${P_BASE}
-新建「文章卡片 ArticleCard」（还原 components/ArticleCard.tsx）：
-- 结构：ArticleArt 封面 + 分类徽章 + serif 标题 + 摘要 + mono 日期；1px 边框直角纸面
-- hover：translateY(-2px) + shadow-float + border-color--yh-muted（仅此，禁止缩放/飞起），封面图 scale 1.04 内部裁切；过渡 transition: transform/box-shadow/border-color 200ms var(--ease-spring)；active:translate-y-0 按压回落
-- 入场：slideInUp 0.5s ease-out both + animation-delay index*50ms stagger（封顶 10 项/500ms，其余立即显示），只播一次
-- 整卡 Link 可点；group-hover 标题转 accent + 下划线 offset-4`},
+新建「文章卡片 ArticleCard」（还原 components/ArticleCard.tsx + Reveal）：
+- 结构：Reveal 包裹 + ArticleArt 封面 + 分类徽章 + 标题 + 摘要 ≤1 标签 + 底栏「相对时间 · 阅读时长」；**无作者头像**
+- hover：translateY(-2px) + shadow-float，250ms ease-out；封面 scale 1.01 / 300ms；标题 accent 200ms；箭头 translateX 3px / 200ms
+- 入场：**视口触发**（IntersectionObserver）fadeInUp 300ms + delay index*45ms；reduced-motion 直接可见
+- 整卡 Link 可点`},
  {id:"badge",name:"分类徽章",cat:"数据展示",desc:"分类色板小面积点缀：paper 底 + ink 字 + wash 边，三值来自 ART_PALETTES。",
   pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">工程</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0E0C0;background:#FFF7E8;color:#3A3330">前端</span><span style="font-size:9px;padding:2px 8px;border:1px solid #C8DCC8;background:#E8F3E8;color:#30362E">随笔</span></div>`,
   prompt:`${P_BASE}
@@ -274,19 +274,18 @@ const C = [
  {id:"btn2",name:"双形态按钮",cat:"输入",desc:"Button.tsx 四变体：primary 实底(hover:opacity-90) / secondary 描边 / ghost / danger；公共站另有 --yh-text→accent hover 变体。",
   pv:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button type="button" class="b-primary" onclick="btnClick(this,'处理中…')">阅读文章 →</button><button type="button" class="b-ghost" style="margin-left:8px" onclick="btnClick(this,'已收到 ✓')">查看全部</button></div>`,
   prompt:`${P_BASE}
-新建「按钮 Button」变体（还原 components/ui/Button.tsx 四变体）：
-- primary = bg-[--dash-text] text-[--dash-bg] hover:opacity-90（暗色反色，禁 text-white）；secondary = --dash-card 描边 hover:bg-[--dash-bg]；ghost = 透明 hover:bg-[--dash-bg]；danger = red-600 系
-- 公共站按钮变体：bg-[--yh-text] → hover:bg-[--yh-accent]（404/CTA 用；真代码 HomeClient 此处仍是 zinc-900 历史态已登记基线，新代码一律用令牌）
-- 共性：直角、12px 大写 letter-spacing .14em、min-h 44px（触屏）、flex 居中
-- 过渡（真代码同款）：transition-[color,background-color,border-color,opacity,scale] duration-200 var(--ease-out) + active:scale-[0.98] 按压；focus-visible = 2px accent outline`},
+新建「按钮 Button」（ui/Button + 公共站 CTA）：
+- primary = bg-dash-text text-dash-bg hover:opacity-90；secondary/ghost/danger 同 ui/Button
+- 公共站 CTA：bg-yh-text → hover:bg-yh-accent
+- 直角、12px 大写 .14em、min-h 44px
+- 过渡：color/background/border/opacity **180–300ms ease-out**；active scale 0.97–0.98；focus-visible 2px accent`},
  {id:"search",name:"归档搜索框",cat:"输入",desc:"左置放大镜 + 聚焦 accent 边框 + placeholder 中文提示，受控输入实时过滤。",
   pv:`<div style="position:relative;width:100%;max-width:210px"><div class="pv-srch"><span class="ic">⌕</span><input class="pv-input" type="text" placeholder="慢日志"></div></div>`,
   prompt:`${P_BASE}
-新建「归档搜索框 ArchiveSearch」（归档页内组件，见 app/archive/ArchiveClient.tsx）：
-- 受控 input，左置 lucide Search 图标（absolute left-3），pl-10 预留
-- focus 转 border-[--yh-accent]；placeholder 用 --yh-muted；直角无圆角
-- 过渡：transition-colors 0.2s var(--ease-out)（border/背景平滑切换）；focus-visible = 2px accent outline
-- onChange 实时回调父级过滤（年份分组 + 标题/分类双字段匹配），不防抖也保持流畅`},
+新建「归档搜索框 ArchiveSearch」：
+- 受控 input + 左置 Search 图标 + pl-10
+- focus border-accent；focus-visible 2px accent
+- 过渡 **180–200ms ease-out**；onChange 父级过滤（标题/分类）`},
  {id:"empty",name:"空状态",cat:"反馈",desc:"S 邮票小印 + serif 主句 + mono 提示，空而不冷，带轻微旋转的编辑感。",
   pv:`<div style="text-align:center"><span style="display:inline-flex;width:30px;height:30px;border:1px solid var(--yh-border);background:var(--dash-card);align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;color:var(--yh-muted);transform:rotate(-4deg)">S</span><div style="font-size:12px;font-weight:600;margin-top:8px">没有匹配的文章</div><div style="font-size:10px;color:var(--yh-muted)">换个关键词试试</div><button type="button" onclick="esClick(this)" style="margin-top:10px;font-family:inherit;font-size:9px;letter-spacing:.1em;padding:4px 12px;border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted);cursor:pointer;transition:all .2s var(--ease-out)">清除筛选</button></div>`,
   prompt:`${P_BASE}
@@ -299,24 +298,24 @@ const C = [
   pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:#dc2626;color:#fff;border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
   prompt:`${P_BASE}
 新建「确认对话框 ConfirmDialog」：
-- 还原 components/ui/Dialog.tsx（导出 ConfirmDialog 与 PromptDialog）：props { open, onOpenChange, title, description, confirmText, cancelText, variant: "default"|"danger", onConfirm }
-- 遮罩 bg-black/40 + backdrop-blur-sm；面板 --dash-card + --dash-border max-w-md p-6 + scaleIn 0.2s ease-out
-- Esc 关闭 + 遮罩点击关闭；入场遮罩 maskIn 0.2s，关闭 200ms 退场（遮罩 transition 渐隐 + 面板 opacity-0 scale-[0.96]）后卸载；按钮组右对齐：取消 = 描边 hover:bg-[--dash-bg]，danger = bg-red-600 text-white hover:bg-red-700`},
+- open/onOpenChange/variant；遮罩 black/40 + blur；面板 scaleIn 200ms；关闭 200ms 退场后卸载
+- Esc/遮罩点击关闭；danger=red-600；按钮取消=描边`},
  {id:"load",name:"加载状态",cat:"反馈",desc:"S 圆印 + 品牌字 + shimmer 骨架卡（三行递减宽度）+ accent 呼吸点 + mono LOADING。后台另有 compact 变体。",
   pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">慢日志 · SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
   prompt:`${P_BASE}
-新建「加载状态 Loading」（路由级，还原 app/loading.tsx）：
-- 结构：S 圆印（--yh-text/--yh-bg 反色圆）+ mono 品牌字「慢日志 · SLOWLOG」→ shimmer 骨架卡（--dash-card + --yh-border，三行 100%/75%/50% 递减宽度，shimmer 1.5s 循环 + 200/400ms 递进延迟）→ accent 呼吸点 + mono LOADING（tracking .14em）
-- 骨架 shimmer：bar 内绝对定位光带（linear-gradient 透明→白→透明），transform: translateX(-120%→330%) 1.5s 循环（禁 background-position 动画）
-- 底部 mono tagline 收尾；变体 DashLoading（后台：S 圆标 + accent 呼吸点 + 「加载中」，compact 仅呼吸点+小字）
-- 编辑器局部加载用直角旋转环变体（dynamic ssr:false 闭包内读 yh-lang 取多语言提示语）`},
+新建「加载状态 Loading」（还原 app/loading.tsx）：
+- 纸纹底 + S 圆印阴影 + 品牌 mono 行 + accent 渐隐短线
+- 骨架卡：三行错峰 shimmer 1.8s ease-in-out + 短 accent 装饰线 + 底部「加载中」1.6s 呼吸点
+- 底部随机格言（lib/taglines.ts pickTagline，mount 后抽，避免水合不一致）
+- 变体 DashLoading compact；编辑器 dynamic loading 用 dashLoadingEditor 词`},
  {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
   pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="prog-i" style="position:absolute;left:0;top:0;height:100%;width:6%;background:var(--yh-accent)"></span></div><div class="mono prog-t" style="font-size:9px;color:var(--yh-muted);margin-top:6px">6% · 预计 10 min</div></div>`,
   prompt:`${P_BASE}
-新建「阅读进度条 ReadingProgress」：
-- 还原 components/ReadingProgress.tsx：进度基于 article 元素矩形（rect.top/offsetHeight - viewport）而非全文档，fallback 全文档比例
-- requestAnimationFrame 节流 + cancelAnimationFrame；三处联动：顶部细线渐显（visible 态）+ 侧栏 data-side-progress 5px 条 + data-side-progress-text 百分比/剩余时间
-- 进度填充用 **transform: scaleX(pct) + origin-left**（transition-transform 150ms ease-out），**禁 width/left 动画**（合成器友好）；读写位置可续读（read-progress lib）`},
+新建「阅读进度条 ReadingProgress」（还原 components/ReadingProgress.tsx）：
+- 基于 article 矩形 + rAF 节流；三处联动：顶部细线（**h-2px opacity-60**）+ 侧栏 data-side-progress scaleX + data-side-progress-text
+- 填充 **transform: scaleX + origin-left**，transition **280ms ease-out**；禁 width 动画
+- **勿对同一节点使用 Tailwind scale-* 与 JS transform**（v4 scale 属性会冲突）；侧栏初值 inline transform:scaleX(0)
+- 段落当前阅读 opacity 微调；读写 localStorage 续读`},
  {id:"blockq",name:"引用块",cat:"数据展示",desc:"正文 prose 引用：accent 左缘 30% 透明 + 纸面底 + italic muted，文章气质件。",
   pv:`<div style="width:100%;max-width:210px;border-left:3px solid color-mix(in srgb,var(--yh-accent) 30%,transparent);background:var(--dash-card);padding:10px 14px;font-size:11px;font-style:italic;color:var(--yh-muted)">慢不是速度，是注意力。</div>`,
   prompt:`${P_BASE}
@@ -328,87 +327,114 @@ const C = [
  {id:"listview",name:"归档列表行",cat:"数据展示",desc:"日期 + 标题 + 徽章 + 阅读时长 + 箭头的五段行，hover 背景微亮 + 箭头滑入。",
   pv:`<div style="width:100%;max-width:210px"><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid var(--yh-border);font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-03</span><span style="flex:1;truncate">规则派生的封面系统</span><span class="ar">→</span></div><div class="arow" style="display:flex;gap:8px;align-items:center;padding:6px 4px;font-size:10.5px"><span class="mono" style="color:var(--yh-muted)">09-01</span><span style="flex:1">左写右读：编辑器</span><span class="ar">→</span></div></div>`,
   prompt:`${P_BASE}
-新建「归档列表行 ArchiveRow」（归档页内组件，见 app/archive/ArchiveClient.tsx）：
-- 五段结构：mono 日期(w-11) / 标题(flex-1 truncate) / 分类徽章 / 阅读时长 / ChevronRight
-- hover：bg-[--yh-bg]/50 + 标题转 accent 下划线 + 箭头 opacity 0→1 且 translateX 入场；过渡 transition-colors 0.2s var(--ease-out)（箭头 opacity/transform 0.2s）
-- 分隔线 --yh-border/50，末行去线；整行 Link 可点`},
+新建「归档列表行 ArchiveRow」：
+- mono 日期 / 标题 truncate / 徽章 / 时长 / ChevronRight
+- hover：bg-yh-bg/50 + 箭头 translateX 3px · **200ms ease-out**
+- 分隔线 border/50；整行可点`},
  {id:"langsw",name:"语言切换器",cat:"输入",desc:"单枚 mono 描边按钮：显示目标语言（中文态显示 EN），点击在 zh/en 间往返，yh-lang 持久化。",
   pv:`<div><button type="button" class="lg" onclick="lgclick(this)">EN</button></div>`,
   prompt:`${P_BASE}
-新建「语言切换器 LanguageSwitcher」（还原 components/LanguageSwitcher.tsx）：
-- 单枚 mono 12px 描边按钮（px-3 py-[5px] --yh-border/--dash-card），显示目标语言：中文态显示 EN，英文态显示 中
-- 点击 setLang 往返 zh/en，持久化 localStorage；标题与 UI 文案经 useLang 双语回退链（titleZh||title）
-- 与 ThemeToggle 并排置于头部；切换即时生效无需刷新
-- 过渡：hover:opacity-60 transition-opacity duration-200（对齐 Header 品牌字 hover 语言）；active:scale-[0.97] 微按压`},
+新建「语言切换器 LanguageSwitcher」：
+- mono 描边按钮；中文态显示 EN，英文态显示 中；localStorage yh-lang
+- 与 ThemeToggle 并排；即时生效
+- hover opacity-60 · **180ms**`},
  {id:"searchpanel",name:"全局搜索面板",cat:"布局导航",desc:"⌘K 或「/」唤起：拼音双路索引、文章/分类/随想分组、命中高亮、键盘上下导航、Esc 关闭。站点招牌件。",
   pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);box-shadow:var(--shadow-pop)"><div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--yh-border)"><span class="mono" style="font-size:10px;color:var(--yh-muted)">⌕ 搜索标题或内容…</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:1px 5px;color:var(--yh-muted)">Esc</span></div><div class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted);padding:8px 12px 2px">文章</div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>规则派生的封面系统</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div><div class="sp-row" style="display:flex;justify-content:space-between;gap:8px;padding:5px 12px;font-size:10.5px;cursor:pointer" onclick="spClick(this)"><span>分屏编辑器</span><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">文章</span></div></div>`,
   prompt:`${P_BASE}
-新建「全局搜索面板 SearchPanel」（还原 components/SearchPanel.tsx）：
-- 唤起：⌘K 或「/」，createPortal 全屏遮罩；Esc 关闭；输入防抖索引
-- 结果按 文章/分类/随想 分组（mono 10px 大写组标），命中关键词高亮，行尾 kind 徽章 + meta
-- 键盘 ↑↓ 循环选择 + Enter 跳转；拼音双路索引（全拼/首字母）
-- sp-item hover 背景 --yh-bg/60（transition-colors 0.15s）；选中行 bg 过渡同步；面板 0.25s pageIn 入场，Esc 关闭时 0.15s 渐隐退场`},
+新建「全局搜索面板 SearchPanel」：
+- ⌘K /「/」；Portal 全屏遮罩；Esc；分组 文章/分类/随想；↑↓ Enter
+- 拼音双路索引；激活行 color-mix(yh-border 45%, transparent)
+- 面板底/边框/底栏全用 --yh-* token（暗色可用）
+- 入场 pageIn 250ms；关闭 150ms 渐隐`},
  {id:"breadcrumb",name:"面包屑",cat:"布局导航",desc:"站点名 → 分类 → 文章三级路径，斜杠分隔，可点层级 hover 转亮。",
   pv:`<nav style="display:flex;gap:6px;font-size:11px;color:var(--yh-muted);align-items:center"><span>慢日志</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-text)">设计</span><span style="color:var(--yh-border)">/</span><span style="color:var(--yh-accent)">规则派生的封面系统</span></nav>`,
   prompt:`${P_BASE}
-新建「面包屑 Breadcrumb」（还原 components/Breadcrumb.tsx）：
-- props { items: { label, href? }[] }；首段固定站点名（useLang 取，try/catch 包裹防 SSR 上下文缺失）
-- 层级分隔符 --yh-border 色斜杠；可点层级 hover:text-[--yh-text]（transition-colors 0.15s）；末级 accent 强调
-- 12px muted 基调，mb-6 与正文留白；无独立入场动画（随页面 pageIn）`},
+新建「面包屑 Breadcrumb」：
+- items { label, href? }；首段站点名（useLang）
+- 分隔 --yh-border 斜杠；末级 accent；12px muted
+- 无独立入场`},
  {id:"aavatar",name:"作者头像",cat:"数据展示",desc:"首字母圆形头像：AUTHOR_BG 按首字母分配底色（M 玫红/C 紫/Y 琥珀/D 蓝/R 绿/J 橙），sm/lg 双尺寸。",
   pv:`<div style="display:flex;gap:8px"><span style="width:30px;height:30px;border-radius:50%;background:#FDF2F8;color:#BE185D;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">M</span><span style="width:30px;height:30px;border-radius:50%;background:#F5F3FF;color:#7C3AED;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">C</span><span style="width:30px;height:30px;border-radius:50%;background:#FFFBEB;color:#B45309;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">Y</span></div>`,
   prompt:`${P_BASE}
-新建「作者头像 AuthorAvatar」（还原 components/AuthorAvatar.tsx）：
-- memo 组件；props { initial, size?: "sm"|"lg" }（sm=32px/lg=40px）
-- 底色查 AUTHOR_BG[initial]（M 玫红/C 紫/Y 琥珀/D 蓝/R 绿/J 橙），未知首字母回退 --yh-border/--yh-muted
-- rounded-full + font-semibold 居中首字母
-- 动画契约：静态组件——无 hover、无独立动画（出现随父级）`},
+新建「作者头像 AuthorAvatar」：
+- memo；initial + size sm/lg；AUTHOR_BG 查色
+- **仅 Hero 使用**；文章卡片/详情页不再显示头像
+- 无独立动画`},
  {id:"footer",name:"页脚",cat:"布局导航",desc:"S 圆印 + 品牌字 + 版本徽章（构建时注入 NEXT_PUBLIC_APP_VERSION）+ tagline，纸面描边收边。",
   pv:`<div style="width:100%;max-width:230px;border:1px solid var(--yh-border);background:var(--dash-card);padding:10px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px"><span style="display:flex;gap:6px;align-items:center;font-size:10.5px;white-space:nowrap"><span style="width:16px;height:16px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:8px">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">v0.3.5</span></span><span class="mono" style="font-size:8px;color:var(--yh-muted)">慢下来，写点值得读的东西。</span></div>`,
   prompt:`${P_BASE}
-新建「页脚 Footer」（还原 components/Footer.tsx）：
-- mt-auto 收底；--dash-card + 上边框 --yh-border；max-w-[min(70%,1600px)] 容器
-- 左：S 圆印（22px）+ 慢日志 · SLOWLOG + 版本徽章（process.env.NEXT_PUBLIC_APP_VERSION 回退 0.3.5）
-- 右：mono tagline；移动端纵向堆叠（flex-col lg:flex-row）
-- 动画契约：容器无入场动画；出口链接 hover:opacity-60 transition-opacity duration-200`},
+新建「页脚 Footer」：
+- mt-auto；dash-card + 上边框；容器 max-w-[min(70%,1600px)]
+- 左：S 圆印 + 品牌 + 版本徽章；右：**随机格言** pickTagline(lang)（mount 后 set，SSR 初值 footerTagline）
+- 链接 mailto/GitHub/RSS；移动端 flex-col lg:flex-row
+- hover opacity-60 · 180ms`},
  {id:"tgl",name:"直角开关",cat:"输入",desc:"rounded-none 滑块：开 = accent 底右位，关 = 灰底左位，18×32 直角身份贯彻到开关。点击试试。",
   pv:`<div style="display:flex;gap:14px;align-items:center"><button type="button" class="tglw on" onclick="tglclick(this)"><span class="kn"></span></button><button type="button" class="tglw" onclick="tglclick(this)"><span class="kn"></span></button><span style="font-size:10px;color:var(--yh-muted)">显示草稿</span></div>`,
   prompt:`${P_BASE}
-新建「直角开关 Toggle」（还原 components/ui/Toggle.tsx）：
-- 32×18 直角轨道：开 = --dash-accent 底 + 滑块 translate-x-[15px]；关 = --yh-border 底左位
-- 滑块 14px --dash-card 直角 + shadow-sm，transition-transform spring
-- focus-visible：外层 2px accent outline（键盘切换可达）；状态动画均受 reduced-motion 全局兜底
-- props { label?, hint?, checked }；sr-only checkbox 无障碍；点击整行切换`},
+新建「直角开关 Toggle」：
+- 32×18 直角；开=dash-accent 滑块 +15px；关=yh-border
+- 滑块 dash-card 直角；transition-transform spring≤1.15
+- focus-visible 2px accent；reduced-motion 兜底
+- props { label?, hint?, checked } + sr-only checkbox`},
  {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：emerald 已发布 / amber 草稿 / sky 定时，文章列表与编辑器状态标。",
   pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
   prompt:`${P_BASE}
-新建「状态徽章 Badge」（还原 components/ui/Badge.tsx）：
-- tones = { emerald: "bg-emerald-50 text-emerald-700 border-emerald-200", amber: "bg-amber-50 …", sky: "bg-sky-50 …" }
-- props { tone = "emerald", children }；直角小签
-- 文章列表状态映射：published→emerald / draft→amber / scheduled→sky
-- 动画契约：静态小签；状态切换时 transition-colors 0.2s 平滑变色（出现随父级）`},
+新建「状态徽章 Badge」：
+- tones emerald/amber/sky；props { tone, children }
+- published→emerald / draft→amber / scheduled→sky
+- 静态签；状态切换 transition-colors 200ms`},
  {id:"formgrp",name:"表单控件组",cat:"输入",desc:"FormField 标签/hint/error 三行契约 + Input/Select 直角纸面 focus accent，后台表单标配。",
   pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:#ef4444">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
   prompt:`${P_BASE}
 新建「表单控件组」：
-- FormField：label（11px medium muted，required 红星 text-red-500）+ children + error（10px red）+ hint（10px muted/60）三行契约，固定高度防跳动
-- Input/Select（还原 components/ui/Input.tsx / Select.tsx）：bg-[--dash-bg] focus:bg-[--dash-card] + --dash-border 直角，focus:border-[--dash-accent] + focus:ring-1 [--dash-accent]/20 + outline-none，placeholder 用 --dash-muted
-- 组合即得后台表单；错误态优先于 hint 显示
-- 过渡：Input/Select transition-colors 0.2s var(--ease-out)（focus 换底/描边平滑）；error/hint 行 ffIn 0.2s 淡入（对齐 FormField.tsx）`},
- {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：墨字逐个浮现（步进延迟）+ 印章落款，1.4s 完整播完；localStorage slowlog-welcomed 首访一次。",
-  pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>慢</span><span>日</span><span>志</span><span style="color:var(--yh-muted);margin:0 4px">·</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">慢 下 来 ， 写 点 值 得 读 的</span></div></div>`,
+- FormField：label / children / error / hint；required 红星
+- Input/Select：dash-bg → focus dash-card + border accent + ring accent/20
+- focus-visible 2px；过渡 180–200ms ease-out
+- 错误优先于 hint；固定高度防跳`},
+ {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：装订线+暖晕+印章+墨字晕开；格言随机；首访一次。",
+  pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>慢</span><span>日</span><span>志</span><span style="color:var(--yh-muted);margin:0 4px">·</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">纸上有字 · 心里有空</span></div></div>`,
   prompt:`${P_BASE}
 新建「墨字入场 Welcome」（还原 components/Welcome.tsx）：
-- 全屏 --yh-bg 覆盖层（z-[90]，照抄 layout 内联 .welcome 真值，低于 toast 100），品牌墨字逐字 inkIn（0.4s ease-out + 60-80ms 步进延迟）+ tagline 次行
-- 总时长 1.4s（签名仪式，不受常态规范约束）；localStorage「slowlog-welcomed」永久记忆，首访播一次，老访客挂 html-returning 类直接 display:none
-- prefers-reduced-motion 直接隐藏；css-probe 失败自动 reload 兜底`},
- {id:"tags",name:"标签组",cat:"数据展示",desc:"文章标签 chips：描边胶囊 hover 转 accent 实底白字，点击进 /tag/[tag] 聚合页。试试 hover。",
+- 四角装订线 → 暖晕 → S 印章 stampIn 0.55s spring(56px) → accent 下划线 → 品牌/格言 ink 晕开(delay 720/1180) → 微字 SLOW
+- LEAVE 2100 / HIDE 2700；html-returning / reduced-motion 隐藏；pickTagline 随机格言`},
+ {id:"tags",name:"标签组",cat:"数据展示",desc:"标签 chips：描边胶囊 hover 转 accent；进 /tag/[tag]。",
   pv:`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><span class="tagchip">设计系统</span><span class="tagchip">Tauri</span><span class="tagchip">情感引擎</span></div>`,
   prompt:`${P_BASE}
-新建「标签组 Tags」（文章页内组件，见 components/PostClient.tsx 标签区）：
-- 每标签 Link → /tag/[encodeURIComponent(tag)]，样式 text-xs px-3 py-1.5 描边胶囊
-- 默认 --yh-muted 字；hover 转 accent 实底白字（transition-all .2s）
-- 暗色态：dark 分支 bg-[--dash-card]/5 border-white/10`},
+新建「标签组 Tags」（PostClient 标签区）：
+- Link → /tag/[tag]；text-xs px-3 py-1.5 描边；hover accent；暗色 dash-card/5`},
+ {id:"reveal",name:"视口入场 Reveal",cat:"动效",desc:"列表入场：滚入视口 fadeInUp 300ms + index×45ms；reduced-motion 直出。",
+  pv:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:200px"><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) both">文章 A</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .08s both">文章 B</div><div class="mini-card" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:10px;font-size:10px;animation:fadeInUp .3s var(--ease-out) .16s both">文章 C</div></div>`,
+  prompt:`${P_BASE}
+新建「视口入场 Reveal」（components/Reveal.tsx）：
+- props { delay?; className? }；IO threshold .08 / rootMargin -8%
+- [data-reveal=0] opacity0 → [1] fadeInUp 300ms + delay；reduced-motion 直接 shown`},
+ {id:"tagline",name:"随机格言池",cat:"动效",desc:"lib/taglines.ts 中英各 8 条；欢迎/加载/页脚 mount 后随机。",
+  pv:`<div style="width:100%;max-width:210px;text-align:center;padding:10px 0"><span class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--yh-muted)">pickTagline(lang)</span><div style="margin-top:8px;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:14px;font-style:italic;color:var(--yh-text)">纸上有字，心里有空。</div></div>`,
+  prompt:`${P_BASE}
+新建「随机格言」（lib/taglines.ts）：
+- ZH/EN 各 8 条；pickTagline(lang) 随机取
+- Welcome/loading/Footer/MFooter useEffect mount 后 set；SSR 初值 footerTagline；切语言重抽`},
+ {id:"code",name:"代码块",cat:"数据展示",desc:"mac 窗饰 + 语言徽章 + 复制 + 行号 gutter；横滚。",
+  pv:`<div style="width:100%;max-width:230px;border:1px solid #2a2a2e;background:#1E1E1E"><div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#2d2d30;border-bottom:1px solid #3a3a3e"><span style="display:flex;gap:4px"><i style="width:8px;height:8px;background:#ff5f56;display:inline-block"></i><i style="width:8px;height:8px;background:#ffbd2e;display:inline-block"></i><i style="width:8px;height:8px;background:#27ca3f;display:inline-block"></i></span><span class="mono" style="font-size:8px;color:#7eb8f7">PY</span><span class="mono" style="font-size:8px;color:#9ca3af;border:1px solid #3a3a3e;padding:1px 6px">复制</span></div><pre style="margin:0;padding:10px 12px;font-size:10px;line-height:1.7;color:#d4d4d4;overflow:auto"><span style="color:#6e6e73">1</span>  class A:&#10;<span style="color:#6e6e73">2</span>      pass</pre></div>`,
+  prompt:`${P_BASE}
+新建「代码块 CodeBlock」（PostRenderer codeBlock）：
+- 深色壳 + mac 点 + LangBadge + CopyBtn（复制纯 code 不含行号）
+- grid-cols-[auto_1fr] 行号 gutter + code；overflow-x-auto
+- 复制「✓ 已复制」1.2s；禁 scale-* 与 JS transform 同节点`},
+ {id:"postmeta",name:"文章头一行 meta",cat:"数据展示",desc:"顶栏徽章+剩余时间；标题下 作者·时间·时长。分类只靠徽章，无重复。",
+  pv:`<div style="width:100%;max-width:210px"><div style="display:flex;gap:6px;align-items:center;margin-bottom:8px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span class="mono" style="font-size:9px;color:var(--yh-muted)">剩余约 8 min</span></div><div style="font-size:13px;font-weight:600;margin-bottom:4px">规则派生的封面系统</div><div style="font-size:10px;color:var(--yh-muted)">Yahajiang · 刚刚 · 5 min</div></div>`,
+  prompt:`${P_BASE}
+新建「文章头 meta」（PostClient/MPost）：
+- 顶栏：CategoryBadge + data-remaining 剩余时间 + 可选仓库链接
+- 标题下一行：作者 · 相对时间 · 阅读时长（**不再重复分类/时长**）
+- 标签最多 3 个弱化；暗色标题色用 var(--yh-text)`},
+ {id:"dashhome",name:"仪表盘首页",cat:"布局导航",desc:"DashboardHome client：四统计卡 + 近期文章 + 快捷入口；接 useLang 中英。",
+  pv:`<div style="width:100%;max-width:220px"><div style="font-size:12px;font-weight:600;margin-bottom:8px">概览你的内容</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">8</div><div style="font-size:8px;color:var(--yh-muted);letter-spacing:.08em;text-transform:uppercase">文章总数</div></div><div class="statc" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px"><div style="font-size:16px;font-weight:700">6</div><div style="font-size:8px;color:var(--yh-muted)">已发布</div></div></div></div>`,
+  prompt:`${P_BASE}
+新建「仪表盘首页 DashboardHome」（components/dashboard/DashboardHome.tsx）：
+- server 拉数 → client 组件接 useLang
+- 统计：total/published/draft/views；近期文章列表；快捷入口 新建文章/随想
+- 中英用 dash* 词典键（非硬编码中文）；stat hover 仅 shadow-float`},
 ];
 
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
@@ -446,7 +472,7 @@ function closeM(){var m=document.getElementById("mask");m.classList.add("closing
 function openAbout(){
   document.getElementById("m-body").innerHTML=`
     <h2 style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;font-weight:600">关于 · 慢日志 UI 组件画廊</h2>
-    <div class="m-meta"><span class="tag">v1.3 · 2026-09-09</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta"><span class="tag">v1.4 · 2026-09-10</span><span class="tag">与真代码同源</span></div>
     <div style="font-size:12px;line-height:2;color:var(--yh-text);border:1px solid var(--yh-border);background:var(--yh-bg);padding:10px 14px;margin-bottom:12px">
       <div style="font-size:10px;letter-spacing:.2em;color:var(--yh-muted);margin-bottom:4px" class="mono">慢日志 SLOWLOG · 项目速览（实测于代码库 2026-09-10）</div>
       <div><b>定位</b>：个人博客——纸感排印做外衣，慢阅读做内胆，系统化做骨架；「安静的文字工作室」，slogan「慢下来，写点值得读的东西」。</div>
@@ -455,13 +481,11 @@ function openAbout(){
       <div><b>功能面</b>：首页杂志门面（分类 Tabs / Hero 轮播 / 随想折叠 / 时间线）· 归档搜索 · 文章阅读体系（pageConfig / TOC / 灯箱 / 代码块复制）· 后台写读同源 · 全文搜索 ⌘K · OG 分享图 · RSS · 内容备份 · 健康检查</div>
       <div><b>链接</b>：在线预览 yahajiang.dpdns.org · GitHub <span class="mono" style="font-size:11px">yahajiang/SLOWLOG-1</span>（双仓库：私人全量 / 公开清洗）</div>
     </div>
-    <p style="font-size:13px;color:var(--yh-muted);line-height:1.9">本画廊的 26 个组件全部还原自真实站点代码（<span class="mono" style="font-size:11px">Desktop/AstrBot插件/慢日志</span>），每条提示词六要素齐备：源码路径 / 结构 / 令牌样式 / 动画契约 / 无障碍与暗色 / P_BASE 全局注入——复制给任何 AI 工具，生成即与真站同源。</p>
+    <p style="font-size:13px;color:var(--yh-muted);line-height:1.9">本画廊组件均还原自真实站点代码（<span class="mono" style="font-size:11px">Desktop/AstrBot插件/慢日志</span>）。提示词含：源码路径 / 结构 / 令牌样式 / 动画契约 / 无障碍与暗色 / P_BASE——复制给 AI 即可与真站同源。</p>
     <div style="font-size:12px;line-height:2.1;color:var(--yh-text)">
-      <div><b>配套文档</b>：《慢日志UI设计系统.html》（v1.3 实现版）· 《慢日志AI提示词-总纲.md》· 《慢日志UI一致性基线.md》</div>
-      <div><b>一致性闸门</b>：<span class="mono" style="font-size:11px">check-consistency.py</span> 84 项机器核对——改任何令牌后必须全 PASS 才收工</div>
-      <div><b>令牌真值速查</b>：muted <span class="mono" style="font-size:11px">#6E6E73</span> · accent <span class="mono" style="font-size:11px">#4A6FB5</span> 双声明回退 · 阴影三档 card/float/pop · z 阶梯 40/50/90/100</div>
-      <div><b>动画语言</b>：五 Motion（呼吸 / 生长 / 偏移 / 阅读 + Welcome 仪式），只动 transform/opacity，200–600ms，ease-out / spring，reduced-motion 全局兜底</div>
-      <div><b>版权</b>：© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0 开源（设计文档引用请注明出处）· 联系 yahajiang@gmail.com</div>
+      <div><b>近期更新</b>：安全 Host 白名单 · 强制改密闭环 · 视口 Reveal · 随机格言池 · TOC 标题 id 去重 · 代码块行号 · 后台中英双语 · 纸感背景四层</div>
+      <div><b>动画语言</b>：180/300/500ms 三档 · ease-out · spring≤1.15 · 只动 transform/opacity · reduced-motion 全局兜底 · 禁 scale-* 与 JS transform 同节点</div>
+      <div><b>版权</b>：© 2026 Yahajiang · 慢日志 SlowLog · yahajiang@gmail.com</div>
     </div>`;
   document.getElementById("mask").classList.add("open");
   document.body.style.overflow="hidden";
