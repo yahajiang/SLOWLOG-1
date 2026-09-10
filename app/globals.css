@@ -103,15 +103,14 @@ code, pre, .font-mono {
   font-family: var(--font-serif), var(--font-serif-sc), Georgia, "Times New Roman", Times, serif;
 }
 
-/* Transitions tokens — 克制纸感 × 少量生命力 */
+/* Transitions tokens — 以静音排印为主：位移极小，以透明度/线条生长表达「仪式」 */
 :root {
-  /* spring 过冲从 1.56 收到 1.35：保留一点回弹，去掉弹跳感 */
-  --ease-spring: cubic-bezier(0.34, 1.35, 0.64, 1);
+  /* spring 过冲再收到 1.12：几乎无弹跳，保留一丝回弹 */
+  --ease-spring: cubic-bezier(0.34, 1.12, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-fast: 180ms;
-  --duration-normal: 320ms;
-  --duration-slow: 480ms;
-  /* Motion System: 呼吸/Grow（Welcome 1.4s 为签名仪式，不受此约束） */
+  --duration-normal: 360ms;
+  --duration-slow: 520ms;
   --motion-breath: 6s;
   --motion-grow: 480ms;
 }
@@ -122,8 +121,9 @@ code, pre, .font-mono {
 }
 .motion-breath { animation: motionBreath var(--motion-breath) ease-in-out infinite; }
 
+/* 静音排印入场：几乎只靠 opacity，位移 2–3px */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(3px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -133,16 +133,28 @@ code, pre, .font-mono {
 }
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.985); }
   to { opacity: 1; transform: scale(1); }
 }
 
-/* 视口触发入场（Reveal）：未 show 时隐藏；show 后播 fadeInUp */
+/* Hero 交叠淡入：优先透明度，辅以极轻上移（杂志落墨感） */
+@keyframes inkSettle {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-swap {
+  animation: inkSettle var(--duration-slow) var(--ease-out) both;
+}
+/* 段落/元信息略晚半拍，形成阅读仪式节奏 */
+.hero-swap-delay-1 { animation-delay: 60ms; }
+.hero-swap-delay-2 { animation-delay: 120ms; }
+
+/* 视口触发入场（Reveal） */
 [data-reveal="0"] { opacity: 0; }
 [data-reveal="1"] {
   animation: fadeInUp var(--duration-normal) var(--ease-out) both;
@@ -874,7 +886,7 @@ body::after {
 /* 页面入场动画：to 帧必须 transform:none——动画结束不残留 containing block，
    文章页内的 fixed 元素（灯箱、阅读进度条）才不会被 wrapper 困住 */
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
 }
 .page-enter {
@@ -888,6 +900,7 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .page-enter > * { animation: none; }
   .stagger-children > * { animation: none; }
+  .hero-swap, .hero-swap-delay-1, .hero-swap-delay-2 { animation: none; }
   [data-reveal="0"], [data-reveal="1"] { animation: none; opacity: 1; }
 }
 

@@ -166,8 +166,8 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           onMouseLeave={() => { heroPaused.current = false }}
         >
           <div className="max-w-[min(70%,1600px)] mx-auto px-6 py-12 md:py-16">
-            <div className="flex flex-col md:flex-row md:items-center gap-5 animate-[fadeInUp_0.5s_var(--ease-out)_both]" key={heroIndex}>
-              <div className="flex-1 min-w-0">
+            <div className="flex flex-col md:flex-row md:items-center gap-5" key={heroIndex}>
+              <div className="flex-1 min-w-0 hero-swap">
                 <div className="flex items-center gap-3 mb-3">
                   <CategoryBadge category={localizedFeatured.category} />
                   {/* 仅真·推荐文章才打「推荐」标；分类 spotlight 可能是回退出的最新一篇，不能谎标 */}
@@ -194,11 +194,11 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     </span>
                   )}
                 </div>
-                <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
+                <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3 hero-swap">
                   {localizedFeatured.title}
                 </h2>
-                <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{localizedFeatured.excerpt}</p>
-                <div className="flex items-center gap-4">
+                <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2 hero-swap hero-swap-delay-1">{localizedFeatured.excerpt}</p>
+                <div className="flex items-center gap-4 hero-swap hero-swap-delay-2">
                   <div className="flex items-center gap-2">
                     <AuthorAvatar initial={localizedFeatured.authorInitial} />
                     <div>
@@ -206,12 +206,12 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(localizedFeatured.date, lang)} · {localizedFeatured.readTime}</p>
                     </div>
                   </div>
-                  <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[11px] tracking-widest uppercase hover:bg-[var(--yh-accent)] transition-colors duration-300 [transition-timing-function:var(--ease-spring)]">
+                  <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[11px] tracking-widest uppercase hover:bg-[var(--yh-accent)] transition-colors duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)]">
                     {t.readArticle} <ChevronRight className="w-3 h-3" />
                   </Link>
                 </div>
               </div>
-              <div className="hidden md:block w-48 shrink-0 animate-[fadeIn_0.6s_var(--ease-out)_both] [animation-delay:100ms]" key={`art-${heroIndex}`}>
+              <div className="hidden md:block w-48 shrink-0 hero-swap hero-swap-delay-1" key={`art-${heroIndex}`}>
                 <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
                   <ArticleArt post={localizedFeatured} tall />
                 </div>
