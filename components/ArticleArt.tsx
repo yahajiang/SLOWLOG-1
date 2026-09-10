@@ -1,4 +1,4 @@
-﻿import { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { ART_PALETTES, CAT_ABBR, resolveTagSymbol, resolveTagPrimary } from "@/lib/categories";
 import type { Post } from "@/lib/types";
 import type { TagSymbol } from "@/lib/categories";
@@ -181,7 +181,7 @@ function TagScene({ symbol, palette, variant }: { symbol: TagSymbol | null; pale
           <rect x="84" y="62" width="36" height="36" fill={c} stroke={c} strokeWidth="1.2" />
           <circle cx="124" cy="98" r="2.5" fill={a} />
           <line x1="22" y1="100" x2="178" y2="100" stroke={c} strokeWidth="0.6" opacity="0.35" />
-          <text x="100" y="112" textAnchor="middle" fontSize="6" fill={c} opacity="0.5" fontFamily="JetBrains Mono">2×2 · grid</text>
+          <text x="100" y="112" textAnchor="middle" fontSize="8" fill={c} opacity="0.32" fontFamily="JetBrains Mono">2×2 · grid</text>
         </svg>
       </div>
     );
@@ -211,7 +211,7 @@ function TagScene({ symbol, palette, variant }: { symbol: TagSymbol | null; pale
           <circle cx="126" cy="60" r="32" fill={w} stroke={c} strokeWidth="1.4" opacity="0.85" />
           <circle cx="74" cy="60" r="14" fill="none" stroke={c} strokeWidth="0.6" opacity="0.5" />
           <circle cx="126" cy="60" r="14" fill="none" stroke={c} strokeWidth="0.6" opacity="0.5" />
-          <text x="100" y="106" textAnchor="middle" fontSize="6" fill={c} opacity="0.5" fontFamily="JetBrains Mono">mirror</text>
+          <text x="100" y="106" textAnchor="middle" fontSize="8" fill={c} opacity="0.32" fontFamily="JetBrains Mono">mirror</text>
         </svg>
       </div>
     );
@@ -270,7 +270,7 @@ function TagScene({ symbol, palette, variant }: { symbol: TagSymbol | null; pale
           <polygon points="100,38 124,60 100,82 76,60" fill="none" stroke={c} strokeWidth="0.8" opacity="0.6" />
           <circle cx="100" cy="60" r="3.5" fill={c} />
           <circle cx="100" cy="60" r="1.5" fill={a} />
-          <text x="100" y="112" textAnchor="middle" fontSize="6" fill={c} opacity="0.5" fontFamily="JetBrains Mono">soulsync</text>
+          <text x="100" y="112" textAnchor="middle" fontSize="8" fill={c} opacity="0.32" fontFamily="JetBrains Mono">soulsync</text>
         </svg>
       </div>
     );
@@ -488,7 +488,7 @@ export const ArticleArt = memo(function ArticleArt({
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 180" preserveAspectRatio="none" aria-hidden>
                 <path d="M0 78 L58 60 L118 86 L182 42 L242 71 L320 52" fill="none" stroke={palette.wash} strokeWidth="1.2" />
                 <path d="M0 98 L78 90 L138 104 L198 72 L320 82" fill="none" stroke={palette.ink} strokeWidth="0.65" strokeDasharray="5 5" opacity="0.32" />
-                <g opacity="0.35"><line x1="58" y1="60" x2="58" y2="12" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="2 3"/><text x="60" y="10" fontSize="6" fill={palette.ink} fontFamily="JetBrains Mono">EL.58</text></g>
+                <g opacity="0.35"><line x1="58" y1="60" x2="58" y2="12" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="2 3"/><text x="60" y="10" fontSize="8" fill={palette.ink} fontFamily="JetBrains Mono">EL.58</text></g>
               </svg>
               <span className={`absolute top-[34%] ${dotPos} w-1.5 h-1.5 rounded-none`} style={{ backgroundColor: palette.accent }} />
               <span className="absolute top-6 left-6 mono text-[6px] tracking-[0.15em] border px-1.5 py-0.5 rounded bg-[var(--dash-card)]/80" style={{ borderColor: palette.ink, opacity: 0.22, color: palette.ink }}>CONTOUR · {dotPos.replace(/[^0-9]/g,'')}</span>
@@ -515,7 +515,7 @@ export const ArticleArt = memo(function ArticleArt({
                 <rect x="118" y="54" width="68" height="42" fill="white" stroke={palette.wash} strokeWidth="0.9" rx="3" />
                 <line x1="102" y1="58" x2="118" y2="76" stroke={palette.ink} strokeWidth="0.75" opacity="0.4"/>
                 <circle cx={variant4 % 2 === 0 ? 52 : 126} cy={variant4 % 2 === 0 ? 44 : 62} r="2.2" fill={palette.accent} />
-                <text x="38" y="48" fontSize="6" fill={palette.ink} opacity="0.5" fontFamily="JetBrains Mono">ARCH-0{variant4 + 2}</text>
+                <text x="38" y="48" fontSize="8" fill={palette.ink} opacity="0.32" fontFamily="JetBrains Mono">ARCH-0{variant4 + 2}</text>
               </svg>
               <span className="absolute top-6 right-6 mono text-[6px] tracking-[0.15em] opacity-30" style={{ color: palette.ink, opacity: 0.28 }}>SCALE 1:2{variant4}0</span>
               <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
@@ -587,7 +587,7 @@ export const ArticleArt = memo(function ArticleArt({
           {variant3 === 2 && (
             <>
               {/* 1. 顶部徽标 */}
-              <span className={`absolute top-7 mono text-[11px] tracking-[0.28em] ${shiftClass} border px-2 py-0.5 rounded-none bg-[var(--dash-card)] shadow-sm`} style={{ color: palette.ink, borderColor: palette.wash, opacity: variant % 2 === 0 ? 0.4 : 0.28 }}>frontend · No.{noNum}</span>
+              <span className={`absolute top-7 mono text-[11px] tracking-[0.28em] ${shiftClass} border px-2 py-0.5 rounded-none bg-[var(--dash-card)] shadow-sm`} style={{ color: palette.ink, borderColor: palette.wash, opacity: variant % 2 === 0 ? 0.32 : 0.24 }}>frontend · No.{noNum}</span>
               {/* 2. 角点 */}
               <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent }} />
               {/* 3. 巨字 */}
