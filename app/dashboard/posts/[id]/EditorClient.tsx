@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
@@ -28,7 +28,7 @@ const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor").th
     <div className="flex items-center justify-center h-96">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-2 border-[var(--dash-border)] border-t-[var(--dash-text)] rounded-none animate-spin" />
-        <p className="text-sm text-[var(--dash-muted)]">{(typeof window !== "undefined" && localStorage.getItem("yh-lang") === "en") ? "Loading editor..." : "加载编辑器..."}</p>
+        <p className="text-sm text-[var(--dash-muted)]">{dict.zh.dashLoadingEditor}</p>
       </div>
     </div>
   )
@@ -38,17 +38,18 @@ const t = dict.zh
 
 // 预览面板独立组件，只在内容变化时重渲染
 function PreviewPanel({ content, post, pageConfig, categories }: { content: any; post: any; pageConfig: PageConfig; categories: any[] }) {
+  const { t: tt, lang: tlang } = useLang()
   return (
     <div className="py-6" style={{ color: pageConfig.theme === "dark" ? "#E5E5E7" : undefined, backgroundColor: pageConfig.theme === "dark" ? "#1C1C1E" : undefined }}>
       <div className="mx-auto max-w-3xl px-6">
-        <Breadcrumb items={[{ label: categories.find((c: any) => c.id === post.categoryId)?.nameZh || "慢日志" }, { label: (post.titleZh || post.title) || "未命名" }]} />
+        <Breadcrumb items={[{ label: categories.find((c: any) => c.id === post.categoryId)?.nameZh || tt.siteName }, { label: (post.titleZh || post.title) || tt.dashUntitled }]} />
         <div className="flex items-center gap-3 mb-4 mt-3">
-          <span className="inline-block px-2.5 py-0.5 text-[10px] font-semibold tracking-widest uppercase rounded-none border" style={{ backgroundColor: pageConfig.primaryColor || undefined, borderColor: pageConfig.primaryColor || undefined, color: "#fff" }}>{categories.find((c: any) => c.id === post.categoryId)?.nameZh || categories.find((c: any) => c.id === post.categoryId)?.name || "未分类"}</span>
+          <span className="inline-block px-2.5 py-0.5 text-[10px] font-semibold tracking-widest uppercase rounded-none border" style={{ backgroundColor: pageConfig.primaryColor || undefined, borderColor: pageConfig.primaryColor || undefined, color: "#fff" }}>{categories.find((c: any) => c.id === post.categoryId)?.nameZh || categories.find((c: any) => c.id === post.categoryId)?.name || tt.dashUncategorized}</span>
           <span className="text-zinc-200">/</span>
           <span className="text-[11px] text-[var(--yh-muted)]">{post.readTime || "5 min"}</span>
         </div>
-        <h1 className={`text-3xl font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: pageConfig.primaryColor && pageConfig.theme !== "dark" ? pageConfig.primaryColor : undefined }}>{(post.titleZh || post.title) || "未命名"}</h1>
-        <p className="text-[15px] leading-relaxed text-[var(--yh-muted)] mb-6">{(post.excerptZh || post.excerpt) || "摘要"}</p>
+        <h1 className={`text-3xl font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: pageConfig.primaryColor && pageConfig.theme !== "dark" ? pageConfig.primaryColor : undefined }}>{(tlang === "zh" ? post.titleZh || post.title : post.title) || tt.dashUntitled}</h1>
+        <p className="text-[15px] leading-relaxed text-[var(--yh-muted)] mb-6">{(tlang === "zh" ? post.excerptZh || post.excerpt : post.excerpt) || tt.dashExcerpt}</p>
         <div className="flex items-center gap-3 pb-6 border-b border-[var(--yh-border)]">
           <div className="w-10 h-10 rounded-none bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
           <div>
@@ -165,7 +166,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         body: JSON.stringify(payload),
       })
       if (res.ok) setLastSaved(new Date())
-    } catch (e) { console.error("自动保存失败:", e) }
+      } catch (e) { console.error("autosave failed:", e) }
   }, [isNew, pageConfig])
 
   const slugifyTitle = (title: string) =>
@@ -208,8 +209,8 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
 
     // 完整保存：发送全部字段
     const tagsArr: string[] = typeof current.tags === "string" ? (current.tags as string).split(",").map((s: string) => s.trim()).filter(Boolean) : (Array.isArray(current.tags) ? current.tags.map((t: string) => String(t).trim()).filter(Boolean) : [])
-    if (!silent && tagsArr.length === 0) { setTagsError("请至少填写一个标签（逗号分隔）"); return }
-    if (!silent && !current.categoryId) { setCategoryError("请选择分类"); return }
+    if (!silent && tagsArr.length === 0) { setTagsError(t.dashNeedTag); return }
+    if (!silent && !current.categoryId) { setCategoryError(t.dashNeedCategory); return }
     if (!silent) setSaving(true)
     const payload = {
       title: current.title, titleZh: current.titleZh, slug: current.slug || current.title?.toLowerCase().replace(/[^\w]+/g, "-"),
@@ -223,14 +224,14 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       if (isNew) { res = await fetch("/api/posts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }); if (res.ok) { const d = await res.json(); router.replace(`/dashboard/posts/${d.id}`) } }
       else { res = await fetch(`/api/posts/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }) }
       if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "save failed") }
-      setLastSaved(new Date()); if (!silent) toast("已保存", "success")
-    } catch (e: any) { if (!silent) { setErrorMsg(e.message || (lang === "zh" ? "保存失败" : "Save failed")); toast(e.message || (lang === "zh" ? "保存失败" : "Save failed"), "error") } }
+      setLastSaved(new Date()); if (!silent) toast(t.dashSaved, "success")
+    } catch (e: any) { if (!silent) { setErrorMsg(e.message || t.toastPublishFail); toast(e.message || t.toastPublishFail, "error") } }
     finally { if (!silent) setSaving(false) }
   }, [isNew, pageConfig, router, toast])
 
   const confirmDelete = useCallback(async () => {
     await fetch(`/api/posts/${postRef.current.id}`, { method: "DELETE" })
-    toast("已删除", "success")
+    toast(t.dashDeleted, "success")
     router.push("/dashboard/posts")
   }, [router, toast])
 
@@ -259,11 +260,11 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       <div className="h-14 border-b border-[var(--dash-border)] bg-[var(--dash-card)]/90 backdrop-blur-xl px-4 flex items-center gap-3 mt-1">
         <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">{t.editorBack}</Link>
         <div className="w-px h-4 bg-[var(--dash-border)]" />
-        <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder="输入标题..." className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
+        <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder={t.dashTitlePh} className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
         <Badge tone={scheduledFuture ? "sky" : post.status === "published" ? "emerald" : "amber"}>
           {scheduledFuture ? `${t.dashScheduledPrefix} ${new Date(post.publishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : post.status === "published" ? t.editorPublished : t.editorDraftBadge}
         </Badge>
-        <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label="推荐" className="shrink-0" />
+        <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label={t.dashRecommend} className="shrink-0" />
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? t.editorSaving : t.editorSaveDraft}</Button>
@@ -306,17 +307,17 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
                       <span className="text-[10px] text-[var(--dash-muted)]">{v.words} 字</span>
                     </div>
                     <div className="mt-1 flex items-center justify-between">
-                      <span className="text-[10px] text-[var(--dash-muted)]">{i === 0 ? (lang === "zh" ? "最新一版" : "Latest") : lang === "zh" ? `约 ${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} 分钟前保存` : `Saved ~${Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000))} min ago`}</span>
+                      <span className="text-[10px] text-[var(--dash-muted)]">{i === 0 ? t.editorLatest : t.editorMinAgo(Math.max(1, Math.round((versions[i - 1].at - v.at) / 60000)))}</span>
                       <button
                         onClick={(e) => { e.stopPropagation(); rollbackTo(v) }}
                         className="text-[10px] px-2 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors"
-                      >{lang === "zh" ? "回滚到此版" : "Roll back"}
+                      >{t.editorRollback}
                       </button>
                     </div>
                   </div>
                 )
               })}
-              <div className="px-4 py-3 text-[10px] text-[var(--dash-muted)]">{lang === "zh" ? "回滚会先保存当前内容为一版，不会丢失。" : "Current content is snapshotted before rollback — nothing is lost."}</div>
+              <div className="px-4 py-3 text-[10px] text-[var(--dash-muted)]">{t.editorRollbackNote}</div>
             </div>
           )}
         </div>
@@ -324,7 +325,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       {/* 定时发布面板（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron） */}
       {scheduleOpen && (
         <div className="border-b border-[var(--dash-border)] bg-[var(--dash-bg)] px-4 py-3 flex flex-wrap items-center gap-3">
-          <span className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "定时发布：到达设定时间后自动对读者可见（无需保持页面打开）" : "Schedule: the post becomes visible to readers at the set time (no need to keep this page open)"}</span>
+          <span className="text-xs text-[var(--dash-muted)]">{t.editorScheduleHint}</span>
           <input
             type="datetime-local"
             value={scheduleAt}
@@ -352,7 +353,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <button onClick={() => setScheduleOpen(false)} className="text-xs text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors">{t.editorCancel}</button>
         </div>
       )}
-      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title={lang === "zh" ? "确定删除？" : "Delete this post?"} description={lang === "zh" ? `将物理删除 "${post.title || post.slug || post.id}"，不可恢复。` : `This will permanently delete "${post.title || post.slug || post.id}". This cannot be undone.`} confirmText={t.editorDeleteBtn} variant="danger" onConfirm={confirmDelete} />
+      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title={t.editorDeleteConfirm} description={t.editorDeleteDesc(post.title || post.slug || post.id)} confirmText={t.editorDeleteBtn} variant="danger" onConfirm={confirmDelete} />
 
       {/* ===== 文章信息 ===== */}
       <div className="border-b border-[var(--dash-border)] bg-[var(--dash-card)] px-5 py-2">
@@ -362,15 +363,15 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           </FormField>
           <FormField label={t.formCategory} required error={categoryError} className="w-[88px] shrink-0">
             <Select value={post.categoryId || ""} onChange={(e) => setPost({ ...post, categoryId: e.target.value || null })} className="h-9 text-[11px] px-1">
-              <option value="">未分类</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.nameZh || c.name}</option>)}
+              <option value="">{t.dashUncategorized}</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{lang === "zh" ? c.nameZh || c.name : c.name}</option>)}
             </Select>
           </FormField>
           <FormField label={t.formTags} error={tagsError} className="flex-1 min-w-[140px]">
             <Input value={post.tags?.join ? post.tags.join(", ") : post.tags || ""} onChange={(e) => setPost({ ...post, tags: e.target.value.split(",") })} placeholder={t.formTagsPlaceholder} className="h-9" />
           </FormField>
           <FormField label={t.formExcerpt} required className="flex-[2] min-w-[220px]">
-            <Input value={post.excerpt || ""} onChange={(e) => setPost({ ...post, excerpt: e.target.value, excerptZh: e.target.value })} placeholder="一句话概括..." className="h-9" />
+            <Input value={post.excerpt || ""} onChange={(e) => setPost({ ...post, excerpt: e.target.value, excerptZh: e.target.value })} placeholder={t.dashExcerptPh} className="h-9" />
           </FormField>
           <FormField label={t.formReadTime} className="w-[88px] shrink-0">
             <Input value={post.readTime || ""} onChange={(e) => setPost({ ...post, readTime: e.target.value })} placeholder="5 min" className="h-9 text-[11px] px-1" />

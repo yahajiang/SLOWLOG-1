@@ -785,6 +785,10 @@ export type Dict = {
   editorVersions: string;
   editorClose: string;
   editorRollbackDone: string;
+  editorLatest: string;
+  editorMinAgo: (n: number) => string;
+  editorRollback: string;
+  editorRollbackNote: string;
   toastPublishFail: string;
   toastScheduleFail: string;
   toastDeleted: string;
