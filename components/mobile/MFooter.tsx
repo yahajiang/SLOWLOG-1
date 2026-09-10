@@ -28,6 +28,7 @@ export function MFooter({ desktopHref }: MFooterProps) {
         <div className="flex items-center gap-4 mono text-[11px] text-[var(--yh-muted)]">
           <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
           <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
+          <a href="/design/gallery.html" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">组件画廊</a>
         </div>
         <p className="mono text-[10px] text-[var(--yh-muted)]">© {new Date().getFullYear()} Yahajiang · {t.footerBuilt}</p>
         <button
