@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { pickTagline } from "@/lib/taglines";
 
 export default function Loading() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const [tagline, setTagline] = useState(t.footerTagline);
+  useEffect(() => {
+    setTagline(pickTagline(lang));
+  }, [lang]);
   return (
     <div className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-6 relative overflow-hidden">
       {/* 纸纹：与欢迎幕同语言 */}
@@ -46,7 +52,7 @@ export default function Loading() {
         </div>
 
         <p className="mono text-[12px] tracking-wide text-[var(--yh-muted)]/55 animate-[fadeIn_0.6s_var(--ease-out)_both] [animation-delay:200ms]">
-          {t.footerTagline}
+          {tagline}
         </p>
       </div>
     </div>

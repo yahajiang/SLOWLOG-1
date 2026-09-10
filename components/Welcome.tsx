@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useLang } from "@/lib/lang-context"
+import { pickTagline } from "@/lib/taglines"
 
 // 首访欢迎幕：「盖章仪式」编排——
 //   四角发丝线先落（纸面裁切感）→ S 圆标盖章回弹 → accent 下划线自左划出 →
@@ -37,8 +38,14 @@ function InkText({
 }
 
 export function Welcome() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [phase, setPhase] = useState<"show" | "leave" | "hidden">("show")
+  // 水合安全：首帧用默认，mount 后再随机（避免 SSR/CSR 不一致）
+  const [tagline, setTagline] = useState<string>(t.footerTagline)
+
+  useEffect(() => {
+    setTagline(pickTagline(lang))
+  }, [lang])
 
   useEffect(() => {
     if (document.documentElement.classList.contains("html-returning")) {
@@ -64,14 +71,11 @@ export function Welcome() {
   if (phase === "hidden") return null
   return (
     <div className={`welcome ${phase === "leave" ? "welcome-leave" : ""}`} aria-hidden>
-      {/* 纸纹颗粒 */}
       <div className="welcome-grain" />
-      {/* 四角裁切线：杂志装订感 */}
       <span className="welcome-frame welcome-frame-tl" />
       <span className="welcome-frame welcome-frame-tr" />
       <span className="welcome-frame welcome-frame-bl" />
       <span className="welcome-frame welcome-frame-br" />
-      {/* 中心轻微暖晕：像落在一盏台灯下 */}
       <div className="welcome-vignette" />
       <div className="welcome-inner">
         <div className="wi-stamp">
@@ -79,7 +83,7 @@ export function Welcome() {
           <span className="welcome-line" />
         </div>
         <InkText text={BRAND} delay={720} step={48} className="welcome-brand" />
-        <InkText text={t.footerTagline} delay={1180} step={28} className="welcome-tagline" />
+        <InkText text={tagline} delay={1180} step={28} className="welcome-tagline" />
         <p className="welcome-hint">SLOW</p>
       </div>
     </div>

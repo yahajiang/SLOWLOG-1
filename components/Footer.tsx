@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { pickTagline } from "@/lib/taglines";
 
 export function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [showTop, setShowTop] = useState(false);
+  const [tagline, setTagline] = useState(t.siteSlogan);
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 400);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    setTagline(pickTagline(lang));
+  }, [lang]);
 
   return (
     <footer className="mt-auto w-full border-t border-[var(--yh-border)] bg-[var(--dash-card)]">
@@ -21,7 +27,7 @@ export function Footer() {
           <span className="w-[22px] h-[22px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px]">S</span>
           <span className="font-medium">慢日志 · SLOWLOG</span>
           <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.5"}</span>
-          <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {t.siteSlogan}</span>
+          <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {tagline}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
           <span>© {new Date().getFullYear()} Yahajiang</span>
