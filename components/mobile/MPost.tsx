@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Clock, Calendar, ExternalLink, List, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, ExternalLink, List, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -10,8 +10,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { Lightbox } from "@/components/Lightbox";
 import { MFooter } from "./MFooter";
 import { PostRenderer } from "@/components/editor/PostRenderer";
-import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
-import { mCatLabel } from "@/lib/madapt";
+import { formatDisplayDate } from "@/lib/relative-time";
 import type { PageConfig } from "@/lib/page-config";
 
 const REPO_MAP: Record<string, string> = {
@@ -95,7 +94,6 @@ export function MPost({
   rawPost?: any;
 }) {
   const { t, lang } = useLang();
-  const relative = useRelativeTime(rawPost.createdAt || rawPost.date, lang);
   const post =
     lang === "zh"
       ? {
@@ -146,13 +144,17 @@ export function MPost({
         <div className="w-full mx-auto px-4">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <CategoryBadge category={post.category} />
+            <span className="text-[11px] text-[var(--yh-muted)]">
+              {post.author}
+            </span>
+            <span className="text-[var(--yh-border)]">·</span>
+            <span className="text-[11px] text-[var(--yh-muted)]">
+              {formatDisplayDate(post.date, lang)}
+            </span>
+            <span className="text-[var(--yh-border)]">·</span>
             <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
               <Clock className="w-3 h-3" />
               {post.readTime}
-            </span>
-            <span className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)]">
-              <Calendar className="w-3 h-3" />
-              {formatDisplayDate(post.date, lang)}
             </span>
             {repoUrl && (
               <a
@@ -169,7 +171,7 @@ export function MPost({
 
           <h1
             className="text-[24px] font-semibold leading-[1.2] tracking-[-0.02em] mb-3"
-            style={{ color: isDark ? "#FFFFFF" : pageConfig?.primaryColor || undefined }}
+            style={{ color: isDark ? "var(--yh-text)" : pageConfig?.primaryColor || undefined }}
           >
             {post.title}
           </h1>
@@ -182,16 +184,6 @@ export function MPost({
             }}
           >
             <p className="text-[15px] leading-[1.75] text-[var(--yh-muted)] italic">{post.excerpt}</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--yh-muted)] mt-3 mb-1">
-            <span>{post.author}</span>
-            <span className="opacity-40">·</span>
-            <span>{relative}</span>
-            <span className="opacity-40">·</span>
-            <span>{mCatLabel(post.category, t)}</span>
-            <span className="opacity-40">·</span>
-            <span>{post.readTime}</span>
           </div>
           {post.tags?.length > 0 && (
             <div className="flex gap-x-2 gap-y-1 flex-wrap mt-2 mb-1">
