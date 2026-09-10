@@ -222,18 +222,19 @@ code, pre, .font-mono {
   to { opacity: 0; transform: translateX(-50%) translateY(16px); }
 }
 
-/* 背景纹理 · 纸感三件套
-   1) body::before 高频颗粒：feTurbulence 细噪，multiply 压出纸纤维截面
-   2) body::after  低频云纹 + 边缘暖晕影：大尺度明暗不均，像老纸的驼纹与四周微黄
-   依旧守"纸感是暗示，不是噪音"：合成后可见度 ~4-6% */
+/* 背景纹理 · 纸感四层
+   1) body::before 高频纤维细噪（multiply 压出纸纤维）
+   2) body::after  低频云纹 + 台灯暖晕 + 边缘微黄：像摊在旧书桌上的米色纸
+   3) body 面层   顶部极淡台灯光带（radial）
+   可见度仍守「暗示不是噪音」：合成后约 5–8% */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.055;
+  opacity: 0.065;
   mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
   pointer-events: none;
 }
@@ -243,13 +244,17 @@ body::after {
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.05;
+  opacity: 0.07;
   mix-blend-mode: multiply;
   background-image:
-    radial-gradient(ellipse 130% 95% at 50% 42%, transparent 60%, rgba(151, 118, 82, 0.55) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='900' height='900' filter='url(%23f)'/%3E%3C/svg%3E");
-  background-size: 100% 100%, 900px 900px;
-  background-repeat: no-repeat, repeat;
+    /* 台灯：上中略亮，向下渐暗 */
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 252, 245, 0.45) 0%, transparent 55%),
+    /* 暖晕影：四周微黄，像灯下旧纸 */
+    radial-gradient(ellipse 125% 95% at 50% 40%, transparent 52%, rgba(151, 118, 82, 0.5) 100%),
+    /* 中频云纹：大块不均，避免纯平 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='720' height='720' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size: 100% 100%, 100% 100%, 720px 720px;
+  background-repeat: no-repeat, no-repeat, repeat;
   pointer-events: none;
 }
 
@@ -990,14 +995,18 @@ body::after {
   color-scheme: dark;
 }
 
-/* 纸纹颗粒：夜里换 screen 微光浮现 */
+/* 夜里：细噪 screen 微光；边缘保留一点墨色暖棕，像台灯照不到的纸角 */
 .dark body::before {
   mix-blend-mode: screen;
-  opacity: 0.04;
+  opacity: 0.045;
 }
 .dark body::after {
   mix-blend-mode: screen;
-  opacity: 0.035;
+  opacity: 0.045;
+  background-image:
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(140, 130, 110, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(80, 60, 40, 0.25) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='720' height='720' filter='url(%23f)'/%3E%3C/svg%3E");
 }
 
 /* 硬编码灰阶类映射（[class~=] 属性选择器——无转义，Lightning CSS 友好） */
