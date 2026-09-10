@@ -143,7 +143,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   key={cat}
                   type="button"
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3 md:px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-200 ${
+                  className={`px-3 md:px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-[220ms] ease-[var(--ease-out)] ${
                     activeCategory === cat
                       ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
                       : "border-transparent text-[var(--yh-muted)] hover:text-[var(--yh-text)] font-medium"
@@ -178,7 +178,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
                       <button
                         onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)}
-                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
+                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
                         aria-label="上一篇推荐"
                       >
                         ‹
@@ -186,7 +186,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       {heroIndex + 1} / {heroPool.length}
                       <button
                         onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)}
-                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors min-h-[24px]"
+                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
                         aria-label="下一篇推荐"
                       >
                         ›
@@ -211,7 +211,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   </Link>
                 </div>
               </div>
-              <div className="hidden md:block w-48 shrink-0 hero-swap hero-swap-delay-1" key={`art-${heroIndex}`}>
+              <div className="hidden md:block w-48 shrink-0 hero-slide" key={`art-${heroIndex}`}>
                 <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
                   <ArticleArt post={localizedFeatured} tall />
                 </div>
@@ -235,7 +235,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               </button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                 {heroPool.map((_, i) => (
-                  <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
+                  <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors duration-[180ms] ease-[var(--ease-out)] ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
                 ))}
               </div>
             </>
@@ -267,6 +267,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           )}
         </div>
 
+        <div key={`${activeCategory}|${searchQuery}`} className="category-enter">
         {gridPosts.length === 0 ? (
           showHero && posts.length === 1 ? (
             <div className="py-12 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
@@ -287,7 +288,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   setSearchQuery("");
                   setActiveCategory("All");
                 }}
-                className="mt-6 text-xs text-[var(--yh-muted)] underline underline-offset-4 hover:text-[var(--yh-text)] transition-colors"
+                className="mt-6 text-xs text-[var(--yh-muted)] underline underline-offset-4 hover:text-[var(--yh-text)] transition-colors duration-[180ms]"
               >
                 {t.clearFilters}
               </button>
@@ -329,6 +330,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
             ))}
           </div>
         )}
+        </div>
       </section>
 
       {showHomeExtras && <Thinking />}
