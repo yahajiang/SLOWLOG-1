@@ -25,12 +25,21 @@ const REPO_MAP: Record<string, string> = {
 function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
   const [open, setOpen] = useState(false);
   const { t } = useLang();
+  // 抽屉打开时锁背景滚动（iOS 需 overflow:hidden 在 html/body）
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
   if (headings.length === 0) return null;
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90"
+        className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90"
         aria-label="TOC"
       >
         <List className="w-5 h-5" />
@@ -41,7 +50,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
       {open && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
           <div
-            className="absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[70vh] flex flex-col"
+            className="absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[70vh] flex flex-col pb-[env(safe-area-inset-bottom)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-2">
@@ -89,9 +98,13 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
 export function MPost({
   post: rawPost,
   rawPost: prismaRaw,
+  prev,
+  next,
 }: {
   post: any;
   rawPost?: any;
+  prev?: { id: string; title: string; titleZh?: string } | null;
+  next?: { id: string; title: string; titleZh?: string } | null;
 }) {
   const { t, lang } = useLang();
   const post =
@@ -136,7 +149,7 @@ export function MPost({
             <span className="w-6 h-6 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px] shrink-0">S</span>
             <span className="font-semibold text-[14px] tracking-tight truncate">慢日志</span>
           </span>
-          <LanguageSwitcher />
+          <LanguageSwitcher size="sm" />
         </div>
       </div>
 
@@ -170,7 +183,7 @@ export function MPost({
           </div>
 
           <h1
-            className="text-[24px] font-semibold leading-[1.2] tracking-[-0.02em] mb-3"
+            className="text-[24px] font-semibold leading-[1.2] tracking-[-0.02em] mb-3 break-words"
             style={{ color: isDark ? "var(--yh-text)" : pageConfig?.primaryColor || undefined }}
           >
             {post.title}
@@ -214,6 +227,37 @@ export function MPost({
           <MTOC headings={post.headings || []} />
         </div>
       </section>
+
+      {(prev || next) && (
+        <section className="px-4 pb-8">
+          <div className="grid grid-cols-1 gap-3">
+            {prev && (
+              <Link
+                href={`/m/posts/${prev.id}`}
+                className="flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] active:bg-[var(--yh-border)]/40"
+              >
+                <ChevronLeft className="w-5 h-5 text-[var(--yh-muted)] shrink-0" />
+                <div className="min-w-0">
+                  <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.previous}</p>
+                  <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate">{lang === "zh" ? prev.titleZh || prev.title : prev.title}</p>
+                </div>
+              </Link>
+            )}
+            {next && (
+              <Link
+                href={`/m/posts/${next.id}`}
+                className="flex items-center gap-3 justify-end text-right border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] active:bg-[var(--yh-border)]/40"
+              >
+                <div className="min-w-0">
+                  <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.next}</p>
+                  <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate">{lang === "zh" ? next.titleZh || next.title : next.title}</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-[var(--yh-muted)] shrink-0" />
+              </Link>
+            )}
+          </div>
+        </section>
+      )}
 
       <MFooter desktopHref={`/posts/${post.id}`} />
     </div>

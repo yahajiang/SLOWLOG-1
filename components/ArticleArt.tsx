@@ -339,9 +339,12 @@ function TagScene({ symbol, palette, variant }: { symbol: TagSymbol | null; pale
 export const ArticleArt = memo(function ArticleArt({
   post,
   tall = false,
+  noBorder = false,
 }: {
   post: Post;
   tall?: boolean;
+  /** 外层已有边框时去掉自带边框，避免双线 */
+  noBorder?: boolean;
 }) {
   const rawCatName = getCategoryName(post.category);
   const KNOWN = ["Design", "Plugin", "Engineering", "Typography", "Frontend", "Snippet", "Life"];
@@ -379,7 +382,7 @@ export const ArticleArt = memo(function ArticleArt({
   return (
     <div
       aria-hidden="true"
-      className={`group relative w-full overflow-hidden rounded-none border border-[var(--yh-border)] cover cover-loop art-${artCat} ${tall ? "aspect-[4/5]" : "aspect-[4/3]"}`}
+      className={`group relative w-full overflow-hidden rounded-none ${noBorder ? "" : "border border-[var(--yh-border)]"} cover cover-loop art-${artCat} ${tall ? "aspect-[16/10]" : "aspect-[4/3]"}`}
       style={{ backgroundColor: "var(--ap)" }}
     >
       {/* 纸纹 + 微噪点 */}

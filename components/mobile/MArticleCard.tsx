@@ -20,7 +20,7 @@ export function MArticleCard({ post }: { post: any }) {
       className="group text-left w-full border border-[var(--yh-border)] bg-[var(--dash-card)] active:bg-[var(--yh-border)] flex flex-col overflow-hidden rounded-none"
     >
       <div className="relative overflow-hidden aspect-[16/9]">
-        <ArticleArt post={post} />
+        <ArticleArt post={post} noBorder />
         <div className="absolute top-2.5 left-2.5">
           <CategoryBadge category={post.category} />
         </div>

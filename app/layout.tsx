@@ -58,6 +58,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#fefdfa",
+  // iPhone 刘海/Home Indicator：允许内容延伸到安全区边缘，由 CSS env() 补偿
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
