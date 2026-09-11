@@ -1120,15 +1120,15 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面 SVG 主体场景：幅度较上一版约 +25%（用户要求更显眼），时长不变 */
-.cover-inner { animation: cover-float var(--motion-breath) ease-in-out infinite }
-@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
+/* 封面：装饰绝大多数静止；仅主体容器 -2px/8s 极轻浮动（潜意识生命力，非“这里在动”） */
+.cover-inner { animation: cover-float 8s ease-in-out infinite }
+@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
 .cover-inner svg > * { animation: cover-el-in var(--duration-normal) var(--ease-out) backwards }
 .cover-inner svg [stroke] { stroke-dasharray: 420; stroke-dashoffset: 420; animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards }
 @keyframes cover-el-in { from { opacity: 0 } }
 @keyframes cover-draw { to { stroke-dashoffset: 0 } }
+/* 实心块仅一次性描边/淡入，无循环 pulse */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box; transform-origin: center;
-  animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards, cover-pulse 5s ease-in-out 1.2s infinite;
+  animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards;
 }
-@keyframes cover-pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.05) } }
