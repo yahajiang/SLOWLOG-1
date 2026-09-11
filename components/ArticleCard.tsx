@@ -31,18 +31,16 @@ export function ArticleCard({
     <Reveal delay={Math.min(index, 8) * 45} className="h-full">
       <Link
         href={`/posts/${post.id}`}
-        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:shadow-[var(--shadow-float)] hover:-translate-y-[2px] flex flex-col overflow-hidden rounded-none transition-[transform,box-shadow] duration-[250ms] [transition-timing-function:var(--ease-out)] transform-gpu [backface-visibility:hidden]`}
+        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:border-[var(--yh-muted)] hover:-translate-y-[2px] flex flex-col overflow-hidden rounded-none transition-[transform,border-color] duration-[250ms] [transition-timing-function:var(--ease-out)] transform-gpu [backface-visibility:hidden]`}
       >
       <div className="relative overflow-hidden aspect-[16/9]">
-        <div className="h-full w-full transition-transform duration-[300ms] [transition-timing-function:var(--ease-out)] group-hover:scale-[1.01]">
-          <ArticleArt post={post} />
-        </div>
+        <ArticleArt post={post} />
         <div className="absolute top-2.5 left-2.5">
           <CategoryBadge category={post.category} />
         </div>
       </div>
       <div className="p-3 pt-2.5 flex flex-col gap-1.5 flex-1">
-        <h3 className="text-[13px] font-semibold leading-snug text-[var(--yh-text)] group-hover:text-[var(--yh-accent)] transition-colors duration-[200ms] ease-[var(--ease-out)] line-clamp-2">
+        <h3 className="text-[13px] font-semibold leading-snug text-[var(--yh-text)] group-hover:text-[var(--yh-accent)] transition-colors duration-[250ms] ease-[var(--ease-out)] line-clamp-2">
           {post.title}
         </h3>
         <p className="text-[12px] text-[var(--yh-muted)] leading-relaxed line-clamp-2">
@@ -70,7 +68,7 @@ export function ArticleCard({
               <ExternalLink className="w-3 h-3" />
             </a>
           ) : (
-            <ChevronRight className="w-4 h-4 text-[var(--yh-border)] group-hover:text-[var(--yh-accent)] group-hover:translate-x-[3px] transition-all duration-[200ms] ease-[var(--ease-out)] shrink-0" />
+            <ChevronRight className="w-4 h-4 text-[var(--yh-border)] group-hover:text-[var(--yh-accent)] group-hover:translate-x-[3px] transition-[color,transform] duration-[250ms] ease-[var(--ease-out)] shrink-0" />
           )}
         </div>
       </div>
