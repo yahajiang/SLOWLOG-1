@@ -172,17 +172,6 @@ code, pre, .font-mono {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Hero：标题优先 · ~550ms · 轻微错峰 */
-@keyframes inkSettle {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.hero-swap {
-  animation: inkSettle 550ms var(--ease-out) both;
-}
-.hero-swap-delay-1 { animation-delay: 80ms; }
-.hero-swap-delay-2 { animation-delay: 160ms; }
-
 /* 设计推荐轮播：翻页感交叠（全站唯一明显内容转场）
    旧：opacity 1→0 · translateX 0→-12px
    新：opacity 0→1 · translateX 12px→0
@@ -987,7 +976,7 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .page-enter > * { animation: none; }
   .stagger-children > * { animation: none; }
-  .hero-swap, .hero-swap-delay-1, .hero-swap-delay-2, .hero-slide, .category-enter { animation: none; }
+  .hero-flip-in, .hero-flip-out, .category-enter, .category-exit { animation: none; }
   [data-reveal="0"], [data-reveal="1"] { animation: none; opacity: 1; }
 }
 
