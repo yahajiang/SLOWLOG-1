@@ -98,28 +98,30 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       ? { ...featured, title: featured.titleZh || featured.title, excerpt: featured.excerptZh || featured.excerpt }
       : featured
     : null
-  // 翻页：index 变化时把上一篇放进 exiting 层叠出，400ms 后卸载
+  // 翻页：index/分类变化时把上一篇放进 exiting 层叠出，400ms 后卸载
+  // 上一篇不在新 heroPool 时用缓存快照，保证分类切换也能翻页淡出
   const prevHeroIdRef = useRef<string | null>(null)
+  const lastHeroSnapRef = useRef<import("@/lib/types").Post | null>(null)
   useEffect(() => {
     const curId = localizedFeatured?.id ?? null
     const prevId = prevHeroIdRef.current
     prevHeroIdRef.current = curId
-    if (!prevId || !curId || prevId === curId) {
+    if (!curId) {
+      lastHeroSnapRef.current = null
       setHeroExiting(null)
       return
     }
-    const prevPost = heroPool.find((p) => p.id === prevId)
-    if (!prevPost) {
-      setHeroExiting(null)
-      return
+    if (prevId && prevId !== curId) {
+      const prevPost = lastHeroSnapRef.current
+      if (prevPost && prevPost.id === prevId) {
+        setHeroExiting(prevPost)
+        const t = setTimeout(() => setHeroExiting(null), 420)
+        lastHeroSnapRef.current = localizedFeatured
+        return () => clearTimeout(t)
+      }
     }
-    const exitPost =
-      lang === "zh"
-        ? { ...prevPost, title: prevPost.titleZh || prevPost.title, excerpt: prevPost.excerptZh || prevPost.excerpt }
-        : prevPost
-    setHeroExiting(exitPost)
-    const t = setTimeout(() => setHeroExiting(null), 420)
-    return () => clearTimeout(t)
+    setHeroExiting(null)
+    lastHeroSnapRef.current = localizedFeatured
   }, [localizedFeatured?.id, heroPool, lang])
   // 多篇候选时自动轮播（reduced-motion 直接关闭；页签不可见 / 鼠标悬停时暂停）
   useEffect(() => {
