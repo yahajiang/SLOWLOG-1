@@ -65,7 +65,7 @@ function FallbackCover({ initial, palette, variant }: { initial: string; palette
   return F[variant] || F[0];
 }
 
-function PluginSymbol({ symbol, palette, variant, variant4 }: { symbol: TagSymbol | null; palette: any; variant: number; variant4?: number }) {
+function PluginSymbol({ symbol, palette, variant, variant4, posClass }: { symbol: TagSymbol | null; palette: any; variant: number; variant4?: number; posClass?: string }) {
   const c = palette.ink;
   const w = palette.wash;
   const style: React.CSSProperties = { borderColor: c };
@@ -73,7 +73,7 @@ function PluginSymbol({ symbol, palette, variant, variant4 }: { symbol: TagSymbo
   // 8×4×3=96：4点位严格四象限（右下/左下/右上/左上），3微变由 v 驱动
   const BADGE_POS = ["bottom-5 right-5", "bottom-5 left-6", "top-6 right-5", "top-6 left-6"] as const;
   const posIndex = typeof variant4 === "number" ? variant4 % 4 : variant % 4;
-  const badgePos = BADGE_POS[posIndex];
+  const badgePos = posClass ?? BADGE_POS[posIndex];
   const badgeBase = `absolute ${badgePos} flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.10)]`;
   const badgeWrap = "bg-[var(--dash-card)]/90 backdrop-blur-sm border p-1.5";
 
@@ -167,8 +167,8 @@ function TagScene({ symbol, palette, variant }: { symbol: TagSymbol | null; pale
   const c = palette.ink;
   const w = palette.wash;
   const a = palette.accent;
-  // 主体区统一容器：中央 + 高 56% + 宽 56%，内部 viewBox 200x120 — 内层 6s 轻微浮动，与外壳 8s 错峰
-  const wrap = "absolute top-1/2 left-1/2 w-[58%] h-[58%] flex items-center justify-center cover-inner";
+  // 主体区统一容器：真正居中（translate）+ 高 56% + 宽 56%，内部 viewBox 200x120 — 内层 6s 轻微浮动，与外壳 8s 错峰
+  const wrap = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[56%] h-[56%] flex items-center justify-center cover-inner";
 
   if (symbol === "grid") {
     // 2x2 菜单方阵 + 中心点
@@ -392,7 +392,10 @@ export const ArticleArt = memo(function ArticleArt({
 
       {/* 标签 → 主体场景区（位于中央偏下，与右下角标形成呼应） */}
       <TagScene symbol={symbol as TagSymbol | null} palette={palette} variant={variant} />
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 mono text-[8px] tracking-[0.2em] opacity-40" style={{ color: palette.ink, opacity: 0.35 }}>{tagPrimary ? tagPrimary.toUpperCase() : abbr}</div>
+      {/* Engineering 底栏单独一行合并 tag，避免中心芯片与编号叠字 */}
+      {catName !== "Engineering" && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 mono text-[8px] tracking-[0.2em] opacity-40" style={{ color: palette.ink, opacity: 0.35 }}>{tagPrimary ? tagPrimary.toUpperCase() : abbr}</div>
+      )}
 
       {/* ---------- Design：编辑杂志感 · v2：族徽+轻纹理+5-7元素 ---------- */}
       {catName === "Design" && (
@@ -482,49 +485,66 @@ export const ArticleArt = memo(function ArticleArt({
         </>
       )}
 
-      {/* ---------- Engineering：蓝图感 · v2：族徽+轻纹理 ---------- */}
+      {/* ---------- Engineering：杂志分区 · 中心主体 + 单角标 + 底栏一行 ---------- */}
       {catName === "Engineering" && (
         <>
           <LightTexture palette={palette} intensity="low" />
+          {/* 装饰降噪：全部 ≤15% 透明度，且让开中心主体安全区（15–85% × 20–75%） */}
           {variant3 === 0 && (
             <>
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 180" preserveAspectRatio="none" aria-hidden>
-                <path d="M0 78 L58 60 L118 86 L182 42 L242 71 L320 52" fill="none" stroke={palette.wash} strokeWidth="1.5" />
-                <path d="M0 98 L78 90 L138 104 L198 72 L320 82" fill="none" stroke={palette.ink} strokeWidth="0.65" strokeDasharray="5 5" opacity="0.4" />
-                <g opacity="0.35"><line x1="58" y1="60" x2="58" y2="12" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="2 3"/><text x="60" y="10" fontSize="8" fill={palette.ink} fontFamily="JetBrains Mono">EL.58</text></g>
+              <svg className="absolute inset-x-0 top-0 h-[28%] w-full opacity-[0.12]" viewBox="0 0 320 48" preserveAspectRatio="none" aria-hidden>
+                <path d="M0 28 L58 14 L118 32 L182 8 L242 22 L320 12" fill="none" stroke={palette.ink} strokeWidth="0.8" />
+                <path d="M0 38 L78 34 L138 40 L198 26 L320 30" fill="none" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="4 4" opacity="0.7" />
               </svg>
-              <span className={`absolute top-[34%] ${dotPos} w-1.5 h-1.5 rounded-none`} style={{ backgroundColor: palette.accent }} />
-              <span className="absolute top-6 left-6 mono text-[6px] tracking-[0.15em] border px-1.5 py-0.5 rounded bg-[var(--dash-card)]/80" style={{ borderColor: palette.ink, opacity: 0.28, color: palette.ink }}>CONTOUR · {dotPos.replace(/[^0-9]/g,'')}</span>
-              <span className="absolute bottom-6 right-7 w-8 h-8 rounded-none border opacity-60 shadow-sm" style={{ borderColor: palette.ink, background: `radial-gradient(circle at 30% 30%, white, ${palette.wash})` }} />
-              <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
+              <span className="absolute top-4 left-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>CONTOUR</span>
+              <span className="absolute top-4 right-5 w-1 h-1 rounded-none opacity-20" style={{ backgroundColor: palette.accent }} />
             </>
           )}
           {variant3 === 1 && (
             <>
-              <div className="absolute inset-4 rounded-[8px] border" style={{ borderColor: palette.wash, backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: `22px 22px`, opacity: variant % 2 === 0 ? 0.42 : 0.28 }} />
-              <div className="absolute top-7 left-6 flex gap-1.5 items-center">
-                <span className="w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent, opacity: 0.55 }} />
-                <span className="mono text-[7px] tracking-[0.15em]" style={{ color: palette.ink, opacity: 0.35 }}>3 NODES · {dotPos === "left-[22%]" ? "A" : dotPos === "left-[38%]" ? "B" : dotPos === "left-[52%]" ? "C" : "D"}</span>
-              </div>
-              <span className={`absolute top-1/2 ${dotPos} w-1 h-1 rounded-none opacity-40`} style={{ backgroundColor: palette.ink }} />
-              <span className="absolute bottom-6 right-8 w-9 h-9 border flex items-center justify-center text-[10px] shadow-sm bg-[var(--dash-card)]/70" style={{ borderColor: palette.ink, clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)", transform: variant % 2 === 0 ? "rotate(12deg)" : undefined }}>⬢</span>
-              <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
+              <div
+                className="absolute inset-x-5 top-4 bottom-12 rounded-[8px] opacity-[0.11] pointer-events-none"
+                style={{
+                  borderColor: palette.wash,
+                  backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`,
+                  backgroundSize: "22px 22px",
+                }}
+              />
+              <span className="absolute top-4 left-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
+                3 NODES · {variant4}
+              </span>
             </>
           )}
           {variant3 === 2 && (
             <>
-              <svg className="absolute inset-0 w-full h-full opacity-45" viewBox="0 0 320 180" aria-hidden>
-                <rect x="34" y="36" width="68" height="42" fill="white" stroke={palette.ink} strokeWidth="0.9" rx="3" />
-                <rect x="118" y="54" width="68" height="42" fill="white" stroke={palette.wash} strokeWidth="0.9" rx="3" />
-                <line x1="102" y1="58" x2="118" y2="76" stroke={palette.ink} strokeWidth="0.75" opacity="0.4"/>
-                <circle cx={variant4 % 2 === 0 ? 52 : 126} cy={variant4 % 2 === 0 ? 44 : 62} r="2.2" fill={palette.accent} />
-                <text x="38" y="48" fontSize="8" fill={palette.ink} opacity="0.4" fontFamily="JetBrains Mono">ARCH-0{variant4 + 2}</text>
+              {/* 架构框退到左上角，避开中心 TagScene */}
+              <svg className="absolute left-4 top-4 w-[38%] h-[34%] opacity-[0.12]" viewBox="0 0 140 70" aria-hidden>
+                <rect x="8" y="10" width="52" height="32" fill="none" stroke={palette.ink} strokeWidth="0.9" rx="2" />
+                <rect x="70" y="22" width="52" height="32" fill="none" stroke={palette.ink} strokeWidth="0.9" rx="2" />
+                <line x1="60" y1="28" x2="70" y2="36" stroke={palette.ink} strokeWidth="0.7" opacity="0.6" />
+                <circle cx={variant4 % 2 === 0 ? 24 : 86} cy={variant4 % 2 === 0 ? 18 : 30} r="2" fill={palette.accent} />
               </svg>
-              <span className="absolute top-6 right-6 mono text-[6px] tracking-[0.15em] opacity-40" style={{ color: palette.ink, opacity: 0.35 }}>SCALE 1:2{variant4}0</span>
-              <PluginSymbol symbol={symbol as any} palette={palette} variant={variant} variant4={variant4} />
+              <span className="absolute top-4 right-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
+                SCALE 1:2{variant4}0
+              </span>
             </>
           )}
-          <span className="absolute bottom-6 left-6 mono text-[10px] tracking-[0.18em] select-none" style={{ color: palette.ink, opacity: 0.35 }}>{abbr} · {noNum} {variant % 2 ? "⬢" : "—"} · {variant4}</span>
+          {/* 单角标：固定右上，不与中心主体/底栏争位 */}
+          <PluginSymbol
+            symbol={symbol as any}
+            palette={palette}
+            variant={variant}
+            variant4={2}
+            posClass="top-4 right-4"
+          />
+          {/* 底栏一行：ENG · 编号 · 主 tag（剥掉数据里自带的 []） */}
+          <span className="absolute bottom-5 left-5 right-5 h-px" style={{ backgroundColor: palette.ink, opacity: 0.14 }} />
+          <span
+            className="absolute bottom-2 left-5 right-5 mono text-[9px] tracking-[0.12em] select-none"
+            style={{ color: palette.ink, opacity: 0.38, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+          >
+            {`${abbr} · ${noNum}${tagPrimary ? ` · ${String(tagPrimary).replace(/[[\]]/g, "").toUpperCase()}` : ""}`}
+          </span>
         </>
       )}
 
