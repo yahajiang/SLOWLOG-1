@@ -500,7 +500,7 @@ export const ArticleArt = memo(function ArticleArt({
             <>
               <div className="absolute inset-4 rounded-[8px] border" style={{ borderColor: palette.wash, backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`, backgroundSize: `22px 22px`, opacity: variant % 2 === 0 ? 0.42 : 0.28 }} />
               <div className="absolute top-7 left-6 flex gap-1.5 items-center">
-                <span className="w-1.5 h-1.5 rounded-none animate-pulse" style={{ backgroundColor: palette.accent }} />
+                <span className="w-1.5 h-1.5 rounded-none" style={{ backgroundColor: palette.accent, opacity: 0.55 }} />
                 <span className="mono text-[7px] tracking-[0.15em]" style={{ color: palette.ink, opacity: 0.35 }}>3 NODES · {dotPos === "left-[22%]" ? "A" : dotPos === "left-[38%]" ? "B" : dotPos === "left-[52%]" ? "C" : "D"}</span>
               </div>
               <span className={`absolute top-1/2 ${dotPos} w-1 h-1 rounded-none opacity-40`} style={{ backgroundColor: palette.ink }} />
@@ -678,8 +678,7 @@ export const ArticleArt = memo(function ArticleArt({
             <>
               <span className="absolute top-7 left-7 w-16 h-16 rounded-none border shadow-sm" style={{ borderColor: palette.wash, background: `radial-gradient(circle at 35% 35%, white, ${palette.wash})`, transform: `translateX(${variant4 * 2}px)` }} />
               <span className="absolute top-12 left-12 w-16 h-16 rounded-none border -ml-6 opacity-45 shadow-sm" style={{ borderColor: palette.ink, backgroundColor: "white", transform: `translateX(${-variant4}px)` }} />
-              <span className={`absolute top-[40%] ${dotPos} w-2 h-2 rounded-none shadow-sm`} style={{ backgroundColor: palette.accent }} />
-              <span className={`absolute top-[40%] ${dotPos} w-2 h-2 rounded-none animate-ping opacity-15`} style={{ backgroundColor: palette.accent }} />
+              <span className={`absolute top-[40%] ${dotPos} w-2 h-2 rounded-none shadow-sm opacity-20`} style={{ backgroundColor: palette.accent }} />
               <span className="absolute bottom-10 left-6 right-6 h-px" style={{ backgroundColor: palette.wash, opacity: 0.35 + variant4 * 0.1 }} />
               {[0, 1, 2, 3].map((i) => (
                 <span key={i} className="absolute bottom-9" style={{ left: `${25 + i * 16}%`, width: 1, height: 4, backgroundColor: palette.ink, opacity: 0.2 }} />
