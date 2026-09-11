@@ -24,7 +24,7 @@ export function MFooter({ desktopHref }: MFooterProps) {
   }
 
   return (
-    <footer className="mt-auto w-full border-t border-[var(--yh-border)] bg-[var(--dash-card)]">
+    <footer className="mt-auto w-full border-t border-[var(--yh-border)] bg-[var(--dash-card)] pb-[env(safe-area-inset-bottom)]">
       <div className="w-full mx-auto px-4 py-4 flex flex-col items-center gap-3 text-center">
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-5 h-5 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[10px]">S</span>
@@ -33,9 +33,9 @@ export function MFooter({ desktopHref }: MFooterProps) {
         </div>
         <p className="mono text-[11px] text-[var(--yh-muted)]">— {tagline}</p>
         <div className="flex items-center gap-4 mono text-[11px] text-[var(--yh-muted)]">
-          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
-          <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
-          <a href="/design/gallery.html" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">组件画廊</a>
+          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">yahajiang@gmail.com</a>
+          <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">GitHub</a>
+          <a href="/design/gallery.html" target="_blank" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">组件画廊</a>
         </div>
         <p className="mono text-[10px] text-[var(--yh-muted)]">© {new Date().getFullYear()} Yahajiang · {t.footerBuilt}</p>
         <button

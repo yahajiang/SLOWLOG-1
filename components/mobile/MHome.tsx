@@ -101,7 +101,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           </div>
           <Link
             href="/m/archive"
-            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
+            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[44px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
           >
             {t.viewAll}
           </Link>
@@ -216,7 +216,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
           {/* 归档入口移出滚动区，常驻可见 */}
           <Link
             href="/m/archive"
-            className="shrink-0 mr-3 px-3 py-1.5 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
+            className="shrink-0 mr-3 px-3 py-1.5 min-h-[44px] flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
           >
             {t.archiveTitle} →
           </Link>
@@ -227,7 +227,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
         <section className="border-b border-[var(--yh-border)] bg-[var(--dash-card)]/60">
           <div className="px-4 py-8">
             <div className="border border-[var(--yh-border)] overflow-hidden rounded-none mb-4">
-              <ArticleArt post={featured} tall />
+              <ArticleArt post={featured} noBorder />
             </div>
             <div className="flex items-center gap-2 mb-2">
               <CategoryBadge category={featured.category} />
@@ -236,7 +236,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
                 <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
               )}
             </div>
-            <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2">
+            <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2 break-words">
               {heroTitle}
             </h2>
             <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{heroExcerpt}</p>
