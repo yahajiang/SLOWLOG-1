@@ -133,13 +133,22 @@ code, pre, .font-mono {
   to { opacity: 1; transform: none; }
 }
 
-/* 分类切换内容：淡入 + 6px · 300ms */
+/* 分类切换：旧列表仅淡出；新列表淡入 + 6px · 300ms
+   容器 min-height 锁定，避免列表高度突然跳动 */
 @keyframes categoryIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes categoryOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 .category-enter {
-  animation: categoryIn var(--duration-normal) var(--ease-out) both;
+  animation: categoryIn 300ms var(--ease-out) both;
+}
+.category-exit {
+  animation: categoryOut 220ms var(--ease-out) both;
+  pointer-events: none;
 }
 
 /* 卡片/列表入场：300ms · 6px */

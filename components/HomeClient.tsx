@@ -75,6 +75,11 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   const heroPaused = useRef(false)
   // 翻页感：切换时保留上一篇短暂叠出，新篇叠入
   const [heroExiting, setHeroExiting] = useState<import("@/lib/types").Post | null>(null)
+  // 分类列表：旧列表淡出 → 新列表淡入；锁定 min-height 防高度跳动
+  const listWrapRef = useRef<HTMLDivElement | null>(null)
+  const [listMinH, setListMinH] = useState<number | undefined>(undefined)
+  const [listFadingOut, setListFadingOut] = useState(false)
+  const [shownListKey, setShownListKey] = useState("All|")
   // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
   const [readMarks, setReadMarks] = useState<Record<string, number>>({});
   useEffect(() => {
@@ -133,6 +138,28 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   // 随想 / 时间线属首页专属区块，切到具体分类时不跟随 hero 一起出现
   const showHomeExtras = showHero && activeCategory === "All"
   const gridPosts = localizedFiltered
+
+  // 分类/搜索切换：先淡出，再换 key 重挂并淡入；用 min-height 锁住容器高度
+  const targetListKey = `${activeCategory}|${searchQuery}`
+  useEffect(() => {
+    if (targetListKey === shownListKey) return
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShownListKey(targetListKey)
+      return
+    }
+    const h = listWrapRef.current?.offsetHeight
+    if (h && h > 0) setListMinH(h)
+    setListFadingOut(true)
+    const t = setTimeout(() => {
+      setShownListKey(targetListKey)
+      setListFadingOut(false)
+    }, 220)
+    const t2 = setTimeout(() => setListMinH(undefined), 560)
+    return () => {
+      clearTimeout(t)
+      clearTimeout(t2)
+    }
+  }, [targetListKey, shownListKey])
 
   // All 且无搜索时：按分类分 Section
   const groupedByCategory = useMemo(() => {
@@ -325,7 +352,12 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           )}
         </div>
 
-        <div key={`${activeCategory}|${searchQuery}`} className="category-enter">
+        <div
+          ref={listWrapRef}
+          style={listMinH !== undefined ? { minHeight: listMinH } : undefined}
+          className={`transition-opacity duration-[220ms] ease-[var(--ease-out)] ${listFadingOut ? "opacity-0" : "opacity-100"}`}
+        >
+        <div key={shownListKey} className={!listFadingOut ? "category-enter" : undefined}>
         {gridPosts.length === 0 ? (
           showHero && posts.length === 1 ? (
             <div className="py-12 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
@@ -388,6 +420,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
             ))}
           </div>
         )}
+        </div>
         </div>
       </section>
 
