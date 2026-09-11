@@ -8,7 +8,7 @@ const REPO_DIR = "C:/Users/Yahajiang/Desktop/AstrBot插件/慢日志";
 const ORIGIN = "https://github.com/yahajiang/slowlog.git";
 const PUBLIC = "https://github.com/yahajiang/SLOWLOG-1.git";
 const TMP = "C:/Users/Yahajiang/AppData/Local/Temp/slowlog1-clean";
-const STRIP = ["cookies2.txt", "public/uploads"]; // 公开仓库剔除的数据路径
+const STRIP = ["cookies2.txt", "public/uploads", "backups"]; // 公开仓库剔除的数据路径
 const PY = "C:/Users/Yahajiang/.workbuddy/binaries/python/envs/default/Scripts/python.exe"; // git-filter-repo 是 python 模块
 const GIT = ["-c", "http.proxy=", "-c", "https.proxy="]; // 本网络直连更稳（代理 7890 常关）
 
