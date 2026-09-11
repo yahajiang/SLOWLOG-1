@@ -29,14 +29,14 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
             <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--yh-text)] shrink-0">· SLOWLOG</span>
           </span>
         </Link>
-        <div className="flex items-center gap-2 shrink-0">
-          <ThemeToggle />
-          <LanguageSwitcher />
+        <div className="flex items-center gap-1 shrink-0">
+          <ThemeToggle size="sm" />
+          <LanguageSwitcher size="sm" />
           {showAdmin && (
             <Link
               href="/m/dashboard"
               aria-label={t.navAdmin}
-              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
+              className="w-11 h-11 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
             >
               <Settings className="w-5 h-5" />
             </Link>
@@ -44,7 +44,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           {searchable && (
             <button
               onClick={() => setOpen((v) => !v)}
-              className="w-10 h-10 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
+              className="w-11 h-11 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
               aria-label="Search"
             >
               {open ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}

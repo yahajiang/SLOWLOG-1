@@ -16,7 +16,7 @@ export function MDashNav() {
     { href: "/m/dashboard/more", label: t.dashMore, icon: MoreHorizontal },
   ];
   return (
-    <nav className="sticky bottom-0 z-40 bg-[var(--dash-card)] border-t border-[var(--dash-border)]">
+    <nav className="sticky bottom-0 z-40 bg-[var(--dash-card)] border-t border-[var(--dash-border)] pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-4">
         {tabs.map((item) => {
           const active =

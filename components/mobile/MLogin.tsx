@@ -49,7 +49,7 @@ export function MLogin() {
         </div>
 
         {changed && (
-          <div className="mb-4 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-none">
+          <div className="mb-4 text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--yh-accent)] px-4 py-3 rounded-none">
             {lang === "zh" ? "账户已更新，请使用新凭据登录。" : "Account updated. Please sign in with your new credentials."}
           </div>
         )}
@@ -82,7 +82,7 @@ export function MLogin() {
               />
             </div>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">
+              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[#c44] px-4 py-3 rounded-none">
                 {error}
               </div>
             )}

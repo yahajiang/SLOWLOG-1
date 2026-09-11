@@ -48,7 +48,16 @@ export default async function MobilePostPage({
   if (!raw) notFound();
   const post = adaptPost(raw)!;
 
+  // 按发布时间排序，算出纵向上下篇（桌面是横向）
   const allRaw = await getAllPosts();
-  const all = allRaw.map((p) => adaptPost(p)!);
-  return <MPost post={post} rawPost={raw} />;
+  const sorted = [...allRaw].sort((a, b) => {
+    const da = new Date((a as any).publishedAt || (a as any).createdAt || (a as any).date || 0).getTime();
+    const db = new Date((b as any).publishedAt || (b as any).createdAt || (b as any).date || 0).getTime();
+    return db - da;
+  });
+  const idx = sorted.findIndex((p) => p.id === post.id);
+  const prev = idx > 0 ? adaptPost(sorted[idx - 1]) : null;
+  const next = idx >= 0 && idx < sorted.length - 1 ? adaptPost(sorted[idx + 1]) : null;
+
+  return <MPost post={post} rawPost={raw} prev={prev} next={next} />;
 }

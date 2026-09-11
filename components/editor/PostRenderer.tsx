@@ -80,13 +80,13 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const id = headingId || slugifyHeading(content.map((c: any) => c.text || "").join("").trim(), idx)
       const Tag = `h${level}` as any
       const cls =
-        level === 1 ? "group text-3xl font-bold mt-[50px] mb-[18px] tracking-tight scroll-mt-[88px] flex items-center gap-2" :
-        level === 2 ? "group text-[22px] font-semibold mt-[50px] mb-[11px] scroll-mt-[88px] tracking-tight border-b border-[var(--yh-border)] pb-[9px] flex items-center gap-2" :
-        level === 3 ? "group text-lg font-semibold mt-[29px] mb-[7px] scroll-mt-[88px] flex items-center gap-2" :
-        "group text-base font-semibold mt-[21px] mb-[7px] scroll-mt-[88px] flex items-center gap-2"
+        level === 1 ? "group text-3xl font-bold mt-[50px] mb-[18px] tracking-tight scroll-mt-[72px] flex items-center gap-2" :
+        level === 2 ? "group text-[22px] font-semibold mt-[50px] mb-[11px] scroll-mt-[72px] tracking-tight border-b border-[var(--yh-border)] pb-[9px] flex items-center gap-2" :
+        level === 3 ? "group text-lg font-semibold mt-[29px] mb-[7px] scroll-mt-[72px] flex items-center gap-2" :
+        "group text-base font-semibold mt-[21px] mb-[7px] scroll-mt-[72px] flex items-center gap-2"
       return (
         <Tag key={idx} id={id} className={cls}>
-          <a href={`#${id}`} aria-label=".Anchor" className="opacity-0 group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>
+          <a href={`#${id}`} aria-label=".Anchor" className="opacity-40 md:opacity-0 md:group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>
           <span className="flex-1">{inline}</span>
         </Tag>
       )
@@ -147,7 +147,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const title = node.attrs?.title || ""
       const width = node.attrs?.width || null
       if (!src) return null
-      return <figure key={idx} className="my-[32px] group/fig"><img src={src} alt={alt} title={title} loading="lazy" className="rounded-none border border-[var(--yh-border)] shadow-md block mx-auto cursor-zoom-in group-hover/fig:shadow-lg group-hover/fig:scale-[1.01] transition-[box-shadow,transform] duration-[300ms] ease-[var(--ease-out)]" style={{ margin: "0", ...(width ? { width } : { maxWidth: "100%" }) }} onClick={() => (window as any).__openLightbox?.(src)} />{alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{alt}</figcaption>}{title && !alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{title}</figcaption>}</figure>
+      return <figure key={idx} className="my-[32px] group/fig"><img src={src} alt={alt} title={title} loading="lazy" className="rounded-none border border-[var(--yh-border)] shadow-md block mx-auto max-w-full h-auto cursor-zoom-in group-hover/fig:shadow-lg group-hover/fig:scale-[1.01] transition-[box-shadow,transform] duration-[300ms] ease-[var(--ease-out)]" style={{ margin: "0", ...(width ? { width } : {}) }} onClick={() => (window as any).__openLightbox?.(src)} />{alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{alt}</figcaption>}{title && !alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{title}</figcaption>}</figure>
     }
     case "horizontalRule":
       return <div key={idx} className="my-[43px] flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent" /><span className="w-1 h-1 rounded-none bg-zinc-300" /><span className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent" /></div>

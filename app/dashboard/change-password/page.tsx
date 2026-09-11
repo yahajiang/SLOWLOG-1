@@ -51,7 +51,9 @@ export default function ChangePasswordPage() {
       }
       // 改密成功，重新登录以刷新 JWT（清除 needsPasswordChange 标志）
       await signOut({ redirect: false })
-      router.push("/login?changed=1")
+      // 手机 UA 回移动登录，避免改密后困在桌面壳
+      const isMobile = /Android.*Mobile|iPhone|iPod|Windows Phone/i.test(navigator.userAgent)
+      router.push(isMobile ? "/m/login?changed=1" : "/login?changed=1")
     } catch {
       setError(lang === "zh" ? "网络错误" : "Network error")
       setLoading(false)
@@ -78,7 +80,7 @@ export default function ChangePasswordPage() {
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder="your@email.com"
                 autoFocus
               />
@@ -92,7 +94,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder={(lang === "zh" ? "至少 8 位" : "At least 8 characters")}
               />
             </div>
@@ -105,7 +107,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder={(lang === "zh" ? "再次输入密码" : "Re-enter password")}
               />
             </div>
@@ -118,7 +120,7 @@ export default function ChangePasswordPage() {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
                 placeholder={lang === "zh" ? "您的名称" : "Your name"}
               />
             </div>
