@@ -1,35 +1,35 @@
 ---
 feature: cover-eng-zones
-status: designed
+status: delivered
 updated: 2026-09-11
 branch: feat/cover-eng-zones
-commits: 270b553..<head>
+commits: 270b553..70359f7
 ---
 
 # Engineering 封面分区避让
 
 ## Report
 
+**What was built** — Engineering 封面改为杂志分区：TagScene 真正居中（全局补 translate，56%），PluginSymbol 单角标固定右上，底栏一行 `ENG · 编号 · TAG`（剥掉 tag 自带的 `[]`），去掉中心 tag 芯片。各 variant3 装饰压到 ≤15% 透明度，并几何避开中心安全区（顶带限高、架构框缩角、SCALE 移到左上避免与角标叠字）。
+
+**Verification** — `npx tsc --noEmit` 无 ArticleArt 错误（其余为既有 prisma/implicit-any）；DOM dump 文本为 `["3 NODES · 3","◎","ENG · 3081 · TAURI"]`；截图 `mobile-preview/07-eng-cover.png` 确认主体居中、底栏一行、无叠字。Review（general-9）P1/P2 已按建议修完。
+
+**Journey log**
+1. TagScene 原 `top-1/2 left-1/2` 缺 translate，主体偏右下——全局修正对所有分类有益。
+2. 底栏 `[TAURI]` 是 tag 数据自带方括号，不是第二枚芯片；需 `replace(/[[\]]/g,"")`。
+3. 角标 pin 右上后会与 variant3===2 的 SCALE 标签叠字，装饰必须让角。
+4. 低透明度不等于不抢戏——装饰在 TagScene 之后绘制，必须几何限高/缩角。
+
 ## [S1] Problem
-Tauri 打印助手等 Engineering 文章封面（`ArticleArt`）多层装饰叠在一起：中心 TagScene 大符号、PluginSymbol 角标、Engineering 装饰 SVG、底栏编号与 tag 芯片互相遮挡。小尺寸卡片上更明显，主次不清。
+Tauri 打印助手等 Engineering 文章封面多层装饰叠在一起：中心 TagScene、PluginSymbol 角标、装饰 SVG、底栏编号与 tag 互相遮挡。
 
 ## [S2] Design
-仅改 **Engineering** 分族，其它分类不动。杂志编辑感三层分区：
-
-1. **中心主体区** — TagScene 居中偏下，约占高度 55%，是唯一视觉焦点。
-2. **单角标** — PluginSymbol 只保留一处，四象限中选不与 TagScene/底栏冲突的角（默认右上或右下）；去掉与主体重复的小装饰方块。
-3. **底栏一行** — `ENG · {noNum} · {PRIMARY_TAG}` 一行 mono；去掉盖在主体上的 `[TAURI]` 独立芯片；装饰线仍在底栏上方。
-4. **装饰降噪** — Engineering 各 variant3 的 SVG/网格/角框 opacity ≤ 0.15，且不得进入中心主体安全区（水平 15%–85%，垂直 20%–75%）。
-
-不变式：TagScene 存在时不得有第二枚 PluginSymbol；底栏文字不得被绝对定位元素覆盖。
+仅 Engineering。三层分区：中心 TagScene 主体；单角标右上；底栏一行 `ENG · noNum · TAG`。装饰 opacity≤0.15 且不进中心安全区（H 15–85% × V 20–75%）。
 
 ## [S3] Out of Scope
-- Design / Plugin / Frontend / Typography / Snippet / Life 分类
-- TagScene 造型本身
-- 暗色 token（已有 CSS 变量）
-- 移动端布局（封面组件共用，本改只动 Engineering 内层）
+其它分类、TagScene 造型、暗色 token、移动端壳布局。
 
 ## Tasks
-- [ ] T1: Engineering 分区结构 — 重排 catName==="Engineering" 分支：中心 TagScene 优先、单角标、底栏一行合并 tag；验收：无元素盖住 TagScene 主体与底栏文字 (covers: S2)
-- [ ] T2: 装饰降噪 — 各 variant3 装饰 SVG/网格 opacity≤0.15 且避开中心安全区；验收：截图/代码审查无高对比装饰压主体 (covers: S2; depends: T1)
-- [ ] T3: 验证 — tsc 通过；对 tauri-react-print-assistant 渲染截图对比无重叠 (covers: S2; depends: T1,T2)
+- [x] T1: Engineering 分区结构 (covers: S2)
+- [x] T2: 装饰降噪与安全区几何 (covers: S2; depends: T1)
+- [x] T3: tsc + 截图验证 (covers: S2; depends: T1,T2)
