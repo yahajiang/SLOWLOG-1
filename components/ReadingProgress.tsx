@@ -24,6 +24,9 @@ export function ReadingProgress() {
           const scrolled = window.scrollY - top;
           pct = height > 0 ? (scrolled / height) * 100 : 0;
           pct = Math.min(100, Math.max(0, pct));
+          // 文末兜底：滚到视口底部附近强制 100%（否则进度条到不了满格）
+          const doc = document.documentElement;
+          if (window.scrollY + window.innerHeight >= doc.scrollHeight - 48) pct = 100;
         } else {
           const scrollTop = window.scrollY;
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
