@@ -489,42 +489,44 @@ export const ArticleArt = memo(function ArticleArt({
       {catName === "Engineering" && (
         <>
           <LightTexture palette={palette} intensity="low" />
-          {/* 装饰降噪：全部 ≤15% 透明度，且让开中心主体安全区（15–85% × 20–75%） */}
+          {/* 装饰降噪：透明度 ≤15%；几何上压在安全区（V 20–75%）之外，避免盖住中心主体 */}
           {variant3 === 0 && (
             <>
-              <svg className="absolute inset-x-0 top-0 h-[28%] w-full opacity-[0.12]" viewBox="0 0 320 48" preserveAspectRatio="none" aria-hidden>
-                <path d="M0 28 L58 14 L118 32 L182 8 L242 22 L320 12" fill="none" stroke={palette.ink} strokeWidth="0.8" />
-                <path d="M0 38 L78 34 L138 40 L198 26 L320 30" fill="none" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="4 4" opacity="0.7" />
+              {/* 顶带限高 18%，不进入 V 20% 安全区 */}
+              <svg className="absolute inset-x-0 top-0 h-[18%] w-full opacity-[0.12]" viewBox="0 0 320 36" preserveAspectRatio="none" aria-hidden>
+                <path d="M0 22 L58 10 L118 26 L182 6 L242 18 L320 8" fill="none" stroke={palette.ink} strokeWidth="0.8" />
+                <path d="M0 30 L78 26 L138 32 L198 20 L320 24" fill="none" stroke={palette.ink} strokeWidth="0.5" strokeDasharray="4 4" opacity="0.7" />
               </svg>
-              <span className="absolute top-4 left-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>CONTOUR</span>
-              <span className="absolute top-4 right-5 w-1 h-1 rounded-none opacity-20" style={{ backgroundColor: palette.accent }} />
+              <span className="absolute top-3 left-4 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>CONTOUR</span>
+              <span className="absolute top-3 left-16 w-1 h-1 rounded-none opacity-20" style={{ backgroundColor: palette.accent }} />
             </>
           )}
           {variant3 === 1 && (
             <>
+              {/* 只铺顶带网格，高度 16%，让开中心主体 */}
               <div
-                className="absolute inset-x-5 top-4 bottom-12 rounded-[8px] opacity-[0.11] pointer-events-none"
+                className="absolute inset-x-4 top-3 h-[16%] rounded-[6px] opacity-[0.11] pointer-events-none"
                 style={{
-                  borderColor: palette.wash,
                   backgroundImage: `linear-gradient(${palette.wash} 1px, transparent 1px), linear-gradient(90deg, ${palette.wash} 1px, transparent 1px)`,
-                  backgroundSize: "22px 22px",
+                  backgroundSize: "18px 18px",
                 }}
               />
-              <span className="absolute top-4 left-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
+              <span className="absolute top-3 left-4 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
                 3 NODES · {variant4}
               </span>
             </>
           )}
           {variant3 === 2 && (
             <>
-              {/* 架构框退到左上角，避开中心 TagScene */}
-              <svg className="absolute left-4 top-4 w-[38%] h-[34%] opacity-[0.12]" viewBox="0 0 140 70" aria-hidden>
+              {/* 架构框缩到左上角外区（约 x≤15%、y≤20%） */}
+              <svg className="absolute left-3 top-3 w-[26%] h-[22%] opacity-[0.12]" viewBox="0 0 140 70" aria-hidden>
                 <rect x="8" y="10" width="52" height="32" fill="none" stroke={palette.ink} strokeWidth="0.9" rx="2" />
                 <rect x="70" y="22" width="52" height="32" fill="none" stroke={palette.ink} strokeWidth="0.9" rx="2" />
                 <line x1="60" y1="28" x2="70" y2="36" stroke={palette.ink} strokeWidth="0.7" opacity="0.6" />
                 <circle cx={variant4 % 2 === 0 ? 24 : 86} cy={variant4 % 2 === 0 ? 18 : 30} r="2" fill={palette.accent} />
               </svg>
-              <span className="absolute top-4 right-5 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
+              {/* SCALE 放左上，避开右上角标 */}
+              <span className="absolute top-3 left-1/2 -translate-x-1/2 mono text-[6px] tracking-[0.15em] opacity-[0.14]" style={{ color: palette.ink }}>
                 SCALE 1:2{variant4}0
               </span>
             </>
@@ -534,8 +536,7 @@ export const ArticleArt = memo(function ArticleArt({
             symbol={symbol as any}
             palette={palette}
             variant={variant}
-            variant4={2}
-            posClass="top-4 right-4"
+            posClass="top-3 right-3"
           />
           {/* 底栏一行：ENG · 编号 · 主 tag（剥掉数据里自带的 []） */}
           <span className="absolute bottom-5 left-5 right-5 h-px" style={{ backgroundColor: palette.ink, opacity: 0.14 }} />
