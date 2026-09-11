@@ -73,6 +73,8 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   }, [posts, featuredPosts, activeCategory, searchQuery])
   const [heroIndex, setHeroIndex] = useState(0)
   const heroPaused = useRef(false)
+  // 翻页感：切换时保留上一篇短暂叠出，新篇叠入
+  const [heroExiting, setHeroExiting] = useState<import("@/lib/types").Post | null>(null)
   // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
   const [readMarks, setReadMarks] = useState<Record<string, number>>({});
   useEffect(() => {
@@ -91,6 +93,29 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
       ? { ...featured, title: featured.titleZh || featured.title, excerpt: featured.excerptZh || featured.excerpt }
       : featured
     : null
+  // 翻页：index 变化时把上一篇放进 exiting 层叠出，400ms 后卸载
+  const prevHeroIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    const curId = localizedFeatured?.id ?? null
+    const prevId = prevHeroIdRef.current
+    prevHeroIdRef.current = curId
+    if (!prevId || !curId || prevId === curId) {
+      setHeroExiting(null)
+      return
+    }
+    const prevPost = heroPool.find((p) => p.id === prevId)
+    if (!prevPost) {
+      setHeroExiting(null)
+      return
+    }
+    const exitPost =
+      lang === "zh"
+        ? { ...prevPost, title: prevPost.titleZh || prevPost.title, excerpt: prevPost.excerptZh || prevPost.excerpt }
+        : prevPost
+    setHeroExiting(exitPost)
+    const t = setTimeout(() => setHeroExiting(null), 420)
+    return () => clearTimeout(t)
+  }, [localizedFeatured?.id, heroPool, lang])
   // 多篇候选时自动轮播（reduced-motion 直接关闭；页签不可见 / 鼠标悬停时暂停）
   useEffect(() => {
     if (heroPool.length <= 1) return
@@ -166,61 +191,94 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           onMouseLeave={() => { heroPaused.current = false }}
         >
           <div className="max-w-[min(70%,1600px)] mx-auto px-6 py-12 md:py-16">
-            <div className="flex flex-col md:flex-row md:items-center gap-5" key={heroIndex}>
-              <div className="flex-1 min-w-0 hero-swap">
-                <div className="flex items-center gap-3 mb-3">
-                  <CategoryBadge category={localizedFeatured.category} />
-                  {/* 仅真·推荐文章才打「推荐」标；分类 spotlight 可能是回退出的最新一篇，不能谎标 */}
-                  {localizedFeatured.featured && (
-                    <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
-                  )}
-                  {heroPool.length > 1 && (
-                    <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
-                      <button
-                        onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)}
-                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
-                        aria-label="上一篇推荐"
-                      >
-                        ‹
-                      </button>
-                      {heroIndex + 1} / {heroPool.length}
-                      <button
-                        onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)}
-                        className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
-                        aria-label="下一篇推荐"
-                      >
-                        ›
-                      </button>
-                    </span>
-                  )}
-                </div>
-                <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3 hero-swap">
-                  {localizedFeatured.title}
-                </h2>
-                <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2 hero-swap hero-swap-delay-1">{localizedFeatured.excerpt}</p>
-                <div className="flex items-center gap-4 hero-swap hero-swap-delay-2">
-                  <div className="flex items-center gap-2">
-                    <AuthorAvatar initial={localizedFeatured.authorInitial} />
-                    <div>
-                      <p className="text-xs font-medium text-[var(--yh-muted)]">{localizedFeatured.author}</p>
-                      <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(localizedFeatured.date, lang)} · {localizedFeatured.readTime}</p>
+            <div className="relative">
+              {/* 旧内容叠出：翻页感 */}
+              {heroExiting && heroExiting.id !== localizedFeatured.id && (
+                <div className="absolute inset-0 z-0 flex flex-col md:flex-row md:items-center gap-5 hero-flip-out" aria-hidden>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-3">
+                      <CategoryBadge category={heroExiting.category} />
+                      {heroExiting.featured && (
+                        <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
+                      )}
+                    </div>
+                    <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
+                      {heroExiting.title}
+                    </h2>
+                    <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{heroExiting.excerpt}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <AuthorAvatar initial={heroExiting.authorInitial} />
+                        <div>
+                          <p className="text-xs font-medium text-[var(--yh-muted)]">{heroExiting.author}</p>
+                          <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(heroExiting.date, lang)} · {heroExiting.readTime}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[11px] tracking-widest uppercase hover:bg-[var(--yh-accent)] transition-colors duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)]">
-                    {t.readArticle} <ChevronRight className="w-3 h-3" />
-                  </Link>
+                  <div className="hidden md:block w-48 shrink-0">
+                    <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
+                      <ArticleArt post={heroExiting} tall />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="hidden md:block w-48 shrink-0 hero-slide" key={`art-${heroIndex}`}>
-                <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
-                  <ArticleArt post={localizedFeatured} tall />
+              )}
+              {/* 新内容叠入 */}
+              <div className="relative z-[1] flex flex-col md:flex-row md:items-center gap-5 hero-flip-in" key={heroIndex}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-3">
+                    <CategoryBadge category={localizedFeatured.category} />
+                    {localizedFeatured.featured && (
+                      <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
+                    )}
+                    {heroPool.length > 1 && (
+                      <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
+                        <button
+                          onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)}
+                          className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
+                          aria-label="上一篇推荐"
+                        >
+                          ‹
+                        </button>
+                        {heroIndex + 1} / {heroPool.length}
+                        <button
+                          onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)}
+                          className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
+                          aria-label="下一篇推荐"
+                        >
+                          ›
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
+                    {localizedFeatured.title}
+                  </h2>
+                  <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{localizedFeatured.excerpt}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <AuthorAvatar initial={localizedFeatured.authorInitial} />
+                      <div>
+                        <p className="text-xs font-medium text-[var(--yh-muted)]">{localizedFeatured.author}</p>
+                        <p className="text-[11px] text-[var(--yh-muted)]">{formatDisplayDate(localizedFeatured.date, lang)} · {localizedFeatured.readTime}</p>
+                      </div>
+                    </div>
+                    <Link href={`/posts/${localizedFeatured.id}`} className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[11px] tracking-widest uppercase hover:bg-[var(--yh-accent)] transition-colors duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)]">
+                      {t.readArticle} <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {localizedFeatured.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] text-[var(--yh-muted)] bg-[var(--dash-card)] border border-[var(--yh-border)] px-2 py-0.5 rounded-none">
-                      {tag}
-                    </span>
-                  ))}
+                <div className="hidden md:block w-48 shrink-0">
+                  <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
+                    <ArticleArt post={localizedFeatured} tall />
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {localizedFeatured.tags.map((tag) => (
+                      <span key={tag} className="text-[10px] text-[var(--yh-muted)] bg-[var(--dash-card)] border border-[var(--yh-border)] px-2 py-0.5 rounded-none">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
