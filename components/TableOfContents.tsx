@@ -50,10 +50,14 @@ export function TableOfContents({
       els.forEach((el, i) => {
         if (el.getBoundingClientRect().top <= 96) curIdx = i;
       });
+      // 文末兜底：视口贴底时强制末节 + 蓝轨打满，否则最后一节高亮/进度永远到不了
+      const nearBottom =
+        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 48;
+      if (nearBottom) curIdx = els.length - 1;
       curIdx = Math.min(curIdx, headings.length - 1);
       const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
-      const p = railProgress(els, curIdx);
+      const p = nearBottom ? 1 : railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
     }
 
