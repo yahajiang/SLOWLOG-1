@@ -33,7 +33,7 @@ const ZONE_CLASS: Record<Zone, string> = {
 
 type Pal = { ink: string; wash: string; accent: string };
 
-/** 8 族标签符号：个性几何，分类无关 */
+/** 8 族标签符号：加厚加层，强化辨识 */
 function SymbolArt({
   symbol,
   pal,
@@ -49,106 +49,119 @@ function SymbolArt({
   if (symbol === "grid") {
     const solid = variant4 % 4;
     return (
-      <div className="relative grid grid-cols-2 gap-[5px]">
-        {[0, 1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className="w-5 h-5 border"
-            style={{
-              borderColor: ink,
-              backgroundColor: i === solid ? accent : i === 3 - solid ? wash : "transparent",
-              opacity: 0.48,
-            }}
-          />
-        ))}
+      <div className="relative">
+        <div className="grid grid-cols-2 gap-[6px]">
+          {[0, 1, 2, 3].map((i) => (
+            <span
+              key={i}
+              className="w-7 h-7 border-2"
+              style={{
+                borderColor: ink,
+                backgroundColor: i === solid ? accent : i === 3 - solid ? wash : "transparent",
+                opacity: 0.55,
+              }}
+            />
+          ))}
+        </div>
         <span
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full cover-pulse"
-          style={{ backgroundColor: accent, opacity: 0.65 }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full cover-pulse"
+          style={{ backgroundColor: accent, opacity: 0.85 }}
         />
+        <span className="absolute -left-3 top-1/2 w-2 h-px" style={{ backgroundColor: ink, opacity: 0.35 }} />
+        <span className="absolute -right-3 top-1/2 w-2 h-px" style={{ backgroundColor: ink, opacity: 0.35 }} />
       </div>
     );
   }
   if (symbol === "shield") {
     return (
-      <svg className="w-12 h-14" viewBox="0 0 48 56" aria-hidden>
+      <svg className="w-16 h-18" width="64" height="72" viewBox="0 0 64 72" aria-hidden>
         <path
-          d="M24 4 L42 12 V28 Q42 42 24 52 Q6 42 6 28 V12 Z"
+          d="M32 6 L56 16 V36 Q56 56 32 66 Q8 56 8 36 V16 Z"
           fill={wash}
           stroke={ink}
-          strokeWidth="1.2"
-          opacity="0.55"
+          strokeWidth="1.8"
+          opacity="0.6"
         />
-        <path d="M24 16 V34" stroke={accent} strokeWidth="1.5" opacity="0.7" />
-        <circle className="cover-pulse" cx="24" cy="24" r="3" fill={accent} opacity="0.8" />
+        <path d="M32 18 V46" stroke={accent} strokeWidth="2" opacity="0.75" />
+        <path d="M22 32 H42" stroke={ink} strokeWidth="1.2" opacity="0.35" />
+        <circle className="cover-pulse" cx="32" cy="32" r="4.5" fill={accent} opacity="0.9" />
       </svg>
     );
   }
   if (symbol === "doubleCircle") {
     return (
-      <div className="relative w-14 h-14">
-        <span className="absolute left-0 top-2 w-10 h-10 rounded-full border" style={{ borderColor: ink, opacity: 0.35 }} />
-        <span className="absolute right-0 bottom-0 w-10 h-10 rounded-full border" style={{ borderColor: wash, backgroundColor: wash, opacity: 0.45 }} />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full cover-pulse" style={{ backgroundColor: accent, opacity: 0.7 }} />
+      <div className="relative w-20 h-20">
+        <span className="absolute left-0 top-3 w-14 h-14 rounded-full border-2" style={{ borderColor: ink, opacity: 0.4 }} />
+        <span
+          className="absolute right-0 bottom-0 w-14 h-14 rounded-full border-2"
+          style={{ borderColor: wash, backgroundColor: wash, opacity: 0.55 }}
+        />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full cover-pulse" style={{ backgroundColor: accent, opacity: 0.85 }} />
+        <span className="absolute left-2 top-1/2 w-4 h-px rotate-45" style={{ backgroundColor: ink, opacity: 0.25 }} />
       </div>
     );
   }
   if (symbol === "wave") {
     return (
-      <svg className="w-16 h-12" viewBox="0 0 64 48" aria-hidden>
-        <path d="M4 28 Q16 12 32 28 T60 28" fill="none" stroke={ink} strokeWidth="1.3" opacity="0.4" />
-        <path className="cover-flow" d="M4 36 Q16 22 32 36 T60 36" fill="none" stroke={accent} strokeWidth="1" opacity="0.55" />
-        <circle className="cover-pulse" cx="32" cy="18" r="2.5" fill={accent} opacity="0.7" />
+      <svg className="w-20 h-16" viewBox="0 0 80 64" aria-hidden>
+        <path d="M4 36 Q20 14 40 36 T76 36" fill="none" stroke={ink} strokeWidth="1.8" opacity="0.45" />
+        <path className="cover-flow" d="M4 46 Q20 26 40 46 T76 46" fill="none" stroke={accent} strokeWidth="1.4" opacity="0.7" />
+        <circle className="cover-pulse" cx="40" cy="20" r="4" fill={accent} opacity="0.85" />
+        <path d="M28 8 Q32 2 36 8" fill="none" stroke={ink} strokeWidth="1" opacity="0.3" />
+        <path d="M44 8 Q48 2 52 8" fill="none" stroke={ink} strokeWidth="1" opacity="0.25" />
       </svg>
     );
   }
   if (symbol === "diamond") {
     return (
-      <svg className="w-14 h-14" viewBox="0 0 56 56" aria-hidden>
-        <polygon points="28,6 50,28 28,50 6,28" fill="none" stroke={ink} strokeWidth="1.2" opacity="0.4" />
-        <polygon points="28,16 40,28 28,40 16,28" fill={wash} opacity="0.5" />
-        <circle className="cover-pulse" cx="28" cy="28" r="3" fill={accent} opacity="0.75" />
+      <svg className="w-18 h-18" width="72" height="72" viewBox="0 0 72 72" aria-hidden>
+        <polygon points="36,6 66,36 36,66 6,36" fill="none" stroke={ink} strokeWidth="1.6" opacity="0.45" />
+        <polygon points="36,18 54,36 36,54 18,36" fill={wash} opacity="0.55" />
+        <polygon points="36,28 44,36 36,44 28,36" fill="none" stroke={accent} strokeWidth="1" opacity="0.55" />
+        <circle className="cover-pulse" cx="36" cy="36" r="4" fill={accent} opacity="0.9" />
+        <line x1="36" y1="2" x2="36" y2="10" stroke={ink} strokeWidth="1" opacity="0.3" />
+        <line x1="36" y1="62" x2="36" y2="70" stroke={ink} strokeWidth="1" opacity="0.3" />
       </svg>
     );
   }
   if (symbol === "window") {
     return (
-      <div className="w-16 h-12 border" style={{ borderColor: ink, opacity: 0.4 }}>
-        <div className="flex items-center gap-1 px-1.5 h-3 border-b" style={{ borderColor: wash, backgroundColor: wash }}>
-          <span className="w-1 h-1 rounded-full" style={{ backgroundColor: accent, opacity: 0.8 }} />
-          <span className="w-1 h-1 rounded-full" style={{ backgroundColor: ink, opacity: 0.25 }} />
+      <div className="w-20 h-16 border-2" style={{ borderColor: ink, opacity: 0.5 }}>
+        <div className="flex items-center gap-1.5 px-2 h-4 border-b-2" style={{ borderColor: wash, backgroundColor: wash, opacity: 0.9 }}>
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accent, opacity: 0.9 }} />
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ink, opacity: 0.3 }} />
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ink, opacity: 0.18 }} />
         </div>
-        <div className="p-1.5 space-y-1">
-          <span className="block h-1 w-3/4" style={{ backgroundColor: ink, opacity: 0.12 }} />
-          <span className="block h-1 w-1/2" style={{ backgroundColor: wash }} />
+        <div className="p-2 space-y-1.5">
+          <span className="block h-1.5 w-4/5" style={{ backgroundColor: ink, opacity: 0.18 }} />
+          <span className="block h-1.5 w-3/5" style={{ backgroundColor: wash }} />
+          <span className="block h-1.5 w-1/2" style={{ backgroundColor: accent, opacity: 0.35 }} />
         </div>
       </div>
     );
   }
   if (symbol === "hex") {
     return (
-      <svg className="w-14 h-14" viewBox="0 0 56 56" aria-hidden>
-        <polygon
-          points="28,4 50,16 50,40 28,52 6,40 6,16"
-          fill="none"
-          stroke={ink}
-          strokeWidth="1.2"
-          opacity="0.4"
-        />
-        <line x1="28" y1="18" x2="18" y2="28" stroke={ink} strokeWidth="0.8" opacity="0.3" />
-        <line x1="28" y1="18" x2="38" y2="28" stroke={ink} strokeWidth="0.8" opacity="0.3" />
-        <circle className="cover-pulse" cx="28" cy="30" r="3" fill={accent} opacity="0.75" />
+      <svg className="w-18 h-18" width="72" height="72" viewBox="0 0 72 72" aria-hidden>
+        <polygon points="36,4 64,20 64,52 36,68 8,52 8,20" fill={wash} stroke={ink} strokeWidth="1.6" opacity="0.5" />
+        <polygon points="36,18 52,27 52,45 36,54 20,45 20,27" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" />
+        <line x1="36" y1="24" x2="24" y2="36" stroke={ink} strokeWidth="1" opacity="0.35" />
+        <line x1="36" y1="24" x2="48" y2="36" stroke={ink} strokeWidth="1" opacity="0.35" />
+        <line x1="24" y1="36" x2="48" y2="36" stroke={accent} strokeWidth="1.2" opacity="0.5" />
+        <circle className="cover-pulse" cx="36" cy="38" r="4" fill={accent} opacity="0.9" />
       </svg>
     );
   }
-  // circle — 环数/虚线/点位随 variant
-  const rings = 1 + (variant % 3);
+  // circle — 多环 + 轨道点
+  const rings = 2 + (variant % 2);
   const dashed = variant4 % 2 === 0;
   return (
-    <svg className="w-14 h-14" viewBox="0 0 56 56" aria-hidden>
-      <circle cx="28" cy="28" r="20" fill="none" stroke={ink} strokeWidth="1" opacity="0.25" strokeDasharray={dashed ? "3 3" : undefined} />
-      {rings >= 2 && <circle cx="28" cy="28" r="12" fill={wash} opacity="0.4" />}
-      {rings >= 3 && <circle cx="28" cy="28" r="6" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.45" />}
-      <circle className="cover-pulse" cx={28 + (variant4 - 1.5) * 3} cy={28 + (variant % 2 === 0 ? -2 : 2)} r="3.5" fill={accent} opacity="0.8" />
+    <svg className="w-20 h-20" viewBox="0 0 72 72" aria-hidden>
+      <circle cx="36" cy="36" r="28" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.28" strokeDasharray={dashed ? "4 4" : undefined} />
+      <circle cx="36" cy="36" r="18" fill={wash} opacity="0.45" />
+      {rings >= 3 && <circle cx="36" cy="36" r="10" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.55" />}
+      <circle className="cover-pulse" cx={36 + (variant4 - 1.5) * 5} cy={36 + (variant % 2 === 0 ? -3 : 3)} r="5" fill={accent} opacity="0.95" />
+      <circle cx="36" cy="36" r="2" fill={ink} opacity="0.4" />
     </svg>
   );
 }
@@ -318,8 +331,39 @@ export const CoverArt = memo(function CoverArt({
           opacity: 0.05,
         }}
       />
-      <div className="absolute top-0 left-5 right-5 h-px" style={{ backgroundColor: palette.ink, opacity: 0.06 }} />
-      <span className="absolute top-3 right-4 w-1 h-1 cover-pulse" style={{ backgroundColor: palette.accent, opacity: 0.55 }} />
+      <div className="absolute top-0 left-5 right-5 h-px" style={{ backgroundColor: palette.ink, opacity: 0.08 }} />
+      <span className="absolute top-3 right-4 w-1.5 h-1.5 cover-pulse" style={{ backgroundColor: palette.accent, opacity: 0.7 }} />
+      {/* 分类底纹家具：强化族感 */}
+      {cat === "Plugin" && (
+        <div
+          className="absolute inset-3 pointer-events-none opacity-[0.07]"
+          style={{
+            backgroundImage: `linear-gradient(${palette.ink} 1px, transparent 1px), linear-gradient(90deg, ${palette.ink} 1px, transparent 1px)`,
+            backgroundSize: "16px 16px",
+          }}
+        />
+      )}
+      {cat === "Engineering" && (
+        <svg className="absolute inset-x-0 bottom-8 h-10 w-full opacity-[0.12]" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden>
+          <path d="M0 28 L40 16 L90 26 L140 10 L200 20" fill="none" stroke={palette.ink} strokeWidth="1" />
+        </svg>
+      )}
+      {cat === "Typography" && (
+        <div className="absolute inset-x-6 top-8 bottom-12 pointer-events-none opacity-[0.08]">
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className="block h-px mb-3" style={{ backgroundColor: palette.ink }} />
+          ))}
+        </div>
+      )}
+      {cat === "Design" && (
+        <span className="absolute left-4 top-6 bottom-10 w-px opacity-20" style={{ backgroundColor: palette.ink }} />
+      )}
+      {cat === "Life" && (
+        <span
+          className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border opacity-15"
+          style={{ borderColor: palette.ink }}
+        />
+      )}
 
       <div className="absolute inset-0 cover-inner">
         {layout === 0 && (
