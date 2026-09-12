@@ -43,15 +43,15 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
     if (symbol === "grid") {
       const solid = variant4 % 4;
       return (
-        <div className="grid grid-cols-2 gap-[6px] p-1.5 border-2" style={{ borderColor: ink, opacity: 0.7 }}>
+        <div className="grid grid-cols-2 gap-[6px] p-1.5 border" style={{ borderColor: ink, opacity: 0.45 }}>
           {[0, 1, 2, 3].map((i) => (
             <span
               key={i}
               className="w-4 h-4"
               style={{
-                border: `2px solid ${i === solid ? accent : ink}`,
+                border: `1px solid ${i === solid ? accent : ink}`,
                 backgroundColor: i === solid ? accent : "transparent",
-                opacity: i === solid ? 0.95 : 0.55,
+                opacity: i === solid ? 0.55 : 0.4,
               }}
             />
           ))}
@@ -61,51 +61,51 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
     if (symbol === "shield") {
       return (
         <svg width="44" height="52" viewBox="0 0 44 52" aria-hidden>
-          <path d="M22 3 L39 11 V26 Q39 41 22 49 Q5 41 5 26 V11 Z" fill="none" stroke={ink} strokeWidth="2.4" opacity="0.7" />
-          <path d="M22 14 V34" stroke={accent} strokeWidth="2.5" opacity="0.9" />
-          <path d="M13 24 H31" stroke={accent} strokeWidth="2" opacity="0.75" />
+          <path d="M22 3 L39 11 V26 Q39 41 22 49 Q5 41 5 26 V11 Z" fill="none" stroke={ink} strokeWidth="1.5" opacity="0.4" />
+          <path d="M22 14 V34" stroke={accent} strokeWidth="1.6" opacity="0.5" />
+          <path d="M13 24 H31" stroke={accent} strokeWidth="1.4" opacity="0.4" />
         </svg>
       );
     }
     if (symbol === "doubleCircle") {
       return (
         <div className="relative w-14 h-12">
-          <span className="absolute left-0 top-0 w-11 h-11 rounded-full border-[3px]" style={{ borderColor: ink, opacity: 0.65 }} />
-          <span className="absolute right-0 bottom-0 w-11 h-11 rounded-full border-[3px]" style={{ borderColor: accent, opacity: 0.85 }} />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-px" style={{ backgroundColor: ink, opacity: 0.5 }} />
+          <span className="absolute left-0 top-0 w-11 h-11 rounded-full border-2" style={{ borderColor: ink, opacity: 0.4 }} />
+          <span className="absolute right-0 bottom-0 w-11 h-11 rounded-full border-2" style={{ borderColor: accent, opacity: 0.5 }} />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-px" style={{ backgroundColor: ink, opacity: 0.3 }} />
         </div>
       );
     }
     if (symbol === "wave") {
       return (
         <svg width="52" height="30" viewBox="0 0 52 30" aria-hidden>
-          <path d="M2 10 Q14 2 26 10 T50 10" fill="none" stroke={ink} strokeWidth="2.2" opacity="0.65" />
-          <path className="cover-flow" d="M2 18 Q14 10 26 18 T50 18" fill="none" stroke={accent} strokeWidth="2.2" opacity="0.9" />
-          <path d="M2 26 Q14 18 26 26 T50 26" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
+          <path d="M2 10 Q14 2 26 10 T50 10" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
+          <path className="cover-flow" d="M2 18 Q14 10 26 18 T50 18" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" />
+          <path d="M2 26 Q14 18 26 26 T50 26" fill="none" stroke={ink} strokeWidth="1" opacity="0.22" />
         </svg>
       );
     }
     if (symbol === "diamond") {
       return (
         <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden>
-          <polygon points="22,2 42,22 22,42 2,22" fill="none" stroke={accent} strokeWidth="2.4" opacity="0.9" />
-          <polygon points="22,12 32,22 22,32 12,22" fill="none" stroke={ink} strokeWidth="1.6" opacity="0.55" />
-          <line x1="22" y1="2" x2="22" y2="12" stroke={ink} strokeWidth="1.2" opacity="0.4" />
-          <line x1="22" y1="32" x2="22" y2="42" stroke={ink} strokeWidth="1.2" opacity="0.4" />
+          <polygon points="22,2 42,22 22,42 2,22" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" />
+          <polygon points="22,12 32,22 22,32 12,22" fill="none" stroke={ink} strokeWidth="1.2" opacity="0.35" />
+          <line x1="22" y1="2" x2="22" y2="12" stroke={ink} strokeWidth="1" opacity="0.25" />
+          <line x1="22" y1="32" x2="22" y2="42" stroke={ink} strokeWidth="1" opacity="0.25" />
         </svg>
       );
     }
     if (symbol === "window") {
       return (
-        <div className="w-16 h-12 border-[3px]" style={{ borderColor: accent, opacity: 0.85 }}>
-          <div className="flex items-center gap-1.5 px-1.5 h-3.5 border-b-2" style={{ borderColor: ink, opacity: 0.5 }}>
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.4 }} />
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.25 }} />
+        <div className="w-16 h-12 border-2" style={{ borderColor: accent, opacity: 0.5 }}>
+          <div className="flex items-center gap-1.5 px-1.5 h-3.5 border-b" style={{ borderColor: ink, opacity: 0.35 }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent, opacity: 0.55 }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.28 }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.18 }} />
           </div>
           <div className="p-1.5 space-y-1">
-            <span className="block h-[3px] w-4/5" style={{ backgroundColor: ink, opacity: 0.35 }} />
-            <span className="block h-[3px] w-1/2" style={{ backgroundColor: ink, opacity: 0.2 }} />
+            <span className="block h-[2px] w-4/5" style={{ backgroundColor: ink, opacity: 0.22 }} />
+            <span className="block h-[2px] w-1/2" style={{ backgroundColor: ink, opacity: 0.14 }} />
           </div>
         </div>
       );
@@ -113,26 +113,26 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
     if (symbol === "hex") {
       return (
         <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden>
-          <polygon points="23,2 41,13 41,33 23,44 5,33 5,13" fill="none" stroke={accent} strokeWidth="2.4" opacity="0.9" />
-          <polygon points="23,13 32,18 32,28 23,33 14,28 14,18" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.5" />
-          <circle cx="23" cy="23" r="2" fill={ink} opacity="0.55" />
+          <polygon points="23,2 41,13 41,33 23,44 5,33 5,13" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" />
+          <polygon points="23,13 32,18 32,28 23,33 14,28 14,18" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.3" />
+          <circle cx="23" cy="23" r="2" fill={ink} opacity="0.35" />
         </svg>
       );
     }
     if (symbol === "circle") {
       return (
         <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden>
-          <circle cx="23" cy="23" r="18" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.4" strokeDasharray="4 3" />
-          <circle cx="23" cy="23" r="12" fill="none" stroke={accent} strokeWidth="2.2" opacity="0.9" />
-          <circle cx="23" cy="23" r="4" fill={accent} opacity="0.95" />
-          <line x1="23" y1="5" x2="23" y2="11" stroke={ink} strokeWidth="1.2" opacity="0.45" />
+          <circle cx="23" cy="23" r="18" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.25" strokeDasharray="4 3" />
+          <circle cx="23" cy="23" r="12" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.5" />
+          <circle cx="23" cy="23" r="4" fill={accent} opacity="0.55" />
+          <line x1="23" y1="5" x2="23" y2="11" stroke={ink} strokeWidth="1" opacity="0.28" />
         </svg>
       );
     }
     return (
       <span
-        className="block w-7 h-7 border-[3px] rotate-45"
-        style={{ borderColor: accent, opacity: 0.8 }}
+        className="block w-7 h-7 border-2 rotate-45"
+        style={{ borderColor: accent, opacity: 0.45 }}
       />
     );
   })();
@@ -182,7 +182,7 @@ function Collage({
     return (
       <div className="absolute inset-0 cover-breathe">
         <div className="absolute left-0 top-0 bottom-0 w-[38%] cover-piece" style={{ backgroundColor: wash, opacity: 0.2 }} />
-        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border-2 cover-piece-2" style={{ borderColor: ink, opacity: 0.28 }} />
+        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border cover-piece-2" style={{ borderColor: ink, opacity: 0.2 }} />
         <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%] cover-piece-3 border" style={{ borderColor: accent, opacity: 0.35 }} />
         <svg className="absolute right-[12%] top-[20%] w-[36%] h-[42%]" viewBox="0 0 80 60" aria-hidden>
           <path d="M4 50 L40 12 L76 40" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
@@ -210,7 +210,7 @@ function Collage({
             }}
           />
         ))}
-        <div className="absolute right-[14%] top-[22%] border-2 p-1.5" style={{ borderColor: ink, opacity: 0.4 }}>
+        <div className="absolute right-[14%] top-[22%] border p-1.5" style={{ borderColor: ink, opacity: 0.28 }}>
           <div className="grid grid-cols-2 gap-1">
             {[0, 1, 2, 3].map((i) => (
               <span key={i} className="w-3 h-3 border" style={{ borderColor: ink, backgroundColor: i === variant % 4 ? accent : "transparent", opacity: 0.4 }} />
@@ -302,12 +302,12 @@ function Collage({
     // 竖栏杂志 + 巨号
     return (
       <>
-        <div className="absolute left-0 top-0 bottom-0 w-[12%]" style={{ backgroundColor: ink, opacity: 0.08 }} />
+        <div className="absolute left-0 top-0 bottom-0 w-[12%] border-r" style={{ borderColor: wash, opacity: 0.4 }} />
         <span className="absolute left-[4%] top-1/2 -translate-y-1/2 -rotate-90 origin-center mono text-[8px] tracking-[0.3em]" style={{ color: ink, opacity: 0.3 }}>
           {abbr}
         </span>
         <div className="absolute left-[20%] top-[22%] w-[40%] h-[40%] border" style={{ borderColor: wash, opacity: 0.5 }} />
-        <div className="absolute left-[28%] top-[30%] w-[24%] h-[24%] border-2" style={{ borderColor: ink, opacity: 0.3 }} />
+        <div className="absolute left-[28%] top-[30%] w-[24%] h-[24%] border" style={{ borderColor: ink, opacity: 0.22 }} />
         <span className="absolute left-[32%] top-[34%] serif text-3xl font-light" style={{ color: ink, opacity: 0.2 }}>{noNum.slice(-2)}</span>
         <div className="absolute right-[14%] top-[28%]">{stamp}</div>
         <span className="absolute right-[14%] bottom-[30%] w-10 h-px" style={{ backgroundColor: accent, opacity: 0.5 }} />
@@ -326,7 +326,7 @@ function Collage({
         }}
       />
       <div className="absolute left-[20%] top-[28%] w-[22%] h-[30%] rotate-[-6deg] border" style={{ borderColor: wash, opacity: 0.5 }} />
-      <div className="absolute right-[18%] top-[32%] w-[16%] h-[22%] border-2" style={{ borderColor: ink, opacity: 0.28 }} />
+      <div className="absolute right-[18%] top-[32%] w-[16%] h-[22%] border" style={{ borderColor: ink, opacity: 0.22 }} />
       <div className="absolute right-[22%] top-[38%] w-[8%] h-[10%] border" style={{ borderColor: accent, opacity: 0.4 }} />
       <div className="absolute left-[24%] bottom-[28%]">{stamp}</div>
       <span className="absolute right-[18%] bottom-[28%] serif italic text-xl" style={{ color: ink, opacity: 0.22 }}>{initial}</span>

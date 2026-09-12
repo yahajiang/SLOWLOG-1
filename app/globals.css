@@ -1109,7 +1109,7 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面：一律淡入 → 透明度呼吸（无描线冲刺、无放大） */
+/* 封面：一律淡入 → 透明度呼吸（覆盖全部后代，含签名章） */
 .cover-inner {
   animation: cover-float 12s ease-in-out infinite;
 }
@@ -1118,17 +1118,22 @@ body::after {
   50% { transform: translateY(-2px) }
 }
 
-@keyframes cover-el-in { from { opacity: 0 } to { opacity: inherit } }
-
-/* SVG 描边：只淡入，不做 dash 冲刺 */
-.cover-inner svg [stroke] {
-  animation: cover-fade 1.4s var(--ease-out) 0.15s backwards;
-}
 @keyframes cover-fade {
   from { opacity: 0 }
 }
 
-/* 实心块：淡入 + 透明度呼吸 */
+/* 所有后代淡入（签名章/线条/块一并） */
+.cover-inner *,
+.cover-inner > svg {
+  animation: cover-fade 1.3s var(--ease-out) backwards;
+}
+.cover-inner > *:nth-child(1) { animation-delay: 0.05s }
+.cover-inner > *:nth-child(2) { animation-delay: 0.2s }
+.cover-inner > *:nth-child(3) { animation-delay: 0.35s }
+.cover-inner > *:nth-child(4) { animation-delay: 0.5s }
+.cover-inner > *:nth-child(5) { animation-delay: 0.65s }
+
+/* 实心块：淡入后透明度呼吸 */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box;
   transform-origin: center;
@@ -1138,26 +1143,17 @@ body::after {
 }
 @keyframes cover-breathe {
   0%, 100% { opacity: 1 }
-  50% { opacity: 0.86 }
+  50% { opacity: 0.88 }
 }
 
 .cover-breathe {
   animation: cover-breathe 6.8s ease-in-out 2s infinite;
 }
 
-/* HTML 拼贴件：淡入 + 透明度呼吸 */
-.cover-piece,
-.cover-inner > div,
-.cover-inner > span {
+.cover-piece {
   animation:
     cover-fade 1.1s var(--ease-out) backwards,
     cover-breathe 7s ease-in-out 1.8s infinite;
-}
-.cover-piece-2, .cover-inner > *:nth-child(2) { animation-delay: 0.28s, 2.3s }
-.cover-piece-3, .cover-inner > *:nth-child(3) { animation-delay: 0.45s, 2.6s }
-.cover-piece-4, .cover-inner > *:nth-child(4) { animation-delay: 0.62s, 2.9s }
-.cover-inner > svg {
-  animation: cover-breathe 6.5s ease-in-out 2.1s infinite;
 }
 
 .cover-pulse {
@@ -1178,14 +1174,13 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   .cover-inner,
-  .cover-inner > *,
+  .cover-inner *,
+  .cover-inner > svg,
   .cover-breathe,
   .cover-piece,
   .cover-pulse,
   .cover-flow,
-  .cover-inner svg [stroke],
   .cover-inner svg [fill] {
     animation: none !important;
   }
-  .cover-inner svg [stroke] { stroke-dashoffset: 0 !important }
 }
