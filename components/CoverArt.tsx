@@ -219,7 +219,7 @@ function Motif({ symbol, genericCode, pal, variant, variant4, zone }: {
   zone: Zone;
 }) {
   return (
-    <div className={`absolute ${ZONE_CLASS[zone]}`}>
+    <div className={`absolute ${ZONE_CLASS[zone]} cover-breathe`}>
       {symbol ? (
         <SymbolArt symbol={symbol} pal={pal} variant={variant} variant4={variant4} />
       ) : (
