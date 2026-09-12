@@ -1121,3 +1121,22 @@ body::after {
   transform-box: fill-box; transform-origin: center;
   animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards;
 }
+/* 封面强调点：极轻呼吸（opacity+scale，不抢阅读） */
+.cover-pulse {
+  animation: cover-pulse 3.2s ease-in-out infinite;
+}
+@keyframes cover-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1) }
+  50% { opacity: 0.85; transform: scale(1.08) }
+}
+/* 封面虚线/等高线：极慢 dash 流动 */
+.cover-flow {
+  stroke-dasharray: 6 5;
+  animation: cover-flow 12s linear infinite;
+}
+@keyframes cover-flow {
+  to { stroke-dashoffset: -88 }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover-inner, .cover-pulse, .cover-flow { animation: none !important }
+}
