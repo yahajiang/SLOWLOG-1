@@ -185,7 +185,7 @@ function Collage({
         <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border cover-piece-2" style={{ borderColor: ink, opacity: 0.2 }} />
         <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%] cover-piece-3 border" style={{ borderColor: accent, opacity: 0.35 }} />
         <svg className="absolute right-[12%] top-[20%] w-[36%] h-[42%]" viewBox="0 0 80 60" aria-hidden>
-          <path d="M4 50 L40 12 L76 40" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
+          <path d="M4 50 L40 12 L76 40" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.22" />
           <circle className="cover-pulse" cx="40" cy="12" r="3" fill={accent} opacity="0.85" />
         </svg>
         <div className="absolute right-[16%] bottom-[28%]">{stamp}</div>
@@ -283,7 +283,7 @@ function Collage({
     return (
       <>
         <svg className="absolute inset-x-[8%] top-[20%] h-[45%]" viewBox="0 0 200 80" aria-hidden>
-          <polyline points="10,60 50,30 90,45 130,18 190,35" fill="none" stroke={ink} strokeWidth="1.5" opacity="0.35" />
+          <polyline points="10,60 50,30 90,45 130,18 190,35" fill="none" stroke={ink} strokeWidth="1.2" opacity="0.22" />
           <polyline className="cover-flow" points="10,70 60,55 120,62 190,48" fill="none" stroke={accent} strokeWidth="1.1" opacity="0.5" />
           <circle className="cover-pulse" cx="130" cy="18" r="4" fill={accent} opacity="0.9" />
           <circle cx="50" cy="30" r="2.5" fill={ink} opacity="0.3" />
