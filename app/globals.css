@@ -1109,21 +1109,21 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面：无整壳浮动；多元素各自轻缓错峰（淡入 + 极轻摆动/呼吸） */
+/* 封面：无整壳浮动；多元素各自轻缓错峰（淡入 + 极轻摆动）
+   注意：循环关键帧不得写死 opacity:1，否则会把低透明描边「拉黑」突然出现 */
 @keyframes cover-fade {
   from { opacity: 0 }
 }
 
-/* 极轻上下摆 + 透明度微呼吸；周期/相位由 --cm-dur / --cm-delay 控制 */
+/* 只动位移，不碰 opacity——保留元素自身淡淡的 ink/accent 透明度 */
 @keyframes cover-sway {
-  0%, 100% { opacity: 1; transform: translateY(0) }
-  50% { opacity: 0.92; transform: translateY(-1.5px) }
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-1.5px) }
 }
 
-/* 默认：每个后代淡入后独立慢摆（时长相位按槽位错开，接近随机） */
 .cover-inner *:not(.cover-pulse):not(.cover-flow) {
   animation:
-    cover-fade 1.4s var(--ease-out) backwards,
+    cover-fade 1.8s var(--ease-out) backwards,
     cover-sway var(--cm-dur, 8s) ease-in-out var(--cm-delay, 1.2s) infinite;
 }
 .cover-inner > *:nth-child(1) { --cm-dur: 7.5s; --cm-delay: 0.9s }
@@ -1135,17 +1135,36 @@ body::after {
 .cover-inner > *:nth-child(2n) { transform-origin: center }
 .cover-inner > *:nth-child(3n) { --cm-dur: 9.8s; --cm-delay: 2.4s }
 
-/* SVG 实心：淡入 + 更缓的 scale 呼吸 */
+/* SVG 实心：淡入 + 极轻 scale（不改 opacity） */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box;
   transform-origin: center;
   animation:
-    cover-fade 1.3s var(--ease-out) backwards,
+    cover-fade 1.6s var(--ease-out) backwards,
     cover-breathe 6.5s ease-in-out 1.8s infinite;
 }
 @keyframes cover-breathe {
-  0%, 100% { opacity: 1; transform: scale(1) }
-  50% { opacity: 0.9; transform: scale(1.025) }
+  0%, 100% { transform: scale(1) }
+  50% { transform: scale(1.02) }
+}
+
+.cover-breathe {
+  transform-origin: center;
+  animation: cover-fade 1.6s var(--ease-out) backwards, cover-breathe 7s ease-in-out 1.6s infinite;
+}
+
+.cover-piece {
+  animation:
+    cover-fade 1.6s var(--ease-out) backwards,
+    cover-sway 7.8s ease-in-out 2s infinite;
+}
+
+.cover-pulse {
+  animation: cover-pulse 4.2s ease-in-out infinite;
+}
+@keyframes cover-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1) }
+  50% { opacity: 0.9; transform: scale(1.06) }
 }
 
 .cover-breathe {
