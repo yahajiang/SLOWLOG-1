@@ -24,17 +24,18 @@ const KNOWN = ["Design", "Plugin", "Engineering", "Typography", "Frontend", "Sni
 
 type Pal = { paper: string; ink: string; wash: string; accent: string };
 
-/** 小号标签符号：拼贴里的一枚「印章」，不占 C 位 */
+/** 标签签名章：加大加醒目，一眼可辨 tag 族 */
 function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; variant4: number }) {
   const { ink, wash, accent } = pal;
+  const wrap = "relative flex items-center justify-center";
   if (symbol === "grid") {
     return (
-      <div className="grid grid-cols-2 gap-[3px]">
+      <div className={`${wrap} gap-[5px] grid grid-cols-2 p-2 border-2`} style={{ borderColor: ink, opacity: 0.55, backgroundColor: wash }}>
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
-            className="w-2.5 h-2.5 border"
-            style={{ borderColor: ink, backgroundColor: i === variant4 % 4 ? accent : "transparent", opacity: 0.5 }}
+            className="w-4 h-4 border-2"
+            style={{ borderColor: ink, backgroundColor: i === variant4 % 4 ? accent : "transparent", opacity: 0.7 }}
           />
         ))}
       </div>
@@ -42,60 +43,80 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
   }
   if (symbol === "shield") {
     return (
-      <svg width="18" height="22" viewBox="0 0 18 22" aria-hidden>
-        <path d="M9 1 L16 4 V11 Q16 17 9 21 Q2 17 2 11 V4 Z" fill={wash} stroke={ink} strokeWidth="1" opacity="0.55" />
-        <circle className="cover-pulse" cx="9" cy="10" r="2" fill={accent} opacity="0.85" />
+      <svg width="40" height="48" viewBox="0 0 40 48" aria-hidden className="cover-breathe">
+        <path d="M20 2 L36 9 V24 Q36 38 20 46 Q4 38 4 24 V9 Z" fill={wash} stroke={ink} strokeWidth="1.8" opacity="0.65" />
+        <path d="M20 12 V32" stroke={accent} strokeWidth="2" opacity="0.8" />
+        <circle className="cover-pulse" cx="20" cy="22" r="4" fill={accent} opacity="0.95" />
       </svg>
     );
   }
   if (symbol === "doubleCircle") {
     return (
-      <div className="relative w-6 h-6">
-        <span className="absolute left-0 top-0 w-5 h-5 rounded-full border" style={{ borderColor: ink, opacity: 0.4 }} />
-        <span className="absolute right-0 bottom-0 w-5 h-5 rounded-full border" style={{ borderColor: accent, opacity: 0.5 }} />
+      <div className="relative w-12 h-12 cover-breathe">
+        <span className="absolute left-0 top-0 w-10 h-10 rounded-full border-2" style={{ borderColor: ink, opacity: 0.5, backgroundColor: wash }} />
+        <span className="absolute right-0 bottom-0 w-10 h-10 rounded-full border-2" style={{ borderColor: accent, opacity: 0.65 }} />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full cover-pulse" style={{ backgroundColor: accent, opacity: 0.9 }} />
       </div>
     );
   }
   if (symbol === "wave") {
     return (
-      <svg width="28" height="14" viewBox="0 0 28 14" aria-hidden>
-        <path className="cover-flow" d="M1 8 Q7 2 14 8 T27 8" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.7" />
+      <svg width="48" height="28" viewBox="0 0 48 28" aria-hidden className="cover-breathe">
+        <path d="M2 16 Q12 4 24 16 T46 16" fill="none" stroke={ink} strokeWidth="2" opacity="0.5" />
+        <path className="cover-flow" d="M2 22 Q12 12 24 22 T46 22" fill="none" stroke={accent} strokeWidth="1.6" opacity="0.75" />
+        <circle className="cover-pulse" cx="24" cy="8" r="3.5" fill={accent} opacity="0.9" />
       </svg>
     );
   }
   if (symbol === "diamond") {
     return (
-      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-        <polygon points="10,1 19,10 10,19 1,10" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.45" />
-        <circle className="cover-pulse" cx="10" cy="10" r="2" fill={accent} opacity="0.9" />
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden className="cover-breathe">
+        <polygon points="20,2 38,20 20,38 2,20" fill={wash} stroke={ink} strokeWidth="1.6" opacity="0.55" />
+        <polygon points="20,10 30,20 20,30 10,20" fill="none" stroke={accent} strokeWidth="1.4" opacity="0.65" />
+        <circle className="cover-pulse" cx="20" cy="20" r="3.5" fill={accent} opacity="0.95" />
       </svg>
     );
   }
   if (symbol === "window") {
     return (
-      <div className="w-7 h-5 border" style={{ borderColor: ink, opacity: 0.45 }}>
-        <div className="h-1.5 border-b" style={{ borderColor: wash, backgroundColor: wash }} />
+      <div className="w-14 h-11 border-2 cover-breathe" style={{ borderColor: ink, opacity: 0.55, backgroundColor: wash }}>
+        <div className="flex items-center gap-1 px-1.5 h-3 border-b-2" style={{ borderColor: ink, opacity: 0.35 }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent, opacity: 0.95 }} />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.35 }} />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.2 }} />
+        </div>
+        <div className="p-1.5 space-y-1">
+          <span className="block h-1 w-4/5" style={{ backgroundColor: ink, opacity: 0.25 }} />
+          <span className="block h-1 w-3/5" style={{ backgroundColor: accent, opacity: 0.4 }} />
+        </div>
       </div>
     );
   }
   if (symbol === "hex") {
     return (
-      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-        <polygon points="10,1 18,5.5 18,14.5 10,19 2,14.5 2,5.5" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.45" />
-        <circle className="cover-pulse" cx="10" cy="10" r="2" fill={accent} opacity="0.85" />
+      <svg width="42" height="42" viewBox="0 0 42 42" aria-hidden className="cover-breathe">
+        <polygon points="21,2 38,12 38,30 21,40 4,30 4,12" fill={wash} stroke={ink} strokeWidth="1.6" opacity="0.55" />
+        <polygon points="21,12 31,17 31,27 21,32 11,27 11,17" fill="none" stroke={ink} strokeWidth="1.1" opacity="0.4" />
+        <circle className="cover-pulse" cx="21" cy="22" r="3.5" fill={accent} opacity="0.95" />
       </svg>
     );
   }
   if (symbol === "circle") {
     return (
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <circle cx="11" cy="11" r="8" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" strokeDasharray="2 2" />
-        <circle className="cover-pulse" cx="11" cy="11" r="2.5" fill={accent} opacity="0.9" />
+      <svg width="42" height="42" viewBox="0 0 42 42" aria-hidden className="cover-breathe">
+        <circle cx="21" cy="21" r="16" fill="none" stroke={ink} strokeWidth="1.5" opacity="0.4" strokeDasharray="3 2" />
+        <circle cx="21" cy="21" r="9" fill={wash} opacity="0.55" />
+        <circle className="cover-pulse" cx="21" cy="21" r="4" fill={accent} opacity="0.95" />
       </svg>
     );
   }
-  // 未知 tag：小方点
-  return <span className="block w-2 h-2 cover-pulse" style={{ backgroundColor: accent, opacity: 0.7 }} />;
+  // 未知 tag
+  return (
+    <span
+      className="block w-6 h-6 border-2 cover-pulse"
+      style={{ borderColor: ink, backgroundColor: accent, opacity: 0.7 }}
+    />
+  );
 }
 
 /**
