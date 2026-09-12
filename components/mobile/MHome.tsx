@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { ArticleArt } from "@/components/ArticleArt";
+import { HeroCover } from "@/components/HeroCover";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { useLang } from "@/lib/lang-context";
@@ -227,7 +227,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
         <section className="border-b border-[var(--yh-border)] bg-[var(--dash-card)]/60">
           <div className="px-4 py-8">
             <div className="border border-[var(--yh-border)] overflow-hidden rounded-none mb-4">
-              <ArticleArt post={featured} noBorder />
+              <HeroCover post={featured} noBorder />
             </div>
             <div className="flex items-center gap-2 mb-2">
               <CategoryBadge category={featured.category} />
