@@ -1109,71 +1109,70 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面：入场缓慢描线 → 接轻微呼吸循环（reduced-motion 全关） */
+/* 封面：缓慢描线 → 缓慢呼吸（整体偏慢，不抢阅读） */
 .cover-inner {
-  animation: cover-float 8s ease-in-out infinite;
+  animation: cover-float 12s ease-in-out infinite;
 }
 @keyframes cover-float {
   0%, 100% { transform: translateY(0) }
   50% { transform: translateY(-2px) }
 }
 
-/* 描线入场 1.6s 缓出 */
+/* 描线入场 2.4s 极缓 */
 .cover-inner svg [stroke] {
   stroke-dasharray: 280;
   stroke-dashoffset: 280;
   animation:
-    cover-el-in 0.6s var(--ease-out) backwards,
-    cover-draw 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+    cover-el-in 0.9s var(--ease-out) backwards,
+    cover-draw 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
 }
 @keyframes cover-el-in { from { opacity: 0 } }
 @keyframes cover-draw { to { stroke-dashoffset: 0 } }
 
-/* 实心块：淡入后呼吸 */
+/* 实心块：淡入后缓慢呼吸 */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box;
   transform-origin: center;
   animation:
-    cover-el-in 0.7s var(--ease-out) backwards,
-    cover-breathe 3.8s ease-in-out 1.5s infinite;
+    cover-el-in 1s var(--ease-out) backwards,
+    cover-breathe 6.5s ease-in-out 2.2s infinite;
 }
 @keyframes cover-breathe {
   0%, 100% { opacity: 1; transform: scale(1) }
-  50% { opacity: 0.78; transform: scale(1.06) }
+  50% { opacity: 0.82; transform: scale(1.04) }
 }
 
-/* 符号整体：描线结束后再呼吸（更明显） */
 .cover-breathe {
   transform-origin: center;
-  animation: cover-breathe 3.6s ease-in-out 1.4s infinite;
+  animation: cover-breathe 6.8s ease-in-out 2s infinite;
 }
 
-/* HTML 拼贴件（色块/框/条）：淡入 + 延迟呼吸 */
+/* HTML 拼贴件 */
 .cover-piece,
 .cover-inner > div,
 .cover-inner > span {
   animation:
-    cover-el-in 0.55s var(--ease-out) backwards,
-    cover-breathe 4.2s ease-in-out 1.2s infinite;
+    cover-el-in 0.9s var(--ease-out) backwards,
+    cover-breathe 7s ease-in-out 1.8s infinite;
 }
-.cover-piece-2, .cover-inner > *:nth-child(2) { animation-delay: 0.12s, 1.5s }
-.cover-piece-3, .cover-inner > *:nth-child(3) { animation-delay: 0.22s, 1.7s }
-.cover-piece-4, .cover-inner > *:nth-child(4) { animation-delay: 0.32s, 1.9s }
+.cover-piece-2, .cover-inner > *:nth-child(2) { animation-delay: 0.25s, 2.3s }
+.cover-piece-3, .cover-inner > *:nth-child(3) { animation-delay: 0.4s, 2.6s }
+.cover-piece-4, .cover-inner > *:nth-child(4) { animation-delay: 0.55s, 2.9s }
 .cover-inner > svg {
-  animation: cover-breathe 4s ease-in-out 1.3s infinite;
+  animation: cover-breathe 6.5s ease-in-out 2.1s infinite;
 }
 
 .cover-pulse {
-  animation: cover-pulse 2.8s ease-in-out infinite;
+  animation: cover-pulse 4.5s ease-in-out infinite;
 }
 @keyframes cover-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1) }
-  50% { opacity: 0.95; transform: scale(1.18) }
+  0%, 100% { opacity: 0.45; transform: scale(1) }
+  50% { opacity: 0.9; transform: scale(1.1) }
 }
 
 .cover-flow {
   stroke-dasharray: 6 5;
-  animation: cover-flow 12s linear infinite;
+  animation: cover-flow 18s linear infinite;
 }
 @keyframes cover-flow {
   to { stroke-dashoffset: -88 }
