@@ -375,6 +375,11 @@ export const CoverArt = memo(function CoverArt({
   );
   const tag = resolveTagPrimary(tags);
   const aspect = ratio === "wide" ? "aspect-[16/10]" : "aspect-[16/9]";
+  // 每篇封面相位/周期微差 → 元素各自轻缓、互不同步
+  const motionVars = {
+    "--cm-dur": `${7 + (variant % 5) * 0.7}s`,
+    "--cm-delay": `${(0.6 + variant4 * 0.45).toFixed(2)}s`,
+  } as React.CSSProperties;
 
   return (
     <div
@@ -390,7 +395,7 @@ export const CoverArt = memo(function CoverArt({
         }}
       />
       <div className="absolute top-0 left-4 right-4 h-px" style={{ backgroundColor: palette.ink, opacity: 0.08 }} />
-      <div className="absolute inset-0 cover-inner">
+      <div className="absolute inset-0 cover-inner" style={motionVars}>
         <Collage
           layout={layout}
           pal={palette}
