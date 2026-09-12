@@ -40,19 +40,20 @@ function Motif({ cat, ink, wash, accent, variant, variant4 }: MotifProps & { cat
   if (cat === "Plugin") {
     const solid = variant4 % 4;
     return (
-      <div className="absolute right-[12%] top-[20%] grid grid-cols-2 gap-[6px]">
-        {[0, 1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className="w-6 h-6 border"
-            style={{
-              borderColor: ink,
-              backgroundColor: i === solid ? accent : i === 3 - solid ? wash : "transparent",
-              opacity: 0.45,
-            }}
-          />
-        ))}
-      </div>
+        <div className="absolute right-[12%] top-[20%] grid grid-cols-2 gap-[6px]">
+          {[0, 1, 2, 3].map((i) => (
+            <span
+              key={i}
+              className="w-6 h-6 border"
+              style={{
+                borderColor: ink,
+                backgroundColor: i === solid ? accent : i === 3 - solid ? wash : "transparent",
+                opacity: 0.45,
+              }}
+            />
+          ))}
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent, opacity: 0.55 }} />
+        </div>
     );
   }
   if (cat === "Engineering") {
@@ -152,8 +153,6 @@ export const HeroCover = memo(function HeroCover({
   const noNum = useMemo(() => String(hashVariant(post.id || post.title || "0", 9000) + 1000).padStart(4, "0"), [post.id, post.title]);
   const tag = resolveTagPrimary((post as any).tags);
 
-  const letterLeft = variant <= 3;
-
   return (
     <div
       aria-hidden="true"
@@ -174,11 +173,9 @@ export const HeroCover = memo(function HeroCover({
       {/* 分类几何母题 */}
       <Motif cat={cat} ink={palette.ink} wash={palette.wash} accent={palette.accent} variant={variant} variant4={variant4} />
 
-      {/* 巨衬线首字母 */}
+      {/* 巨衬线首字母：左侧安全区内 */}
       <span
-        className={`absolute serif italic leading-none select-none font-light tracking-tighter ${
-          letterLeft ? "left-[8%] top-[18%]" : "right-[10%] top-[16%]"
-        } text-[6.5rem]`}
+        className="absolute serif italic leading-none select-none font-light tracking-tighter left-[12%] top-[20%] text-[6.5rem]"
         style={{ color: palette.ink, opacity: 0.32 }}
       >
         {initial}
