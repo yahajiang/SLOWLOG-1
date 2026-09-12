@@ -1109,27 +1109,53 @@ body::after {
 .tl-armed .tl-item .tl-dot { background: var(--yh-border); transition: background 0.4s var(--ease-out); }
 .tl-armed .tl-item.is-in .tl-dot { background: var(--yh-accent); }
 
-/* 封面：装饰绝大多数静止；仅主体容器 -2px/8s 极轻浮动（潜意识生命力，非“这里在动”） */
-.cover-inner { animation: cover-float 8s ease-in-out infinite }
-@keyframes cover-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
-.cover-inner svg > * { animation: cover-el-in var(--duration-normal) var(--ease-out) backwards }
-.cover-inner svg [stroke] { stroke-dasharray: 420; stroke-dashoffset: 420; animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards }
+/* 封面：入场缓慢描线 → 接轻微呼吸循环（reduced-motion 全关） */
+.cover-inner {
+  animation: cover-float 8s ease-in-out infinite;
+}
+@keyframes cover-float {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-2px) }
+}
+
+/* 描线入场 1.6s 缓出 */
+.cover-inner svg [stroke] {
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  animation:
+    cover-el-in 0.6s var(--ease-out) backwards,
+    cover-draw 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
 @keyframes cover-el-in { from { opacity: 0 } }
 @keyframes cover-draw { to { stroke-dashoffset: 0 } }
-/* 实心块仅一次性描边/淡入，无循环 pulse */
+
+/* 实心块：淡入后极轻呼吸 */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
-  transform-box: fill-box; transform-origin: center;
-  animation: cover-el-in var(--duration-normal) var(--ease-out) backwards, cover-draw var(--duration-slow) var(--ease-out) 0.12s forwards;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    cover-el-in 0.7s var(--ease-out) backwards,
+    cover-breathe 4.5s ease-in-out 1.5s infinite;
 }
-/* 封面强调点：极轻呼吸（opacity+scale，不抢阅读） */
+@keyframes cover-breathe {
+  0%, 100% { opacity: 1; transform: scale(1) }
+  50% { opacity: 0.88; transform: scale(1.03) }
+}
+
+/* 符号整体：描线结束后再呼吸 */
+.cover-breathe {
+  transform-origin: center;
+  animation: cover-breathe 5.2s ease-in-out 1.4s infinite;
+}
+
 .cover-pulse {
-  animation: cover-pulse 3.2s ease-in-out infinite;
+  animation: cover-pulse 3.4s ease-in-out infinite;
 }
 @keyframes cover-pulse {
   0%, 100% { opacity: 0.45; transform: scale(1) }
   50% { opacity: 0.85; transform: scale(1.08) }
 }
-/* 封面虚线/等高线：极慢 dash 流动 */
+
 .cover-flow {
   stroke-dasharray: 6 5;
   animation: cover-flow 12s linear infinite;
@@ -1137,6 +1163,15 @@ body::after {
 @keyframes cover-flow {
   to { stroke-dashoffset: -88 }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .cover-inner, .cover-pulse, .cover-flow { animation: none !important }
+  .cover-inner,
+  .cover-breathe,
+  .cover-pulse,
+  .cover-flow,
+  .cover-inner svg [stroke],
+  .cover-inner svg [fill] {
+    animation: none !important;
+  }
+  .cover-inner svg [stroke] { stroke-dashoffset: 0 !important }
 }
