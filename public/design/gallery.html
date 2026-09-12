@@ -49,15 +49,29 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .tag{display:inline-block;font-size:10px;padding:1px 8px;border:1px solid var(--yh-border);color:var(--yh-muted);margin-bottom:8px}
 .ci h3{font-size:14px;font-weight:600;margin-bottom:5px}
 .ci p{font-size:12px;color:var(--yh-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;transition:opacity .2s var(--ease-out)}
-.modal-mask.open{display:flex;animation:g-maskIn .2s var(--ease-out)}
-.modal-mask.open .modal{animation:g-scaleIn .2s var(--ease-out)}
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:90;display:none;align-items:flex-start;justify-content:center;padding:32px 16px 48px;overflow:auto;transition:opacity .28s var(--ease-out)}
+.modal-mask.open{display:flex;animation:g-maskIn .28s var(--ease-out)}
+.modal-mask.open .modal{animation:g-modalIn .32s var(--ease-out) backwards}
 .modal-mask.closing{opacity:0}
 @keyframes g-maskIn{from{opacity:0}to{opacity:1}}
-@keyframes g-scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
-.modal{background:var(--yh-bg);border:1px solid var(--yh-border);max-width:720px;width:100%;padding:28px;position:relative}
-.modal .x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:var(--yh-muted);cursor:pointer}
-.modal .x:hover{color:var(--yh-text)}
+@keyframes g-modalIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes g-bpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.modal{background:var(--yh-bg);border:1px solid var(--yh-border);max-width:720px;width:100%;padding:32px 36px 28px;position:relative;box-shadow:0 24px 64px -24px rgba(0,0,0,.18)}
+.modal.about{max-width:640px}
+.modal .x{position:absolute;top:10px;right:12px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid transparent;font-size:18px;color:var(--yh-muted);cursor:pointer;transition:all .18s var(--ease-out)}
+.modal .x:hover{color:var(--yh-text);border-color:var(--yh-border)}
+.modal .x:focus-visible{outline:2px solid var(--yh-accent);outline-offset:2px}
+.ab-card{border:1px solid var(--yh-border);background:var(--dash-card);padding:16px 18px 14px;margin-bottom:10px;position:relative}
+.modal.about .ab-card{animation:g-bpIn .4s var(--ease-out) backwards}
+.modal.about .ab-card:nth-of-type(1){animation-delay:.06s}
+.modal.about .ab-card:nth-of-type(2){animation-delay:.12s}
+.modal.about .ab-card:nth-of-type(3){animation-delay:.18s}
+.modal.about .ab-card:nth-of-type(4){animation-delay:.24s}
+.modal.about .ab-card:nth-of-type(5){animation-delay:.3s}
+.modal.about .ab-card:nth-of-type(6){animation-delay:.36s}
+.modal.about .ab-card:nth-of-type(7){animation-delay:.42s}
+.ab-k{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--yh-muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ab-k::before{content:"";width:12px;height:1px;background:var(--yh-accent);flex-shrink:0}
 
 @keyframes motionBreath{0%,100%{opacity:.88}50%{opacity:1}}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -581,11 +595,12 @@ function openM(id){
   document.getElementById("mask").classList.add("open");
   document.body.style.overflow="hidden";
 }
-function closeM(){var m=document.getElementById("mask");m.classList.add("closing");setTimeout(function(){m.classList.remove("open","closing");document.body.style.overflow=""},200)}
+function closeM(){var m=document.getElementById("mask");var md=document.querySelector(".modal");if(md)md.classList.remove("about");m.classList.add("closing");setTimeout(function(){m.classList.remove("open","closing");document.body.style.overflow=""},280)}
 function openAbout(){
+  var md=document.querySelector(".modal");
+  if(md) md.classList.add("about");
   document.getElementById("m-body").innerHTML=`
-    <h2 class="m-h2">设计蓝图 · 慢日志 UI</h2>
-    <div class="m-meta"><span class="tag">DESIGN.md v1.6</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta" style="margin-bottom:14px"><span class="tag">DESIGN.md v1.6</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">§ Identity · 你是谁在设计</div>
       <p class="ab-lead" style="margin:0">Editorial Web Designer — 画廊是设计契约的展品柜，不是营销落地页。每条提示词都应对齐真站源码路径与令牌。</p>
