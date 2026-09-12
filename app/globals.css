@@ -1129,31 +1129,31 @@ body::after {
 @keyframes cover-el-in { from { opacity: 0 } }
 @keyframes cover-draw { to { stroke-dashoffset: 0 } }
 
-/* 实心块：淡入后极轻呼吸 */
+/* 实心块：淡入后呼吸 */
 .cover-inner svg [fill]:not([fill="none"]):not([fill="transparent"]):not(text) {
   transform-box: fill-box;
   transform-origin: center;
   animation:
     cover-el-in 0.7s var(--ease-out) backwards,
-    cover-breathe 4.5s ease-in-out 1.5s infinite;
+    cover-breathe 3.8s ease-in-out 1.5s infinite;
 }
 @keyframes cover-breathe {
   0%, 100% { opacity: 1; transform: scale(1) }
-  50% { opacity: 0.88; transform: scale(1.03) }
+  50% { opacity: 0.78; transform: scale(1.06) }
 }
 
-/* 符号整体：描线结束后再呼吸 */
+/* 符号整体：描线结束后再呼吸（更明显） */
 .cover-breathe {
   transform-origin: center;
-  animation: cover-breathe 5.2s ease-in-out 1.4s infinite;
+  animation: cover-breathe 3.6s ease-in-out 1.4s infinite;
 }
 
 .cover-pulse {
-  animation: cover-pulse 3.4s ease-in-out infinite;
+  animation: cover-pulse 2.8s ease-in-out infinite;
 }
 @keyframes cover-pulse {
-  0%, 100% { opacity: 0.45; transform: scale(1) }
-  50% { opacity: 0.85; transform: scale(1.08) }
+  0%, 100% { opacity: 0.4; transform: scale(1) }
+  50% { opacity: 0.95; transform: scale(1.18) }
 }
 
 .cover-flow {
