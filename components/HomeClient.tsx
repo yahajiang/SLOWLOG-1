@@ -247,7 +247,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   </div>
                   <div className="hidden md:block w-48 shrink-0">
                     <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
-                      <HeroCover post={heroExiting} />
+                      <HeroCover post={heroExiting} noBorder />
                     </div>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                 </div>
                 <div className="hidden md:block w-48 shrink-0">
                   <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
-                    <HeroCover post={localizedFeatured} />
+                    <HeroCover post={localizedFeatured} noBorder />
                   </div>
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {localizedFeatured.tags.map((tag) => (
