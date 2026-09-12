@@ -11,7 +11,7 @@ import { useLang } from "@/lib/lang-context";
 import { getReadProgress } from "@/lib/read-progress";
 import { Header } from "@/components/Header";
 import { ArticleCard } from "@/components/ArticleCard";
-import { ArticleArt } from "@/components/ArticleArt";
+import { HeroCover } from "@/components/HeroCover";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { Thinking } from "@/components/Thinking";
@@ -247,7 +247,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   </div>
                   <div className="hidden md:block w-48 shrink-0">
                     <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
-                      <ArticleArt post={heroExiting} tall />
+                      <HeroCover post={heroExiting} />
                     </div>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                 </div>
                 <div className="hidden md:block w-48 shrink-0">
                   <div className="border border-[var(--yh-border)] overflow-hidden rounded-none shadow-[var(--shadow-card)]">
-                    <ArticleArt post={localizedFeatured} tall />
+                    <HeroCover post={localizedFeatured} />
                   </div>
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {localizedFeatured.tags.map((tag) => (
