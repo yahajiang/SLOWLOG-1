@@ -3,7 +3,7 @@
 <head data-page-node-id="sCsGXIr5lYvFwcQg46Eofs">
 <meta charset="UTF-8" data-page-node-id="Yeehtd7hHU0zIMHJFnuOly">
 <meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="CkbODbylSOeUNolhUsN7Nr">
-<title>慢日志 · UI Design Prompt</title>
+<title>慢日志 · UI 组件画廊</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="O7Ov2myXhj4OBKHYgH7gHI">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet" data-page-node-id="zoEHcfEyhqBvWov7qod0i1">
 <style>
@@ -215,7 +215,7 @@ body.dark .ti-sun{display:inline}
 </div>
 
 <script>
-const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif=Cormorant Garamond+Noto Serif SC 标题；sans=Plus Jakarta Sans；mono=JetBrains Mono（11–12px/.14em/大写）。动效时长档：fast 180ms / normal 300ms / slow 500ms；ease-out cubic-bezier(0.22,1,0.36,1)；spring 过冲≤1.15。只动 transform/opacity；hover/active/focus 三态齐全；focus-visible 2px accent；暗色全令牌化（dash-text 底上的按钮用 dash-bg 反色，禁 text-white）。正文 17px/1.9；行宽默认 max-w-3xl；阴影 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100。reduced-motion 全局兜底。`;
+const P_BASE = `基于慢日志设计语言：Next.js 15 + Tailwind + CSS 令牌（--yh-bg/--yh-text/--yh-muted/--yh-border/--yh-accent/--dash-card，.dark 整体覆盖）。直角 rounded-none、1px var(--yh-border)、纸面 var(--dash-card)。serif=Cormorant Garamond+Noto Serif SC 标题；sans=Plus Jakarta Sans；mono=JetBrains Mono（11–12px/.14em/大写）。动效：入场一律 opacity 淡入 1.1–1.4s；循环只做透明度呼吸（1↔0.86–0.88，6–7s）；禁描线冲刺与大 scale；reduced-motion 全关。hover/active/focus 三态齐全；focus-visible 2px accent。封面系统见 CoverArt：分类只定色 art-*，母题由 resolveTagSymbol 标签驱动，8 套密拼贴 layout，签名章带 mono 代号；大面积色块改描边或 opacity≤0.22。正文 17px/1.9；阴影 --shadow-card/float/pop；z-index header40/modal50/Welcome90/toast100。`;
 
 const C = [
  {id:"stat",name:"统计卡片",cat:"数据展示",desc:"概览页四联统计：PJS 粗体 tabular-nums 大数字 + tracking-widest 大写标签，hover 上浮 + shadow-float。",
@@ -241,13 +241,14 @@ const C = [
 - 轴线 1px border + accent scaleY(阅读进度) · transform-only
 - 年份环节点 + 文章圆点；IO 点亮 is-in（translateX -10→0 · 55ms 交错）
 - tl-armed 渐进增强；reduced-motion 静态可见`},
- {id:"toc",name:"阅读目录导轨",cat:"数据展示",desc:"Motion 05：scroll-spy 激活当前节（accent 加粗+圆点），左缘导轨 scaleY 随滚动生长。",
+ {id:"toc",name:"阅读目录导轨",cat:"数据展示",desc:"scroll-spy 激活当前节；左缘导轨 scaleY；视口贴底强制末节+进度 100%（文末兜底）。",
   pv:`<div class="pv-toc" style="width:100%;max-width:180px"><a href="#" onclick="tocClick(this)"><span class="dot"></span>为什么做</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>情感模型</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>记忆系统</a><a href="#" onclick="tocClick(this)"><span class="dot"></span>关系演进</a></div>`,
   prompt:`${P_BASE}
 新建「阅读目录 TocRail」（还原 components/TableOfContents.tsx）：
 - 双层导轨：底层 1px 边 + accent 填充 scaleY，**进度按标题区间插值**（与高亮标题同步，禁用整页 scrollY）
 - 高亮：accent 文字 + bg accent/7% + 圆点变大；transition-colors 180ms ease-out
 - 导轨 transition 160ms linear；点击后立即推进导轨
+- **文末兜底**：scrollY+innerHeight ≥ scrollHeight-48 → curIdx=末节、progress=1
 - 标题 id 与 lib/headings.ts 共用 slug+去重（重名标题 foo / foo-1）
 - 可折叠：标题行 toggle，展开 250ms / 收起 200ms max-height+opacity
 - 正文异步：轮询绑定标题，不依赖 DB id 字面相等`},
@@ -258,14 +259,14 @@ const C = [
 - 三胶囊 system/light/dark；选中 yh-text/yh-bg
 - system 用 matchMedia；html.dark + sl-theme
 - 首帧内联脚本防白闪；transition 180ms`},
- {id:"cover",name:"封面构成器",cat:"数据展示",desc:"ArticleArt：文章 id 哈希 → 发版变体；族徽字/几何 SVG/横线基线，每篇一张脸。",
+ {id:"cover",name:"CoverArt 密拼贴封面",cat:"数据展示",desc:"共享封面：8 套 layout×variant×标题 hash；标签签名章 CIR/WIN/… + mono 代号；淡入+透明度呼吸；card 16/9、wide 16/10。",
   pv:`<div style="width:100%;max-width:190px;aspect-ratio:5/3;position:relative;background:#F5F3EF;border:1px solid var(--yh-border)"><span style="position:absolute;top:5px;left:8px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.14em;color:#3A332E;border:1px solid #3A332E;padding:1px 5px">设计</span><span class="serif cv-fade" style="position:absolute;top:8px;left:12px;font-size:42px;line-height:1;color:#3A332E">每</span><span class="cv-rot" style="position:absolute;bottom:12px;right:12px;width:18px;height:18px;background:#E8E0D8;border:1px solid #3A332E"></span><span class="cv-line" style="position:absolute;bottom:8px;left:10px;right:10px;height:1px;background:#3A332E;opacity:.3"></span><input class="seed-in" style="position:absolute;bottom:20px;right:10px" value="slowlog" oninput="coverSeed(this)" title="改种子，看构图实时变化"><span class="cov-dot cv-pop" style="position:absolute;width:8px;height:8px;border-radius:50%;background:#C9A98A;left:118px;top:68px;transition:left .3s var(--ease-out),top .3s var(--ease-out)"></span><span class="mono cov-no" style="position:absolute;bottom:2px;left:14px;font-size:8px;letter-spacing:.2em;color:#3A332E">DSN · No.0 · seed:slowlog</span></div>`,
   prompt:`${P_BASE}
-新建「封面构成器 ArticleArt」（还原 components/ArticleArt.tsx）：
-- seed（文章 id）FNV-1a → variant 决定构图；分类 palette（paper/ink/wash/accent）内联
-- 元素：分类徽章 + 基线 + mono 装饰戳（opacity≤0.35、fontSize≥8，去无信息量数字串）；禁点阵铺底
-- 暗色保留 paper 亮块；memo；5:3
-- 动画：描边生长 dashoffset 420→0 @ 480ms；容器浮动 translateY **-4px @ 8s** breath；实心 pulse **scale 1↔1.05 @ 5s**；reduced-motion 兜底；无 hover；无 JS 静态可见`},
+新建「CoverArt 密拼贴封面」（还原 components/CoverArt.tsx）：
+- props { post, ratio?: wide|card, noBorder? }；HeroCover/ArticleArt 为薄封装
+- 分类只定色 art-*；母题 resolveTagSymbol → 8 族签名章 + mono 代号；未命中 tag 走通用几何
+- layout=hash(title+id,8) 密拼贴 ≥5 件；大面积填充改描边或 opacity≤0.22
+- 底栏一行 ABBR · noNum · TAG（剥 []）；.cover-inner * 淡入 1.3s + 透明度呼吸；reduced-motion 关`},
  {id:"card",name:"文章卡片",cat:"数据展示",desc:"Motion 04 本体：封面 + 徽章 + 标题 + hover 仅 -2px 偏移，stagger 进场一次播完。",
   pv:`<div class="mini-card" style="width:100%;max-width:200px;border:1px solid var(--yh-border);background:var(--dash-card)"><div style="height:56px;background:#F5F3EF;display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="serif mc-art" style="font-size:26px;color:#3A332E">记</span></div><div style="padding:10px 12px"><span style="font-size:9px;padding:1px 6px;border:1px solid #E8E0D8;color:#3A332E">设计</span><div class="mc-t" style="font-size:11.5px;font-weight:600;margin-top:6px">规则派生的封面系统</div></div></div>`,
   prompt:`${P_BASE}
@@ -448,6 +449,28 @@ const C = [
 - 中英用 dash* 词典键（非硬编码中文）；stat hover 仅 shadow-float`},
 ];
 
+ {id:"hero",name:"Hero 推荐侧栏封面",cat:"数据展示",desc:"首页推荐位 CoverArt wide（16/10）；外层有边框必须 noBorder 防双线。",
+   pv:`<div style="width:100%;max-width:110px;aspect-ratio:16/10;border:1px solid var(--yh-border);background:#F5F3EF;position:relative"><span class="mono" style="position:absolute;bottom:4px;left:6px;font-size:7px;color:#3A332E;opacity:.4">FRT · 3648</span></div>`,
+   prompt:`${P_BASE}
+接入 Hero 推荐封面（HeroCover.tsx + HomeClient/MHome）：
+- CoverArt ratio=wide + noBorder；卡片仍用 ArticleArt card`},
+ {id:"mheader",name:"移动顶栏 MHeader",cat:"布局导航",desc:"sticky h-14：品牌 + ThemeToggle/LanguageSwitcher size=sm（44px）+ 可展开搜索。",
+   pv:`<div style="width:100%;max-width:220px;height:36px;border-bottom:1px solid var(--yh-border);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:10px"><b>慢日志</b><span style="display:flex;gap:4px"><span style="border:1px solid var(--yh-border);padding:2px 6px">☾</span><span style="border:1px solid var(--yh-border);padding:2px 6px">EN</span></span></div>`,
+   prompt:`${P_BASE}
+新建 MHeader（mobile/MHeader.tsx）：h-14 sticky；sm 切换器 44px；搜索 text-base`},
+ {id:"mdash",name:"移动后台底栏 MDashNav",cat:"布局导航",desc:"sticky bottom-0 四 Tab；min-h 56 + safe-area-inset-bottom。",
+   pv:`<div style="width:100%;max-width:220px;border-top:1px solid var(--yh-border);display:grid;grid-template-columns:repeat(4,1fr);font-size:9px;text-align:center"><span style="padding:8px 0;color:var(--yh-accent)">概览</span><span style="padding:8px 0;color:var(--yh-muted)">文章</span><span style="padding:8px 0;color:var(--yh-muted)">随想</span><span style="padding:8px 0;color:var(--yh-muted)">更多</span></div>`,
+   prompt:`${P_BASE}
+新建 MDashNav：grid-cols-4 min-h-56；pb env(safe-area-inset-bottom)`},
+ {id:"mtoc",name:"移动目录抽屉 MTOC",cat:"数据展示",desc:"FAB→底部 sheet：进度条文末 100%、当前节高亮、列表 min-h-0 可滚、锁 body。",
+   pv:`<div style="width:100%;max-width:200px"><div style="height:3px;background:var(--yh-border)"><i style="display:block;height:100%;width:100%;background:var(--yh-accent)"></i></div><div class="mono" style="font-size:8px;text-align:right;color:var(--yh-muted)">100%</div><div style="font-size:10px;padding:6px;color:var(--yh-accent);background:color-mix(in srgb,var(--yh-accent) 7%,transparent)">写在最后</div></div>`,
+   prompt:`${P_BASE}
+新建 MTOC：min-h-0 列表；nearBottom 兜底 progress=1；body overflow hidden`},
+ {id:"mcard",name:"移动文章卡 MArticleCard",cat:"数据展示",desc:"CoverArt 16/9 noBorder + 徽章叠层 + 标题两行 + 相对时间底栏。",
+   pv:`<div style="width:100%;max-width:180px;border:1px solid var(--yh-border)"><div style="aspect-ratio:16/9;background:#EAF0F5"></div><div style="padding:8px;font-size:10px;font-weight:600">打印助手</div></div>`,
+   prompt:`${P_BASE}
+新建 MArticleCard：ArticleArt noBorder；CategoryBadge 叠层；line-clamp-2`},
+
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
 let cur = "全部";
 document.getElementById("tabs").innerHTML = CATS.map(c=>{const n=c==="全部"?C.length:C.filter(x=>x.cat===c).length;return `<button class="tab${c===cur?" on":""}" onclick="setCat('${c}')" title="${c} · ${n} 个">${c}${`<span class="mono" style="font-size:8px;opacity:.55;margin-left:4px">${n}</span>`}`}).join("");
@@ -483,22 +506,22 @@ function closeM(){var m=document.getElementById("mask");m.classList.add("closing
 function openAbout(){
   document.getElementById("m-body").innerHTML=`
     <h2 class="m-h2">关于 · 慢日志 UI 组件画廊</h2>
-    <div class="m-meta"><span class="tag">v1.4 · 2026-09-11</span><span class="tag">31 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta"><span class="tag">v1.5 · 对齐 CoverArt</span><span class="tag">36 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">慢日志 SLOWLOG · 项目速览</div>
       <div class="ab-list">
         <div><b>定位</b>个人博客——纸感排印外衣、慢阅读内胆、系统化骨架；slogan「慢下来，写点值得读的东西」；格言池随机展示品牌句。</div>
         <div><b>规模</b>应用包 <span class="mono">v0.3.5</span> · 约 60 个 app 路由文件 + 49 个组件 · 双语（zh/en）前台 + 后台 · Prisma 六表 · 桌面 /m 平行树</div>
         <div><b>技术栈</b>Next.js 15.4 · React 19 · Tailwind v4 令牌 · Prisma 6 / Neon · Tiptap 3 · Vercel Blob · NextAuth Credentials · 安全 origin 只信 env</div>
-        <div><b>功能面</b>杂志首页（Hero spotlight / 分类 / 随想 / 时间线）· 归档 · 阅读（TOC 导轨 / 灯箱 / 代码块行号 / 相关推荐）· ⌘K 搜索 · 移动后台 · OG / RSS / Sitemap · 强制改密闭环 · 组件画廊</div>
+        <div><b>功能面</b>杂志首页（HeroCover / 分类 / 随想 / 时间线）· 归档 · 阅读（TOC 文末 100% / 灯箱 / 代码块 / 上下篇）· ⌘K 搜索 · 移动端 /m（顶栏/抽屉/后台 Tab）· CoverArt 标签签名章 · OG / RSS · 强制改密 · 组件画廊</div>
         <div><b>仓库</b>私有 slowlog（含数据）· 公开 <span class="mono">yahajiang/SLOWLOG-1</span>（纯源码）· 本地预览 <span class="mono">localhost:3000</span> · <span class="mono">/design/gallery.html</span></div>
       </div>
     </div>
-    <p class="ab-lead">31 条组件提示词均对齐当前真站代码（源码路径 / 结构 / 令牌 / 动画契约 / 无障碍暗色 / P_BASE）。点卡片复制即可交给任意 AI 生成同源 UI。</p>
+    <p class="ab-lead">组件提示词对齐当前真站（CoverArt 密拼贴 / 移动端 / TOC 文末 100%）。点卡片复制即可交给任意 AI 生成同源 UI。</p>
     <div class="ab-list ab-card" style="margin-bottom:0">
-      <div><b>设计契约</b>直角 + 1px 边 + 纸面卡片；动效 180/300/500ms · ease-out · spring≤1.15 · 只动 transform/opacity · reduced-motion 兜底 · 禁 Tailwind scale-* 与 JS transform 同节点</div>
-      <div><b>近期落地</b>Host 白名单 · 强制改密 · 视口 Reveal · 随机格言 · TOC id 去重 · 代码行号 · 后台中英 · 纸感背景四层 · 文章头 meta 去重 · 正文 max-w-3xl</div>
-      <div><b>画廊组件数</b>31（含 Reveal / 格言池 / 代码块 / 文章头 meta / 仪表盘首页）</div>
+      <div><b>设计契约</b>直角 + 1px 边 + 纸面卡片；封面淡入+透明度呼吸、禁大色块；签名章 mono 代号；reduced-motion 兜底</div>
+      <div><b>近期落地</b>CoverArt 密拼贴 · 标签签名章 · TOC 文末进度打满 · 移动触控 44px · safe-area · 上下篇 · HeroCover</div>
+      <div><b>画廊组件数</b>36（含 CoverArt / HeroCover / MHeader / MDashNav / MTOC / MArticleCard）</div>
       <div><b>版权</b>© 2026 Yahajiang · SlowLog · yahajiang@gmail.com</div>
     </div>`;
   document.getElementById("mask").classList.add("open");
