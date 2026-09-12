@@ -134,6 +134,19 @@ h1{font-family:"Cormorant Garamond","Noto Serif SC",serif;font-size:34px;font-we
 .pv .cv-rot,.m-pv .cv-rot{animation:g-cvRot .5s var(--ease-out) .3s backwards}
 .pv .cv-pop,.m-pv .cv-pop{animation:g-cvPop .4s var(--ease-spring) .5s backwards,g-pulse 3s ease-in-out 1s infinite}
 @keyframes g-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes g-sway{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+@keyframes g-blink{0%,100%{opacity:.45}50%{opacity:.95}}
+@keyframes g-progLoop{0%{transform:scaleX(.08)}50%{transform:scaleX(1)}100%{transform:scaleX(.08)}}
+.pv .lp,.m-pv .lp{animation:g-sway 7s ease-in-out infinite}
+.pv .lp.d2,.m-pv .lp.d2{animation-duration:9s;animation-delay:1.2s}
+.pv .lp.d3,.m-pv .lp.d3{animation-duration:8s;animation-delay:.6s}
+.pv .lb,.m-pv .lb{animation:g-blink 3.2s ease-in-out infinite}
+.pv .lprog,.m-pv .lprog{transform-origin:left;animation:g-progLoop 4.5s ease-in-out infinite}
+.pv .nav-item,.m-pv .nav-item{cursor:pointer;transition:all .18s var(--ease-out)}
+.pv .nav-item:hover,.m-pv .nav-item:hover{color:var(--yh-text)}
+.pv .nav-item.on,.m-pv .nav-item.on{color:var(--yh-accent);border-left-color:var(--yh-accent);background:color-mix(in srgb,var(--yh-accent) 10%,transparent);font-weight:600}
+.pv .lb-img,.m-pv .lb-img{cursor:zoom-in;transition:transform .25s var(--ease-out)}
+.pv .lb-img.on,.m-pv .lb-img.on{transform:scale(1.12);cursor:zoom-out}
 @keyframes g-cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 /* —— 页面级细节动效 —— */
 html{scroll-behavior:smooth}
@@ -321,7 +334,7 @@ const C = [
 - 底部随机格言（lib/taglines.ts pickTagline，mount 后抽，避免水合不一致）
 - 变体 DashLoading compact；编辑器 dynamic loading 用 dashLoadingEditor 词`},
  {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
-  pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="prog-i" style="position:absolute;left:0;top:0;height:100%;width:6%;background:var(--yh-accent)"></span></div><div class="mono prog-t" style="font-size:9px;color:var(--yh-muted);margin-top:6px">6% · 预计 10 min</div></div>`,
+  pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="lprog" style="position:absolute;left:0;top:0;height:100%;width:100%;background:var(--yh-accent)"></span></div><div class="mono lb" style="font-size:9px;color:var(--yh-muted);margin-top:6px">scaleX 循环演示 · 阅读进度</div></div>`,
   prompt:`${P_BASE}
 新建「阅读进度条 ReadingProgress」（还原 components/ReadingProgress.tsx）：
 - 基于 article 矩形 + rAF 节流；三处联动：顶部细线（**h-2px opacity-60**）+ 侧栏 data-side-progress scaleX + data-side-progress-text
@@ -468,36 +481,36 @@ const C = [
    pv:`<div style="width:100%;max-width:180px;border:1px solid var(--yh-border)"><div style="aspect-ratio:16/9;background:#EAF0F5"></div><div style="padding:8px;font-size:10px;font-weight:600">打印助手</div></div>`,
    prompt:`${P_BASE}
 新建 MArticleCard：ArticleArt noBorder；CategoryBadge 叠层；line-clamp-2`},
- {id:"lightbox",name:"图片灯箱 Lightbox",cat:"反馈",desc:"点击 article 内图片 Portal 全屏：缩放/旋转/下载；键盘 +−/r/0/Esc。",
-   pv:`<div style="width:100%;max-width:200px;background:#1c1c1e;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:70%;aspect-ratio:4/3;background:#2c2a26;border:1px solid #3a3a3e"></div><span class="mono" style="font-size:8px;color:#8e8478">+ − R 0 Esc</span></div>`,
+ {id:"lightbox",name:"图片灯箱 Lightbox",cat:"反馈",desc:"点击 article 内图片 Portal 全屏：缩放/旋转/下载；键盘 +−/r/0/Esc。点图试试。",
+   pv:`<div style="width:100%;max-width:200px;background:#1c1c1e;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px"><div class="lb-img lp" onclick="lbZoom(this)" style="width:70%;aspect-ratio:4/3;background:#2c2a26;border:1px solid #3a3a3e"></div><span class="mono" style="font-size:8px;color:#8e8478">点击图片缩放 · + − R 0 Esc</span></div>`,
    prompt:`${P_BASE}
 新建「Lightbox」（components/Lightbox.tsx）：
 - 监听 article 内 img 点击 → createPortal 全屏黑底
 - scale 0.5–3、rotate 90°、Download；键盘 +−/r/0/Esc
 - 无独立动画契约，遮罩 fadeIn 200ms`},
- {id:"thinking",name:"随想时间线 Thinking",cat:"数据展示",desc:"首页随想：左轴+圆点+纸卡；默认 4 条可展开；hover 圆点转 accent。",
-   pv:`<div style="width:100%;max-width:200px;padding-left:18px;position:relative"><span style="position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--yh-accent),var(--yh-border),transparent)"></span><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px 10px;font-size:10px;margin-bottom:8px"><span style="position:absolute;left:0;width:9px;height:9px;border:2px solid var(--yh-border);border-radius:50%;background:var(--yh-bg)"></span>安静写，认真读。</div><div style="border:1px solid var(--yh-border);padding:8px 10px;font-size:10px;opacity:.7">纸上有字，心里有空。</div></div>`,
+ {id:"thinking",name:"随想时间线 Thinking",cat:"数据展示",desc:"首页随想：左轴+圆点+纸卡；默认 4 条可展开；hover 圆点转 accent。点「展开」。",
+   pv:`<div style="width:100%;max-width:200px;padding-left:18px;position:relative"><span class="lp" style="position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--yh-accent),var(--yh-border),transparent)"></span><div class="lp d2" style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px 10px;font-size:10px;margin-bottom:8px;position:relative"><span class="lb" style="position:absolute;left:-18px;top:10px;width:9px;height:9px;border:2px solid var(--yh-border);border-radius:50%;background:var(--yh-bg)"></span>安静写，认真读。</div><div id="th-more" style="display:none;border:1px solid var(--yh-border);padding:8px 10px;font-size:10px;margin-bottom:6px">纸上有字，心里有空。</div><button type="button" onclick="thToggle(this)" style="font-family:inherit;font-size:9px;border:1px solid var(--yh-border);background:var(--dash-card);padding:4px 10px;cursor:pointer;color:var(--yh-muted)">展开</button></div>`,
    prompt:`${P_BASE}
 新建「Thinking 随想」（components/Thinking.tsx）：
 - fetch /api/thoughts；默认可见 4 条，展开更多
 - 轴线 gradient accent→border；圆点 hover scale 110% + accent
 - 相对时间 useRelativeTime；zh/en textZh 回退`},
- {id:"sidebar",name:"后台侧栏 Sidebar",cat:"布局导航",desc:"w-240 sticky：品牌区 + 六导航（概览/文章/随想/分类/媒体/设置）+ 底部语言/主题/登出。",
-   pv:`<div style="width:100%;max-width:130px;border-right:1px solid var(--yh-border);background:var(--dash-card);padding:10px 8px;font-size:10px"><div style="font-weight:600;margin-bottom:8px">慢日志</div><div style="padding:5px 8px;color:var(--yh-accent);border-left:2px solid var(--yh-accent);background:color-mix(in srgb,var(--yh-accent) 10%,transparent)">概览</div><div style="padding:5px 8px;color:var(--yh-muted)">文章</div><div style="padding:5px 8px;color:var(--yh-muted)">设置</div></div>`,
+ {id:"sidebar",name:"后台侧栏 Sidebar",cat:"布局导航",desc:"w-240 sticky：品牌 + 六导航高亮 + 底部语言/主题/登出。点导航切换。",
+   pv:`<div style="width:100%;max-width:130px;border-right:1px solid var(--yh-border);background:var(--dash-card);padding:10px 8px;font-size:10px"><div style="font-weight:600;margin-bottom:8px">慢日志</div><div class="nav-item on" onclick="navPick(this)" style="padding:5px 8px;border-left:2px solid transparent">概览</div><div class="nav-item" onclick="navPick(this)" style="padding:5px 8px;border-left:2px solid transparent;color:var(--yh-muted)">文章</div><div class="nav-item" onclick="navPick(this)" style="padding:5px 8px;border-left:2px solid transparent;color:var(--yh-muted)">设置</div></div>`,
    prompt:`${P_BASE}
 新建「Sidebar」（components/dashboard/Sidebar.tsx）：
 - w-[240px] sticky h-screen；六项 nav + pathname 高亮 border-l accent
 - 底部 LanguageSwitcher + ThemeToggle + signOut
 - 全 dash-* 令牌`},
- {id:"mfooter",name:"移动页脚 MFooter",cat:"布局导航",desc:"S 圆印 + 版本 + 随机格言 + 链接纵排 + 「桌面版」cookie 切换。",
-   pv:`<div style="width:100%;max-width:200px;border-top:1px solid var(--yh-border);padding:10px;text-align:center;font-size:10px;display:flex;flex-direction:column;gap:6px;align-items:center"><b>慢日志 · SLOWLOG</b><span class="mono" style="color:var(--yh-muted);font-size:9px">安静写，认真读。</span><span style="border:1px solid var(--yh-border);padding:4px 10px">桌面版</span></div>`,
+ {id:"mfooter",name:"移动页脚 MFooter",cat:"布局导航",desc:"S 圆印 + 版本 + 随机格言 + 「桌面版」cookie 切换。点按钮试试。",
+   pv:`<div style="width:100%;max-width:200px;border-top:1px solid var(--yh-border);padding:10px;text-align:center;font-size:10px;display:flex;flex-direction:column;gap:6px;align-items:center"><b>慢日志 · SLOWLOG</b><span class="lp mono" style="color:var(--yh-muted);font-size:9px">安静写，认真读。</span><button type="button" onclick="btnClick(this,'已切换 ✓')" style="font-family:inherit;border:1px solid var(--yh-border);background:var(--dash-card);padding:6px 14px;cursor:pointer;font-size:10px">桌面版</button></div>`,
    prompt:`${P_BASE}
 新建「MFooter」（components/mobile/MFooter.tsx）：
 - props desktopHref；goDesktop 写 cookie view=desktop 后跳转
 - pickTagline 随机格言；链接 mailto/GitHub/画廊
 - pb env(safe-area-inset-bottom)`},
- {id:"themetgl",name:"图标主题切换 ThemeToggle",cat:"输入",desc:"☀/☾ 单按钮循环；size md 30px / sm 44px；sl-theme + theme-color meta。",
-   pv:`<button type="button" style="width:36px;height:36px;border:1px solid var(--yh-border);background:var(--dash-card);display:inline-flex;align-items:center;justify-content:center;cursor:pointer">☾</button>`,
+ {id:"themetgl",name:"图标主题切换 ThemeToggle",cat:"输入",desc:"☀/☾ 单按钮循环；size md 30px / sm 44px。点一下切换。",
+   pv:`<button type="button" onclick="iconTgl(this)" style="width:40px;height:40px;border:1px solid var(--yh-border);background:var(--dash-card);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px">☾</button>`,
    prompt:`${P_BASE}
 新建「ThemeToggle」（components/ThemeToggle.tsx）：
 - props size?: sm|md；toggle html.dark + localStorage sl-theme
@@ -508,22 +521,22 @@ const C = [
 新建「DashLoading」（components/dashboard/DashLoading.tsx）：
 - full：S 印 + 品牌 mono + 呼吸点 + children 骨架
 - compact：仅呼吸点+加载中（移动顶栏已有品牌）`},
- {id:"mlogin",name:"移动登录 MLogin",cat:"输入",desc:"居中纸卡：用户名/密码 text-base（防 iOS 缩放）；成功提示用令牌色条。",
-   pv:`<div style="width:100%;max-width:160px;border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:11px;font-weight:600;margin-bottom:8px">后台管理</div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:6px"></div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:8px"></div><div style="background:var(--yh-text);color:var(--yh-bg);text-align:center;padding:8px;font-size:10px">登录</div></div>`,
+ {id:"mlogin",name:"移动登录 MLogin",cat:"输入",desc:"居中纸卡：text-base 输入；成功提示令牌色条。点登录试试。",
+   pv:`<div style="width:100%;max-width:160px;border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:11px;font-weight:600;margin-bottom:8px">后台管理</div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:6px"></div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:8px"></div><button type="button" onclick="btnClick(this,'✓ 已提交')" style="width:100%;font-family:inherit;background:var(--yh-text);color:var(--yh-bg);text-align:center;padding:8px;font-size:10px;cursor:pointer;border:none">登录</button></div>`,
    prompt:`${P_BASE}
 新建「MLogin」（components/mobile/MLogin.tsx）：
 - input text-base；按钮 min-h-48；changed 提示 accent 左边条（非 emerald）
 - 错误条用 #c44 左边条 + 令牌底`},
  {id:"mtop",name:"移动后台顶栏 MDashTopbar",cat:"布局导航",desc:"h-14 用户名 + 语言/主题；与 MDashNav 成对。",
-   pv:`<div style="width:100%;max-width:220px;height:32px;border-bottom:1px solid var(--yh-border);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:10px"><b>admin</b><span style="color:var(--yh-muted)">EN ☾</span></div>`,
+   pv:`<div class="lp" style="width:100%;max-width:220px;height:32px;border-bottom:1px solid var(--yh-border);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:10px"><b>admin</b><span style="color:var(--yh-muted)">EN ☾</span></div>`,
    prompt:`${P_BASE}
 新建「MDashTopbar」：h-14 sticky；userName + LanguageSwitcher/ThemeToggle size=sm`},
- {id:"march",name:"移动归档 MArchive",cat:"数据展示",desc:"年份分组 + IO 点亮节点；与桌面 TimelineArchive 同语言。",
-   pv:`<div style="width:100%;max-width:180px;font-size:10px"><div class="mono" style="font-weight:600;margin-bottom:6px">2026 · 7</div><div style="padding:4px 0;border-bottom:1px solid var(--yh-border)">09-03 封面系统</div><div style="padding:4px 0">09-01 编辑器</div></div>`,
+ {id:"march",name:"移动归档 MArchive",cat:"数据展示",desc:"年份分组 + IO 点亮节点。点行高亮。",
+   pv:`<div style="width:100%;max-width:180px;font-size:10px"><div class="mono lb" style="font-weight:600;margin-bottom:6px">2026 · 7</div><div class="nav-item on" onclick="navPick(this)" style="padding:5px 0;border-bottom:1px solid var(--yh-border);border-left:2px solid transparent">09-03 封面系统</div><div class="nav-item lp d2" onclick="navPick(this)" style="padding:5px 0;border-left:2px solid transparent;color:var(--yh-muted)">09-01 编辑器</div></div>`,
    prompt:`${P_BASE}
 新建「MArchive」（components/mobile/MArchive.tsx）：年份环 + IO is-in；MHeader 搜索过滤`},
- {id:"collaps",name:"折叠面板 Collapsible",cat:"输入",desc:"title + defaultOpen + Chevron 旋转；aria-expanded。",
-   pv:`<div style="width:100%;max-width:200px;border:1px solid var(--yh-border)"><button type="button" style="width:100%;display:flex;justify-content:space-between;padding:8px 10px;font-size:11px;background:var(--dash-card);cursor:pointer;border:none;font-family:inherit"><span>高级选项</span><span>▾</span></button><div style="padding:8px 10px;font-size:10px;color:var(--yh-muted);border-top:1px solid var(--yh-border)">折叠内容…</div></div>`,
+ {id:"collaps",name:"折叠面板 Collapsible",cat:"输入",desc:"title + defaultOpen + Chevron 旋转；aria-expanded。点标题展开/收起。",
+   pv:`<div style="width:100%;max-width:200px;border:1px solid var(--yh-border)"><button type="button" onclick="colToggle(this)" aria-expanded="false" style="width:100%;display:flex;justify-content:space-between;padding:8px 10px;font-size:11px;background:var(--dash-card);cursor:pointer;border:none;font-family:inherit"><span>高级选项</span><span class="col-ch" style="transition:transform .2s">▸</span></button><div class="col-body" style="display:none;padding:8px 10px;font-size:10px;color:var(--yh-muted);border-top:1px solid var(--yh-border)">折叠内容…</div></div>`,
    prompt:`${P_BASE}
 新建「Collapsible」（components/ui/Collapsible.tsx）：
 - props { title, defaultOpen?, children }；button aria-expanded
@@ -587,7 +600,28 @@ function openAbout(){
   document.body.style.overflow="hidden";
 }
 function pvGuard(e){
-  if(e.target.closest('button,input,a,.t3,.lg,.seed-in,.arow')) e.stopPropagation();
+  if(e.target.closest('button,input,a,.t3,.lg,.seed-in,.arow,.nav-item,.lb-img,[onclick]')) e.stopPropagation();
+}
+function navPick(el){
+  var box=el.parentNode;
+  box.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('on');n.style.color='var(--yh-muted)'});
+  el.classList.add('on'); el.style.color='';
+}
+function lbZoom(el){ el.classList.toggle('on') }
+function iconTgl(btn){ btn.textContent = btn.textContent==='☾' ? '☀' : '☾' }
+function thToggle(btn){
+  var m=document.getElementById('th-more'); if(!m) return;
+  var open=m.style.display!=='none';
+  m.style.display=open?'none':'block';
+  btn.textContent=open?'展开':'收起';
+}
+function colToggle(btn){
+  var body=btn.parentNode.querySelector('.col-body');
+  var ch=btn.querySelector('.col-ch');
+  var open=btn.getAttribute('aria-expanded')==='true';
+  btn.setAttribute('aria-expanded', open?'false':'true');
+  if(body) body.style.display=open?'none':'block';
+  if(ch) ch.style.transform=open?'':'rotate(90deg)';
 }
 function copyP(btn, srcId){
   const t = document.getElementById(srcId || "pp").innerText;
