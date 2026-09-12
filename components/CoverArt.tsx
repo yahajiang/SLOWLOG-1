@@ -131,10 +131,10 @@ function Collage({
   if (L === 0) {
     // 左色块 + 右网格框 + 对角线 + 印章
     return (
-      <>
-        <div className="absolute left-0 top-0 bottom-0 w-[38%]" style={{ backgroundColor: wash, opacity: 0.45 }} />
-        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border-2" style={{ borderColor: ink, opacity: 0.35 }} />
-        <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%]" style={{ backgroundColor: accent, opacity: 0.4 }} />
+      <div className="absolute inset-0 cover-breathe">
+        <div className="absolute left-0 top-0 bottom-0 w-[38%] cover-piece" style={{ backgroundColor: wash, opacity: 0.45 }} />
+        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border-2 cover-piece-2" style={{ borderColor: ink, opacity: 0.35 }} />
+        <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%] cover-piece-3" style={{ backgroundColor: accent, opacity: 0.4 }} />
         <svg className="absolute right-[12%] top-[20%] w-[36%] h-[42%]" viewBox="0 0 80 60" aria-hidden>
           <path d="M4 50 L40 12 L76 40" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
           <circle className="cover-pulse" cx="40" cy="12" r="3" fill={accent} opacity="0.85" />
@@ -142,7 +142,7 @@ function Collage({
         <div className="absolute right-[16%] bottom-[28%]">{stamp}</div>
         <span className="absolute left-[42%] top-[22%] serif italic text-2xl" style={{ color: ink, opacity: 0.22 }}>{initial}</span>
         <span className="absolute right-[12%] top-[14%] mono text-[9px] tracking-[0.2em]" style={{ color: ink, opacity: 0.3 }}>{noNum}</span>
-      </>
+      </div>
     );
   }
   if (L === 1) {

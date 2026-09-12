@@ -1148,6 +1148,21 @@ body::after {
   animation: cover-breathe 3.6s ease-in-out 1.4s infinite;
 }
 
+/* HTML 拼贴件（色块/框/条）：淡入 + 延迟呼吸 */
+.cover-piece,
+.cover-inner > div,
+.cover-inner > span {
+  animation:
+    cover-el-in 0.55s var(--ease-out) backwards,
+    cover-breathe 4.2s ease-in-out 1.2s infinite;
+}
+.cover-piece-2, .cover-inner > *:nth-child(2) { animation-delay: 0.12s, 1.5s }
+.cover-piece-3, .cover-inner > *:nth-child(3) { animation-delay: 0.22s, 1.7s }
+.cover-piece-4, .cover-inner > *:nth-child(4) { animation-delay: 0.32s, 1.9s }
+.cover-inner > svg {
+  animation: cover-breathe 4s ease-in-out 1.3s infinite;
+}
+
 .cover-pulse {
   animation: cover-pulse 2.8s ease-in-out infinite;
 }
@@ -1166,7 +1181,9 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   .cover-inner,
+  .cover-inner > *,
   .cover-breathe,
+  .cover-piece,
   .cover-pulse,
   .cover-flow,
   .cover-inner svg [stroke],
