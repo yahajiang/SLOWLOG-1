@@ -140,12 +140,15 @@ function SymbolArt({
       </svg>
     );
   }
-  // circle
+  // circle — 环数/虚线/点位随 variant
+  const rings = 1 + (variant % 3);
+  const dashed = variant4 % 2 === 0;
   return (
     <svg className="w-14 h-14" viewBox="0 0 56 56" aria-hidden>
-      <circle cx="28" cy="28" r="18" fill="none" stroke={ink} strokeWidth="1" opacity="0.28" strokeDasharray="3 3" />
-      <circle cx="28" cy="28" r="10" fill={wash} opacity="0.45" />
-      <circle className="cover-pulse" cx="28" cy="28" r="3.5" fill={accent} opacity="0.8" />
+      <circle cx="28" cy="28" r="20" fill="none" stroke={ink} strokeWidth="1" opacity="0.25" strokeDasharray={dashed ? "3 3" : undefined} />
+      {rings >= 2 && <circle cx="28" cy="28" r="12" fill={wash} opacity="0.4" />}
+      {rings >= 3 && <circle cx="28" cy="28" r="6" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.45" />}
+      <circle className="cover-pulse" cx={28 + (variant4 - 1.5) * 3} cy={28 + (variant % 2 === 0 ? -2 : 2)} r="3.5" fill={accent} opacity="0.8" />
     </svg>
   );
 }
