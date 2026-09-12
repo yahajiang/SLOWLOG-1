@@ -196,7 +196,7 @@ body.dark .ti-sun{display:inline}
 
 <div class="wrap" id="home" data-page-node-id="erliiFLgAcRlbYJMZlAvOX">
   <h1>UI 组件</h1>
-  <p class="sub">v1.5 · 与真代码同源 · CoverArt / 移动端 / TOC 文末 100% · 分类筛选 · 点卡片取提示词</p>
+  <p class="sub">v1.6 · 与真代码同源 · CoverArt / 灯箱 / 随想 / 后台侧栏 / 移动端壳 · 分类筛选 · 点卡片取提示词</p>
   <div class="srch" data-page-node-id="43I4BvuDI9gYkGFtJWo4ld">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="YU6DRm5rG2nCtm4eQljXKJ"><circle cx="11" cy="11" r="7" data-page-node-id="D4DhEXrr9M2Xez7eS7LDKB"/><path d="M21 21l-4-4" data-page-node-id="hsOVjwqx6diTHKIjXSPyMl"/></svg>
     <input id="q" type="text" placeholder="搜索组件名称或描述…" oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
@@ -468,6 +468,66 @@ const C = [
    pv:`<div style="width:100%;max-width:180px;border:1px solid var(--yh-border)"><div style="aspect-ratio:16/9;background:#EAF0F5"></div><div style="padding:8px;font-size:10px;font-weight:600">打印助手</div></div>`,
    prompt:`${P_BASE}
 新建 MArticleCard：ArticleArt noBorder；CategoryBadge 叠层；line-clamp-2`},
+ {id:"lightbox",name:"图片灯箱 Lightbox",cat:"反馈",desc:"点击 article 内图片 Portal 全屏：缩放/旋转/下载；键盘 +−/r/0/Esc。",
+   pv:`<div style="width:100%;max-width:200px;background:#1c1c1e;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:70%;aspect-ratio:4/3;background:#2c2a26;border:1px solid #3a3a3e"></div><span class="mono" style="font-size:8px;color:#8e8478">+ − R 0 Esc</span></div>`,
+   prompt:`${P_BASE}
+新建「Lightbox」（components/Lightbox.tsx）：
+- 监听 article 内 img 点击 → createPortal 全屏黑底
+- scale 0.5–3、rotate 90°、Download；键盘 +−/r/0/Esc
+- 无独立动画契约，遮罩 fadeIn 200ms`},
+ {id:"thinking",name:"随想时间线 Thinking",cat:"数据展示",desc:"首页随想：左轴+圆点+纸卡；默认 4 条可展开；hover 圆点转 accent。",
+   pv:`<div style="width:100%;max-width:200px;padding-left:18px;position:relative"><span style="position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--yh-accent),var(--yh-border),transparent)"></span><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px 10px;font-size:10px;margin-bottom:8px"><span style="position:absolute;left:0;width:9px;height:9px;border:2px solid var(--yh-border);border-radius:50%;background:var(--yh-bg)"></span>安静写，认真读。</div><div style="border:1px solid var(--yh-border);padding:8px 10px;font-size:10px;opacity:.7">纸上有字，心里有空。</div></div>`,
+   prompt:`${P_BASE}
+新建「Thinking 随想」（components/Thinking.tsx）：
+- fetch /api/thoughts；默认可见 4 条，展开更多
+- 轴线 gradient accent→border；圆点 hover scale 110% + accent
+- 相对时间 useRelativeTime；zh/en textZh 回退`},
+ {id:"sidebar",name:"后台侧栏 Sidebar",cat:"布局导航",desc:"w-240 sticky：品牌区 + 六导航（概览/文章/随想/分类/媒体/设置）+ 底部语言/主题/登出。",
+   pv:`<div style="width:100%;max-width:130px;border-right:1px solid var(--yh-border);background:var(--dash-card);padding:10px 8px;font-size:10px"><div style="font-weight:600;margin-bottom:8px">慢日志</div><div style="padding:5px 8px;color:var(--yh-accent);border-left:2px solid var(--yh-accent);background:color-mix(in srgb,var(--yh-accent) 10%,transparent)">概览</div><div style="padding:5px 8px;color:var(--yh-muted)">文章</div><div style="padding:5px 8px;color:var(--yh-muted)">设置</div></div>`,
+   prompt:`${P_BASE}
+新建「Sidebar」（components/dashboard/Sidebar.tsx）：
+- w-[240px] sticky h-screen；六项 nav + pathname 高亮 border-l accent
+- 底部 LanguageSwitcher + ThemeToggle + signOut
+- 全 dash-* 令牌`},
+ {id:"mfooter",name:"移动页脚 MFooter",cat:"布局导航",desc:"S 圆印 + 版本 + 随机格言 + 链接纵排 + 「桌面版」cookie 切换。",
+   pv:`<div style="width:100%;max-width:200px;border-top:1px solid var(--yh-border);padding:10px;text-align:center;font-size:10px;display:flex;flex-direction:column;gap:6px;align-items:center"><b>慢日志 · SLOWLOG</b><span class="mono" style="color:var(--yh-muted);font-size:9px">安静写，认真读。</span><span style="border:1px solid var(--yh-border);padding:4px 10px">桌面版</span></div>`,
+   prompt:`${P_BASE}
+新建「MFooter」（components/mobile/MFooter.tsx）：
+- props desktopHref；goDesktop 写 cookie view=desktop 后跳转
+- pickTagline 随机格言；链接 mailto/GitHub/画廊
+- pb env(safe-area-inset-bottom)`},
+ {id:"themetgl",name:"图标主题切换 ThemeToggle",cat:"输入",desc:"☀/☾ 单按钮循环；size md 30px / sm 44px；sl-theme + theme-color meta。",
+   pv:`<button type="button" style="width:36px;height:36px;border:1px solid var(--yh-border);background:var(--dash-card);display:inline-flex;align-items:center;justify-content:center;cursor:pointer">☾</button>`,
+   prompt:`${P_BASE}
+新建「ThemeToggle」（components/ThemeToggle.tsx）：
+- props size?: sm|md；toggle html.dark + localStorage sl-theme
+- 同步 meta theme-color；首帧由 layout 内联脚本防白闪`},
+ {id:"dashload",name:"后台加载壳 DashLoading",cat:"反馈",desc:"S 圆标+品牌+accent 呼吸点；compact 只留呼吸点；children 传骨架。",
+   pv:`<div style="width:100%;max-width:200px;text-align:center;padding:8px"><span class="breath" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--yh-accent);margin-right:6px"></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.14em">加载中</span><div style="margin-top:10px;height:40px;border:1px solid var(--yh-border);opacity:.5"></div></div>`,
+   prompt:`${P_BASE}
+新建「DashLoading」（components/dashboard/DashLoading.tsx）：
+- full：S 印 + 品牌 mono + 呼吸点 + children 骨架
+- compact：仅呼吸点+加载中（移动顶栏已有品牌）`},
+ {id:"mlogin",name:"移动登录 MLogin",cat:"输入",desc:"居中纸卡：用户名/密码 text-base（防 iOS 缩放）；成功提示用令牌色条。",
+   pv:`<div style="width:100%;max-width:160px;border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:11px;font-weight:600;margin-bottom:8px">后台管理</div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:6px"></div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:8px"></div><div style="background:var(--yh-text);color:var(--yh-bg);text-align:center;padding:8px;font-size:10px">登录</div></div>`,
+   prompt:`${P_BASE}
+新建「MLogin」（components/mobile/MLogin.tsx）：
+- input text-base；按钮 min-h-48；changed 提示 accent 左边条（非 emerald）
+- 错误条用 #c44 左边条 + 令牌底`},
+ {id:"mtop",name:"移动后台顶栏 MDashTopbar",cat:"布局导航",desc:"h-14 用户名 + 语言/主题；与 MDashNav 成对。",
+   pv:`<div style="width:100%;max-width:220px;height:32px;border-bottom:1px solid var(--yh-border);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:10px"><b>admin</b><span style="color:var(--yh-muted)">EN ☾</span></div>`,
+   prompt:`${P_BASE}
+新建「MDashTopbar」：h-14 sticky；userName + LanguageSwitcher/ThemeToggle size=sm`},
+ {id:"march",name:"移动归档 MArchive",cat:"数据展示",desc:"年份分组 + IO 点亮节点；与桌面 TimelineArchive 同语言。",
+   pv:`<div style="width:100%;max-width:180px;font-size:10px"><div class="mono" style="font-weight:600;margin-bottom:6px">2026 · 7</div><div style="padding:4px 0;border-bottom:1px solid var(--yh-border)">09-03 封面系统</div><div style="padding:4px 0">09-01 编辑器</div></div>`,
+   prompt:`${P_BASE}
+新建「MArchive」（components/mobile/MArchive.tsx）：年份环 + IO is-in；MHeader 搜索过滤`},
+ {id:"collaps",name:"折叠面板 Collapsible",cat:"输入",desc:"title + defaultOpen + Chevron 旋转；aria-expanded。",
+   pv:`<div style="width:100%;max-width:200px;border:1px solid var(--yh-border)"><button type="button" style="width:100%;display:flex;justify-content:space-between;padding:8px 10px;font-size:11px;background:var(--dash-card);cursor:pointer;border:none;font-family:inherit"><span>高级选项</span><span>▾</span></button><div style="padding:8px 10px;font-size:10px;color:var(--yh-muted);border-top:1px solid var(--yh-border)">折叠内容…</div></div>`,
+   prompt:`${P_BASE}
+新建「Collapsible」（components/ui/Collapsible.tsx）：
+- props { title, defaultOpen?, children }；button aria-expanded
+- Chevron rotate；内容区无强制动画（可接 max-height）`},
 ];
 
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
@@ -505,7 +565,7 @@ function closeM(){var m=document.getElementById("mask");m.classList.add("closing
 function openAbout(){
   document.getElementById("m-body").innerHTML=`
     <h2 class="m-h2">关于 · 慢日志 UI 组件画廊</h2>
-    <div class="m-meta"><span class="tag">v1.5 · 对齐 CoverArt</span><span class="tag">36 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta"><span class="tag">v1.6 · 补齐缺失组件</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">慢日志 SLOWLOG · 项目速览</div>
       <div class="ab-list">
@@ -520,7 +580,7 @@ function openAbout(){
     <div class="ab-list ab-card" style="margin-bottom:0">
       <div><b>设计契约</b>直角 + 1px 边 + 纸面卡片；封面淡入 + 轻摆动（循环不写死 opacity）、禁大色块；签名章 mono 代号；reduced-motion 兜底</div>
       <div><b>近期落地</b>CoverArt 密拼贴 · 标签签名章 · TOC 文末进度打满 · 移动触控 44px · safe-area · 上下篇 · HeroCover</div>
-      <div><b>画廊组件数</b>36（含 CoverArt / HeroCover / MHeader / MDashNav / MTOC / MArticleCard）</div>
+      <div><b>画廊组件数</b>46（含 Lightbox / Thinking / Sidebar / MFooter / ThemeToggle / DashLoading / MLogin / MDashTopbar / MArchive / Collapsible）</div>
       <div><b>版权</b>© 2026 Yahajiang · SlowLog · yahajiang@gmail.com</div>
     </div>`;
   document.getElementById("mask").classList.add("open");
@@ -633,6 +693,6 @@ document.addEventListener('click',function(e){
 });
 render();
 </script>
-<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.5</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
+<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.6</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
 </body>
 </html>
