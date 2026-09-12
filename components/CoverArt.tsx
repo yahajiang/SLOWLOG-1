@@ -30,7 +30,7 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
   const wrap = "relative flex items-center justify-center";
   if (symbol === "grid") {
     return (
-      <div className={`${wrap} gap-[5px] grid grid-cols-2 p-2 border-2`} style={{ borderColor: ink, opacity: 0.55, backgroundColor: wash }}>
+      <div className={`${wrap} gap-[5px] grid grid-cols-2 p-2 border-2`} style={{ borderColor: ink, opacity: 0.5 }}>
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
@@ -53,7 +53,7 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
   if (symbol === "doubleCircle") {
     return (
       <div className="relative w-12 h-12 cover-breathe">
-        <span className="absolute left-0 top-0 w-10 h-10 rounded-full border-2" style={{ borderColor: ink, opacity: 0.5, backgroundColor: wash }} />
+        <span className="absolute left-0 top-0 w-10 h-10 rounded-full border-2" style={{ borderColor: ink, opacity: 0.45 }} />
         <span className="absolute right-0 bottom-0 w-10 h-10 rounded-full border-2" style={{ borderColor: accent, opacity: 0.65 }} />
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full cover-pulse" style={{ backgroundColor: accent, opacity: 0.9 }} />
       </div>
@@ -79,7 +79,7 @@ function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; 
   }
   if (symbol === "window") {
     return (
-      <div className="w-14 h-11 border-2 cover-breathe" style={{ borderColor: ink, opacity: 0.55, backgroundColor: wash }}>
+      <div className="w-14 h-11 border-2 cover-breathe" style={{ borderColor: ink, opacity: 0.5 }}>
         <div className="flex items-center gap-1 px-1.5 h-3 border-b-2" style={{ borderColor: ink, opacity: 0.35 }}>
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent, opacity: 0.95 }} />
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: ink, opacity: 0.35 }} />
@@ -153,9 +153,9 @@ function Collage({
     // 左色块 + 右网格框 + 对角线 + 印章
     return (
       <div className="absolute inset-0 cover-breathe">
-        <div className="absolute left-0 top-0 bottom-0 w-[38%] cover-piece" style={{ backgroundColor: wash, opacity: 0.45 }} />
-        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border-2 cover-piece-2" style={{ borderColor: ink, opacity: 0.35 }} />
-        <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%] cover-piece-3" style={{ backgroundColor: accent, opacity: 0.4 }} />
+        <div className="absolute left-0 top-0 bottom-0 w-[38%] cover-piece" style={{ backgroundColor: wash, opacity: 0.2 }} />
+        <div className="absolute left-[8%] top-[18%] w-[22%] h-[40%] border-2 cover-piece-2" style={{ borderColor: ink, opacity: 0.28 }} />
+        <div className="absolute left-[14%] top-[26%] w-[10%] h-[16%] cover-piece-3 border" style={{ borderColor: accent, opacity: 0.35 }} />
         <svg className="absolute right-[12%] top-[20%] w-[36%] h-[42%]" viewBox="0 0 80 60" aria-hidden>
           <path d="M4 50 L40 12 L76 40" fill="none" stroke={ink} strokeWidth="1.4" opacity="0.35" />
           <circle className="cover-pulse" cx="40" cy="12" r="3" fill={accent} opacity="0.85" />
@@ -178,14 +178,14 @@ function Collage({
               top: `${28 + i * 14}%`,
               width: `${40 - i * 8}%`,
               backgroundColor: i === variant4 % 3 ? accent : wash,
-              opacity: i === variant4 % 3 ? 0.5 : 0.4,
+              opacity: i === variant4 % 3 ? 0.28 : 0.2,
             }}
           />
         ))}
         <div className="absolute right-[14%] top-[22%] border-2 p-1.5" style={{ borderColor: ink, opacity: 0.4 }}>
           <div className="grid grid-cols-2 gap-1">
             {[0, 1, 2, 3].map((i) => (
-              <span key={i} className="w-3 h-3" style={{ backgroundColor: i === variant % 4 ? accent : wash, opacity: 0.5 }} />
+              <span key={i} className="w-3 h-3 border" style={{ borderColor: ink, backgroundColor: i === variant % 4 ? accent : "transparent", opacity: 0.4 }} />
             ))}
           </div>
         </div>
@@ -201,11 +201,11 @@ function Collage({
       <>
         <div
           className="absolute left-0 bottom-0 w-[70%] h-[48%]"
-          style={{ background: `linear-gradient(120deg, ${wash} 0%, transparent 55%)`, opacity: 0.5 }}
+          style={{ background: `linear-gradient(120deg, ${wash} 0%, transparent 55%)`, opacity: 0.22 }}
         />
         <svg className="absolute right-[10%] top-[16%] w-[40%] h-[48%]" viewBox="0 0 80 70" aria-hidden>
           <circle cx="40" cy="35" r="26" fill="none" stroke={ink} strokeWidth="1.3" opacity="0.28" strokeDasharray="4 3" />
-          <circle cx="40" cy="35" r="14" fill={wash} opacity="0.5" />
+          <circle cx="40" cy="35" r="14" fill="none" stroke={wash} strokeWidth="1.2" opacity="0.45" />
           <circle className="cover-pulse" cx="40" cy="35" r="4" fill={accent} opacity="0.9" />
         </svg>
         <span className="absolute left-[12%] top-[22%] serif italic text-3xl" style={{ color: ink, opacity: 0.2 }}>{initial}</span>
@@ -218,13 +218,13 @@ function Collage({
     // 上带 + 下分栏 + 中线
     return (
       <>
-        <div className="absolute inset-x-0 top-0 h-[30%]" style={{ backgroundColor: wash, opacity: 0.4 }} />
+        <div className="absolute inset-x-0 top-0 h-[30%] border-b" style={{ borderColor: wash, opacity: 0.35 }} />
         <div className="absolute left-[8%] right-[8%] top-[30%] h-px" style={{ backgroundColor: ink, opacity: 0.25 }} />
         <div className="absolute left-[8%] top-[38%] w-[36%] h-[28%] border" style={{ borderColor: ink, opacity: 0.3 }} />
-        <div className="absolute left-[12%] top-[44%] w-[20%] h-1.5" style={{ backgroundColor: ink, opacity: 0.15 }} />
-        <div className="absolute left-[12%] top-[52%] w-[14%] h-1.5" style={{ backgroundColor: wash }} />
+        <div className="absolute left-[12%] top-[44%] w-[20%] h-1.5" style={{ backgroundColor: ink, opacity: 0.12 }} />
+        <div className="absolute left-[12%] top-[52%] w-[14%] h-1.5 border" style={{ borderColor: wash, opacity: 0.5 }} />
         <div className="absolute right-[12%] top-[38%]">{stamp}</div>
-        <span className="absolute right-[12%] top-[55%] w-8 h-8" style={{ backgroundColor: accent, opacity: 0.35 }} />
+        <span className="absolute right-[12%] top-[55%] w-8 h-8 border" style={{ borderColor: accent, opacity: 0.4 }} />
         <span className="absolute left-[8%] top-[12%] mono text-[9px] tracking-[0.2em]" style={{ color: ink, opacity: 0.35 }}>{noNum}</span>
       </>
     );
@@ -235,7 +235,7 @@ function Collage({
       <>
         <div className="absolute inset-5 border" style={{ borderColor: ink, opacity: 0.12 }} />
         <div className="absolute inset-8 border-2" style={{ borderColor: wash, opacity: 0.5 }} />
-        <div className="absolute left-[18%] top-[30%] w-[28%] h-[28%]" style={{ backgroundColor: accent, opacity: 0.25 }} />
+        <div className="absolute left-[18%] top-[30%] w-[28%] h-[28%] border" style={{ borderColor: accent, opacity: 0.35 }} />
         <div className="absolute right-[16%] top-[24%]">{stamp}</div>
         {[0, 1, 2].map((i) => (
           <span key={i} className={`absolute w-1 h-1 rounded-full ${i === 1 ? "cover-pulse" : ""}`} style={{
@@ -262,7 +262,7 @@ function Collage({
         </svg>
         <div className="absolute left-[12%] bottom-[28%] flex gap-1.5">
           {[0, 1, 2].map((i) => (
-            <span key={i} className="w-2.5 h-2.5" style={{ backgroundColor: i === variant4 ? accent : wash, opacity: 0.55 }} />
+            <span key={i} className="w-2.5 h-2.5 border" style={{ borderColor: i === variant4 ? accent : ink, backgroundColor: "transparent", opacity: 0.45 }} />
           ))}
         </div>
         <div className="absolute right-[14%] bottom-[28%]">{stamp}</div>
@@ -278,7 +278,7 @@ function Collage({
         <span className="absolute left-[4%] top-1/2 -translate-y-1/2 -rotate-90 origin-center mono text-[8px] tracking-[0.3em]" style={{ color: ink, opacity: 0.3 }}>
           {abbr}
         </span>
-        <div className="absolute left-[20%] top-[22%] w-[40%] h-[40%]" style={{ backgroundColor: wash, opacity: 0.55 }} />
+        <div className="absolute left-[20%] top-[22%] w-[40%] h-[40%] border" style={{ borderColor: wash, opacity: 0.5 }} />
         <div className="absolute left-[28%] top-[30%] w-[24%] h-[24%] border-2" style={{ borderColor: ink, opacity: 0.3 }} />
         <span className="absolute left-[32%] top-[34%] serif text-3xl font-light" style={{ color: ink, opacity: 0.2 }}>{noNum.slice(-2)}</span>
         <div className="absolute right-[14%] top-[28%]">{stamp}</div>
@@ -297,9 +297,9 @@ function Collage({
           backgroundSize: "12px 12px",
         }}
       />
-      <div className="absolute left-[20%] top-[28%] w-[22%] h-[30%] rotate-[-6deg]" style={{ backgroundColor: wash, opacity: 0.5 }} />
-      <div className="absolute right-[18%] top-[32%] w-[16%] h-[22%] border-2" style={{ borderColor: ink, opacity: 0.35 }} />
-      <div className="absolute right-[22%] top-[38%] w-[8%] h-[10%]" style={{ backgroundColor: accent, opacity: 0.45 }} />
+      <div className="absolute left-[20%] top-[28%] w-[22%] h-[30%] rotate-[-6deg] border" style={{ borderColor: wash, opacity: 0.5 }} />
+      <div className="absolute right-[18%] top-[32%] w-[16%] h-[22%] border-2" style={{ borderColor: ink, opacity: 0.28 }} />
+      <div className="absolute right-[22%] top-[38%] w-[8%] h-[10%] border" style={{ borderColor: accent, opacity: 0.4 }} />
       <div className="absolute left-[24%] bottom-[28%]">{stamp}</div>
       <span className="absolute right-[18%] bottom-[28%] serif italic text-xl" style={{ color: ink, opacity: 0.22 }}>{initial}</span>
       {dot && <span className="absolute left-[48%] top-[22%] w-1.5 h-1.5 cover-pulse" style={{ backgroundColor: accent, opacity: 0.75 }} />}
