@@ -187,6 +187,13 @@ body.dark .ti-sun{display:inline}
 .ab-list>div:last-child{border-bottom:none}
 .ab-list b{font-weight:600}
 .ab-lead{font-size:13px;color:var(--yh-muted);line-height:1.85;margin:0 0 4px}
+.bp-grid{display:grid;grid-template-columns:88px 1fr;gap:6px 12px;font-size:12px;line-height:1.75}
+.bp-grid dt{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--yh-muted);padding-top:3px}
+.bp-grid dd{margin:0;color:var(--yh-text)}
+.swatch{display:inline-block;width:14px;height:14px;border:1px solid var(--yh-border);vertical-align:-2px;margin-right:4px}
+.bp-trace{font-size:12px;line-height:1.7;color:var(--yh-text);padding:8px 0;border-bottom:1px solid color-mix(in srgb,var(--yh-border) 50%,transparent)}
+.bp-trace:last-child{border-bottom:none}
+.bp-trace .q{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;color:var(--yh-muted);display:block;margin-bottom:2px}
 .prompt-box{position:relative;margin-top:10px}
 .prompt-box pre{font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.75;background:var(--dash-card);border:1px solid var(--yh-border);padding:18px;white-space:pre-wrap;overflow:auto;max-height:340px}
 .copy{position:absolute;top:10px;right:10px;font-size:11px;padding:5px 12px;border:1px solid var(--yh-border);background:var(--yh-bg);color:var(--yh-muted);cursor:pointer;font-family:inherit}
@@ -577,24 +584,59 @@ function openM(id){
 function closeM(){var m=document.getElementById("mask");m.classList.add("closing");setTimeout(function(){m.classList.remove("open","closing");document.body.style.overflow=""},200)}
 function openAbout(){
   document.getElementById("m-body").innerHTML=`
-    <h2 class="m-h2">关于 · 慢日志 UI 组件画廊</h2>
-    <div class="m-meta"><span class="tag">v1.6 · 补齐缺失组件</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
+    <h2 class="m-h2">设计蓝图 · 慢日志 UI</h2>
+    <div class="m-meta"><span class="tag">DESIGN.md v1.6</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
-      <div class="ab-k mono">慢日志 SLOWLOG · 项目速览</div>
-      <div class="ab-list">
-        <div><b>定位</b>个人博客——纸感排印外衣、慢阅读内胆、系统化骨架；slogan「慢下来，写点值得读的东西」；格言池随机展示品牌句。</div>
-        <div><b>规模</b>应用包 <span class="mono">v0.3.5</span> · 约 60 个 app 路由文件 + 约 51 个组件 · 双语（zh/en）前台 + 后台 · Prisma 六表 · 桌面 /m 平行树</div>
-        <div><b>技术栈</b>Next.js 15.4 · React 19 · Tailwind v4 令牌 · Prisma 6 / Neon · Tiptap 3 · Vercel Blob · NextAuth Credentials · 安全 origin 只信 env</div>
-        <div><b>功能面</b>杂志首页（HeroCover / 分类 / 随想 / 时间线）· 归档 · 阅读（TOC 文末 100% / 灯箱 / 代码块 / 上下篇）· ⌘K 搜索 · 移动端 /m（顶栏/抽屉/后台 Tab）· CoverArt 标签签名章 · OG / RSS · 强制改密 · 组件画廊</div>
-        <div><b>仓库</b>私有 slowlog（含数据）· 公开 <span class="mono">yahajiang/SLOWLOG-1</span>（纯源码）· 本地预览 <span class="mono">localhost:3000</span> · <span class="mono">/design/gallery.html</span></div>
-      </div>
+      <div class="ab-k mono">§ Identity · 你是谁在设计</div>
+      <p class="ab-lead" style="margin:0">Editorial Web Designer — 画廊是设计契约的展品柜，不是营销落地页。每条提示词都应对齐真站源码路径与令牌。</p>
     </div>
-    <p class="ab-lead">组件提示词对齐当前真站（CoverArt 密拼贴 / 移动端 / TOC 文末 100%）。点卡片复制即可交给任意 AI 生成同源 UI。</p>
-    <div class="ab-list ab-card" style="margin-bottom:0">
-      <div><b>设计契约</b>直角 + 1px 边 + 纸面卡片；封面淡入 + 轻摆动（循环不写死 opacity）、禁大色块；签名章 mono 代号；reduced-motion 兜底</div>
-      <div><b>近期落地</b>CoverArt 密拼贴 · 标签签名章 · TOC 文末进度打满 · 移动触控 44px · safe-area · 上下篇 · HeroCover</div>
-      <div><b>画廊组件数</b>46（含 Lightbox / Thinking / Sidebar / MFooter / ThemeToggle / DashLoading / MLogin / MDashTopbar / MArchive / Collapsible）</div>
-      <div><b>版权</b>© 2026 Yahajiang · SlowLog · yahajiang@gmail.com</div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ Objective · 单一目标</div>
+      <p class="ab-lead" style="margin:0">让访客 10 秒看懂纸感排印语言，并把任意组件提示词复制给 AI，生成同源 UI。</p>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ Visual Foundations · 令牌与字体</div>
+      <dl class="bp-grid">
+        <dt>Paper</dt><dd><span class="swatch" style="background:#fefdfa"></span><span class="mono">#fefdfa</span> 浅 / <span class="swatch" style="background:#14110d"></span><span class="mono">#14110d</span> 暗</dd>
+        <dt>Ink</dt><dd><span class="mono">#1c1c1e</span> · Muted <span class="mono">#6e6e73</span> · Border <span class="mono">#e5e5e7</span></dd>
+        <dt>Accent</dt><dd><span class="swatch" style="background:#4a6fb5"></span><span class="mono">oklch(.55 .15 250)</span> 仅点缀，不做铺底</dd>
+        <dt>Type</dt><dd>serif = Cormorant + Noto Serif SC（标题）· sans = Plus Jakarta · mono = JetBrains 11–12px / .14em</dd>
+        <dt>Form</dt><dd>直角 rounded-none · 1px var(--yh-border) · 纸面 --dash-card · 无圆角阴影卡</dd>
+      </dl>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ Motion · 动效契约</div>
+      <dl class="bp-grid">
+        <dt>入场</dt><dd>opacity 淡入 1.6–1.8s；禁描线冲刺</dd>
+        <dt>循环</dt><dd>cover-sway 只动 translateY(±1.5px)；关键帧禁止写死 opacity:1</dd>
+        <dt>错峰</dt><dd>--cm-dur / --cm-delay 按文章 hash，多元素各自轻缓</dd>
+        <dt>Reduced</dt><dd>prefers-reduced-motion 全关；静态直出</dd>
+      </dl>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ Cover System · 封面世界</div>
+      <dl class="bp-grid">
+        <dt>分类</dt><dd>只定色 art-*（paper/ink/wash/accent）</dd>
+        <dt>母题</dt><dd>resolveTagSymbol → 8 族签名章 + mono 代号；未命中走通用几何</dd>
+        <dt>构图</dt><dd>hash(title+id, 8) 轮换 8 套密拼贴；大面积色块改描边或 opacity≤0.22</dd>
+        <dt>底栏</dt><dd>一行 ABBR · noNum · TAG（剥 []）</dd>
+      </dl>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ Decision Trace · 关键决策</div>
+      <div class="bp-trace"><span class="q">DECISION</span>封面从 ArticleArt 切到 CoverArt —— 主站已切换，画廊不同步会误导 AI</div>
+      <div class="bp-trace"><span class="q">DECISION</span>循环关键帧不写死 opacity —— 淡描边被拉成满黑会突然出现</div>
+      <div class="bp-trace"><span class="q">DECISION</span>可交互预览真点击；不可交互用循环动效 —— 展品柜要能试</div>
+      <div class="bp-trace"><span class="q">TRADEOFF</span>不做圆角卡片与渐变 hero —— 编辑气质优先</div>
+    </div>
+    <div class="ab-card" style="margin-bottom:0">
+      <div class="ab-k mono">§ Workflow · 怎么用</div>
+      <div class="ab-list" style="border:none">
+        <div>点卡片 → 复制提示词 → 交给任意 AI 生成同源 UI</div>
+        <div>改主站组件后同步画廊条目与本蓝图契约</div>
+        <div>仓库 · <span class="mono">yahajiang/SLOWLOG-1</span> · <span class="mono">localhost:3000/design/gallery.html</span></div>
+        <div>© 2026 Yahajiang · SlowLog</div>
+      </div>
     </div>`;
   document.getElementById("mask").classList.add("open");
   document.body.style.overflow="hidden";
