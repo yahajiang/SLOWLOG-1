@@ -447,8 +447,6 @@ const C = [
 - server 拉数 → client 组件接 useLang
 - 统计：total/published/draft/views；近期文章列表；快捷入口 新建文章/随想
 - 中英用 dash* 词典键（非硬编码中文）；stat hover 仅 shadow-float`},
-];
-
  {id:"hero",name:"Hero 推荐侧栏封面",cat:"数据展示",desc:"首页推荐位 CoverArt wide（16/10）；外层有边框必须 noBorder 防双线。",
    pv:`<div style="width:100%;max-width:110px;aspect-ratio:16/10;border:1px solid var(--yh-border);background:#F5F3EF;position:relative"><span class="mono" style="position:absolute;bottom:4px;left:6px;font-size:7px;color:#3A332E;opacity:.4">FRT · 3648</span></div>`,
    prompt:`${P_BASE}
@@ -470,6 +468,7 @@ const C = [
    pv:`<div style="width:100%;max-width:180px;border:1px solid var(--yh-border)"><div style="aspect-ratio:16/9;background:#EAF0F5"></div><div style="padding:8px;font-size:10px;font-weight:600">打印助手</div></div>`,
    prompt:`${P_BASE}
 新建 MArticleCard：ArticleArt noBorder；CategoryBadge 叠层；line-clamp-2`},
+];
 
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
 let cur = "全部";
