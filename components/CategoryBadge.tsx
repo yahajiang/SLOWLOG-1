@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from "react";
 import { ART_PALETTES } from "@/lib/categories";
 import { useLang } from "@/lib/lang-context";

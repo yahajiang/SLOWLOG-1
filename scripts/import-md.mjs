@@ -22,6 +22,22 @@ function parseFrontmatter(md) {
   return { meta, body: m[2] };
 }
 
+/**
+ * 解析 frontmatter 的 tags。
+ * 支持 `[a, b, c]`（YAML 行内数组——本站 content-export 即此格式）、`a, b, c`，以及本就是数组的情况。
+ * ⚠️ 必须剥掉外层方括号：历史上直接 split(",") 没剥离，导致首尾标签带上 "[" / "]"
+ *    （线上因此出现 "/tag/[设计"、"哈希算法]" 这类脏标签与脏标签页）。
+ */
+function parseTags(raw) {
+  if (!raw) return [];
+  const arr = Array.isArray(raw)
+    ? raw.map((t) => String(t))
+    : String(raw)
+        .replace(/^\s*\[|\]\s*$/g, "")
+        .split(",");
+  return arr.map((t) => t.trim().replace(/^\[+|\]+$/g, "")).filter(Boolean);
+}
+
 function defaultCategory() {
   return prisma.category.findFirst().then((c) => c?.id);
 }
@@ -48,7 +64,7 @@ async function main() {
       excerptZh: meta.excerpt || "",
       content,
       categoryId: meta.category ? undefined : catId,
-      tags: meta.tags ? meta.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+      tags: parseTags(meta.tags),
       status: meta.status === "published" ? "published" : "draft",
       readTime: meta.readTime || null,
     };
