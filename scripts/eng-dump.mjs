@@ -8,7 +8,7 @@ import { chromium } from "playwright";
   await p.waitForTimeout(1000);
 
   const info = await p.evaluate(() => {
-    const covers = [...document.querySelectorAll('[class*="art-Engineering"]')];
+    const covers = [...document.querySelectorAll('[class*="art-Build"]')];
     return covers.map((el) => {
       const texts = [...el.querySelectorAll("*")]
         .map((n) => (n.childElementCount === 0 ? (n.textContent || "").trim() : ""))

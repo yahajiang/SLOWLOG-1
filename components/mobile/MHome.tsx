@@ -137,7 +137,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
 
   const allCats: string[] = dbCategories?.length
     ? ["All", ...dbCategories.map((c: any) => c.name as string).filter((c) => c !== "All")]
-    : ["All", "Design", "Plugin", "Engineering", "Typography", "Frontend", "Snippet"];
+    : ["All", "Design", "Build", "Lab", "Found", "Log"];
 
   const filtered = useMemo(() => {
     return posts.filter((post) => {

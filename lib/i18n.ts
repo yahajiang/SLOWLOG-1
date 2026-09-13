@@ -259,11 +259,10 @@ export const dict = {
     emptyFilteredHint: "换个关键词试试，或清除筛选查看全部",
     catAll: "全部",
     catDesign: "设计",
-    catPlugin: "插件",
-    catEngineering: "工程",
-    catTypography: "字体",
-    catFrontend: "前端",
-    catSnippet: "点滴",
+    catBuild: "开发",
+    catLab: "实验",
+    catFound: "发现",
+    catLog: "记录",
     // VersionHistory
     versionHistory: "版本历史",
     noVersions: "暂无版本记录",
@@ -548,11 +547,10 @@ export const dict = {
     emptyFilteredHint: "Try another keyword, or clear the filter",
     catAll: "All",
     catDesign: "Design",
-    catPlugin: "Plugin",
-    catEngineering: "Engineering",
-    catTypography: "Typography",
-    catFrontend: "Frontend",
-    catSnippet: "Snippet",
+    catBuild: "Build",
+    catLab: "Lab",
+    catFound: "Found",
+    catLog: "Log",
     versionHistory: "Version History",
     noVersions: "No versions yet",
     maxVersions: "Max 4 versions retained",
@@ -805,11 +803,10 @@ export type Dict = {
   emptyFilteredHint: string;
   catAll: string;
   catDesign: string;
-  catPlugin: string;
-  catEngineering: string;
-  catTypography: string;
-  catFrontend: string;
-  catSnippet: string;
+  catBuild: string;
+  catLab: string;
+  catFound: string;
+  catLog: string;
   versionHistory: string;
   noVersions: string;
   maxVersions: string;

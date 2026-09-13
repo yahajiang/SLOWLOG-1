@@ -20,7 +20,7 @@ function getCategoryName(category: any): string {
   return "";
 }
 
-const KNOWN = ["Design", "Plugin", "Engineering", "Typography", "Frontend", "Snippet", "Life"] as const;
+const KNOWN = ["Design", "Build", "Lab", "Found", "Log"] as const;
 
 type Pal = { paper: string; ink: string; wash: string; accent: string };
 

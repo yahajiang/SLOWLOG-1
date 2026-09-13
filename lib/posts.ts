@@ -47,8 +47,8 @@ function toDisplayDate(d: Date | string | null): string {
 
 function extractCategory(dto: any): ContentCategory {
   const name = dto.category?.name || dto.categoryName || "Design"
-  // map legacy enum names to current
-  if (["Design","Plugin","Engineering","Typography","Frontend","Snippet"].includes(name)) return name as ContentCategory
+  // map legacy enum names to current（2026-09 类目重构：Design/Build/Lab/Found/Log）
+  if (["Design", "Build", "Lab", "Found", "Log"].includes(name)) return name as ContentCategory
   return "Design"
 }
 

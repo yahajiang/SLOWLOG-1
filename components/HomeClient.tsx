@@ -20,11 +20,10 @@ import { Footer } from "@/components/Footer";
 export function catLabel(cat: string, t: ReturnType<typeof useLang>["t"]): string {
   if (cat === "All") return t.catAll;
   if (cat === "Design") return t.catDesign;
-  if (cat === "Plugin") return t.catPlugin;
-  if (cat === "Engineering") return t.catEngineering;
-  if (cat === "Typography") return t.catTypography;
-  if (cat === "Frontend") return t.catFrontend;
-  if (cat === "Snippet") return t.catSnippet;
+  if (cat === "Build") return t.catBuild;
+  if (cat === "Lab") return t.catLab;
+  if (cat === "Found") return t.catFound;
+  if (cat === "Log") return t.catLog;
   return cat;
 }
 

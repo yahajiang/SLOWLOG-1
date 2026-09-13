@@ -99,9 +99,9 @@ export function SearchPanel() {
       scored.push({ s, r: { key: "p" + p.id, group: zh ? "文章" : "Posts", title, meta: p.date + (p.readTime ? " · " + p.readTime : ""), kind: "post", href: `/posts/${p.id}`, matchText: title } });
     }
     // 分类中文标签 + 硬编码拼音（映射固定 7 条，零运行时成本）
-    const CAT_ZH: Record<string, string> = { Design: "设计", Plugin: "插件", Engineering: "工程", Typography: "排印", Frontend: "前端", Snippet: "片段", Life: "生活" };
-    const CAT_PY: Record<string, string> = { Design: "sheji", Plugin: "chajian", Engineering: "gongcheng", Typography: "paiyin", Frontend: "qianduan", Snippet: "pianduan", Life: "shenghuo" };
-    const CAT_ABBR: Record<string, string> = { Design: "sj", Plugin: "cj", Engineering: "gc", Typography: "py", Frontend: "qd", Snippet: "pd", Life: "sh" };
+    const CAT_ZH: Record<string, string> = { Design: "设计", Build: "开发", Lab: "实验", Found: "发现", Log: "记录" };
+    const CAT_PY: Record<string, string> = { Design: "sheji", Build: "kaifa", Lab: "shiyan", Found: "faxian", Log: "jilu" };
+    const CAT_ABBR: Record<string, string> = { Design: "sj", Build: "kf", Lab: "sy", Found: "fx", Log: "jl" };
     for (const c of index.categories) {
       const zhLabel = CAT_ZH[c.name] || "";
       const zhHit = zhLabel.includes(q) || (CAT_PY[c.name] || "").includes(q) || (CAT_ABBR[c.name] || "").startsWith(q);
