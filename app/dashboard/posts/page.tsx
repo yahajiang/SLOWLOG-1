@@ -69,15 +69,22 @@ export default function PostsPage() {
   }, [selected, toast, load])
   const togglePublish = useCallback(async (p:any)=>{
     const ns = p.status==="published" ? "draft" : "published"
-    const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({status:ns})})
-    if(r.ok) toast(ns==="published"?t.toastPublished:t.toastUnpublished,"success"); else toast(t.dashOpFail,"error")
-    await load()
-  }, [toast, load])
+    // 先改本地，避免随后 load 若读到旧缓存又盖回去
+    setPosts(prev => prev.map(x => x.id === p.id ? { ...x, status: ns } : x))
+    const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({status:ns}), cache:"no-store"})
+    if(r.ok) toast(ns==="published"?t.toastPublished:t.toastUnpublished,"success"); else {
+      toast(t.dashOpFail,"error")
+      setPosts(prev => prev.map(x => x.id === p.id ? { ...x, status: p.status } : x))
+    }
+  }, [toast])
   const toggleFeatured = useCallback(async (p:any)=>{
-    const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({featured:!p.featured})})
-    if(r.ok) toast(p.featured?(lang === "zh" ? "已取消推荐" : "Unfeatured"):(lang === "zh" ? "已设为推荐" : "Featured"),"success"); else toast(t.dashOpFail,"error")
-    await load()
-  }, [toast, load])
+    setPosts(prev => prev.map(x => x.id === p.id ? { ...x, featured: !p.featured } : x))
+    const r = await fetch(`/api/posts/${p.id}`,{method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({featured:!p.featured}), cache:"no-store"})
+    if(r.ok) toast(p.featured?(lang === "zh" ? "已取消推荐" : "Unfeatured"):(lang === "zh" ? "已设为推荐" : "Featured"),"success"); else {
+      toast(t.dashOpFail,"error")
+      setPosts(prev => prev.map(x => x.id === p.id ? { ...x, featured: p.featured } : x))
+    }
+  }, [toast, lang])
   const duplicate = useCallback(async (p:any)=>{
     const r=await fetch("/api/posts",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({title:p.title+" 副本", titleZh:(p.titleZh||p.title)+" 副本", slug:p.slug+"-copy-"+Date.now(), excerpt:p.excerpt, content:p.content, status:"draft", categoryId:p.categoryId, tags:p.tags, pageConfig:p.pageConfig})})
     if(r.ok) toast(t.toastCopiedDraft,"success"); else {const j=await r.json(); toast(j.error||t.toastCopyFail,"error")}

@@ -53,10 +53,13 @@ export default function MobilePostsPage() {
       });
       if (r.ok) {
         toast(ns === "published" ? t.toastPublished : t.toastUnpublished, "success");
-        // 先改本地状态，列表立即反映，不必等接口回包渲染
         setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: ns } : x)));
-      } else toast(t.dashOpFail, "error");
-      await load();
+      } else {
+        toast(t.dashOpFail, "error");
+      }
+    },
+    [toast, t]
+  );
     },
     [toast, load, t]
   );
