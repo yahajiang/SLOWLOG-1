@@ -169,16 +169,28 @@ export function TableOfContents({
                     onClick={(e) => {
                       e.preventDefault();
                       setActive(h.id);
-                      setProgress((idx + 1) / Math.max(1, headings.length));
                       isClickRef.current = true;
                       if (releaseTimer.current) clearTimeout(releaseTimer.current);
                       const el = document.getElementById(h.id);
                       if (el) {
                         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                        // sticky 顶栏用 scroll-margin；smooth 滚动期间锁定 scroll-spy，避免高亮回跳
                         el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
                         history.pushState(null, "", `#${h.id}`);
+                        // 等滚动结束再交回 scroll-spy（smooth 往往 >200ms）
+                        const unlock = () => {
+                          isClickRef.current = false;
+                          releaseTimer.current = null;
+                        };
+                        releaseTimer.current = setTimeout(unlock, reduce ? 80 : 900);
+                        if (!reduce) {
+                          const onEnd = () => {
+                            unlock();
+                            window.removeEventListener("scrollend", onEnd);
+                          };
+                          window.addEventListener("scrollend", onEnd, { once: true });
+                        }
                       }
-                      releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 200);
                     }}
                     aria-current={isActive ? "true" : undefined}
                     className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-[180ms] ease-[var(--ease-out)] ${
