@@ -50,38 +50,16 @@ export function TableOfContents({
       els.forEach((el, i) => {
         if (el.getBoundingClientRect().top <= 96) curIdx = i;
       });
-      // 末节：下面文字少时滚不到判定线——进入视口上半区即点亮
-      const last = els[els.length - 1];
-      if (last) {
-        const lastTop = last.getBoundingClientRect().top;
-        if (lastTop < window.innerHeight * 0.45) curIdx = els.length - 1;
-      }
-      // 文末兜底：视口贴底时强制末节 + 蓝轨打满
+      const docH = document.documentElement.scrollHeight;
       const nearBottom =
-        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 48;
+        window.scrollY + window.innerHeight >= docH - 48;
+      // 末节：仅在贴底或末标题已过判定线时收口——避免中间章节被跳到最后
       if (nearBottom) curIdx = els.length - 1;
       curIdx = Math.min(curIdx, headings.length - 1);
       const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
-      const p = nearBottom || curIdx >= els.length - 1 ? railEndProgress(els) : railProgress(els, curIdx);
+      const p = nearBottom ? 1 : railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
-    }
-
-    /** 末节区间进度：从末标题到文档底插值，短文/贴底时拉满 */
-    function railEndProgress(headingsEls: HTMLElement[]): number {
-      const n = headingsEls.length;
-      if (n === 0) return 0;
-      if (n === 1) return 1;
-      const last = headingsEls[n - 1];
-      const lastTop = last.getBoundingClientRect().top + window.scrollY;
-      const docH = document.documentElement.scrollHeight;
-      const endY = Math.max(lastTop + last.offsetHeight, lastTop + 80);
-      const span = Math.max(1, endY - lastTop);
-      const line = window.scrollY + 96;
-      const local = Math.min(1, Math.max(0, (line - lastTop) / span));
-      const nearBottom =
-        window.scrollY + window.innerHeight >= docH - 48;
-      return Math.max((n - 1) / n, nearBottom ? 1 : ((n - 1) + local) / n);
     }
 
     /** TOC 蓝轨：在「当前标题 → 下一标题」的滚动区间内 0→1，再映射到 curIdx/n */
@@ -90,7 +68,18 @@ export function TableOfContents({
       if (n === 0) return 0;
       if (n === 1) return 1;
       const line = window.scrollY + 96;
-      if (curIdx >= n - 1) return 1;
+      const docH = document.documentElement.scrollHeight;
+      // 末节：从末标题到文底插值；短文滚不动时贴底才满
+      if (curIdx >= n - 1) {
+        const last = headingsEls[n - 1];
+        const lastTop = last.getBoundingClientRect().top + window.scrollY;
+        const endY = lastTop + Math.max(last.offsetHeight, 120);
+        const span = Math.max(1, endY - lastTop);
+        const local = Math.min(1, Math.max(0, (line - lastTop) / span));
+        const remain = docH - (window.scrollY + window.innerHeight);
+        if (remain <= 48) return 1;
+        return Math.max((n - 1) / n, ((n - 1) + local) / n);
+      }
       const curTop = headingsEls[curIdx].getBoundingClientRect().top + window.scrollY;
       const nextTop = headingsEls[curIdx + 1].getBoundingClientRect().top + window.scrollY;
       const span = Math.max(1, nextTop - curTop);
