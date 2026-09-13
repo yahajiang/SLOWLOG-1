@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useEffect, useState } from "react"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
@@ -14,22 +14,25 @@ export default function NotesPage() {
   const [delId, setDelId] = useState<string | null>(null)
   const { toast } = useToast()
   const { lang } = useLang()
-  const fetchNotes = () => fetch("/api/thoughts").then(r=>r.json()).then(data=> { setNotes(Array.isArray(data)? data.map((d:any)=>({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt })) : []); setLoading(false) })
+  const fetchNotes = () => fetch("/api/thoughts", { cache: "no-store" }).then(r=>r.json()).then(data=> { setNotes(Array.isArray(data)? data.map((d:any)=>({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt })) : []); setLoading(false) })
   useEffect(()=>{fetchNotes()},[])
   const submit = async () => {
     if (!input.trim() || input.length>500) { toast(lang === "zh" ? "内容需 1-500 字" : "Content must be 1-500 characters","error"); return }
-    setLoading(true)
-    const r=await fetch("/api/thoughts", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ text: input }) })
+    const text = input.trim()
+    setNotes(prev => [{ id: `local-${Date.now()}`, content: text, contentZh: text, createdAt: new Date().toISOString() }, ...prev])
+    setInput("")
+    const r=await fetch("/api/thoughts", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ text }), cache:"no-store" })
     if(!r.ok) toast(lang === "zh" ? "发布失败" : "Publish failed","error"); else toast(lang === "zh" ? "已发布" : "Published","success")
-    setInput(""); setLoading(false); fetchNotes()
+    fetchNotes()
   }
   const del = async (id:string)=> setDelId(id)
   const confirmDel=async()=>{
     if(!delId) return
-    await fetch(`/api/thoughts/${delId}`,{method:"DELETE"})
-    toast(lang === "zh" ? "已删除" : "Deleted","success")
+    setNotes(prev => prev.filter(n => n.id !== delId))
     setDelId(null)
-    fetchNotes()
+    const r = await fetch(`/api/thoughts/${delId}`,{method:"DELETE", cache:"no-store"})
+    if (r.ok) toast(lang === "zh" ? "已删除" : "Deleted","success")
+    else fetchNotes()
   }
   if (loading) return <NotesPageSkeleton />
   return (

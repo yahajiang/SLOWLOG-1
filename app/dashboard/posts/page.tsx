@@ -54,9 +54,14 @@ export default function PostsPage() {
   const delOne = useCallback((id:string)=> setDelId(id), [])
   const confirmDel = useCallback(async()=>{
     if(!delId) return
-    const r=await fetch(`/api/posts/${delId}`,{method:"DELETE"})
-    if(r.ok) toast(t.toastDeleted,"success"); else toast(t.dashOpFail,"error")
-    setDelId(null); setSelected(s=>{const n=new Set(s); n.delete(delId); return n}); await load()
+    setPosts(prev => prev.filter(x => x.id !== delId))
+    setSelected(s=>{const n=new Set(s); n.delete(delId); return n})
+    setDelId(null)
+    const r=await fetch(`/api/posts/${delId}`,{method:"DELETE", cache:"no-store"})
+    if(!r.ok) {
+      toast(t.dashOpFail,"error")
+      await load()
+    } else toast(t.toastDeleted,"success")
   }, [delId, toast, load])
   const [bulkConfirm, setBulkConfirm] = useState(false)
   const bulkDel = useCallback(()=>{
@@ -64,9 +69,11 @@ export default function PostsPage() {
     setBulkConfirm(true)
   }, [selected])
   const confirmBulkDel = useCallback(async()=>{
-    for(const id of selected) await fetch(`/api/posts/${id}`,{method:"DELETE"})
-    toast(lang === "zh" ? `已删除 ${selected.size} 篇` : `${selected.size} deleted`,"success"); setSelected(new Set()); setBulkConfirm(false); await load()
-  }, [selected, toast, load])
+    const ids = new Set(selected)
+    setPosts(prev => prev.filter(x => !ids.has(x.id)))
+    for(const id of selected) await fetch(`/api/posts/${id}`,{method:"DELETE", cache:"no-store"})
+    toast(lang === "zh" ? `已删除 ${selected.size} 篇` : `${selected.size} deleted`,"success"); setSelected(new Set()); setBulkConfirm(false)
+  }, [selected, toast])
   const togglePublish = useCallback(async (p:any)=>{
     const ns = p.status==="published" ? "draft" : "published"
     // 先改本地，避免随后 load 若读到旧缓存又盖回去

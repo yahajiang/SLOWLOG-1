@@ -36,26 +36,28 @@ export default function MobilePostsPage() {
 
   const confirmDel = useCallback(async () => {
     if (!delId) return;
-    const r = await fetch(`/api/posts/${delId}`, { method: "DELETE" });
-    if (r.ok) toast(t.dashDeleted, "success");
-    else toast(t.dashOpFail, "error");
+    setPosts((prev) => prev.filter((x) => x.id !== delId));
     setDelId(null);
-    await load();
+    const r = await fetch(`/api/posts/${delId}`, { method: "DELETE", cache: "no-store" });
+    if (r.ok) toast(t.dashDeleted, "success");
+    else await load();
   }, [delId, toast, load, t]);
 
   const togglePublish = useCallback(
     async (p: any) => {
       const ns = p.status === "published" ? "draft" : "published";
+      setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: ns } : x)));
       const r = await fetch(`/api/posts/${p.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: ns }),
+        cache: "no-store",
       });
       if (r.ok) {
         toast(ns === "published" ? t.toastPublished : t.toastUnpublished, "success");
-        setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: ns } : x)));
       } else {
         toast(t.dashOpFail, "error");
+        setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: p.status } : x)));
       }
     },
     [toast, t]
