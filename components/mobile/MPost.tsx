@@ -11,6 +11,7 @@ import { Lightbox } from "@/components/Lightbox";
 import { MFooter } from "./MFooter";
 import { PostRenderer } from "@/components/editor/PostRenderer";
 import { formatDisplayDate } from "@/lib/relative-time";
+import { useScrollSpy } from "@/lib/hooks/use-scroll-spy";
 import type { PageConfig } from "@/lib/page-config";
 
 const REPO_MAP: Record<string, string> = {
@@ -22,88 +23,11 @@ const REPO_MAP: Record<string, string> = {
   "soulsync-menu-image-generator": "https://github.com/yahajiang/astrbot_plugin_soulsync/tree/soulsync-menu",
 };
 
-function useActiveHeading(headings: { id: string; text: string }[], enabled: boolean) {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (!enabled || headings.length === 0) return;
-    const ids = headings.map((h) => h.id).filter(Boolean);
-    if (ids.length === 0) return;
-
-    function sync() {
-      const els = ids
-        .map((id) => document.getElementById(id))
-        .filter((el): el is HTMLElement => !!el);
-      if (els.length === 0) return;
-
-      // 顶栏 56px + 余量：当前节判定线
-      const line = 72;
-      let curIdx = 0;
-      els.forEach((el, i) => {
-        if (el.getBoundingClientRect().top <= line) curIdx = i;
-      });
-
-      const doc = document.documentElement;
-      const nearBottom = window.scrollY + window.innerHeight >= doc.scrollHeight - 48;
-      // 贴底：仅末标题已进视口上部才收口，避免文末页脚导致中间节被跳过
-      const last = els[els.length - 1];
-      if (nearBottom && last && last.getBoundingClientRect().top < window.innerHeight * 0.35) {
-        curIdx = els.length - 1;
-      }
-
-      setActiveIdx(curIdx);
-
-      const n = els.length;
-      if (n === 1) {
-        setProgress(nearBottom ? 1 : 0);
-        return;
-      }
-      if (nearBottom) {
-        setProgress(1);
-        return;
-      }
-      if (curIdx >= n - 1) {
-        // 末节：从末标题到文底插值，不提前打满
-        const lastTop = last.getBoundingClientRect().top + window.scrollY;
-        const endY = lastTop + Math.max(last.offsetHeight, 120);
-        const span = Math.max(1, endY - lastTop);
-        const lineY = window.scrollY + line;
-        const local = Math.min(1, Math.max(0, (lineY - lastTop) / span));
-        setProgress(Math.max((n - 1) / n, ((n - 1) + local) / n));
-        return;
-      }
-      const lineY = window.scrollY + line;
-      const curTop = els[curIdx].getBoundingClientRect().top + window.scrollY;
-      const nextTop = els[curIdx + 1].getBoundingClientRect().top + window.scrollY;
-      const span = Math.max(1, nextTop - curTop);
-      const local = Math.min(1, Math.max(0, (lineY - curTop) / span));
-      setProgress((curIdx + local) / n);
-    }
-
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(sync);
-    };
-    sync();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [enabled, headings]);
-
-  return { activeIdx, progress };
-}
-
 function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const { t } = useLang();
-  const { activeIdx, progress } = useActiveHeading(headings, true);
+  const { activeIdx, progress, scrollToHeading } = useScrollSpy(headings, { offsetPx: 64 });
   const listRef = useRef<HTMLDivElement | null>(null);
 
   const requestClose = useCallback(() => {
@@ -196,10 +120,8 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                     onClick={(e) => {
                       e.preventDefault();
                       requestClose();
-                      setTimeout(() => {
-                        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                        document.getElementById(h.id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-                      }, 220);
+                      // 等抽屉退场动画结束后再滚动
+                      setTimeout(() => scrollToHeading(h.id), 220);
                     }}
                     className={`flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none min-h-[48px] active:bg-[var(--yh-border)] ${
                       isActive
