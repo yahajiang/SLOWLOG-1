@@ -23,9 +23,9 @@ export function Collapsible({
         <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
         {title}
       </button>
-      <div className={`grid transition-[grid-template-rows] duration-200 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+      <div className={`grid transition-[grid-template-rows] duration-[250ms] ease-[var(--ease-out)] ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
         <div className="overflow-hidden">
-          <div className="pt-3 pb-1">{children}</div>
+          <div className={`pt-3 pb-1 ${open ? "panel-in" : ""}`}>{children}</div>
         </div>
       </div>
     </div>

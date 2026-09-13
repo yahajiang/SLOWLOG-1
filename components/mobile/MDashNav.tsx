@@ -27,8 +27,8 @@ export function MDashNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 py-2.5 text-[11px] rounded-none min-h-[56px] justify-center transition-colors ${
-                active ? "text-[var(--dash-accent)] font-medium" : "text-[var(--dash-muted)]"
+              className={`flex flex-col items-center gap-1 py-2.5 text-[11px] rounded-none min-h-[56px] justify-center transition-[color,background-color] duration-[220ms] ease-[var(--ease-out)] ${
+                active ? "text-[var(--dash-accent)] font-medium bg-[var(--dash-accent-soft)]" : "text-[var(--dash-muted)]"
               }`}
             >
               <Icon className="w-5 h-5" />

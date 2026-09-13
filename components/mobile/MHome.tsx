@@ -38,8 +38,8 @@ function MThoughts() {
         </p>
       </div>
       <div className="space-y-3">
-        {shown.map((th) => (
-          <div key={th.id} className="bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none px-4 py-3">
+        {shown.map((th, i) => (
+          <div key={th.id} className={`bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none px-4 py-3 ${expanded && i >= 4 ? "section-in" : ""}`}>
             <p className="text-[14px] text-[var(--yh-text)] leading-[1.8]">
               {lang === "zh" ? th.contentZh || th.content : th.content}
             </p>
@@ -281,7 +281,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 section-in" key={`${activeCategory}-${searchQuery}`}>
             {filtered.map((post) => (
               <MArticleCard key={post.id} post={post} />
             ))}

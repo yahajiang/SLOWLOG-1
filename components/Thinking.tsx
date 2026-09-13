@@ -84,7 +84,7 @@ export function Thinking() {
           {shown.map((thought, i) => (
             <div
               key={thought.id}
-              className="animate-[fadeInUp_0.5s_var(--ease-out)_both]"
+              className={expanded && i >= 4 ? "section-in" : "animate-[fadeInUp_0.5s_var(--ease-out)_both]"}
               style={{ animationDelay: `${Math.min(i, 10) * 50}ms` }}
             >
               <ThoughtItem thought={thought} lang={lang} index={i} />

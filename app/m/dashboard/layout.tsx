@@ -3,6 +3,7 @@ import { auth, passwordChangeRequired } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { MDashNav } from "@/components/mobile/MDashNav";
 import { MDashTopbar } from "@/components/mobile/MDashTopbar";
+import { MDashMain } from "@/components/mobile/MDashMain";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -22,7 +23,7 @@ export default async function MobileDashboardLayout({
   return (
     <div data-m="1" className="min-h-screen bg-[var(--dash-bg)] flex flex-col">
       <MDashTopbar userName={userName} />
-      <main className="flex-1 p-4 pb-8">{children}</main>
+      <MDashMain>{children}</MDashMain>
       <MDashNav />
     </div>
   );
