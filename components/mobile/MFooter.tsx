@@ -29,7 +29,7 @@ export function MFooter({ desktopHref }: MFooterProps) {
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-5 h-5 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[10px]">S</span>
           <span className="font-medium">慢日志 · SLOWLOG</span>
-          <span className="mono text-[10px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.8"}</span>
+          <span className="mono text-[10px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.9"}</span>
         </div>
         <p className="mono text-[11px] text-[var(--yh-muted)]">— {tagline}</p>
         <div className="flex items-center gap-4 mono text-[11px] text-[var(--yh-muted)]">
