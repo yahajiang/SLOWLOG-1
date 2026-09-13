@@ -176,6 +176,10 @@ code, pre, .font-mono {
   .section-in, .panel-in, .category-enter, .category-exit {
     animation: none !important;
   }
+  [data-reveal="1"] {
+    animation: none !important;
+    opacity: 1;
+  }
 }
 
 /* 卡片/列表入场：300ms · 6px */

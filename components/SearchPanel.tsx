@@ -174,7 +174,7 @@ export function SearchPanel() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="animate-[pageIn_0.25s_var(--ease-out)_both]"
+        className="panel-in"
         style={{ width: 520, maxWidth: "94%", background: "var(--yh-bg)", border: "1px solid var(--yh-border)", overflow: "hidden", boxShadow: "var(--shadow-float, 0 12px 40px rgba(0,0,0,0.12))" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", borderBottom: "1px solid var(--yh-border)" }}>
