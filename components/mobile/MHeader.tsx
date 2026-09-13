@@ -16,8 +16,21 @@ interface MHeaderProps {
 /** 移动端顶栏：S 圆标 + 慢日志·SLOWLOG + EN 切换 + 可展开搜索（桌面风格同源） */
 export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }: MHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const { t } = useLang();
   const searchable = typeof onSearchChange === "function";
+
+  function toggleSearch() {
+    if (open) {
+      setClosing(true);
+      window.setTimeout(() => {
+        setOpen(false);
+        setClosing(false);
+      }, 200);
+    } else {
+      setOpen(true);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 bg-[var(--yh-bg)]/90 backdrop-blur-xl border-b border-[var(--yh-border)]">
@@ -43,7 +56,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           )}
           {searchable && (
             <button
-              onClick={() => setOpen((v) => !v)}
+              onClick={toggleSearch}
               className="w-11 h-11 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
               aria-label="Search"
             >
@@ -52,8 +65,8 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           )}
         </div>
       </div>
-      {searchable && open && (
-        <div className="px-4 pb-3 panel-in">
+      {(searchable && (open || closing)) && (
+        <div className={`px-4 pb-3 ${closing ? "panel-out" : "panel-in"}`}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
             <input

@@ -171,9 +171,25 @@ code, pre, .font-mono {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: none; }
 }
+.panel-out {
+  animation: panelOut 200ms var(--ease-out) both;
+  pointer-events: none;
+}
+@keyframes panelOut {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-4px); }
+}
+/* 灯箱：淡入 + 轻放大，与 scaleIn 同语感但更慢一点 */
+.lightbox-in {
+  animation: lightboxIn 320ms var(--ease-out) both;
+}
+@keyframes lightboxIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .section-in, .panel-in, .category-enter, .category-exit {
+  .section-in, .panel-in, .panel-out, .lightbox-in, .category-enter, .category-exit {
     animation: none !important;
   }
   [data-reveal="1"] {
