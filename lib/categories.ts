@@ -1,12 +1,10 @@
 export const CATEGORIES = [
   "All",
   "Design",
-  "Plugin",
-  "Engineering",
-  "Typography",
-  "Frontend",
-  "Snippet",
-  "Life",
+  "Build",
+  "Lab",
+  "Found",
+  "Log",
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
@@ -14,12 +12,10 @@ export type ContentCategory = Exclude<Category, "All">;
 
 export const CATEGORY_LABEL: Record<ContentCategory, string> = {
   Design: "设计",
-  Plugin: "插件",
-  Engineering: "工程",
-  Typography: "字体",
-  Frontend: "前端",
-  Snippet: "点滴",
-  Life: "生活",
+  Build: "开发",
+  Lab: "实验",
+  Found: "发现",
+  Log: "记录",
 };
 
 /**
@@ -28,12 +24,10 @@ export const CATEGORY_LABEL: Record<ContentCategory, string> = {
  */
 export const CATEGORY_COLORS: Record<string, string> = {
   Design: "bg-rose-50 text-rose-700 border border-rose-200",
-  Plugin: "bg-violet-50 text-violet-700 border border-violet-200",
-  Engineering: "bg-blue-50 text-blue-700 border border-blue-200",
-  Typography: "bg-teal-50 text-teal-700 border border-teal-200",
-  Frontend: "bg-amber-50 text-amber-700 border border-amber-200",
-  Snippet: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  Life: "bg-orange-50 text-orange-700 border border-orange-200",
+  Build: "bg-blue-50 text-blue-700 border border-blue-200",
+  Lab: "bg-violet-50 text-violet-700 border border-violet-200",
+  Found: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  Log: "bg-orange-50 text-orange-700 border border-orange-200",
 };
 
 export function getCategoryBadgeStyle(category: string): Record<string, string> {
@@ -44,23 +38,19 @@ export function getCategoryBadgeStyle(category: string): Record<string, string> 
 
 export const ART_PALETTES: Record<string, { paper: string; ink: string; wash: string; accent: string }> = {
   Design: { paper: "#F5F3EF", ink: "#3A332E", wash: "#E8E0D8", accent: "#C9A98A" },
-  Plugin: { paper: "#EEF2EE", ink: "#2E3A35", wash: "#DDE3DE", accent: "#7AA88A" },
-  Engineering: { paper: "#EAF0F5", ink: "#30333A", wash: "#D6DEE8", accent: "#7A9CC2" },
-  Typography: { paper: "#F5F1E8", ink: "#3C3830", wash: "#E8E0D0", accent: "#C2A87A" },
-  Frontend: { paper: "#FFF7E8", ink: "#3A3330", wash: "#F0E0C0", accent: "#E8A46A" },
-  Snippet: { paper: "#E8F3E8", ink: "#30362E", wash: "#C8DCC8", accent: "#7AB088" },
-  Life: { paper: "#FDF0E6", ink: "#3A3330", wash: "#F0DCCA", accent: "#E8A07A" },
+  Build: { paper: "#EAF0F5", ink: "#30333A", wash: "#D6DEE8", accent: "#7A9CC2" },
+  Lab: { paper: "#F4F2F8", ink: "#332F3B", wash: "#E3DFEC", accent: "#8F7CBE" },
+  Found: { paper: "#EEF2EE", ink: "#2E3A35", wash: "#DDE3DE", accent: "#7AA88A" },
+  Log: { paper: "#FDF0E6", ink: "#3A3330", wash: "#F0DCCA", accent: "#E8A07A" },
 };
 
 
 export const CAT_ABBR: Record<string, string> = {
   Design: "DSN",
-  Plugin: "PLG",
-  Engineering: "ENG",
-  Typography: "TYP",
-  Frontend: "FRT",
-  Snippet: "SNP",
-  Life: "LIFE",
+  Build: "BLD",
+  Lab: "LAB",
+  Found: "FND",
+  Log: "LOG",
 };
 
 export type TagSymbol = "grid" | "shield" | "doubleCircle" | "wave" | "diamond" | "window" | "hex" | "circle";

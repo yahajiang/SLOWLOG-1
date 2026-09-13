@@ -20,7 +20,7 @@ const OUT = "C:/Users/Yahajiang/Desktop/AstrBot插件/慢日志/mobile-preview/0
   await p.waitForTimeout(500);
 
   // 只截封面内部
-  const cover = card.locator('[class*="art-Engineering"], [class*="cover"]').first();
+  const cover = card.locator('[class*="art-Build"], [class*="cover"]').first();
   const target = (await cover.count()) ? cover : card;
   await target.screenshot({ path: OUT });
   console.log("saved", OUT);
