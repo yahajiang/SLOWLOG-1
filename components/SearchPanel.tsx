@@ -21,12 +21,22 @@ export function SearchPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState<IndexData | null>(null);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const indexRef = useRef<IndexData | null>(null);
+
+  const requestClose = useCallback(() => {
+    setClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+      setQuery("");
+    }, 200);
+  }, []);
 
   // 打开时懒加载索引（只取一次，之后用内存）
   useEffect(() => {
@@ -44,7 +54,7 @@ export function SearchPanel() {
     function onKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement)?.tagName;
       const typing = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
-      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key === "Escape") { if (open) requestClose(); return; }
       if (typing) return;
       if (e.key === "/" || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) {
         e.preventDefault();
@@ -55,10 +65,10 @@ export function SearchPanel() {
     window.addEventListener("keydown", onKey);
     window.addEventListener("sl-open-search", onOpen);
     return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("sl-open-search", onOpen); };
-  }, []);
+  }, [open, requestClose]);
 
-  // 路由跳转自动关闭
-  useEffect(() => { setOpen(false); setQuery(""); }, [pathname]);
+  // 路由跳转立即收起（已在导航中，无需退场）
+  useEffect(() => { setOpen(false); setClosing(false); setQuery(""); }, [pathname]);
 
   // 检索：子串 + 简单评分（标题 3 > 标签 2.5 > 摘要 1.5 > 正文 0.5），零依赖
   // 拼音支持：query 为纯英文字母时，同时匹配索引里的全拼（sheji）与首字母（sj）
@@ -166,8 +176,8 @@ export function SearchPanel() {
 
   return (
     <div
-      className="mask-in"
-      onClick={() => setOpen(false)}
+      className={closing ? "mask-out" : "mask-in"}
+      onClick={requestClose}
       style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,.4)", backdropFilter: "blur(2px)", display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: "10vh" }}
       role="dialog"
       aria-modal
@@ -175,7 +185,7 @@ export function SearchPanel() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="panel-in"
+        className={closing ? "panel-out" : "panel-in"}
         style={{ width: 520, maxWidth: "94%", background: "var(--yh-bg)", border: "1px solid var(--yh-border)", overflow: "hidden", boxShadow: "var(--shadow-float, 0 12px 40px rgba(0,0,0,0.12))" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", borderBottom: "1px solid var(--yh-border)" }}>

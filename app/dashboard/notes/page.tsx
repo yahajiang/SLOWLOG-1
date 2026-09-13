@@ -36,7 +36,7 @@ export default function NotesPage() {
   }
   if (loading) return <NotesPageSkeleton />
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "随想" : "Thoughts"}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 flex gap-3 shadow-[var(--shadow-card)]">
         <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()} placeholder={lang === "zh" ? "写点什么... (≤500字，自动识别链接)" : "Write something... (≤500 chars, links auto-detected)"} maxLength={500} className="flex-1 px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--dash-accent)]/20" />
@@ -49,7 +49,7 @@ export default function NotesPage() {
               <p className="text-sm text-[var(--dash-text)] leading-relaxed whitespace-pre-wrap break-words">{n.contentZh || n.content || (lang === "zh" ? "（空）" : "(empty)")}</p>
               <p className="text-xs text-[var(--dash-muted)] mt-2">{new Date(n.createdAt).toLocaleString()}</p>
             </div>
-            <button onClick={()=>del(n.id)} className="text-xs text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-none border border-transparent hover:border-red-200 shrink-0">{lang === "zh" ? "删除" : "Delete"}</button>
+            <button onClick={()=>del(n.id)} className="text-xs px-2 py-1.5 rounded-none border border-transparent hover:border-red-200 hover:text-red-600 hover:bg-red-50 shrink-0 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-400">{lang === "zh" ? "删除" : "Delete"}</button>
           </div>
         ))}
         {notes.length===0 && <p className="text-sm text-[var(--dash-muted)] text-center py-12">{lang === "zh" ? "暂无随想" : "No thoughts yet"}</p>}

@@ -6,9 +6,9 @@ import { useLang } from "@/lib/lang-context";
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
-      <p className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium mb-1.5">{label}</p>
-      <p className="text-2xl font-bold tracking-tight text-[var(--dash-text)] tabular-nums">{value}</p>
+    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none px-2 py-2.5 min-h-[64px] flex flex-col justify-center">
+      <p className="text-[9px] tracking-widest uppercase text-[var(--dash-muted)] font-medium mb-0.5 truncate">{label}</p>
+      <p className="text-base font-bold tracking-tight text-[var(--dash-text)] tabular-nums">{value}</p>
     </div>
   );
 }
@@ -30,29 +30,27 @@ export function MDashHome({ data }: {
   const { t, lang } = useLang();
   const { total, published, draft, totalViews, recent, noteCount = 0, catCount = 0, mediaCount = 0 } = data;
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 section-in">
       <div>
         <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashOverview}</h1>
         <p className="text-sm text-[var(--dash-muted)] mt-1">{t.dashHomeSub}</p>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         <Stat label={t.dashTotalPosts} value={total} />
         <Stat label={t.dashPublished} value={published} />
         <Stat label={t.dashDraft} value={draft} />
         <Stat label={t.dashTotalViews} value={totalViews} />
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        <Link href="/m/dashboard/notes" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
-          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "随想" : "Notes"}</p>
-          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{noteCount}</p>
+        <Link href="/m/dashboard/notes" className="bg-[var(--dash-card)] border border-[var(--dash-border)] px-2 py-2.5 min-h-[64px] flex flex-col justify-center">
+          <p className="text-[9px] tracking-widest uppercase text-[var(--dash-muted)] mb-0.5 truncate">{lang === "zh" ? "随想" : "Notes"}</p>
+          <p className="text-base font-bold tabular-nums text-[var(--dash-text)]">{noteCount}</p>
         </Link>
-        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
-          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "分类" : "Cats"}</p>
-          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{catCount}</p>
+        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] px-2 py-2.5 min-h-[64px] flex flex-col justify-center">
+          <p className="text-[9px] tracking-widest uppercase text-[var(--dash-muted)] mb-0.5 truncate">{lang === "zh" ? "分类" : "Cats"}</p>
+          <p className="text-base font-bold tabular-nums text-[var(--dash-text)]">{catCount}</p>
         </Link>
-        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
-          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "媒体" : "Media"}</p>
-          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{mediaCount}</p>
+        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] px-2 py-2.5 min-h-[64px] flex flex-col justify-center">
+          <p className="text-[9px] tracking-widest uppercase text-[var(--dash-muted)] mb-0.5 truncate">{lang === "zh" ? "媒体" : "Media"}</p>
+          <p className="text-base font-bold tabular-nums text-[var(--dash-text)]">{mediaCount}</p>
         </Link>
       </div>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">

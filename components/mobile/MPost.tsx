@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Clock, ExternalLink, List, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
@@ -101,9 +101,18 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
 
 function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const { t } = useLang();
   const { activeIdx, progress } = useActiveHeading(headings, true);
   const listRef = useRef<HTMLDivElement | null>(null);
+
+  const requestClose = useCallback(() => {
+    setClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 200);
+  }, []);
 
   // 抽屉打开时锁背景滚动 + 把当前项滚进列表视野
   useEffect(() => {
@@ -139,9 +148,9 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
         </span>
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm mask-in" onClick={() => setOpen(false)}>
+        <div className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm ${closing ? "mask-out" : "mask-in"}`} onClick={requestClose}>
           <div
-            className="absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)] sheet-in"
+            className={`absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)] ${closing ? "sheet-out" : "sheet-in"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-2">
@@ -152,7 +161,7 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                 {t.onThisPage} · {headings.length}
               </p>
               <button
-                onClick={() => setOpen(false)}
+                onClick={requestClose}
                 className="mono text-[11px] px-3 py-2 rounded-none border border-[var(--yh-border)] min-h-[44px]"
               >
                 Close
@@ -186,11 +195,11 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
                     href={`#${h.id}`}
                     onClick={(e) => {
                       e.preventDefault();
-                      setOpen(false);
+                      requestClose();
                       setTimeout(() => {
                         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
                         document.getElementById(h.id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-                      }, 120);
+                      }, 220);
                     }}
                     className={`flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none min-h-[48px] active:bg-[var(--yh-border)] ${
                       isActive

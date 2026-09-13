@@ -33,8 +33,15 @@ export async function GET(req: NextRequest) {
   } else if (status && status !== "all") {
     where.status = status
   }
-  if (q) where.OR = [{ title: { contains: q, mode: "insensitive" } }, { titleZh: { contains: q, mode: "insensitive" } }]
-  // 列表 API 排除 content 大字段，详情走 /api/posts/[id]
+  if (q) where.OR = [
+    { title: { contains: q, mode: "insensitive" } },
+    { titleZh: { contains: q, mode: "insensitive" } },
+    { excerpt: { contains: q, mode: "insensitive" } },
+    { excerptZh: { contains: q, mode: "insensitive" } },
+    { tags: { has: q } },
+  ]
+  // 登录态拉全量（列表无 content 大字段），游客保持 100 上限
+  const take = session ? 500 : 100
   const posts = await prisma.post.findMany({
     where,
     select: {
@@ -45,7 +52,7 @@ export async function GET(req: NextRequest) {
       category: { select: { name: true, nameZh: true, slug: true } },
     },
     orderBy: { updatedAt: "desc" },
-    take: 100,
+    take,
   })
   return NextResponse.json(posts)
 }

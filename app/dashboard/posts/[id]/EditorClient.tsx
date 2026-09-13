@@ -15,7 +15,7 @@ import { getVersions, snapVersion, forceSnap, type PostVersion } from "@/lib/pos
 import { useToast } from "@/components/ui/Toast"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
+import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { FormField } from "@/components/ui/FormField"
 import { Toggle } from "@/components/ui/Toggle"
 import { Badge } from "@/components/ui/Badge"
@@ -363,11 +363,20 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <FormField label={t.formSlug} className="flex-[1.2] min-w-[180px]">
             <Input value={post.slug || ""} onChange={(e) => setPost({ ...post, slug: e.target.value })} placeholder="auto" className="font-mono text-[13px] h-9" />
           </FormField>
-          <FormField label={t.formCategory} required error={categoryError} className="w-[88px] shrink-0">
-            <Select value={post.categoryId || ""} onChange={(e) => setPost({ ...post, categoryId: e.target.value || null })} className="h-9 text-[11px] px-1">
-              <option value="">{t.dashUncategorized}</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{lang === "zh" ? c.nameZh || c.name : c.name}</option>)}
-            </Select>
+          <FormField label={t.formCategory} required error={categoryError} className="w-[110px] shrink-0">
+            <DropdownSelect
+              value={post.categoryId || ""}
+              onChange={(v) => setPost({ ...post, categoryId: v || null })}
+              options={[
+                { value: "", label: t.dashUncategorized },
+                ...categories.map((c) => ({
+                  value: c.id,
+                  label: lang === "zh" ? c.nameZh || c.name : c.name,
+                })),
+              ]}
+              ariaLabel={t.formCategory}
+              triggerClassName="h-9 text-[11px] px-2"
+            />
           </FormField>
           <FormField label={t.formTags} error={tagsError} className="flex-1 min-w-[140px]">
             <Input value={post.tags?.join ? post.tags.join(", ") : post.tags || ""} onChange={(e) => setPost({ ...post, tags: e.target.value.split(",") })} placeholder={t.formTagsPlaceholder} className="h-9" />

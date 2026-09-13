@@ -195,6 +195,14 @@ code, pre, .font-mono {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: none; }
 }
+.sheet-out {
+  animation: sheetOut 200ms var(--ease-out) both;
+  pointer-events: none;
+}
+@keyframes sheetOut {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(16px); }
+}
 .mask-in {
   animation: maskIn 220ms var(--ease-out) both;
 }
@@ -202,9 +210,25 @@ code, pre, .font-mono {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+.mask-out {
+  animation: maskOut 200ms var(--ease-out) both;
+  pointer-events: none;
+}
+@keyframes maskOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.lightbox-out {
+  animation: lightboxOut 200ms var(--ease-out) both;
+  pointer-events: none;
+}
+@keyframes lightboxOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .section-in, .panel-in, .panel-out, .lightbox-in, .sheet-in, .mask-in, .category-enter, .category-exit {
+  .section-in, .panel-in, .panel-out, .lightbox-in, .lightbox-out, .sheet-in, .sheet-out, .mask-in, .mask-out, .category-enter, .category-exit {
     animation: none !important;
   }
   [data-reveal="1"] {
