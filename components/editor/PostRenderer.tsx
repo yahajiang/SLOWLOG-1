@@ -84,16 +84,22 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
         level === 2 ? "group text-[22px] font-semibold mt-[50px] mb-[11px] scroll-mt-[72px] tracking-tight border-b border-[var(--yh-border)] pb-[9px] flex items-center gap-2" :
         level === 3 ? "group text-lg font-semibold mt-[29px] mb-[7px] scroll-mt-[72px] flex items-center gap-2" :
         "group text-base font-semibold mt-[21px] mb-[7px] scroll-mt-[72px] flex items-center gap-2"
+      const align = node.attrs?.textAlign
+      const alignStyle = align && align !== "left" ? { textAlign: align as React.CSSProperties["textAlign"] } : undefined
       return (
-        <Tag key={idx} id={id} className={cls}>
+        <Tag key={idx} id={id} className={cls} style={alignStyle}>
           <a href={`#${id}`} aria-label=".Anchor" className="opacity-40 md:opacity-0 md:group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>
           <span className="flex-1">{inline}</span>
         </Tag>
       )
     }
-    case "paragraph":
-      if (inTable) return <p key={idx} className="text-[13px] leading-[1.5] text-zinc-600 m-0">{inline.length ? inline : <br />}</p>
-      return <p key={idx} data-paragraph className={`text-[17px] leading-[1.9] text-[var(--yh-text)]/85 mb-[22px] font-light transition-colors ${isFirstPara ? "first-letter:float-left first-letter:text-[3.2em] first-letter:font-serif first-letter:font-semibold first-letter:leading-[0.8] first-letter:mr-2 first-letter:mt-1.5" : ""}`}>{inline.length ? inline : <br />}</p>
+    case "paragraph": {
+      // 对齐由编辑器写入 attrs.textAlign，这里必须落地——否则工具栏的对齐按钮存了也白存
+      const pAlign = node.attrs?.textAlign
+      const pStyle = pAlign && pAlign !== "left" ? { textAlign: pAlign as React.CSSProperties["textAlign"] } : undefined
+      if (inTable) return <p key={idx} style={pStyle} className="text-[13px] leading-[1.5] text-zinc-600 m-0">{inline.length ? inline : <br />}</p>
+      return <p key={idx} data-paragraph style={pStyle} className={`text-[17px] leading-[1.9] text-[var(--yh-text)]/85 mb-[22px] font-light transition-colors ${isFirstPara ? "first-letter:float-left first-letter:text-[3.2em] first-letter:font-serif first-letter:font-semibold first-letter:leading-[0.8] first-letter:mr-2 first-letter:mt-1.5" : ""}`}>{inline.length ? inline : <br />}</p>
+    }
     case "blockquote":
       return <blockquote key={idx} className="relative border-l-[3px] border-[var(--yh-accent)]/30 pl-6 text-[var(--yh-muted)] italic bg-[var(--yh-bg)]/60 py-[11px] pr-6 rounded-none my-[29px] text-[15px] leading-[1.85] overflow-hidden"><span className="absolute top-2 left-3 serif text-3xl leading-none select-none opacity-15" style={{ color: "var(--yh-accent)" }}>“</span>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</blockquote>
     case "codeBlock": {
@@ -150,7 +156,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       return <figure key={idx} className="my-[32px] group/fig"><img src={src} alt={alt} title={title} loading="lazy" className="rounded-none border border-[var(--yh-border)] shadow-md block mx-auto max-w-full h-auto cursor-zoom-in group-hover/fig:shadow-lg group-hover/fig:scale-[1.01] transition-[box-shadow,transform] duration-[300ms] ease-[var(--ease-out)]" style={{ margin: "0", ...(width ? { width } : {}) }} onClick={() => (window as any).__openLightbox?.(src)} />{alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{alt}</figcaption>}{title && !alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{title}</figcaption>}</figure>
     }
     case "horizontalRule":
-      return <div key={idx} className="my-[43px] flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent" /><span className="w-1 h-1 rounded-none bg-zinc-300" /><span className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent" /></div>
+      return <div key={idx} className="my-[43px] flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent" /><span className="w-1 h-1 rounded-none bg-[var(--yh-muted)]/40" /><span className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent" /></div>
     case "table": {
       const headerRows: any[] = []
       const bodyRows: any[] = []
