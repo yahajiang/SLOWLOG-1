@@ -19,12 +19,19 @@ export function ReadingProgress() {
         let pct = 0;
         if (article) {
           const rect = article.getBoundingClientRect();
-          const top = window.scrollY + rect.top;
-          const height = article.offsetHeight - window.innerHeight;
-          const scrolled = window.scrollY - top;
-          pct = height > 0 ? (scrolled / height) * 100 : 0;
-          // 短文不足一屏：文章底缘进入视口才算读完（避免标题一可见就 100%）
-          if (height <= 0 && rect.bottom <= window.innerHeight + 8) pct = 100;
+          const articleTop = window.scrollY + rect.top;
+          const articleBottom = articleTop + article.offsetHeight;
+          const viewBottom = window.scrollY + window.innerHeight;
+          // 从「文章顶贴到判定线」到「文章底进入视口底」为 0→100
+          // 不用 offsetHeight-innerHeight：文末偏短时 scrolled/height 会提前打满
+          const start = articleTop - 96;
+          const finish = articleBottom - window.innerHeight;
+          if (finish > start) {
+            pct = ((window.scrollY - start) / (finish - start)) * 100;
+          } else {
+            // 整篇不足一屏：文章底缘进入视口才算读完
+            pct = viewBottom >= articleBottom - 8 ? 100 : 0;
+          }
           pct = Math.min(100, Math.max(0, pct));
           const doc = document.documentElement;
           if (window.scrollY + window.innerHeight >= doc.scrollHeight - 48) pct = 100;
