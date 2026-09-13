@@ -53,14 +53,18 @@ export function TableOfContents({
       const docH = document.documentElement.scrollHeight;
       const nearBottom =
         window.scrollY + window.innerHeight >= docH - 48;
-      // 末节：仅在贴底或末标题已过判定线时收口——避免中间章节被跳到最后
-      if (nearBottom) curIdx = els.length - 1;
+      // 贴底时：仅当末标题已进入视口上部才收口到最后一节。
+      // 文末常有页脚/相关推荐，不能一贴底就跳过中间几节。
+      const last = els[els.length - 1];
+      if (nearBottom && last) {
+        const lastTop = last.getBoundingClientRect().top;
+        if (lastTop < window.innerHeight * 0.35) curIdx = els.length - 1;
+      }
       curIdx = Math.min(curIdx, headings.length - 1);
       const cur = headings[curIdx]?.id || "";
       setActive((prev) => (prev === cur ? prev : cur));
       const p = nearBottom ? 1 : railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
-      // 侧栏阅读进度与蓝轨同源，避免 ReadingProgress 算法不一致导致假 100%
       document.documentElement.dataset.tocProgress = String(p);
       const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
       if (sideBar) sideBar.style.transform = `scaleX(${p})`;
