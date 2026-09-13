@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidateTag, unstable_cache } from "next/cache"
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
@@ -41,6 +41,8 @@ export async function POST(req: Request) {
     if (!text || text.length > 500) return NextResponse.json({ error: "Invalid content" }, { status: 400 })
     const doc = await prisma.note.create({ data: { content: text, contentZh: body.textZh || text } })
     revalidateTag("thoughts")
+    revalidatePath("/")
+    revalidatePath("/m")
     return NextResponse.json({ id: doc.id, text: doc.content, textZh: doc.contentZh, createdAt: doc.createdAt })
   } catch (e) {
     console.error(e)

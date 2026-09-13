@@ -3,6 +3,8 @@ import { revalidatePath, revalidateTag } from "next/cache"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 // 文章数据变更后立即再生前台缓存：数据缓存 tag + 首页 + 文章详情路由（覆盖 id/slug 两种地址形态）
 function revalidatePostViews(post?: { id: string; slug?: string | null }) {
   revalidateTag("posts")

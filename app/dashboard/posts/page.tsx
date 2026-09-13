@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useToast } from "@/components/ui/Toast"
@@ -24,7 +24,7 @@ export default function PostsPage() {
     const params = new URLSearchParams()
     if (q) params.set("q", q)
     if (status !== "all") params.set("status", status)
-    const res = await fetch(`/api/posts?${params}`)
+    const res = await fetch(`/api/posts?${params}`, { cache: "no-store" })
     const data = await res.json()
     setPosts(Array.isArray(data) ? data : [])
     setLoading(false)

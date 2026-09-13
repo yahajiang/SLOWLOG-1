@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
@@ -26,6 +27,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!text || text.length > 500) return NextResponse.json({ error: "内容需 1-500 字" }, { status: 400 })
   try {
     const note = await prisma.note.update({ where: { id }, data: { content: text, contentZh: body.textZh || text } })
+    revalidateTag("thoughts")
     return NextResponse.json({ id: note.id, text: note.content, textZh: note.contentZh, createdAt: note.createdAt })
   } catch (e: any) {
     if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -41,6 +43,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params
   try {
     await prisma.note.delete({ where: { id } })
+    revalidateTag("thoughts")
+    revalidatePath("/")
+    revalidatePath("/m")
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
