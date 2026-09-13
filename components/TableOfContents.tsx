@@ -128,7 +128,7 @@ export function TableOfContents({
           className={`overflow-hidden transition-all ease-[var(--ease-out)] ${expanded ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"}`}
           style={{ transitionDuration: expanded ? "250ms" : "200ms" }}
         >
-        <nav className="relative pl-4 pt-1">
+        <nav className={`relative pl-4 pt-1 ${expanded ? "panel-in" : ""}`}>
           <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
           <span
             aria-hidden

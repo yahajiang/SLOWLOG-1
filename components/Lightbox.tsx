@@ -47,7 +47,7 @@ export function Lightbox() {
   if (!src) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4" onClick={close}>
+    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 lightbox-in" onClick={close}>
       <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <img
           src={src}
