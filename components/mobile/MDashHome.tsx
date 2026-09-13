@@ -21,11 +21,14 @@ export function MDashHome({ data }: {
     draft: number;
     totalViews: number;
     recent: any[];
+    noteCount?: number;
+    catCount?: number;
+    mediaCount?: number;
   };
 }) {
   const { toast } = useToast();
   const { t, lang } = useLang();
-  const { total, published, draft, totalViews, recent } = data;
+  const { total, published, draft, totalViews, recent, noteCount = 0, catCount = 0, mediaCount = 0 } = data;
   return (
     <div className="space-y-5">
       <div>
@@ -37,6 +40,20 @@ export function MDashHome({ data }: {
         <Stat label={t.dashPublished} value={published} />
         <Stat label={t.dashDraft} value={draft} />
         <Stat label={t.dashTotalViews} value={totalViews} />
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        <Link href="/m/dashboard/notes" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
+          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "随想" : "Notes"}</p>
+          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{noteCount}</p>
+        </Link>
+        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
+          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "分类" : "Cats"}</p>
+          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{catCount}</p>
+        </Link>
+        <Link href="/m/dashboard/more" className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-3 min-h-[72px] flex flex-col justify-center">
+          <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] mb-1">{lang === "zh" ? "媒体" : "Media"}</p>
+          <p className="text-lg font-bold tabular-nums text-[var(--dash-text)]">{mediaCount}</p>
+        </Link>
       </div>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
         <div className="flex items-center justify-between mb-3">
