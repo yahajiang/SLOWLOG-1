@@ -13,7 +13,7 @@ export function TableOfContents({
 }) {
   const [expanded, setExpanded] = useState(true)
   const { t } = useLang()
-  const { activeId, progress, scrollToHeading } = useScrollSpy(headings)
+  const { activeId, progress, railProgress, scrollToHeading } = useScrollSpy(headings)
 
   // ── 侧栏进度文案 ──
   // 百分比与条形必须同源（都用 heading 进度 progress）：
@@ -66,11 +66,12 @@ export function TableOfContents({
           style={{ transitionDuration: expanded ? "250ms" : "200ms" }}
         >
           <nav className={`relative pl-4 pt-1 ${expanded ? "panel-in" : ""}`}>
-            <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
+            {/* 轨道：范围与列表行严格对齐（nav 的 pt-1 之上就是 ul，底部即 nav 底） */}
+            <span aria-hidden className="absolute left-0 top-1 bottom-0 w-px bg-[var(--yh-border)]" />
             <span
               aria-hidden
-              className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)] origin-top will-change-transform"
-              style={{ transform: `scaleY(${progress})`, transition: "transform 160ms linear" }}
+              className="absolute left-0 top-1 bottom-0 w-px bg-[var(--yh-accent)] origin-top"
+              style={{ transform: `scaleY(${railProgress})`, transition: "transform 220ms var(--ease-out)" }}
             />
             <ul className="space-y-0.5" role="list">
               {headings.map((h, idx) => {
