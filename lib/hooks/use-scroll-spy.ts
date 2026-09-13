@@ -25,7 +25,7 @@ export type ScrollSpyResult = {
  */
 export function useScrollSpy(
   headings: { id: string; text: string }[],
-  { offsetPx = 96 }: { offsetPx?: number } = {},
+  { offsetPx = 72 }: { offsetPx?: number } = {},
 ): ScrollSpyResult {
   const [activeId, setActiveId] = useState("")
   const [activeIdx, setActiveIdx] = useState(0)
@@ -59,16 +59,19 @@ export function useScrollSpy(
       const line = window.scrollY + offsetPx
 
       // ── 当前节判定 ──
+      // 用 heading 元素的 getBoundingClientRect().top 直接判断
+      // scroll-mt-[72px] 让 heading 滚动时停在 72px 处，所以判定线也用 72
       let curIdx = 0
       for (let i = 0; i < n; i++) {
-        if (els[i].getBoundingClientRect().top <= offsetPx) curIdx = i
+        const rect = els[i].getBoundingClientRect()
+        if (rect.top <= offsetPx + 12) curIdx = i  // +12 容差，避免刚好在边界时抖动
       }
 
       // 贴底：仅末标题已进视口上半才收口
       const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 48
       if (nearBottom) {
         const last = els[n - 1]
-        if (last && last.getBoundingClientRect().top < window.innerHeight * 0.35) {
+        if (last && last.getBoundingClientRect().top < window.innerHeight * 0.5) {
           curIdx = n - 1
         }
       }
