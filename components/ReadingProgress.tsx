@@ -23,8 +23,10 @@ export function ReadingProgress() {
           const height = article.offsetHeight - window.innerHeight;
           const scrolled = window.scrollY - top;
           pct = height > 0 ? (scrolled / height) * 100 : 0;
+          // 短文：整篇不足一屏，标题已进上半区即视为读完
+          if (height <= 0 && rect.top < window.innerHeight * 0.45) pct = 100;
           pct = Math.min(100, Math.max(0, pct));
-          // 文末兜底：滚到视口底部附近强制 100%（否则进度条到不了满格）
+          // 文末兜底：滚到视口底部附近强制 100%
           const doc = document.documentElement;
           if (window.scrollY + window.innerHeight >= doc.scrollHeight - 48) pct = 100;
         } else {
