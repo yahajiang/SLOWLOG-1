@@ -1,130 +1,37 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
-import { useLang } from "@/lib/lang-context";
+import React, { useEffect, useState } from "react"
+import { useLang } from "@/lib/lang-context"
+import { useScrollSpy } from "@/lib/hooks/use-scroll-spy"
 
 export function TableOfContents({
   headings,
   readMinutes,
 }: {
-  headings: { id: string; text: string }[];
-  readMinutes?: number;
+  headings: { id: string; text: string }[]
+  readMinutes?: number
 }) {
-  const [active, setActive] = useState("");
-  const [progress, setProgress] = useState(0);
-  const [expanded, setExpanded] = useState(true);
-  const isClickRef = React.useRef(false);
-  const releaseTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { t } = useLang();
+  const [expanded, setExpanded] = useState(true)
+  const { t } = useLang()
+  const { activeId, progress, articleProgress, scrollToHeading } = useScrollSpy(headings)
 
-  const idsKey = headings.map((h) => h.id).join("|");
-
+  // ── 同步进度到侧栏 DOM（ReadingProgress 消费） ──
   useEffect(() => {
-    let cancelled = false;
-    let bound = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let tries = 0;
-    let els: HTMLElement[] = [];
-
-    function tryBind() {
-      if (cancelled || bound) return;
-      tries++;
-      const scope = document.querySelector("article") || document.querySelector(".prose");
-      els = scope
-        ? Array.from(scope.querySelectorAll<HTMLElement>("h2[id], h3[id]")).slice(0, headings.length)
-        : [];
-      if (els.length === 0) {
-        if (tries < 40) timer = setTimeout(tryBind, 200);
-        return;
-      }
-      bound = true;
-      sync();
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onScroll, { passive: true });
-    }
-
-    function sync() {
-      timer = null;
-      if (isClickRef.current || !bound) return;
-      let curIdx = 0;
-      els.forEach((el, i) => {
-        if (el.getBoundingClientRect().top <= 96) curIdx = i;
-      });
-      const docH = document.documentElement.scrollHeight;
-      const nearBottom =
-        window.scrollY + window.innerHeight >= docH - 48;
-      // 贴底时：仅当末标题已进入视口上部才收口到最后一节。
-      // 文末常有页脚/相关推荐，不能一贴底就跳过中间几节。
-      const last = els[els.length - 1];
-      if (nearBottom && last) {
-        const lastTop = last.getBoundingClientRect().top;
-        if (lastTop < window.innerHeight * 0.35) curIdx = els.length - 1;
-      }
-      curIdx = Math.min(curIdx, headings.length - 1);
-      const cur = headings[curIdx]?.id || "";
-      setActive((prev) => (prev === cur ? prev : cur));
-      const p = nearBottom ? 1 : railProgress(els, curIdx);
-      setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
-      document.documentElement.dataset.tocProgress = String(p);
-      const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
-      if (sideBar) sideBar.style.transform = `scaleX(${p})`;
-      const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null;
-      if (sideText) {
-        const pct = Math.round(p * 100);
-        const remainMin = Math.max(1, Math.round((1 - p) * (readMinutes ?? 10)));
-        sideText.textContent = pct >= 100
+    document.documentElement.dataset.tocProgress = String(progress)
+    const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null
+    if (sideBar) sideBar.style.transform = `scaleX(${progress})`
+    const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null
+    if (sideText) {
+      const pct = Math.round(articleProgress)
+      const remainMin = Math.max(1, Math.round((1 - articleProgress / 100) * (readMinutes ?? 10)))
+      sideText.textContent =
+        pct >= 100
           ? `100% · ${t.almostDone}`
-          : `${pct}% · ${t.estimatedTime(remainMin)}`;
-      }
+          : `${pct}% · ${t.estimatedTime(remainMin)}`
     }
+  }, [progress, articleProgress, readMinutes, t])
 
-    /** TOC 蓝轨：在「当前标题 → 下一标题」的滚动区间内 0→1，再映射到 curIdx/n */
-    function railProgress(headingsEls: HTMLElement[], curIdx: number): number {
-      const n = headingsEls.length;
-      if (n === 0) return 0;
-      if (n === 1) return 1;
-      const line = window.scrollY + 96;
-      const docH = document.documentElement.scrollHeight;
-      // 末节：从末标题到文底插值；短文滚不动时贴底才满
-      if (curIdx >= n - 1) {
-        const last = headingsEls[n - 1];
-        const lastTop = last.getBoundingClientRect().top + window.scrollY;
-        const endY = lastTop + Math.max(last.offsetHeight, 120);
-        const span = Math.max(1, endY - lastTop);
-        const local = Math.min(1, Math.max(0, (line - lastTop) / span));
-        const remain = docH - (window.scrollY + window.innerHeight);
-        if (remain <= 48) return 1;
-        return Math.max((n - 1) / n, ((n - 1) + local) / n);
-      }
-      const curTop = headingsEls[curIdx].getBoundingClientRect().top + window.scrollY;
-      const nextTop = headingsEls[curIdx + 1].getBoundingClientRect().top + window.scrollY;
-      const span = Math.max(1, nextTop - curTop);
-      const local = Math.min(1, Math.max(0, (line - curTop) / span));
-      return (curIdx + local) / n;
-    }
-
-    function onScroll() {
-      if (isClickRef.current) {
-        if (releaseTimer.current) clearTimeout(releaseTimer.current);
-        releaseTimer.current = setTimeout(() => { isClickRef.current = false }, 180);
-        return;
-      }
-      if (timer === null) timer = setTimeout(sync, 16);
-    }
-
-    tryBind();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-      if (releaseTimer.current) clearTimeout(releaseTimer.current);
-      if (bound) {
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
-      }
-    };
-  }, [idsKey]);
-
-  if (headings.length === 0) return null;
+  if (headings.length === 0) return null
 
   return (
     <aside className="hidden lg:block w-[308px] shrink-0 -ml-8">
@@ -151,73 +58,51 @@ export function TableOfContents({
           </span>
         </div>
 
-        {/* 目录列表：可折叠 · 展开 250ms / 收起 200ms */}
+        {/* 目录列表 */}
         <div
           className={`overflow-hidden transition-all ease-[var(--ease-out)] ${expanded ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"}`}
           style={{ transitionDuration: expanded ? "250ms" : "200ms" }}
         >
-        <nav className={`relative pl-4 pt-1 ${expanded ? "panel-in" : ""}`}>
-          <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
-          <span
-            aria-hidden
-            className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)] origin-top will-change-transform"
-            style={{ transform: `scaleY(${progress})`, transition: "transform 160ms linear" }}
-          />
-          <ul className="space-y-0.5" role="list">
-            {headings.map((h, idx) => {
-              const isActive = active === h.id;
-              return (
-                <li key={h.id || `heading-${idx}`}>
-                  <a
-                    href={`#${h.id}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActive(h.id);
-                      isClickRef.current = true;
-                      if (releaseTimer.current) clearTimeout(releaseTimer.current);
-                      const el = document.getElementById(h.id);
-                      if (el) {
-                        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                        // sticky 顶栏用 scroll-margin；smooth 滚动期间锁定 scroll-spy，避免高亮回跳
-                        el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-                        history.pushState(null, "", `#${h.id}`);
-                        // 等滚动结束再交回 scroll-spy（smooth 往往 >200ms）
-                        const unlock = () => {
-                          isClickRef.current = false;
-                          releaseTimer.current = null;
-                        };
-                        releaseTimer.current = setTimeout(unlock, reduce ? 80 : 900);
-                        if (!reduce) {
-                          const onEnd = () => {
-                            unlock();
-                            window.removeEventListener("scrollend", onEnd);
-                          };
-                          window.addEventListener("scrollend", onEnd, { once: true });
-                        }
-                      }
-                    }}
-                    aria-current={isActive ? "true" : undefined}
-                    className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-[180ms] ease-[var(--ease-out)] ${
-                      isActive
-                        ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
-                        : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/70"
-                    }`}
-                  >
-                    <span
-                      aria-hidden
-                      className={`shrink-0 rounded-full transition-all duration-[180ms] ease-[var(--ease-out)] ${
+          <nav className={`relative pl-4 pt-1 ${expanded ? "panel-in" : ""}`}>
+            <span aria-hidden className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-border)]" />
+            <span
+              aria-hidden
+              className="absolute left-0 top-[6px] bottom-[6px] w-px bg-[var(--yh-accent)] origin-top will-change-transform"
+              style={{ transform: `scaleY(${progress})`, transition: "transform 160ms linear" }}
+            />
+            <ul className="space-y-0.5" role="list">
+              {headings.map((h, idx) => {
+                const isActive = activeId === h.id
+                return (
+                  <li key={h.id || `heading-${idx}`}>
+                    <a
+                      href={`#${h.id}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        scrollToHeading(h.id)
+                      }}
+                      aria-current={isActive ? "true" : undefined}
+                      className={`group relative flex items-center gap-2.5 rounded-none px-2.5 py-[7px] text-[13px] leading-snug transition-colors duration-[180ms] ease-[var(--ease-out)] ${
                         isActive
-                          ? "w-1.5 h-1.5 bg-[var(--yh-accent)]"
-                          : "w-1 h-1 bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"
+                          ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
+                          : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/70"
                       }`}
-                    />
-                    <span className="line-clamp-2">{h.text}</span>
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+                    >
+                      <span
+                        aria-hidden
+                        className={`shrink-0 rounded-full transition-all duration-[180ms] ease-[var(--ease-out)] ${
+                          isActive
+                            ? "w-1.5 h-1.5 bg-[var(--yh-accent)]"
+                            : "w-1 h-1 bg-[var(--yh-border)] group-hover:bg-[var(--yh-muted)]"
+                        }`}
+                      />
+                      <span className="line-clamp-2">{h.text}</span>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </nav>
         </div>
 
         {/* 阅读进度 */}
@@ -228,18 +113,17 @@ export function TableOfContents({
             </p>
           </div>
           <div className="h-[4px] rounded-none bg-[var(--yh-border)]/80 overflow-hidden">
-            {/* 勿用 Tailwind scale-*：v4 走 scale 属性，会与 ReadingProgress 写入的 transform 冲突 */}
             <div
               data-side-progress
               className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/90 transition-transform duration-150 will-change-transform"
-              style={{ transform: "scaleX(0)" }}
+              style={{ transform: `scaleX(${progress})` }}
             />
           </div>
           <p
             data-side-progress-text
             className="mono text-[11px] tabular-nums text-[var(--yh-muted)]/85 mt-2"
           >
-            0% · {t.estimatedTime(readMinutes ?? 10)}
+            {Math.round(articleProgress)}% · {t.estimatedTime(readMinutes ?? 10)}
           </p>
         </div>
 
@@ -250,5 +134,5 @@ export function TableOfContents({
         </div>
       </div>
     </aside>
-  );
+  )
 }
