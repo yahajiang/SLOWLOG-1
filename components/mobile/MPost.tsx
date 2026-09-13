@@ -44,13 +44,6 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
         if (el.getBoundingClientRect().top <= line) curIdx = i;
       });
 
-      // 末节：文字少滚不到判定线——进入视口上半区即点亮
-      const last = els[els.length - 1];
-      if (last && last.getBoundingClientRect().top < window.innerHeight * 0.45) {
-        curIdx = els.length - 1;
-      }
-
-      // 文末兜底：滚到视口底部附近时强制末节
       const doc = document.documentElement;
       const nearBottom = window.scrollY + window.innerHeight >= doc.scrollHeight - 48;
       if (nearBottom) curIdx = els.length - 1;
@@ -59,7 +52,7 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
 
       const n = els.length;
       if (n === 1) {
-        setProgress(nearBottom || window.scrollY > 80 || (last && last.getBoundingClientRect().top < window.innerHeight * 0.45) ? 1 : 0);
+        setProgress(nearBottom ? 1 : 0);
         return;
       }
       if (nearBottom) {
@@ -67,13 +60,14 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
         return;
       }
       if (curIdx >= n - 1) {
-        // 末节区间：从末标题到文档底插值，短文也能拉满
+        // 末节：从末标题到文底插值，不提前打满
+        const last = els[n - 1];
         const lastTop = last.getBoundingClientRect().top + window.scrollY;
-        const endY = lastTop + Math.max(last.offsetHeight, 80);
+        const endY = lastTop + Math.max(last.offsetHeight, 120);
         const span = Math.max(1, endY - lastTop);
         const lineY = window.scrollY + line;
         const local = Math.min(1, Math.max(0, (lineY - lastTop) / span));
-        setProgress(((n - 1) + local) / n);
+        setProgress(Math.max((n - 1) / n, ((n - 1) + local) / n));
         return;
       }
       const lineY = window.scrollY + line;
