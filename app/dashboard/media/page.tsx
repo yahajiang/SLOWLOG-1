@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useCallback, useEffect, useState } from "react"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
@@ -32,7 +32,7 @@ export default function MediaPage(){
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const { lang } = useLang()
-  const load = useCallback(() => fetch("/api/media").then(r => r.json()).then(d => { setItems(d); setLoading(false) }), [])
+  const load = useCallback(() => fetch("/api/media", { cache: "no-store" }).then(r => r.json()).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }), [])
   useEffect(() => { load() }, [load])
 
   const upload = useCallback(async (files: FileList | null) => {
@@ -68,11 +68,16 @@ export default function MediaPage(){
   const del = useCallback((id: string) => setDelId(id), [])
   const confirmDel = useCallback(async () => {
     if (!delId) return
-    await fetch(`/api/media?id=${delId}`, { method: "DELETE" })
-    toast(lang === "zh" ? "已删除" : "Deleted", "success")
+    const removed = items.find((x) => x.id === delId)
+    setItems((prev) => prev.filter((x) => x.id !== delId))
     setDelId(null)
-    load()
-  }, [delId, toast, load])
+    const r = await fetch(`/api/media?id=${delId}`, { method: "DELETE", cache: "no-store" })
+    if (r.ok) toast(lang === "zh" ? "已删除" : "Deleted", "success")
+    else {
+      toast(lang === "zh" ? "删除失败" : "Delete failed", "error")
+      if (removed) setItems((prev) => [...prev, removed])
+    }
+  }, [delId, toast, items, lang])
 
   const copy = useCallback(async (url: string) => {
     await navigator.clipboard.writeText(url)

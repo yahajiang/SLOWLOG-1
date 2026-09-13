@@ -93,8 +93,16 @@ export default function PostsPage() {
     }
   }, [toast, lang])
   const duplicate = useCallback(async (p:any)=>{
-    const r=await fetch("/api/posts",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({title:p.title+" 副本", titleZh:(p.titleZh||p.title)+" 副本", slug:p.slug+"-copy-"+Date.now(), excerpt:p.excerpt, content:p.content, status:"draft", categoryId:p.categoryId, tags:p.tags, pageConfig:p.pageConfig})})
-    if(r.ok) toast(t.toastCopiedDraft,"success"); else {const j=await r.json(); toast(j.error||t.toastCopyFail,"error")}
+    const r=await fetch("/api/posts",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({title:p.title+" 副本", titleZh:(p.titleZh||p.title)+" 副本", slug:p.slug+"-copy-"+Date.now(), excerpt:p.excerpt, excerptZh:p.excerptZh, content:p.content, status:"draft", categoryId:p.categoryId, tags:p.tags, pageConfig:p.pageConfig}), cache:"no-store"})
+    if(r.ok){
+      toast(t.toastCopiedDraft,"success")
+      const d = await r.json().catch(()=>null)
+      if (d?.id) {
+        setPosts(prev => [{ ...d, category: p.category, status: "draft", featured: false }, ...prev])
+        setPage(1)
+        return
+      }
+    } else {const j=await r.json().catch(()=>({})); toast(j.error||t.toastCopyFail,"error")}
     await load()
   }, [toast, load])
 
