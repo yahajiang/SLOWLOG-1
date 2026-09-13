@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { PROGRESS_EVENT } from "@/lib/hooks/use-scroll-spy";
+
+type ProgressDetail = { progress: number; articleProgress: number };
 
 export function ReadingProgress() {
   const { t } = useLang();
@@ -9,24 +12,37 @@ export function ReadingProgress() {
   const [visible, setVisible] = useState(false);
   const [remaining, setRemaining] = useState<string>("");
 
+  // 目录（桌面 TOC / 移动端 MTOC）存在时，进度由 useScrollSpy 广播，顶栏不再自算，
+  // 否则两套算法会打架（历史上顶栏因此慢一拍）。只有无目录的页面才走本地兜底。
+  const external = useRef(false);
+
   useEffect(() => {
+    function paint(pct: number, articlePct: number) {
+      const p = Math.min(100, Math.max(0, pct));
+      setProgress(p);
+      setVisible(window.scrollY > 120);
+      const mins = Math.max(1, Math.round((100 - p) * 0.08));
+      setRemaining(t.readingRemaining(mins));
+      const el = document.querySelector("[data-remaining]") as HTMLElement | null;
+      if (el)
+        el.textContent =
+          articlePct >= 100 ? t.readDone : mins <= 1 ? t.almostDone : t.readingRemaining(mins);
+    }
+
+    function onBroadcast(e: Event) {
+      const d = (e as CustomEvent<ProgressDetail>).detail;
+      if (!d) return;
+      external.current = true;
+      paint(d.progress * 100, d.articleProgress);
+    }
+
     let rafId: number;
 
     function handleScroll() {
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
-        // 有 TOC 时：顶栏进度与目录蓝轨同源，避免两套算法打架（侧栏由 TOC 写入）
-        const tocP = document.documentElement.dataset.tocProgress;
-        if (tocP !== undefined) {
-          const pct = Math.min(100, Math.max(0, parseFloat(tocP) * 100));
-          setProgress(pct);
-          setVisible(window.scrollY > 120);
-          const mins = Math.max(1, Math.round((100 - pct) * 0.08));
-          setRemaining(t.readingRemaining(mins));
-          const el = document.querySelector("[data-remaining]") as HTMLElement | null;
-          if (el) el.textContent = pct >= 100 ? t.almostDone : t.readingRemaining(mins);
-          return;
-        }
+        // 已有广播来源（本页有目录）→ 完全交给它，避免回写旧值
+        if (external.current) return;
 
         const article = document.querySelector("article") as HTMLElement | null;
         let pct = 0;
@@ -44,46 +60,45 @@ export function ReadingProgress() {
           }
           pct = Math.min(100, Math.max(0, pct));
           const doc = document.documentElement;
-          if (window.scrollY + window.innerHeight >= doc.scrollHeight - 48) pct = 100;
+          if (window.scrollY + window.innerHeight >= doc.scrollHeight - 8) pct = 100;
         } else {
           const scrollTop = window.scrollY;
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
         }
-        setProgress(pct);
-        setVisible(window.scrollY > 120);
-        const remainPct = Math.max(0, 100 - pct);
-        const mins = Math.max(1, Math.round(remainPct * 0.08));
-        setRemaining(t.readingRemaining(mins));
-        const el = document.querySelector("[data-remaining]") as HTMLElement | null;
-        if (el) el.textContent = mins <= 1 ? t.almostDone : t.readingRemaining(mins);
-        const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
-        if (sideBar) sideBar.style.transform = `scaleX(${pct / 100})`;
-        const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null;
-        if (sideText) sideText.textContent = `${Math.round(pct)}% · ${t.estimatedTime(mins)}`;
+        paint(pct, pct);
+
+        // 无目录页的段落聚焦：当前阅读段保持实色，其余压暗
         const paras = Array.from(document.querySelectorAll("[data-paragraph]")) as HTMLElement[];
         let best: HTMLElement | null = null;
         let bestDist = Infinity;
         const mid = window.innerHeight * 0.45;
-        for (const p of paras) {
-          const r = p.getBoundingClientRect();
+        for (const para of paras) {
+          const r = para.getBoundingClientRect();
           if (r.top < window.innerHeight && r.bottom > 0) {
             const d = Math.abs(r.top + r.height / 2 - mid);
-            if (d < bestDist) { bestDist = d; best = p }
+            if (d < bestDist) { bestDist = d; best = para }
           }
-          p.style.opacity = "0.72";
-          p.style.transition = "opacity 0.3s var(--ease-out)";
+          para.style.opacity = "0.72";
+          para.style.transition = "opacity 0.3s var(--ease-out)";
         }
         if (best) best.style.opacity = "1";
       });
     }
 
+    window.addEventListener(PROGRESS_EVENT, onBroadcast);
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll, { passive: true });
+    // 首帧正文尚未撑开高度时，兜底算法会把 scrollHeight 误当成「已到底」而报 100%；
+    // 内容长高后重新评估一次。
+    const ro = new ResizeObserver(() => handleScroll());
+    ro.observe(document.body);
     handleScroll();
     return () => {
+      window.removeEventListener(PROGRESS_EVENT, onBroadcast);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      ro.disconnect();
       cancelAnimationFrame(rafId);
     };
   }, [t]);

@@ -54,6 +54,7 @@ export const dict = {
     collapseThoughts: "收起",
     readingRemaining: (m: number) => `剩余约 ${m} 分钟`,
     almostDone: "即将读完",
+    readDone: "已读完",
     postsCount2: (n: number) => `${n} 篇`,
     thoughtUnit: "条",
     yearUnit: "年",
@@ -348,6 +349,7 @@ export const dict = {
     collapseThoughts: "Collapse",
     readingRemaining: (m: number) => `~${m} min left`,
     almostDone: "Almost done",
+    readDone: "Finished",
     postsCount2: (n: number) => `${n} posts`,
     thoughtUnit: "",
     yearUnit: "",
@@ -628,6 +630,7 @@ export type Dict = {
   collapseThoughts: string;
   readingRemaining: (m: number) => string;
   almostDone: string;
+  readDone: string;
   postsCount2: (n: number) => string;
   thoughtUnit: string;
   yearUnit: string;

@@ -15,9 +15,8 @@ export function TableOfContents({
   const { t } = useLang()
   const { activeId, progress, articleProgress, scrollToHeading } = useScrollSpy(headings)
 
-  // ── 同步进度到侧栏 DOM（ReadingProgress 消费） ──
+  // ── 侧栏进度文案（百分比取自文章进度，与顶栏同源——顶栏由 hook 广播驱动） ──
   useEffect(() => {
-    document.documentElement.dataset.tocProgress = String(progress)
     const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null
     if (sideBar) sideBar.style.transform = `scaleX(${progress})`
     const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null
@@ -26,7 +25,7 @@ export function TableOfContents({
       const remainMin = Math.max(1, Math.round((1 - articleProgress / 100) * (readMinutes ?? 10)))
       sideText.textContent =
         pct >= 100
-          ? `100% · ${t.almostDone}`
+          ? `100% · ${t.readDone}`
           : `${pct}% · ${t.estimatedTime(remainMin)}`
     }
   }, [progress, articleProgress, readMinutes, t])
