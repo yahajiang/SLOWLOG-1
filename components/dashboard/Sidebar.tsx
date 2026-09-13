@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, FileText, MessageSquare, Folder, Image as ImageIcon, Settings, ExternalLink, LogOut } from "lucide-react"
@@ -35,7 +35,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               prefetch={true}
-              className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-none transition-[transform,box-shadow,border-color,background-color] duration-200 border-l-[3px] ${active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] font-medium border-[var(--dash-accent)]" : "text-[var(--dash-muted)] border-transparent hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] hover:border-[var(--dash-border)]/50"}`}
+              className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-none transition-[transform,box-shadow,border-color,background-color] duration-200 border-l-[3px] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)] ${active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] font-medium border-[var(--dash-accent)]" : "text-[var(--dash-muted)] border-transparent hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] hover:border-[var(--dash-border)]/50"}`}
             >
               <Icon className="w-4 h-4" /> {item.label}
             </Link>
@@ -43,10 +43,10 @@ export function Sidebar() {
         })}
       </nav>
       <div className="p-3 border-t border-[var(--dash-border)] space-y-1">
-        <Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors">
+        <Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">
           <ExternalLink className="w-4 h-4" /> {t.dashFront}
         </Link>
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-none transition-colors text-left">
+        <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 rounded-none transition-colors text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-400">
           <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>
         <div className="px-3 pt-2 space-y-2">

@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useToast } from "@/components/ui/Toast"
+import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { useLang } from "@/lib/lang-context"
 import { SettingsPageSkeleton } from "@/components/dashboard/Skeleton"
 
@@ -8,7 +9,7 @@ export default function SettingsPage(){
   const [form,setForm]=useState<any>(null)
   const [saving,setSaving]=useState(false)
   const { toast } = useToast()
-  const { lang } = useLang()
+  const { t, lang } = useLang()
   useEffect(()=>{fetch("/api/settings",{cache:"no-store"}).then(r=>r.json()).then(setForm)},[])
   const save=async()=>{
     setSaving(true)
@@ -18,8 +19,8 @@ export default function SettingsPage(){
   }
   if(!form) return <SettingsPageSkeleton />
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>设置</h1>
+    <div className="space-y-6 max-w-2xl section-in">
+      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashSettings}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 space-y-5 shadow-[var(--shadow-card)]">
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点名称" : "Site Name"}</label><input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点描述" : "Description"}</label><input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
@@ -30,8 +31,22 @@ export default function SettingsPage(){
         </div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "页脚文案" : "Footer text"}</label><input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "每页文章数" : "Posts per page"}</label><input type="number" value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className="mt-1 w-32 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "主题" : "Theme"}</label><select value={form.theme||"system"} onChange={e=>setForm({...form,theme:e.target.value})} className="mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"><option value="light">{(lang === "zh" ? "浅色" : "Light")}</option><option value="dark">{(lang === "zh" ? "深色" : "Dark")}</option><option value="system">{(lang === "zh" ? "跟随系统" : "System")}</option></select></div>
-        <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中..." : "Saving...") : (lang === "zh" ? "保存" : "Save")}</button>
+        <div>
+          <label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "主题" : "Theme"}</label>
+          <div className="mt-1 w-40">
+            <DropdownSelect
+              value={form.theme || "system"}
+              onChange={(v) => setForm({ ...form, theme: v })}
+              options={[
+                { value: "light", label: lang === "zh" ? "浅色" : "Light" },
+                { value: "dark", label: lang === "zh" ? "深色" : "Dark" },
+                { value: "system", label: lang === "zh" ? "跟随系统" : "System" },
+              ]}
+              ariaLabel={lang === "zh" ? "主题" : "Theme"}
+            />
+          </div>
+        </div>
+        <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
       </div>
     </div>
   )

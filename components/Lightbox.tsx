@@ -9,11 +9,17 @@ export function Lightbox() {
   const [alt, setAlt] = useState("");
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [closing, setClosing] = useState(false);
 
   const close = useCallback(() => {
-    setSrc(null);
-    setScale(1);
-    setRotation(0);
+    setClosing(true);
+    window.setTimeout(() => {
+      setSrc(null);
+      setAlt("");
+      setScale(1);
+      setRotation(0);
+      setClosing(false);
+    }, 200);
   }, []);
 
   useEffect(() => {
@@ -47,7 +53,7 @@ export function Lightbox() {
   if (!src) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 lightbox-in" onClick={close}>
+    <div className={`fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 ${closing ? "lightbox-out" : "lightbox-in"}`} onClick={close}>
       <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <img
           src={src}

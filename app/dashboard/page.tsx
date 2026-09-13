@@ -14,9 +14,9 @@ const getDashboardData = unstable_cache(
       }),
       prisma.post.findMany({
         orderBy: { updatedAt: "desc" },
-        take: 6,
+        take: 12,
         select: {
-          id: true, title: true, titleZh: true, status: true, updatedAt: true, featured: true,
+          id: true, title: true, titleZh: true, status: true, updatedAt: true, featured: true, tags: true,
           category: { select: { name: true, nameZh: true } },
         },
       }),
@@ -57,7 +57,7 @@ const getDashboardData = unstable_cache(
       recentNotes,
     };
   },
-  ["dash-stats-v2"],
+  ["dash-stats-v3"],
   { revalidate: 30, tags: ["posts", "thoughts", "categories"] }
 );
 

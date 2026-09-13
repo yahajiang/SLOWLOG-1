@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useEffect, useState } from "react"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
@@ -67,7 +67,7 @@ export default function CategoriesPage(){
   }
   if (loading) return <CategoriesPageSkeleton />
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "分类" : "Categories"}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 flex flex-wrap gap-3 items-end shadow-[var(--shadow-card)]">
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "Design" : "Design"} /></div>
@@ -99,8 +99,8 @@ export default function CategoriesPage(){
                   <p className="text-xs text-[var(--dash-muted)] truncate">{c.slug} · {c._count?.posts ?? 0} {lang === "zh" ? "篇" : " posts"}{c.description ? ` · ${c.description}` : ""}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={()=>startEdit(c)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "编辑" : "Edit"}</button>
-                  <button onClick={()=>del(c.id)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600 hover:border-red-200">{lang === "zh" ? "删除" : "Delete"}</button>
+                  <button onClick={()=>startEdit(c)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">{lang === "zh" ? "编辑" : "Edit"}</button>
+                  <button onClick={()=>del(c.id)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600 hover:border-red-200 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-400">{lang === "zh" ? "删除" : "Delete"}</button>
                 </div>
               </div>
             )}

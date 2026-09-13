@@ -86,7 +86,7 @@ export default function MediaPage(){
 
   return (
     loading ? <MediaPageSkeleton /> :
-    <div className="space-y-6" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+    <div className="space-y-6 section-in" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "媒体库" : "Media"}</h1>
         <div className="flex items-center gap-3">

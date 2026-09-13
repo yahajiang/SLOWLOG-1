@@ -78,7 +78,7 @@ export default function MobileNotesPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashNotes}</h1>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 space-y-2.5">
         <textarea

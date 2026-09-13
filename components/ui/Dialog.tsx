@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useEffect, useState } from "react"
 
 export function ConfirmDialog({
@@ -44,7 +44,7 @@ export function ConfirmDialog({
         </h3>
         {description && <p className="text-sm text-[var(--dash-muted)] mt-2 leading-relaxed">{description}</p>}
         <div className="flex justify-end gap-3 mt-6">
-          <button onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] transition-colors bg-[var(--dash-card)]">
+          <button onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] transition-colors bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">
             {cancelText}
           </button>
           <button
@@ -52,7 +52,7 @@ export function ConfirmDialog({
               onConfirm()
               onOpenChange(false)
             }}
-            className={`px-4 py-2 text-sm rounded-none transition-colors font-medium ${variant === "danger" ? "bg-red-600 text-white hover:bg-red-700 border border-red-600" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)]"}`}
+            className={`px-4 py-2 text-sm rounded-none transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${variant === "danger" ? "bg-red-600 text-white hover:bg-red-700 border border-red-600 focus-visible:outline-red-400" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)] focus-visible:outline-[var(--dash-accent)]"}`}
           >
             {confirmText}
           </button>
@@ -105,8 +105,8 @@ export function PromptDialog({
         </h3>
         <input name="value" defaultValue={defaultValue} placeholder={placeholder} autoFocus className="w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none focus:outline-none focus:border-[var(--dash-accent)] focus:ring-1 focus:ring-[var(--dash-accent)]/20 bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] transition-colors" />
         <div className="flex justify-end gap-3 mt-6">
-          <button type="button" onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] bg-[var(--dash-card)]">取消</button>
-          <button type="submit" className="px-4 py-2 text-sm bg-[var(--dash-text)] text-[var(--dash-bg)] rounded-none hover:opacity-90 font-medium">确认</button>
+          <button type="button" onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">取消</button>
+          <button type="submit" className="px-4 py-2 text-sm bg-[var(--dash-text)] text-[var(--dash-bg)] rounded-none hover:opacity-90 font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">确认</button>
         </div>
       </form>
     </div>
