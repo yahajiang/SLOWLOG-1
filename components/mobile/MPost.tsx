@@ -46,7 +46,11 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
 
       const doc = document.documentElement;
       const nearBottom = window.scrollY + window.innerHeight >= doc.scrollHeight - 48;
-      if (nearBottom) curIdx = els.length - 1;
+      // 贴底：仅末标题已进视口上部才收口，避免文末页脚导致中间节被跳过
+      const last = els[els.length - 1];
+      if (nearBottom && last && last.getBoundingClientRect().top < window.innerHeight * 0.35) {
+        curIdx = els.length - 1;
+      }
 
       setActiveIdx(curIdx);
 
@@ -61,7 +65,6 @@ function useActiveHeading(headings: { id: string; text: string }[], enabled: boo
       }
       if (curIdx >= n - 1) {
         // 末节：从末标题到文底插值，不提前打满
-        const last = els[n - 1];
         const lastTop = last.getBoundingClientRect().top + window.scrollY;
         const endY = lastTop + Math.max(last.offsetHeight, 120);
         const span = Math.max(1, endY - lastTop);
