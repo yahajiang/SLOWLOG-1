@@ -42,6 +42,10 @@ export function useScrollSpy(
   const unlockTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   // sync 定义在 effect 内，点击逻辑在 effect 外——用 ref 搭一座桥，好在解锁时补一次同步
   const syncRef = useRef<() => void>(() => {})
+  // 最近一次算出的文章进度：点击时要立刻广播，不能广播 undefined 把顶栏文案打回原型
+  const apRef = useRef(0)
+  // 最近一次生效的 heading 进度：去抖后的最终值必须同时喂给 state 与广播
+  const progRef = useRef(0)
 
   // ── 滚动侦测 ──────────────────────────────────────────────
   useEffect(() => {
@@ -145,7 +149,11 @@ export function useScrollSpy(
         const local = Math.min(1, Math.max(0, (line - curTop) / span))
         p = (curIdx + local) / n
       }
-      setProgress((prev) => (Math.abs(prev - p) < 0.005 ? prev : p))
+      // 去抖：变化不足 0.5% 就不动。最终值要同时用于 state 与广播——
+      // 早期 state 走去抖、广播发原始值，侧栏条（吃 state）与顶栏（吃广播）会差 0.004。
+      const nextProgress = Math.abs(progRef.current - p) < 0.005 ? progRef.current : p
+      progRef.current = nextProgress
+      setProgress(nextProgress)
 
       // ── 文章进度（0→100）──
       const article = document.querySelector("article")
@@ -167,6 +175,7 @@ export function useScrollSpy(
         const docH = document.documentElement.scrollHeight - window.innerHeight
         ap = docH > 0 ? (window.scrollY / docH) * 100 : 0
       }
+      apRef.current = ap
       setArticleProgress((prev) => (Math.abs(prev - ap) < 0.5 ? prev : Math.round(ap)))
 
       // 同步广播给顶栏等消费方。
@@ -174,7 +183,7 @@ export function useScrollSpy(
       // 结果永远慢一拍（停在上一档的值）。改为在同一个 rAF 内同步派发，去掉这个竞态。
       window.dispatchEvent(
         new CustomEvent(PROGRESS_EVENT, {
-          detail: { progress: p, articleProgress: ap },
+          detail: { progress: nextProgress, articleProgress: ap },
         }),
       )
     }
@@ -212,7 +221,23 @@ export function useScrollSpy(
 
       setActiveId(id)
       const idx = headings.findIndex((h) => h.id === id)
-      if (idx >= 0) setActiveIdx(idx)
+      if (idx >= 0) {
+        setActiveIdx(idx)
+        // 点击即刻把进度推到该小节起点并广播。
+        // 不能只依赖「解锁后的补偿同步」——解锁要等 scrollend 或 900ms 超时，
+        // 这段时间进度条纹丝不动，用户看到的就是「点了目录进度条不更新」。
+        const n = headings.length
+        if (n > 1) {
+          const p = Math.min(1, Math.max(0, idx / n))
+          progRef.current = p
+          setProgress(p)
+          window.dispatchEvent(
+            new CustomEvent(PROGRESS_EVENT, {
+              detail: { progress: p, articleProgress: apRef.current },
+            }),
+          )
+        }
+      }
 
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
       el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" })
