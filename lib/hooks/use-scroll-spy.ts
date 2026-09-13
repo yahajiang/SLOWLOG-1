@@ -40,6 +40,8 @@ export function useScrollSpy(
 
   const lockedRef = useRef(false)
   const unlockTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // sync 定义在 effect 内，点击逻辑在 effect 外——用 ref 搭一座桥，好在解锁时补一次同步
+  const syncRef = useRef<() => void>(() => {})
 
   // ── 滚动侦测 ──────────────────────────────────────────────
   useEffect(() => {
@@ -90,26 +92,33 @@ export function useScrollSpy(
       }
       stopWatching()
 
-      const line = window.scrollY + offsetPx
-
+      const doc = document.documentElement
+      const maxScroll = Math.max(0, doc.scrollHeight - window.innerHeight)
+      const remain = maxScroll - window.scrollY
       // 文档已滚到最底（含标签/版权/相关阅读/页脚等长尾内容，无法继续滚动）
-      const atDocEnd =
-        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8
+      const atDocEnd = remain <= 8
+
+      // ── 判据线（视口相对坐标）──
+      // 常规落在 offsetPx：scroll-mt-[72px] 让标题滚到该处停住，所以判定线也用 72。
+      // 但文章尾部有标签 / 版权 / 相关阅读 / 页脚这些长尾内容，末尾几节的标题可能永远
+      // 滚不到这条线——那样高亮要么卡在中间节（进度却已满格），要么只能在贴底瞬间跳到
+      // 末节（跳节，从倒数第三直接到最后一节）。
+      // 这里把「判据线永远够不着的距离」摊到最后一段滚动里逐步补上，让末尾几节按顺序
+      // 被点亮：既不跳节，也不会点不亮，且与进度天然同源。
+      const lastEl = els[n - 1]
+      const lastTopAbs = lastEl.getBoundingClientRect().top + window.scrollY
+      const lastSpan = Math.max(lastEl.offsetHeight, 160)
+      const shortfall = Math.max(0, lastTopAbs + lastSpan - (maxScroll + offsetPx))
+      const sweep = shortfall > 0 && remain < shortfall ? 1 - remain / shortfall : 0
+      const lineY = offsetPx + 12 + sweep * shortfall   // +12 容差，避免刚好在边界时抖动
+      const line = window.scrollY + lineY
 
       // ── 当前节判定 ──
-      // 用 heading 元素的 getBoundingClientRect().top 直接判断
-      // scroll-mt-[72px] 让 heading 滚动时停在 72px 处，所以判定线也用 72
       let curIdx = 0
       for (let i = 0; i < n; i++) {
         const rect = els[i].getBoundingClientRect()
-        if (rect.top <= offsetPx + 12) curIdx = i  // +12 容差，避免刚好在边界时抖动
+        if (rect.top <= lineY) curIdx = i
       }
-
-      // 文末收口：贴底即判定为最后一节。
-      // 这里不能用「末标题进视口上半」之类的比例门槛——视口越高，长尾内容占比越小，
-      // 末标题就越靠下（1280 宽实测 53%~65%），永远够不到门槛，于是进度已 100%、
-      // 高亮却卡在中间节。贴底是「本文已读完」唯一可靠的信号，且必须与进度同源。
-      if (atDocEnd) curIdx = n - 1
       curIdx = Math.min(curIdx, n - 1)
 
       const id = headings[curIdx]?.id || ""
@@ -117,19 +126,17 @@ export function useScrollSpy(
       setActiveIdx((prev) => (prev === curIdx ? prev : curIdx))
 
       // ── heading 进度（0→1）──
-      // 与 curIdx 共用 atDocEnd，保证「蓝轨/百分比满格」与「高亮落在末节」永远同步
+      // 与 curIdx 用同一条判据线，保证「蓝轨 / 百分比」与「高亮落在哪一节」永远同步
       let p = 0
       if (n === 1) {
-        p = atDocEnd ? 1 : 0
+        // 只有一节时 heading 进度没有意义，退回整体滚动比例，避免全程停在 0
+        p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 1
       } else if (atDocEnd) {
+        // 贴底：此时扫掠已把 curIdx 推到末节，进度补到 1 与之一致
         p = 1
       } else if (curIdx >= n - 1) {
-        // 末节：从末标题到文底插值
-        const last = els[n - 1]
-        const lastTop = last.getBoundingClientRect().top + window.scrollY
-        const endY = lastTop + Math.max(last.offsetHeight, 120)
-        const span = Math.max(1, endY - lastTop)
-        const local = Math.min(1, Math.max(0, (line - lastTop) / span))
+        // 末节：判据线扫过末标题那段高度即走完
+        const local = Math.min(1, Math.max(0, (line - lastTopAbs) / Math.max(1, lastSpan)))
         p = Math.max((n - 1) / n, ((n - 1) + local) / n)
       } else {
         const curTop = els[curIdx].getBoundingClientRect().top + window.scrollY
@@ -178,6 +185,7 @@ export function useScrollSpy(
       raf = requestAnimationFrame(sync)
     }
 
+    syncRef.current = sync
     sync()
 
     window.addEventListener("scroll", onScroll, { passive: true })
@@ -214,6 +222,9 @@ export function useScrollSpy(
       const unlock = () => {
         lockedRef.current = false
         unlockTimer.current = null
+        // 解锁后立刻补一次同步。锁住期间 sync() 是直接 return 的，而解锁靠 scrollend
+        // 事件——事件之后不会再有滚动事件来唤醒 sync，于是进度会永远停在被点击前的旧值。
+        syncRef.current()
       }
       unlockTimer.current = setTimeout(unlock, reduce ? 80 : 900)
       if (!reduce) {

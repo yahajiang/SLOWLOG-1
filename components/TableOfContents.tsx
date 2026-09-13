@@ -13,22 +13,25 @@ export function TableOfContents({
 }) {
   const [expanded, setExpanded] = useState(true)
   const { t } = useLang()
-  const { activeId, progress, articleProgress, scrollToHeading } = useScrollSpy(headings)
+  const { activeId, progress, scrollToHeading } = useScrollSpy(headings)
 
-  // ── 侧栏进度文案（百分比取自文章进度，与顶栏同源——顶栏由 hook 广播驱动） ──
+  // ── 侧栏进度文案 ──
+  // 百分比与条形必须同源（都用 heading 进度 progress）：
+  // 早期条形用 progress、文字用 articleProgress，两个指标并排显示，点击跳转到靠后的
+  // 小节时会出现「条形 74% 而文字 100%」的自相矛盾。
   useEffect(() => {
     const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null
     if (sideBar) sideBar.style.transform = `scaleX(${progress})`
     const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null
     if (sideText) {
-      const pct = Math.round(articleProgress)
-      const remainMin = Math.max(1, Math.round((1 - articleProgress / 100) * (readMinutes ?? 10)))
+      const pct = Math.round(progress * 100)
+      const remainMin = Math.max(1, Math.round((1 - progress) * (readMinutes ?? 10)))
       sideText.textContent =
         pct >= 100
           ? `100% · ${t.readDone}`
           : `${pct}% · ${t.estimatedTime(remainMin)}`
     }
-  }, [progress, articleProgress, readMinutes, t])
+  }, [progress, readMinutes, t])
 
   if (headings.length === 0) return null
 
@@ -122,7 +125,7 @@ export function TableOfContents({
             data-side-progress-text
             className="mono text-[11px] tabular-nums text-[var(--yh-muted)]/85 mt-2"
           >
-            {Math.round(articleProgress)}% · {t.estimatedTime(readMinutes ?? 10)}
+            {Math.round(progress * 100)}% · {t.estimatedTime(readMinutes ?? 10)}
           </p>
         </div>
 
