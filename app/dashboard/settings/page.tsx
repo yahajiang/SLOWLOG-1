@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useEffect, useState } from "react"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
@@ -9,7 +9,7 @@ export default function SettingsPage(){
   const [saving,setSaving]=useState(false)
   const { toast } = useToast()
   const { lang } = useLang()
-  useEffect(()=>{fetch("/api/settings").then(r=>r.json()).then(setForm)},[])
+  useEffect(()=>{fetch("/api/settings",{cache:"no-store"}).then(r=>r.json()).then(setForm)},[])
   const save=async()=>{
     setSaving(true)
     const r=await fetch("/api/settings",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)})
