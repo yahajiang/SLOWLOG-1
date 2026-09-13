@@ -24,7 +24,7 @@ export default function MobileNotesPage() {
   const { t, lang } = useLang();
 
   const fetchNotes = () =>
-    fetch("/api/thoughts")
+    fetch("/api/thoughts", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         setNotes(
@@ -50,24 +50,31 @@ export default function MobileNotesPage() {
       return;
     }
     setSending(true);
+    const text = input.trim();
+    // 乐观插入，列表立即可见
+    setNotes((prev) => [{ id: `local-${Date.now()}`, content: text, contentZh: text, createdAt: new Date().toISOString() }, ...prev]);
+    setInput("");
     const r = await fetch("/api/thoughts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: input }),
+      body: JSON.stringify({ text }),
+      cache: "no-store",
     });
-    if (!r.ok) toast(t.toastPublishFail, "error");
-    else toast(t.toastPublished, "success");
-    setInput("");
+    if (!r.ok) {
+      toast(t.toastPublishFail, "error");
+      setNotes((prev) => prev.filter((n) => !String(n.id).startsWith("local-")));
+    } else toast(t.toastPublished, "success");
     setSending(false);
     fetchNotes();
   };
 
   const confirmDel = async () => {
     if (!delId) return;
-    await fetch(`/api/thoughts/${delId}`, { method: "DELETE" });
-    toast(t.dashDeleted, "success");
+    setNotes((prev) => prev.filter((n) => n.id !== delId));
     setDelId(null);
-    fetchNotes();
+    const r = await fetch(`/api/thoughts/${delId}`, { method: "DELETE", cache: "no-store" });
+    if (r.ok) toast(t.dashDeleted, "success");
+    else fetchNotes();
   };
 
   return (
