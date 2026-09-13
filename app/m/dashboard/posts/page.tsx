@@ -20,7 +20,7 @@ export default function MobilePostsPage() {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (status !== "all") params.set("status", status);
-    const res = await fetch(`/api/posts?${params}`);
+    const res = await fetch(`/api/posts?${params}`, { cache: "no-store" });
     const data = await res.json();
     setPosts(Array.isArray(data) ? data : []);
     setLoading(false);
@@ -51,8 +51,11 @@ export default function MobilePostsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: ns }),
       });
-      if (r.ok) toast(ns === "published" ? t.toastPublished : t.toastUnpublished, "success");
-      else toast(t.dashOpFail, "error");
+      if (r.ok) {
+        toast(ns === "published" ? t.toastPublished : t.toastUnpublished, "success");
+        // 先改本地状态，列表立即反映，不必等接口回包渲染
+        setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: ns } : x)));
+      } else toast(t.dashOpFail, "error");
       await load();
     },
     [toast, load, t]

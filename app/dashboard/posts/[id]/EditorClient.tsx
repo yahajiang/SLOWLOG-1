@@ -201,6 +201,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         setPost((prev: any) => ({ ...prev, status }))
         setLastSaved(new Date())
         if (!silent) toast(status === "published" ? t.toastPublished : t.toastUnpublished, "success")
+        router.refresh()
       } catch (e: any) {
         if (!silent) { setErrorMsg(e.message || t.toastPublishFail); toast(e.message || t.toastPublishFail, "error") }
       } finally { if (!silent) setSaving(false) }
@@ -225,6 +226,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       else { res = await fetch(`/api/posts/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }) }
       if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "save failed") }
       setLastSaved(new Date()); if (!silent) toast(t.dashSaved, "success")
+      router.refresh()
     } catch (e: any) { if (!silent) { setErrorMsg(e.message || t.toastPublishFail); toast(e.message || t.toastPublishFail, "error") } }
     finally { if (!silent) setSaving(false) }
   }, [isNew, pageConfig, router, toast])
