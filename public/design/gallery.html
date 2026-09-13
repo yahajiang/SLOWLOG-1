@@ -310,7 +310,7 @@ const C = [
 - 入场：**视口触发**（IntersectionObserver）fadeInUp 300ms + delay index*45ms；reduced-motion 直接可见
 - 整卡 Link 可点`},
  {id:"badge",name:"分类徽章",cat:"数据展示",desc:"分类色板小面积点缀：paper 底 + ink 字 + wash 边，三值来自 ART_PALETTES。",
-  pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">工程</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0E0C0;background:#FFF7E8;color:#3A3330">前端</span><span style="font-size:9px;padding:2px 8px;border:1px solid #C8DCC8;background:#E8F3E8;color:#30362E">随笔</span></div>`,
+  pv:`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px"><span style="font-size:9px;padding:2px 8px;border:1px solid #E8E0D8;background:#F5F3EF;color:#3A332E">设计</span><span style="font-size:9px;padding:2px 8px;border:1px solid #D6DEE8;background:#EAF0F5;color:#30333A">开发</span><span style="font-size:9px;padding:2px 8px;border:1px solid #E3DFEC;background:#F4F2F8;color:#332F3B">实验</span><span style="font-size:9px;padding:2px 8px;border:1px solid #DDE3DE;background:#EEF2EE;color:#2E3A35">发现</span><span style="font-size:9px;padding:2px 8px;border:1px solid #F0DCCA;background:#FDF0E6;color:#3A3330">记录</span></div>`,
   prompt:`${P_BASE}
 新建「分类徽章 CategoryBadge」（还原 components/CategoryBadge.tsx）：
 - 样式由 ART_PALETTES[category] 内联注入：backgroundColor paper / color ink / borderColor wash，1px solid
@@ -482,7 +482,7 @@ const C = [
 - 统计：total/published/draft/views；近期文章列表；快捷入口 新建文章/随想
 - 中英用 dash* 词典键（非硬编码中文）；stat hover 仅 shadow-float`},
  {id:"hero",name:"Hero 推荐侧栏封面",cat:"数据展示",desc:"首页推荐位 CoverArt wide（16/10）；外层有边框必须 noBorder 防双线。",
-   pv:`<div style="width:100%;max-width:110px;aspect-ratio:16/10;border:1px solid var(--yh-border);background:#F5F3EF;position:relative"><span class="mono" style="position:absolute;bottom:4px;left:6px;font-size:7px;color:#3A332E;opacity:.4">FRT · 3648</span></div>`,
+   pv:`<div style="width:100%;max-width:110px;aspect-ratio:16/10;border:1px solid var(--yh-border);background:#F5F3EF;position:relative"><span class="mono" style="position:absolute;bottom:4px;left:6px;font-size:7px;color:#3A332E;opacity:.4">DSN · 3648</span></div>`,
    prompt:`${P_BASE}
 接入 Hero 推荐封面（HeroCover.tsx + HomeClient/MHome）：
 - CoverArt ratio=wide + noBorder；卡片仍用 ArticleArt card`},
