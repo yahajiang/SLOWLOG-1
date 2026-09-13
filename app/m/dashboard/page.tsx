@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 const getMobileDashData = unstable_cache(
   async () => {
-    const [stats, recent] = await Promise.all([
+    const [stats, recent, noteCount, catCount, mediaCount] = await Promise.all([
       prisma.post.groupBy({
         by: ["status"],
         _count: { _all: true },
@@ -20,15 +20,18 @@ const getMobileDashData = unstable_cache(
           category: { select: { name: true, nameZh: true } },
         },
       }),
+      prisma.note.count(),
+      prisma.category.count(),
+      prisma.media.count().catch(() => 0),
     ]);
     const total = stats.reduce((a, s) => a + s._count._all, 0);
     const published = stats.find((s) => s.status === "published")?._count._all ?? 0;
     const draft = stats.find((s) => s.status === "draft")?._count._all ?? 0;
     const totalViews = stats.reduce((a, s) => a + (s._sum.viewCount || 0), 0);
-    return { total, published, draft, totalViews, recent };
+    return { total, published, draft, totalViews, recent, noteCount, catCount, mediaCount };
   },
-  ["m-dash-stats"],
-  { revalidate: 60, tags: ["posts"] }
+  ["m-dash-stats-v2"],
+  { revalidate: 30, tags: ["posts", "thoughts", "categories"] }
 );
 
 export default async function MobileDashboardPage() {
