@@ -15,6 +15,12 @@ export type ScrollSpyResult = {
   activeIdx: number
   /** 基于 heading 位置的进度 0→1（供 TOC 蓝轨） */
   progress: number
+  /**
+   * TOC 左轨（蓝条）的填充比例：按「当前小节行的中心」吸附。
+   * 不能直接用 progress——那会把蓝条边缘落在上一项与当前项的分界线上，
+   * 小节刚激活时看起来就是「蓝条没对准高亮项」。
+   */
+  railProgress: number
   /** 基于文章滚动的进度 0→100（供顶栏进度条） */
   articleProgress: number
   /** 平滑滚动到指定 heading */
@@ -263,5 +269,11 @@ export function useScrollSpy(
     [headings],
   )
 
-  return { activeId, activeIdx, progress, articleProgress, scrollToHeading }
+  // ── 左轨填充比例：吸附到当前小节行的中心 ──
+  // 每行占 1/n，行中心即 (idx + 0.5)/n。这样蓝条边缘永远落在高亮项那一行的中间，
+  // 不会停在行与行的分界线上（那样小节刚激活时看着就是没对齐）。
+  const railProgress =
+    headings.length > 1 ? Math.min(1, (activeIdx + 0.5) / headings.length) : progress
+
+  return { activeId, activeIdx, progress, railProgress, articleProgress, scrollToHeading }
 }
