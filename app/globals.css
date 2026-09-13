@@ -187,9 +187,24 @@ code, pre, .font-mono {
   from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: none; }
 }
+/* 底部抽屉（MTOC 等）：自下缘上滑 + 淡入 */
+.sheet-in {
+  animation: sheetIn 280ms var(--ease-out) both;
+}
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.mask-in {
+  animation: maskIn 220ms var(--ease-out) both;
+}
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .section-in, .panel-in, .panel-out, .lightbox-in, .category-enter, .category-exit {
+  .section-in, .panel-in, .panel-out, .lightbox-in, .sheet-in, .mask-in, .category-enter, .category-exit {
     animation: none !important;
   }
   [data-reveal="1"] {

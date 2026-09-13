@@ -126,9 +126,9 @@ function MTOC({ headings }: { headings: { id: string; text: string }[] }) {
         </span>
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm mask-in" onClick={() => setOpen(false)}>
           <div
-            className="absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)]"
+            className="absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)] sheet-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-2">
