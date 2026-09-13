@@ -60,6 +60,18 @@ export function TableOfContents({
       setActive((prev) => (prev === cur ? prev : cur));
       const p = nearBottom ? 1 : railProgress(els, curIdx);
       setProgress((prev) => (Math.abs(prev - p) < 0.01 ? prev : p));
+      // 侧栏阅读进度与蓝轨同源，避免 ReadingProgress 算法不一致导致假 100%
+      document.documentElement.dataset.tocProgress = String(p);
+      const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
+      if (sideBar) sideBar.style.transform = `scaleX(${p})`;
+      const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null;
+      if (sideText) {
+        const pct = Math.round(p * 100);
+        const remainMin = Math.max(1, Math.round((1 - p) * (readMinutes ?? 10)));
+        sideText.textContent = pct >= 100
+          ? `100% · ${t.almostDone}`
+          : `${pct}% · ${t.estimatedTime(remainMin)}`;
+      }
     }
 
     /** TOC 蓝轨：在「当前标题 → 下一标题」的滚动区间内 0→1，再映射到 curIdx/n */

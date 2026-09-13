@@ -15,6 +15,19 @@ export function ReadingProgress() {
     function handleScroll() {
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
+        // 有 TOC 时：顶栏进度与目录蓝轨同源，避免两套算法打架（侧栏由 TOC 写入）
+        const tocP = document.documentElement.dataset.tocProgress;
+        if (tocP !== undefined) {
+          const pct = Math.min(100, Math.max(0, parseFloat(tocP) * 100));
+          setProgress(pct);
+          setVisible(window.scrollY > 120);
+          const mins = Math.max(1, Math.round((100 - pct) * 0.08));
+          setRemaining(t.readingRemaining(mins));
+          const el = document.querySelector("[data-remaining]") as HTMLElement | null;
+          if (el) el.textContent = pct >= 100 ? t.almostDone : t.readingRemaining(mins);
+          return;
+        }
+
         const article = document.querySelector("article") as HTMLElement | null;
         let pct = 0;
         if (article) {
@@ -22,14 +35,11 @@ export function ReadingProgress() {
           const articleTop = window.scrollY + rect.top;
           const articleBottom = articleTop + article.offsetHeight;
           const viewBottom = window.scrollY + window.innerHeight;
-          // 从「文章顶贴到判定线」到「文章底进入视口底」为 0→100
-          // 不用 offsetHeight-innerHeight：文末偏短时 scrolled/height 会提前打满
           const start = articleTop - 96;
           const finish = articleBottom - window.innerHeight;
           if (finish > start) {
             pct = ((window.scrollY - start) / (finish - start)) * 100;
           } else {
-            // 整篇不足一屏：文章底缘进入视口才算读完
             pct = viewBottom >= articleBottom - 8 ? 100 : 0;
           }
           pct = Math.min(100, Math.max(0, pct));
@@ -42,19 +52,15 @@ export function ReadingProgress() {
         }
         setProgress(pct);
         setVisible(window.scrollY > 120);
-        // 剩余时间（按 300字/分钟 粗算）
         const remainPct = Math.max(0, 100 - pct);
         const mins = Math.max(1, Math.round(remainPct * 0.08));
         setRemaining(t.readingRemaining(mins));
-        // 头部 meta 剩余时间同步
         const el = document.querySelector("[data-remaining]") as HTMLElement | null;
         if (el) el.textContent = mins <= 1 ? t.almostDone : t.readingRemaining(mins);
-        // 侧栏进度卡同步
         const sideBar = document.querySelector("[data-side-progress]") as HTMLElement | null;
         if (sideBar) sideBar.style.transform = `scaleX(${pct / 100})`;
         const sideText = document.querySelector("[data-side-progress-text]") as HTMLElement | null;
         if (sideText) sideText.textContent = `${Math.round(pct)}% · ${t.estimatedTime(mins)}`;
-        // 段落高亮：当前视口中点附近的段落
         const paras = Array.from(document.querySelectorAll("[data-paragraph]")) as HTMLElement[];
         let best: HTMLElement | null = null;
         let bestDist = Infinity;
