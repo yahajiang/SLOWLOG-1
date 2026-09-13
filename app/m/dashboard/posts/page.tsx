@@ -60,9 +60,6 @@ export default function MobilePostsPage() {
     },
     [toast, t]
   );
-    },
-    [toast, load, t]
-  );
 
   const copyLink = useCallback(
     async (id: string) => {
