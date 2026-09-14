@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { isPublicPost } from "@/lib/posts"
 
 // 文章数据变更后立即再生前台缓存：数据缓存 tag + 首页 + 文章详情路由（覆盖 id/slug 两种地址形态）
 function revalidatePostViews(post?: { id: string; slug?: string | null }) {
@@ -18,14 +19,17 @@ function revalidatePostViews(post?: { id: string; slug?: string | null }) {
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const session = await auth()
   const post = await prisma.post.findUnique({ where: { id }, include: { category: true } })
   if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  // 非 published 文章需要鉴权
-  if (post.status !== "published") {
-    const session = await auth()
-    if (!session) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!session && !isPublicPost(post)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
-  return NextResponse.json(post)
+  return NextResponse.json(post, {
+    headers: session
+      ? { "Cache-Control": "private, no-store", Vary: "Cookie" }
+      : { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300", Vary: "Cookie" },
+  })
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

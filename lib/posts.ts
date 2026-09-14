@@ -71,9 +71,18 @@ function extractHeadings(content: unknown): { id: string; text: string; level: n
   return headings
 }
 
+/** 唯一的公开可见性规则：草稿、归档和未来定时文章均不可从任何公开入口读取。 */
+export function isPublicPost(row: { status?: string; publishedAt?: Date | string | null } | null | undefined, now = new Date()) {
+  if (!row || row.status !== "published") return false
+  return !row.publishedAt || new Date(row.publishedAt) <= now
+}
+
+export function publicPostWhere(now = new Date()) {
+  return { status: "published", OR: [{ publishedAt: null }, { publishedAt: { lte: now } }] }
+}
+
 function scheduledGuard(row: any) {
-  if (!row) return null
-  if (row.status === "published" && row.publishedAt && new Date(row.publishedAt) > new Date()) return null
+  if (!isPublicPost(row)) return null
   return mapPost(row)
 }
 function mapPost(row: any): PostDTO {
@@ -118,7 +127,7 @@ const getCachedPostRows = unstable_cache(
   async (status: string) => {
     const where: any = { status }
     if (status === "published") {
-      where.OR = [{ publishedAt: null }, { publishedAt: { lte: new Date() } }]
+      Object.assign(where, publicPostWhere())
     }
     return prisma.post.findMany({
       where,
@@ -156,13 +165,13 @@ export async function getPostById(id: string) {
 }
 
 export async function getFeaturedPost() {
-  const row = await prisma.post.findFirst({ where: { featured: true, status: "published" }, include: { category: true } })
+  const row = await prisma.post.findFirst({ where: { ...publicPostWhere(), featured: true }, include: { category: true } })
   if (!row) return null
   return mapPost(row)
 }
 
 export async function getAllPostSlugs() {
-  const rows = await prisma.post.findMany({ where: { status: "published" }, select: { slug: true } })
+  const rows = await prisma.post.findMany({ where: publicPostWhere(), select: { slug: true } })
   return rows.map((r) => r.slug)
 }
 
