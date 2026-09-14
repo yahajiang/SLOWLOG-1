@@ -50,7 +50,7 @@ export function Sidebar() {
         <div className={`flex items-center w-full ${collapsed ? "justify-center" : "justify-between px-3"}`}>
           <Link
             href="/dashboard"
-            className={collapsed ? "w-8 h-8 rounded-full bg-[var(--dash-text)] text-[var(--dash-bg)] flex items-center justify-center serif italic text-[13px] hover:opacity-60 transition-opacity" : "text-[16px] font-semibold tracking-tight text-[var(--dash-text)] hover:opacity-60 transition-opacity whitespace-nowrap overflow-hidden"}
+            className={collapsed ? "hidden" : "text-[16px] font-semibold tracking-tight text-[var(--dash-text)] hover:opacity-60 transition-opacity whitespace-nowrap overflow-hidden"}
             style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}
           >
             {collapsed ? "S" : t.dashBrand}
@@ -60,7 +60,7 @@ export function Sidebar() {
             aria-label={collapsed ? t.dashExpand : t.dashCollapse}
             aria-expanded={!collapsed}
             title={collapsed ? t.dashExpand : t.dashCollapse}
-            className="w-8 h-8 flex items-center justify-center text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors"
+            className={`${collapsed ? "w-10 h-10" : "w-8 h-8"} flex items-center justify-center text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors`}
           >
             {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
@@ -97,16 +97,16 @@ export function Sidebar() {
           <Link
             href="/"
             title={t.dashFront}
-            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]" : "gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]"}`}
+            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[11px] text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]" : "px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]"}`}
           >
-            <ExternalLink className="w-4 h-4 shrink-0" /> {!collapsed && <span className="whitespace-nowrap">{t.dashFront}</span>}
+            {!collapsed && <span className="whitespace-nowrap">{t.dashFront}</span>}
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             title={t.dashLogout}
-            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50" : "w-full gap-2 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 text-left"}`}
+            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[11px] text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50" : "w-full px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 text-left"}`}
           >
-            <LogOut className="w-4 h-4 shrink-0" /> {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
+            {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
           </button>
         </div>
         <div className={`w-full ${collapsed ? "flex flex-col items-center gap-2" : "flex items-center gap-2 pt-1"}`}>
