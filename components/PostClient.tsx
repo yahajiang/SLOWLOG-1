@@ -146,7 +146,7 @@ export function PostClient({
             <ThemeToggle />
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
-              className="w-[34px] h-[30px] flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              className="w-11 h-11 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
               aria-label={lang === "zh" ? "全局搜索" : "Search"}
               title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
             >

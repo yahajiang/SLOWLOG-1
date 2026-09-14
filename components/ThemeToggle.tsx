@@ -28,7 +28,7 @@ export function ThemeToggle({ size = "md" }: ThemeToggleProps) {
     setDark(next);
   }
 
-  const box = size === "sm" ? "w-11 h-11" : "w-[30px] h-[30px]";
+  const box = size === "sm" ? "w-11 h-11" : "w-11 h-11";
   const icon = size === "sm" ? 18 : 15;
 
   return (
