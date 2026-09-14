@@ -53,7 +53,8 @@ export async function DELETE(req: NextRequest) {
   if (!id) return apiError(400, "缺少 id")
   const media = await prisma.media.findUnique({ where: { id } })
   if (!media) return apiError(404, "媒体不存在")
-  await deleteFromBlob(media.url)
+  // 本地降级链产物（data: URI / 本地文件）非 Blob 对象，跳过远端删除
+  if (media.url.includes("blob.vercel-storage.com")) await deleteFromBlob(media.url)
   await prisma.media.delete({ where: { id } })
   return NextResponse.json({ ok: true })
 }
