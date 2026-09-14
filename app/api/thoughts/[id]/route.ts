@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { apiError } from "@/lib/api-utils"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const note = await prisma.note.findUnique({ where: { id } })
-  if (!note) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!note) return apiError(404, "随想不存在")
   return NextResponse.json({
     id: note.id,
     text: note.content,
@@ -19,7 +20,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   const { id } = await params
   const body = await req.json()
@@ -30,7 +31,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     revalidateTag("thoughts")
     return NextResponse.json({ id: note.id, text: note.content, textZh: note.contentZh, createdAt: note.createdAt })
   } catch (e: any) {
-    if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (e.code === "P2025") return apiError(404, "随想不存在")
     console.error(e)
     return NextResponse.json({ error: "更新失败" }, { status: 500 })
   }
@@ -38,7 +39,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   const { id } = await params
   try {
@@ -48,7 +49,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     revalidatePath("/m")
     return NextResponse.json({ ok: true })
   } catch (e: any) {
-    if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (e.code === "P2025") return apiError(404, "随想不存在")
     console.error(e)
     return NextResponse.json({ error: "删除失败" }, { status: 500 })
   }

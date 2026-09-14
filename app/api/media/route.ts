@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-utils"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { compressAndUpload, deleteFromBlob } from "@/lib/blob"
@@ -12,23 +13,23 @@ const ALLOWED_MIMES = new Set([
 
 export async function GET() {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   const items = await prisma.media.findMany({ orderBy: { createdAt: "desc" }, take: 100 })
   return NextResponse.json(items)
 }
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   const form = await req.formData()
   const files = form.getAll("file") as File[]
-  if (!files.length) return NextResponse.json({ error: "No file" }, { status: 400 })
+  if (!files.length) return apiError(400, "请选择文件")
   const results = []
   try {
     for (const file of files) {
-      if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "单张上限5MB" }, { status: 400 })
-      if (!ALLOWED_MIMES.has(file.type)) return NextResponse.json({ error: "仅支持 JPEG/PNG/WebP/GIF" }, { status: 400 })
+      if (file.size > 5 * 1024 * 1024) return apiError(400, "单张上限 5MB")
+      if (!ALLOWED_MIMES.has(file.type)) return apiError(400, "仅支持 JPEG/PNG/WebP/GIF")
       const filename = `${Date.now()}-${file.name}`
       const buffer = Buffer.from(await file.arrayBuffer())
       const res = await compressAndUpload(buffer, filename, { quality: 75 })
@@ -45,13 +46,13 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id")
-  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
+  if (!id) return apiError(400, "缺少 id")
   const media = await prisma.media.findUnique({ where: { id } })
-  if (!media) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!media) return apiError(404, "媒体不存在")
   await deleteFromBlob(media.url)
   await prisma.media.delete({ where: { id } })
   return NextResponse.json({ ok: true })

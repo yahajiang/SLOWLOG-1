@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
+import { postCreateSchema } from "@/lib/schemas"
+import { apiError, apiZodError } from "@/lib/api-utils"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { publicPostWhere } from "@/lib/posts"
@@ -64,12 +66,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
-  const body = await req.json()
+  const parsed = postCreateSchema.safeParse(await req.json())
+  if (!parsed.success) return apiZodError(parsed.error)
+  const body = parsed.data
   const tags: string[] = Array.isArray(body.tags) ? body.tags.map((t: string) => String(t).trim()).filter(Boolean) : []
-  if (tags.length === 0) return NextResponse.json({ error: "至少选择一个标签" }, { status: 400 })
-  if (!body.categoryId) return NextResponse.json({ error: "请选择分类" }, { status: 400 })
+  if (tags.length === 0) return apiError(400, "至少选择一个标签")
+  if (!body.categoryId) return apiError(400, "请选择分类")
   const slug = body.slug?.trim() || body.title?.toLowerCase().replace(/[^\w]+/g, "-") || `post-${Date.now()}`
   try {
     const post = await prisma.post.create({
@@ -79,7 +83,7 @@ export async function POST(req: NextRequest) {
         slug,
         excerpt: body.excerpt || "",
         excerptZh: body.excerptZh || body.excerpt || "",
-        content: body.content || { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "" }] }] },
+        content: (body.content as any) || { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "" }] }] },
         status: body.status || "draft",
         categoryId: body.categoryId || null,
         tags: tags,
@@ -97,8 +101,8 @@ export async function POST(req: NextRequest) {
     revalidatePostViews(post)
     return NextResponse.json(post)
   } catch (e: any) {
-    if (e.code === "P2002") return NextResponse.json({ error: "Slug 已存在" }, { status: 400 })
+    if (e.code === "P2002") return apiError(400, "Slug 已存在")
     console.error(e)
-    return NextResponse.json({ error: "创建失败" }, { status: 500 })
+    return apiError(500, "创建失败")
   }
 }

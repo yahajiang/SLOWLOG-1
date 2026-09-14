@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { auth, passwordChangeRequired } from "@/lib/auth"
+import { apiError, apiZodError } from "@/lib/api-utils"
+import { postUpdateSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
 import { isPublicPost } from "@/lib/posts"
 
@@ -21,9 +23,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params
   const session = await auth()
   const post = await prisma.post.findUnique({ where: { id }, include: { category: true } })
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!post) return apiError(404, "内容不存在")
   if (!session && !isPublicPost(post)) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return apiError(404, "内容不存在")
   }
   return NextResponse.json(post, {
     headers: session
@@ -34,10 +36,12 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+  if (!session) return apiError(401, "未登录")
+  if (passwordChangeRequired(session)) return apiError(403, "请先修改默认密码")
   const { id } = await params
-  const body = await req.json()
+  const parsed = postUpdateSchema.safeParse(await req.json())
+  if (!parsed.success) return apiZodError(parsed.error)
+  const body = parsed.data as any
 
   const data: any = {}
   if (body.title !== undefined) data.title = body.title
@@ -78,17 +82,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     revalidatePostViews(post)
     return NextResponse.json(post)
   } catch (e: any) {
-    if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
-    if (e.code === "P2002") return NextResponse.json({ error: "Slug 已存在" }, { status: 400 })
+    if (e.code === "P2025") return apiError(404, "内容不存在")
+    if (e.code === "P2002") return apiError(400, "Slug 已存在")
     console.error(e)
-    return NextResponse.json({ error: "更新失败" }, { status: 500 })
+    return apiError(500, "更新失败")
   }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+  if (!session) return apiError(401, "未登录")
+  if (passwordChangeRequired(session)) return apiError(403, "请先修改默认密码")
   const { id } = await params
   try {
     const existing = await prisma.post.findUnique({ where: { id }, select: { slug: true } })
@@ -96,8 +100,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     revalidatePostViews({ id, slug: existing?.slug })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
-    if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (e.code === "P2025") return apiError(404, "内容不存在")
     console.error(e)
-    return NextResponse.json({ error: "删除失败" }, { status: 500 })
+    return apiError(500, "删除失败")
   }
 }

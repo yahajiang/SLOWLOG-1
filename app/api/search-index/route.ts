@@ -74,7 +74,8 @@ export async function GET() {
           tags: p.tags || [],
           date: p.displayDate,
           readTime: p.readTime || "",
-          body: stripMd(extractText(p.content)).slice(0, 20000),
+          // 正文截断 2000 字：面板搜索主要匹配标题/摘要/标签，索引体积防膨胀（P1-4）
+          body: stripMd(extractText(p.content)).slice(0, 2000),
           py: pyT.py + " " + pyC.py,
           abbr: pyT.abbr + " " + pyC.abbr,
         }
