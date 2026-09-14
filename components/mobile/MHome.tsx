@@ -12,7 +12,7 @@ import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { MArticleCard } from "./MArticleCard";
-import { mCatLabel } from "@/lib/madapt";
+import { mCatLabel } from "@/lib/adapt";
 
 function MThoughts() {
   const { t, lang } = useLang();

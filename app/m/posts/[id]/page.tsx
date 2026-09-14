@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { MPost } from "@/components/mobile/MPost";
-import { adaptPost } from "@/lib/madapt";
+import { adaptLegacyPost, postOgMeta } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -20,21 +20,13 @@ export async function generateMetadata({
   const { id } = await params;
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) return { title: "文章未找到" };
-  const post = adaptPost(raw)!;
+  const post = adaptLegacyPost(raw)!;
   const siteUrl = await getSiteUrl();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
     alternates: { canonical: `${siteUrl}/posts/${post.id}` },
-    openGraph: {
-      title: post.titleZh || post.title,
-      description: post.excerptZh || post.excerpt,
-      type: "article",
-      publishedTime: post.date,
-      tags: post.tags,
-      url: `${siteUrl}/posts/${post.id}`,
-      siteName: "慢日志",
-    },
+    openGraph: postOgMeta(post, siteUrl),
   };
 }
 
@@ -46,7 +38,7 @@ export default async function MobilePostPage({
   const { id } = await params;
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) notFound();
-  const post = adaptPost(raw)!;
+  const post = adaptLegacyPost(raw)!;
 
   // 按发布时间排序，算出纵向上下篇（桌面是横向）
   const allRaw = await getAllPosts();
@@ -56,8 +48,8 @@ export default async function MobilePostPage({
     return db - da;
   });
   const idx = sorted.findIndex((p) => p.id === post.id);
-  const prev = idx > 0 ? adaptPost(sorted[idx - 1]) : null;
-  const next = idx >= 0 && idx < sorted.length - 1 ? adaptPost(sorted[idx + 1]) : null;
+  const prev = idx > 0 ? adaptLegacyPost(sorted[idx - 1]) : null;
+  const next = idx >= 0 && idx < sorted.length - 1 ? adaptLegacyPost(sorted[idx + 1]) : null;
 
   return <MPost post={post} rawPost={raw} prev={prev} next={next} />;
 }
