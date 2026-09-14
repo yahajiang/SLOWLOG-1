@@ -16,6 +16,17 @@ function mobileTarget(pathname: string): string | null {
   return null
 }
 
+// 平板：iPad / Android 平板（Android 且无 Mobile）。iPadOS 13+ UA 与 macOS 相同，
+// 这部分由桌面树内的 TabletGate（视口 + 粗指针）兜底引导。
+const TABLET_UA_RE = /iPad|Tablet|Android(?!.*Mobile)/i
+
+function tabletTarget(pathname: string): string | null {
+  if (pathname === "/") return "/t"
+  if (pathname === "/archive") return "/t/archive"
+  if (pathname.startsWith("/posts/")) return "/t" + pathname
+  return null
+}
+
 /**
  * 重定向必须基于「请求真值」：Vercel + Cloudflare 代理链路下，nextUrl.origin
  * 可能被解析成部署域（slowlog.vercel.app——被墙，访客侧直接超时）。
@@ -45,6 +56,26 @@ export default auth((req) => {
     if (!optOut) {
       const ua = req.headers.get("user-agent") || ""
       const target = MOBILE_UA_RE.test(ua) ? mobileTarget(pathname) : null
+      if (target) {
+        const url = req.nextUrl.clone()
+        url.pathname = target
+        return NextResponse.rewrite(url)
+      }
+    }
+  }
+
+  // 平板（iPad / Android 平板 / view=tablet cookie）→ /t 平板树；view=desktop 尊重用户选择
+  if (
+    !pathname.startsWith("/m") &&
+    !pathname.startsWith("/t") &&
+    !pathname.startsWith("/api") &&
+    !pathname.startsWith("/dashboard")
+  ) {
+    const view = req.cookies.get("view")?.value
+    const ua = req.headers.get("user-agent") || ""
+    const wantsTablet = view === "tablet" || (!view && TABLET_UA_RE.test(ua))
+    if (view !== "desktop" && wantsTablet) {
+      const target = tabletTarget(pathname)
       if (target) {
         const url = req.nextUrl.clone()
         url.pathname = target
