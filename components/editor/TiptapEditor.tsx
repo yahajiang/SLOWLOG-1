@@ -190,7 +190,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
       </FloatingMenu>
 
       {/* 工具栏 - 固定在顶部 */}
-      <div className="bg-[var(--dash-card)] border-b border-[var(--yh-border)] px-4 py-1.5 flex flex-wrap items-center gap-0.5 sticky top-0 z-10 shadow-sm">
+      <div className="bg-white dark:bg-[#1c1915] border-b border-[var(--yh-border)] px-4 py-1.5 flex flex-wrap items-center gap-0.5 sticky top-0 z-10 shadow-sm">
           {/* 标题下拉 */}
           <div className="relative">
             <button title="标题" onMouseDown={(e) => e.preventDefault()} onClick={() => { setTitleOpen(!titleOpen); setListOpen(false); setAlignOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
