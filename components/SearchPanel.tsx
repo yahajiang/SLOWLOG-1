@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useLang } from "@/lib/lang-context";
+import { mdInSiteTz } from "@/lib/relative-time";
 
 // 全局搜索面板（v0.3 蓝图 Chapter 01 实现）：
 // `/` 或 ⌘K 唤起，Esc/遮罩/路由跳转关闭；结果按 文章/分类/随想 分组，
@@ -109,8 +110,7 @@ export function SearchPanel() {
     }
     for (const n of index.thoughts) {
       if (n.text.toLowerCase().includes(q) || pyHit(n.py, n.abbr)) {
-        const d = new Date(n.date);
-        scored.push({ s: 8, r: { key: "t" + n.id, group: zh ? "随想" : "Thoughts", title: n.text, meta: `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`, kind: "thought", href: `/#thoughts`, matchText: n.text } });
+        scored.push({ s: 8, r: { key: "t" + n.id, group: zh ? "随想" : "Thoughts", title: n.text, meta: mdInSiteTz(n.date), kind: "thought", href: `/#thoughts`, matchText: n.text } });
       }
     }
     scored.sort((a, b) => b.s - a.s);

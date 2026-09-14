@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/EmptyState"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useLang } from "@/lib/lang-context"
+import { mdInSiteTz } from "@/lib/relative-time"
 
 // 归档页 = 查看全部的终点：真时间线（Motion 02 生长 + Motion 05 阅读）
 // 轴线随滚动生长（scaleY），节点进入视口依次点亮，文章从节点侧淡入。
@@ -26,7 +27,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
   // 刊头统计：篇数 / 年数 / 分类数 / 最近更新（MM-DD）
   const catCount = new Set(posts.map((p: any) => p.category)).size
   const latestTs = posts.reduce((acc: number, p: any) => Math.max(acc, new Date(p.publishedAt || p.createdAt).getTime()), 0)
-  const latestMd = latestTs ? `${String(new Date(latestTs).getMonth() + 1).padStart(2, "0")}-${String(new Date(latestTs).getDate()).padStart(2, "0")}` : "—"
+  const latestMd = latestTs ? mdInSiteTz(new Date(latestTs).toISOString()) : "—"
 
   useEffect(() => {
     const root = tlRef.current
@@ -143,8 +144,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
               </div>
               <div>
                 {arr.map((p:any, i:number)=> {
-                  const d = new Date(p.publishedAt || p.createdAt)
-                  const md = `${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
+                  const md = mdInSiteTz(p.publishedAt || p.createdAt)
                   const title = p.titleZh || p.title
                   return (
                     <Link key={p.id} href={`/posts/${p.id}`}

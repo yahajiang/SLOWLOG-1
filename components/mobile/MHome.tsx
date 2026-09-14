@@ -8,7 +8,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import { AuthorAvatar } from "@/components/AuthorAvatar";
 import { useLang } from "@/lib/lang-context";
 import { getReadProgress } from "@/lib/read-progress";
-import { formatDisplayDate } from "@/lib/relative-time";
+import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { MArticleCard } from "./MArticleCard";
@@ -112,8 +112,7 @@ function MTimeline({ posts }: { posts: any[] }) {
         {/* 迷你时间线：细竖线 + 骑线圆点，active 态点亮品牌色 */}
         <div className="space-y-0.5 border-l border-[var(--yh-border)] pl-4 ml-1">
           {recent.map((p: any) => {
-            const d = new Date(p.publishedAt || p.createdAt || p.date);
-            const md = `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+            const md = mdInSiteTz(p.publishedAt || p.createdAt || p.date);
             return (
               <Link key={p.id} href={`/m/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[5px] active:bg-[var(--yh-bg)]/60">
                 <span className="absolute -left-[21px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-active:bg-[var(--yh-accent)] group-active:border-[var(--yh-accent)] transition-colors" />
