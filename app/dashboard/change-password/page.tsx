@@ -7,6 +7,7 @@ import { useLang } from "@/lib/lang-context"
 
 export default function ChangePasswordPage() {
   const { lang } = useLang()
+  const [currentPassword, setCurrentPassword] = useState("")
   const [newEmail, setNewEmail] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -19,7 +20,7 @@ export default function ChangePasswordPage() {
     e.preventDefault()
     setError("")
 
-    if (!newEmail.trim() || !newPassword.trim() || !newName.trim()) {
+    if (!currentPassword.trim() || !newEmail.trim() || !newPassword.trim() || !newName.trim()) {
       setError(lang === "zh" ? "请填写所有字段" : "Fill all fields")
       return
     }
@@ -38,6 +39,7 @@ export default function ChangePasswordPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          currentPassword: currentPassword,
           email: newEmail.trim(),
           password: newPassword.trim(),
           name: newName.trim(),
@@ -72,6 +74,19 @@ export default function ChangePasswordPage() {
 
         <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-8 rounded-none">
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium block mb-2">
+                {lang === "zh" ? "当前密码" : "Current Password"}
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                placeholder={lang === "zh" ? "验证身份用" : "Verify your identity"}
+              />
+            </div>
+
             <div>
               <label className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium block mb-2">
                 {lang === "zh" ? "新邮箱" : "New email"}
@@ -133,7 +148,7 @@ export default function ChangePasswordPage() {
 
             <button
               type="submit"
-              disabled={loading || !newEmail || !newPassword || !confirmPassword || !newName}
+              disabled={loading || !currentPassword || !newEmail || !newPassword || !confirmPassword || !newName}
               className="w-full py-3 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-none font-medium"
             >
               {loading ? (lang === "zh" ? "保存中..." : "Saving...") : (lang === "zh" ? "确认修改" : "Confirm")}

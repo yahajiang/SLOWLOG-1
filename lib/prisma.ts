@@ -11,7 +11,8 @@ function createPrisma() {
   // ⚠️ 本模块仅可在 Node runtime 引用；middleware/edge 不得 import（pg 依赖 crypto）。
   const pool = new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: false },
+    // Neon 证书链由 Node 内置 CA 覆盖：启用 TLS 验证（修复后端审查 P2-1）
+    ssl: { rejectUnauthorized: true },
     max: 5,
     connectionTimeoutMillis: 15_000,
   })

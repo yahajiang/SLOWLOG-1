@@ -47,7 +47,8 @@ export async function compressAndUpload(
   const origMime = (file as any).type || guessMime(filename)
 
   // SVG/GIF keep original
-  if (origMime === "image/svg+xml" || origMime === "image/gif" || filename.endsWith(".svg") || filename.endsWith(".gif")) {
+  // SVG 已被 media API 的 MIME 白名单拦截；此处仅保留 GIF 不压缩原样上传
+  if (origMime === "image/gif" || filename.endsWith(".gif")) {
     const res = await persist(filename, buffer, origMime)
     return { url: res.url, size: buffer.length, mimeType: origMime }
   }
