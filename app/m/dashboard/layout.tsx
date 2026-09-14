@@ -6,6 +6,7 @@ import { MDashTopbar } from "@/components/mobile/MDashTopbar";
 import { MDashMain } from "@/components/mobile/MDashMain";
 
 export const metadata: Metadata = {
+  title: "后台 · 慢日志",
   robots: { index: false, follow: false },
 };
 

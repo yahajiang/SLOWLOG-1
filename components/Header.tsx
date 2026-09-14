@@ -47,13 +47,13 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
             <nav className="hidden md:flex items-center gap-4 2xl:gap-7 mono text-[12px] tracking-[0.14em] uppercase">
               <Link
                 href="/"
-                className="whitespace-nowrap text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
+                className="whitespace-nowrap py-1.5 text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
               >
                 {t.navHome}
               </Link>
               <Link
                 href="/archive"
-                className="whitespace-nowrap text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+                className="whitespace-nowrap py-1.5 text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
               >
                 {t.archiveTitle}
               </Link>
@@ -61,7 +61,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
                 href="/design/gallery.html"
                 target="_blank"
                 rel="noopener"
-                className="whitespace-nowrap text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+                className="whitespace-nowrap py-1.5 text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
                 title={lang === "zh" ? "UI 组件画廊（新窗口）" : "UI component gallery (new tab)"}
               >
                 {lang === "zh" ? "画廊" : "GALLERY"}
