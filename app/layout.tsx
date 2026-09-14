@@ -42,6 +42,14 @@ const notoSerifSC = Noto_Serif_SC({
 export const metadata: Metadata = {
   // 单域名不变式：OG/绝对地址一律走 env 域（与访客域一致），见 lib/site-url.ts
   metadataBase: new URL(getSiteUrlSync()),
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/icon-192.png",
+  },
   title: {
     default: "慢日志",
     template: "%s | 慢日志",
@@ -49,10 +57,6 @@ export const metadata: Metadata = {
   description:
     "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
   authors: [{ name: "Yahajiang" }],
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-icon.png",
-  },
   openGraph: {
     title: "慢日志",
     description: "慢下来，写点值得读的东西。",

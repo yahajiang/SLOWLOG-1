@@ -49,6 +49,16 @@ export function MPost({
   const content = (prismaRaw as any)?.content || (rawPost as any).content;
   const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined;
   const [sysDark, setSysDark] = useState(false)
+
+  // 浏览计数：每会话每篇一次（sessionStorage 去重；失败静默）
+  useEffect(() => {
+    try {
+      const key = `sl-viewed:${post.id}`
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, "1")
+      fetch(`/api/posts/${post.id}/view`, { method: "POST", keepalive: true }).catch(() => {})
+    } catch {}
+  }, [post.id])
   useEffect(() => {
     if (pageConfig?.theme !== "system") return
     const mq = window.matchMedia("(prefers-color-scheme: dark)")

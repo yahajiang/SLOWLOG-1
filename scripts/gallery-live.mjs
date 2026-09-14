@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true });
+const p = await b.newPage();
+const errs = [];
+p.on("pageerror", (e) => errs.push(String(e)));
+p.on("console", (m) => { if (m.type() === "error") errs.push(m.text()); });
+await p.goto("http://127.0.0.1:3000/design/gallery.html", { waitUntil: "networkidle", timeout: 60000 });
+await p.waitForTimeout(800);
+const cards = await p.locator(".card").count();
+const cnt = await p.locator("#cnt").textContent().catch(() => "");
+console.log("cards", cards, "cnt", cnt);
+console.log("errors", errs.slice(0, 5));
+await b.close();

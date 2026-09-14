@@ -69,6 +69,16 @@ export function PostClient({
   const [resumePct, setResumePct] = useState<number | null>(null)
   const [portalReady, setPortalReady] = useState(false)
   useEffect(() => setPortalReady(true), [])
+
+  // 浏览计数：每会话每篇一次（sessionStorage 去重，防刷新虚增；失败静默）
+  useEffect(() => {
+    try {
+      const key = `sl-viewed:${post.id}`
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, "1")
+      fetch(`/api/posts/${post.id}/view`, { method: "POST", keepalive: true }).catch(() => {})
+    } catch {}
+  }, [post.id])
   useEffect(() => {
     const saved = getReadProgress(postId)
     if (saved && saved > 10 && saved < 92) setResumePct(saved)
