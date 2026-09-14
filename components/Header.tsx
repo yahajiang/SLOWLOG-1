@@ -52,12 +52,6 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
                 {t.navHome}
               </Link>
               <Link
-                href="/#posts"
-                className="whitespace-nowrap text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
-              >
-                {t.navPosts}
-              </Link>
-              <Link
                 href="/archive"
                 className="whitespace-nowrap text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
               >
