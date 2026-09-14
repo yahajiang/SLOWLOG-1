@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/Toast"
 import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { useLang } from "@/lib/lang-context"
 import { SettingsPageSkeleton } from "@/components/dashboard/Skeleton"
+import { AccountCard } from "@/components/dashboard/AccountCard"
 
 export default function SettingsPage(){
   const [form,setForm]=useState<any>(null)
@@ -48,6 +49,8 @@ export default function SettingsPage(){
         </div>
         <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
       </div>
+
+      <AccountCard />
     </div>
   )
 }

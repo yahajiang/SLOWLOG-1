@@ -153,6 +153,17 @@ export const dict = {
     dashCategories: "分类",
     dashMedia: "媒体库",
     dashSettings: "设置",
+    dashCollapse: "收起侧边栏",
+    dashExpand: "展开侧边栏",
+    acctTitle: "账号管理",
+    acctDesc: "修改登录邮箱、显示名称与密码；保存后需重新登录。",
+    acctCurrent: "当前密码",
+    acctEmail: "新邮箱",
+    acctNewPass: "新密码",
+    acctConfirm: "确认新密码",
+    acctName: "显示名称",
+    acctSave: "更新账号",
+    acctSaved: "已更新，请重新登录",
     dashFront: "前台",
     dashLogout: "登出",
     dashTagline: "深度思考 · 缓慢进化",
@@ -445,6 +456,17 @@ export const dict = {
     dashCategories: "Categories",
     dashMedia: "Media",
     dashSettings: "Settings",
+    dashCollapse: "Collapse sidebar",
+    dashExpand: "Expand sidebar",
+    acctTitle: "Account",
+    acctDesc: "Update sign-in email, display name and password. You will be signed out after saving.",
+    acctCurrent: "Current password",
+    acctEmail: "New email",
+    acctNewPass: "New password",
+    acctConfirm: "Confirm new password",
+    acctName: "Display name",
+    acctSave: "Update account",
+    acctSaved: "Updated. Please sign in again",
     dashFront: "Frontend",
     dashLogout: "Sign out",
     dashTagline: "Think deep · Evolve slow",
@@ -720,6 +742,17 @@ export type Dict = {
   dashCategories: string;
   dashMedia: string;
   dashSettings: string;
+    dashCollapse: string;
+    dashExpand: string;
+    acctTitle: string;
+    acctDesc: string;
+    acctCurrent: string;
+    acctEmail: string;
+    acctNewPass: string;
+    acctConfirm: string;
+    acctName: string;
+    acctSave: string;
+    acctSaved: string;
   dashFront: string;
   dashLogout: string;
   dashTagline: string;
