@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import { authConfig } from "@/lib/auth-config"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
 const { auth } = NextAuth(authConfig)
 
@@ -15,13 +16,28 @@ function mobileTarget(pathname: string): string | null {
   return null
 }
 
+/**
+ * 重定向必须基于「请求真值」：Vercel + Cloudflare 代理链路下，nextUrl.origin
+ * 可能被解析成部署域（slowlog.vercel.app——被墙，访客侧直接超时）。
+ * 优先 x-forwarded-host / x-forwarded-proto，退回 host，最后才用 nextUrl 兜底。
+ */
+function redirectFor(req: NextRequest, target: string) {
+  const h = req.headers
+  const proto = (h.get("x-forwarded-proto") || "https").split(",")[0].trim() || "https"
+  const host =
+    (h.get("x-forwarded-host") || "").split(",")[0].trim() ||
+    h.get("host") ||
+    req.nextUrl.host
+  return NextResponse.redirect(new URL(target, `${proto}://${host}`))
+}
+
 export default auth((req) => {
   const { pathname } = req.nextUrl
 
   // 兼容旧路径 /admin -> /dashboard
   if (pathname.startsWith("/admin")) {
     const newPath = pathname.replace("/admin", "/dashboard") + req.nextUrl.search
-    return NextResponse.redirect(new URL(newPath, req.nextUrl))
+    return redirectFor(req, newPath)
   }
 
   if (!pathname.startsWith("/m") && !pathname.startsWith("/api") && !pathname.startsWith("/dashboard")) {
@@ -39,19 +55,19 @@ export default auth((req) => {
 
   // 未认证用户重定向到登录页（移动后台走 /m/login）
   if (pathname.startsWith("/m/dashboard") && !req.auth) {
-    return NextResponse.redirect(new URL("/m/login", req.nextUrl))
+    return redirectFor(req, "/m/login")
   }
   if (pathname.startsWith("/dashboard") && !req.auth) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl))
+    return redirectFor(req, "/login")
   }
 
   const needsChange = (req.auth?.user as any)?.needsPasswordChange
   if (needsChange) {
     if (pathname.startsWith("/m/dashboard")) {
-      return NextResponse.redirect(new URL("/dashboard/change-password", req.nextUrl))
+      return redirectFor(req, "/dashboard/change-password")
     }
     if (pathname.startsWith("/dashboard") && pathname !== "/dashboard/change-password") {
-      return NextResponse.redirect(new URL("/dashboard/change-password", req.nextUrl))
+      return redirectFor(req, "/dashboard/change-password")
     }
   }
 })
