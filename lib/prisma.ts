@@ -11,8 +11,8 @@ function createPrisma() {
   // ⚠️ 本模块仅可在 Node runtime 引用；middleware/edge 不得 import（pg 依赖 crypto）。
   const pool = new Pool({
     connectionString,
-    // Neon 证书链由 Node 内置 CA 覆盖：启用 TLS 验证（修复后端审查 P2-1）
-    ssl: { rejectUnauthorized: true },
+    // TLS 策略：远程（Neon）强制验证证书链（P2-1）；本地/CI 的 postgres 服务无 TLS，走明文
+    ssl: /localhost|127\.0\.0\.1/.test(connectionString) ? false : { rejectUnauthorized: true },
     max: 5,
     connectionTimeoutMillis: 15_000,
   })
