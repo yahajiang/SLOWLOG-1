@@ -2,15 +2,34 @@
 
 import { useLang } from "@/lib/lang-context";
 
+import { Languages } from "lucide-react";
+
 interface LanguageSwitcherProps {
   /** sm=移动 44px 触控；md=桌面紧凑（默认） */
   size?: "sm" | "md";
   /** ghost=无边框（与 ThemeToggle 幽灵风格统一，用于侧边栏控件组） */
   ghost?: boolean;
+  /** icon=纯图标/文字钮（默认）；row=侧边栏全宽行 */
+  variant?: "icon" | "row";
 }
 
-export function LanguageSwitcher({ size = "md", ghost = false }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ size = "md", ghost = false, variant = "icon" }: LanguageSwitcherProps) {
   const { lang, setLang, t } = useLang();
+
+  if (variant === "row") {
+    return (
+      <button
+        onClick={() => setLang(lang === "zh" ? "en" : "zh")}
+        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] transition-colors rounded-none"
+        title={lang === "zh" ? t.switchToEn : t.switchToZh}
+        aria-label={lang === "zh" ? t.switchToEn : t.switchToZh}
+      >
+        <Languages className="w-4 h-4 shrink-0" />
+        <span className="whitespace-nowrap">{lang === "zh" ? "语言" : "Language"}</span>
+        <span className="ml-auto mono text-[11px] tracking-[0.14em] uppercase">{lang === "zh" ? "中" : "EN"}</span>
+      </button>
+    );
+  }
 
   return (
     <button
