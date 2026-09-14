@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SearchButton } from "@/components/SearchButton";
 import { useLang } from "@/lib/lang-context";
 import { catLabel } from "@/components/HomeClient";
+import { mdInSiteTz } from "@/lib/relative-time";
 
 export type TagItem = {
   id: string;
@@ -97,8 +98,7 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
         <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-6 rounded-none">
           <div className="space-y-2">
             {items.map((p) => {
-              const d = new Date(p.date);
-              const md = `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+              const md = mdInSiteTz(p.date);
               const title = zh ? (p.titleZh || p.title) : p.title;
               return (
                 <Link

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
+import { mdInSiteTz } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { mCatLabel } from "@/lib/madapt"
@@ -105,8 +106,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
               </div>
               <div>
                 {arr.map((p: any, i: number) => {
-                  const d = new Date(p.publishedAt || p.createdAt);
-                  const md = `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                  const md = mdInSiteTz(p.publishedAt || p.createdAt);
                   const title = lang === "zh" ? p.titleZh || p.title : p.title;
                   return (
                     <Link

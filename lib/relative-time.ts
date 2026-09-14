@@ -3,11 +3,23 @@
 import { useEffect, useState } from "react";
 import type { Lang } from "./i18n";
 
+/** 站点展示时区固定 +08:00（CST）：SSR（UTC）与客户端同值，防跨零点 hydration mismatch */
+const SITE_TZ_OFFSET_MS = 8 * 3600_000;
+
+/** 固定 +08:00 的 MM-DD（归档/标签/卡片行日期） */
+export function mdInSiteTz(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+  const t = Date.parse(dateStr);
+  if (isNaN(t)) return "";
+  return new Date(t + SITE_TZ_OFFSET_MS).toISOString().slice(5, 10);
+}
+
 export function formatDisplayDate(dateStr: string | null, lang: Lang): string {
   if (!dateStr) return ""
-  const d = new Date(dateStr)
-  if (isNaN(d.getTime())) return ""
-  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric" })
+  const t = Date.parse(dateStr)
+  if (isNaN(t)) return ""
+  const d = new Date(t + SITE_TZ_OFFSET_MS)
+  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })
 }
 
 export function formatRelativeTime(dateStr: string, lang: Lang): string {
@@ -30,14 +42,14 @@ export function formatRelativeTime(dateStr: string, lang: Lang): string {
     if (diffHour < 24) return `${diffHour} 小时前`;
     if (diffDay < 7) return `${diffDay} 天前`;
     if (diffDay < 30) return `${Math.floor(diffDay / 7)} 周前`;
-    return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric", year: "numeric" });
+    return new Date(date.getTime() + SITE_TZ_OFFSET_MS).toLocaleDateString("zh-CN", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   } else {
     if (diffSec < 60) return "just now";
     if (diffMin < 60) return `${diffMin} min ago`;
     if (diffHour < 24) return `${diffHour} hours ago`;
     if (diffDay < 7) return `${diffDay} days ago`;
     if (diffDay < 30) return `${Math.floor(diffDay / 7)} weeks ago`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return new Date(date.getTime() + SITE_TZ_OFFSET_MS).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   }
 }
 

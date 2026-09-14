@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
 import type { Category } from "@/lib/categories";
 import type { Post } from "@/lib/types";
-import { formatDisplayDate } from "@/lib/relative-time";
+import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { useLang } from "@/lib/lang-context";
 import { getReadProgress } from "@/lib/read-progress";
 import { Header } from "@/components/Header";
@@ -471,8 +471,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       {/* 迷你时间线：细竖线 + 骑线圆点，hover 点亮品牌色 */}
                       <div className="space-y-0.5 border-l border-[var(--yh-border)] pl-5 ml-1">
                         {arr.map((p)=> {
-                          const d = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date)
-                          const md = `${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`
+                          const md = mdInSiteTz((p as any).publishedAt || (p as any).createdAt || (p as any).date)
                           return (
                             <Link key={p.id} href={`/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[3px]">
                               <span className="absolute -left-[26px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:bg-[var(--yh-accent)] group-hover:border-[var(--yh-accent)] group-hover:scale-110 transition-all duration-200" />
