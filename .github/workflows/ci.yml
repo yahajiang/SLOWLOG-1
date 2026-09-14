@@ -74,9 +74,8 @@ jobs:
         run: node scripts/api-tests-fixtures.mjs
       - name: 生产构建
         run: npx next build
-      - name: 启动生产服务
+      - name: 启动生产服务并运行六场景集成测试
         run: |
           npx next start -p 3100 &
-          npx wait-on http://127.0.0.1:3100/api/health -t 60000 || (sleep 5 && curl -sf http://127.0.0.1:3100/api/health)
-      - name: 六场景集成测试（登录限流 / 改密 / 草稿保护 / 定时发布 / 缓存隔离 / 上传校验）
-        run: node scripts/api-tests.mjs http://127.0.0.1:3100
+          npx wait-on http://127.0.0.1:3100/api/health -t 60000
+          node scripts/api-tests.mjs http://127.0.0.1:3100
