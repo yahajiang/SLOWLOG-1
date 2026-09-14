@@ -265,7 +265,7 @@ export function PostClient({
           {/* 平板竖持（<1024）：侧栏目录不可用 → 共享抽屉目录（/t 树挂载） */}
           {tocDrawer && (
             <div className="lg:hidden">
-              <TocDrawer headings={post.headings || []} />
+              <TocDrawer headings={post.headings || []} hideOnLg />
             </div>
           )}
         </div>
