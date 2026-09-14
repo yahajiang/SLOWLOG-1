@@ -11,6 +11,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { CategoryBadge } from "./CategoryBadge";
 import { ReadingProgress } from "./ReadingProgress";
 import { TableOfContents } from "./TableOfContents";
+import { TocDrawer } from "./TocDrawer";
 import { Footer } from "./Footer";
 import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
@@ -36,10 +37,12 @@ export function PostClient({
   post: rawPost,
   rawPost: prismaRaw,
   relatedPosts = [],
+  tocDrawer = false,
 }: {
   post: Post;
   rawPost?: any;
   relatedPosts?: Post[];
+  tocDrawer?: boolean;
 }) {
   const { t, lang } = useLang();
   const relative = useRelativeTime(rawPost.createdAt || rawPost.date, lang);
@@ -259,6 +262,12 @@ export function PostClient({
 
             {showTOC && <TableOfContents headings={post.headings} readMinutes={parseInt(post.readTime) || undefined} />}
           </div>
+          {/* 平板竖持（<1024）：侧栏目录不可用 → 共享抽屉目录（/t 树挂载） */}
+          {tocDrawer && (
+            <div className="lg:hidden">
+              <TocDrawer headings={post.headings || []} />
+            </div>
+          )}
         </div>
       </section>
 

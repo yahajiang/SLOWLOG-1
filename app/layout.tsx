@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./Providers";
 import { Welcome } from "@/components/Welcome";
 import { SearchPanel } from "@/components/SearchPanel";
+import { TabletGate } from "@/components/TabletGate";
 import { getSiteUrlSync } from "@/lib/site-url";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -111,6 +112,7 @@ export default function RootLayout({
           <Welcome />
           {children}
           <SearchPanel />
+          <TabletGate />
         </Providers>
       </body>
     </html>
