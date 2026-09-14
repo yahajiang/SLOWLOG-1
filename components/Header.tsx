@@ -38,13 +38,13 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
               <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">慢日志</span>
               <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-text)]">· SLOWLOG</span>
             </span>
-            <span className="hidden xl:inline mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] border-l border-[var(--yh-border)] pl-3">
+            <span className="hidden 2xl:inline mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] border-l border-[var(--yh-border)] pl-3">
               {t.siteSlogan}
             </span>
           </Link>
 
-          <div className="flex items-center gap-3 xl:gap-7 shrink-0">
-            <nav className="hidden md:flex items-center gap-4 xl:gap-7 mono text-[12px] tracking-[0.14em] uppercase">
+          <div className="flex items-center gap-3 2xl:gap-7 shrink-0">
+            <nav className="hidden md:flex items-center gap-4 2xl:gap-7 mono text-[12px] tracking-[0.14em] uppercase">
               <Link
                 href="/"
                 className="whitespace-nowrap text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
@@ -86,7 +86,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="pl-10 pr-[18px] py-2 mono text-[12px] tracking-[0.14em] border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors w-36 md:w-44 xl:w-56 min-h-[48px] rounded-none"
+                className="pl-10 pr-[18px] py-2 mono text-[12px] tracking-[0.14em] border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors w-36 md:w-44 2xl:w-56 min-h-[48px] rounded-none"
               />
             </div>
           </div>
