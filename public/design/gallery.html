@@ -354,7 +354,23 @@ const C = [
 - 骨架卡：三行错峰 shimmer 1.8s ease-in-out + 短 accent 装饰线 + 底部「加载中」1.6s 呼吸点
 - 底部随机格言（lib/taglines.ts pickTagline，mount 后抽，避免水合不一致）
 - 变体 DashLoading compact；编辑器 dynamic loading 用 dashLoadingEditor 词`},
- {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
+ {id:"nf",name:"404 幽灵页",cat:"反馈",desc:"幽灵数字 404 轻浮 + 歪印压角 + 「随机一篇」探索出口；纸纹 + 装订线过场语言。",
+  pv:`<div style="width:100%;max-width:200px;text-align:center;padding:11px 0 6px"><div style="position:relative;display:inline-block"><span style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:56px;font-weight:600;letter-spacing:.08em;color:var(--yh-muted);opacity:.4;line-height:1">404</span><span style="position:absolute;top:-1px;right:-11px;width:22px;height:22px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9px;transform:rotate(-6deg)">S</span></div><div style="font-size:11px;font-weight:600;margin-top:8px">这一页还没有被写下</div><div style="font-size:9px;color:var(--yh-muted);margin-top:3px">页面不存在或已被移动</div><div style="display:flex;gap:6px;justify-content:center;margin-top:9px"><span style="font-size:9px;padding:5px 10px;background:var(--yh-text);color:var(--yh-bg)">返回首页</span><span style="font-size:9px;padding:5px 10px;border:1px solid var(--yh-border);color:var(--yh-muted)">去归档页</span></div><div class="mono" style="font-size:8px;color:var(--yh-muted);margin-top:8px;text-decoration:underline">&#8635; 随机一篇</div></div>`,
+  prompt:`${P_BASE}
+新建「404 幽灵页」（还原 app/not-found.tsx）：
+- 幽灵数字 404：serif ~112px、text muted/40、nfBob 7s 轻浮（translateY ±7px）
+- 歪印 S 压数字右上（rotate -6°）；过场语言 .paper-grain + .tick 四角
+- 出口三个：返回首页（实底）/ 去归档页（描边）/ 「随机一篇」（fetch /api/posts 随机跳转，失败兜底 /archive）
+- 文案全走 i18n：nfHeadline / nfHint / nfArchive / nfRandom`},
+  {id:"err",name:"错误边界",cat:"反馈",desc:"断线菱形母题 + 歪印 + ERR digest 摘要；重试 / 回首页双语出口。",
+  pv:`<div style="width:100%;max-width:200px;text-align:center"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="flex:1;height:1px;background:var(--yh-border)"></span><span style="width:7px;height:7px;transform:rotate(45deg);border:1px solid #C2543A;background:rgba(194,84,58,.18)"></span><span style="flex:1;height:1px;background:var(--yh-border)"></span></div><span style="width:26px;height:26px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;transform:rotate(-5deg)">S</span><div style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:16px;font-weight:600;margin-top:7px">出错了</div><div class="mono" style="font-size:8px;letter-spacing:.2em;color:var(--yh-muted);margin-top:5px">ERR &#183; 2867882134</div><div style="display:flex;gap:6px;justify-content:center;margin-top:9px"><span style="font-size:9px;padding:5px 10px;background:var(--yh-text);color:var(--yh-bg)">重试</span><span style="font-size:9px;padding:5px 10px;border:1px solid var(--yh-border);color:var(--yh-muted)">返回首页</span></div></div>`,
+  prompt:`${P_BASE}
+新建「错误边界 Error」（还原 app/error.tsx）：
+- 断线母题：左右细线 + 中央 45° 菱形（#C2543A 描边 + 18% 底）
+- 歪印 S（rotate -5°）+ serif 标题（t.errorTitle）+ ERR digest（mono 10px tracking .22em）
+- 出口：重试（reset 实底）+ 返回首页（描边）；文案双语（useLang）
+- 过场语言：.paper-grain 纸纹 + .tick 四角；dashboard 版换 --dash-* 令牌`},
+  {id:"progress",name:"阅读进度条",cat:"反馈",desc:"article 相对计算阅读比例（rAF 节流）：顶部细线渐显 + 侧栏 5px 条 + mono 百分比/剩余时间三处联动。",
   pv:`<div style="width:100%;max-width:210px"><div style="height:5px;background:var(--yh-border);position:relative"><span class="lprog" style="position:absolute;left:0;top:0;height:100%;width:100%;background:var(--yh-accent)"></span></div><div class="mono lb" style="font-size:9px;color:var(--yh-muted);margin-top:6px">scaleX 循环演示 · 阅读进度</div></div>`,
   prompt:`${P_BASE}
 新建「阅读进度条 ReadingProgress」（还原 components/ReadingProgress.tsx）：
@@ -542,7 +558,15 @@ const C = [
 新建「DashLoading」（components/dashboard/DashLoading.tsx）：
 - full：S 印 + 品牌 mono + 呼吸点 + children 骨架
 - compact：仅呼吸点+加载中（移动顶栏已有品牌）`},
- {id:"mlogin",name:"移动登录 MLogin",cat:"输入",desc:"居中纸卡：text-base 输入；成功提示令牌色条。点登录试试。",
+ {id:"login",name:"桌面登录 Login",cat:"输入",desc:"品牌行（歪印 + serif 慢日志 + ADMIN CONSOLE 眉题）+ CREDENTIAL CHECK 题头条；focus accent + 左色条状态。",
+  pv:`<div style="width:100%;max-width:170px;text-align:center"><span style="width:22px;height:22px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9px;transform:rotate(-4deg)">S</span><div style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:15px;font-weight:600;margin-top:4px">慢日志</div><div class="mono" style="font-size:7px;letter-spacing:.2em;color:var(--yh-muted);margin:3px 0 8px">ADMIN CONSOLE &#183; 后台管理</div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:9px;text-align:left"><div style="display:flex;align-items:center;gap:5px;margin-bottom:7px"><span style="width:12px;height:1px;background:var(--yh-accent);opacity:.6"></span><span class="mono" style="font-size:7px;letter-spacing:.24em;color:var(--yh-muted)">CREDENTIAL CHECK</span><span style="flex:1;height:1px;background:var(--yh-border)"></span></div><div style="border:1px solid var(--yh-border);height:22px;margin-bottom:6px"></div><div style="border:1px solid var(--yh-border);height:22px;margin-bottom:7px"></div><button type="button" onclick="btnClick(this,'✓ 已提交')" style="width:100%;font-family:inherit;background:var(--yh-text);color:var(--yh-bg);text-align:center;padding:6px;font-size:9px;letter-spacing:.18em;cursor:pointer;border:none">登录</button></div></div>`,
+  prompt:`${P_BASE}
+新建「桌面登录 Login」（还原 app/login/page.tsx）：
+- 品牌行：歪印 S（rotate -4°）+ serif 慢日志 + mono 眉题 ADMIN CONSOLE · 后台管理
+- 卡片题头条：accent 短线 + CREDENTIAL CHECK（mono 9px tracking .28em）+ 延伸细线
+- 输入 focus: border-accent + ring 1px accent/20；错误/成功提示 4px 左色条（#c44 / accent）
+- 逻辑：next-auth credentials → /dashboard；文案双语`},
+  {id:"mlogin",name:"移动登录 MLogin",cat:"输入",desc:"居中纸卡：text-base 输入；成功提示令牌色条。点登录试试。",
    pv:`<div style="width:100%;max-width:160px;border:1px solid var(--yh-border);background:var(--dash-card);padding:12px"><div style="font-size:11px;font-weight:600;margin-bottom:8px">后台管理</div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:6px"></div><div style="border:1px solid var(--yh-border);height:28px;margin-bottom:8px"></div><button type="button" onclick="btnClick(this,'✓ 已提交')" style="width:100%;font-family:inherit;background:var(--yh-text);color:var(--yh-bg);text-align:center;padding:8px;font-size:10px;cursor:pointer;border:none">登录</button></div>`,
    prompt:`${P_BASE}
 新建「MLogin」（components/mobile/MLogin.tsx）：
@@ -600,7 +624,7 @@ function openAbout(){
   var md=document.querySelector(".modal");
   if(md) md.classList.add("about");
   document.getElementById("m-body").innerHTML=`
-    <div class="m-meta" style="margin-bottom:14px"><span class="tag">DESIGN.md v1.6</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta" style="margin-bottom:14px"><span class="tag">DESIGN.md v1.7</span><span class="tag">49 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">§ Identity · 你是谁在设计</div>
       <p class="ab-lead" style="margin:0">Editorial Web Designer — 画廊是设计契约的展品柜，不是营销落地页。每条提示词都应对齐真站源码路径与令牌。</p>
