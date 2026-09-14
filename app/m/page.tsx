@@ -3,6 +3,7 @@ import { getAllPosts } from "@/lib/posts";
 import { prisma } from "@/lib/prisma";
 import { MHome } from "@/components/mobile/MHome";
 import { adaptPost } from "@/lib/madapt";
+import { stripPostHeavy } from "@/lib/posts";
 import { getSiteUrlSync } from "@/lib/site-url";
 
 export const revalidate = 60;
@@ -18,7 +19,7 @@ export default async function MobileHomePage() {
     getAllPosts(),
     prisma.category.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []),
   ]);
-  const posts = postsRaw.map(adaptPost) as any;
+  const posts = postsRaw.map(adaptPost).map(stripPostHeavy) as any;
   const categories = dbCats.length
     ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" } as any, ...dbCats]
     : undefined;
