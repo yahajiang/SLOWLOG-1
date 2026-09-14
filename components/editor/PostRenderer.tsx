@@ -2,15 +2,7 @@
 import React from "react"
 import type { PageConfig } from "@/lib/page-config"
 import { slugifyHeading, dedupeHeadingId } from "@/lib/headings"
-
-function safeColor(v: unknown): string | undefined {
-  if (typeof v !== "string") return undefined
-  const s = v.trim()
-  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(s)) return s
-  if (/^(rgb|rgba|hsl|hsla)\(\s*[\d.,\s\/%]+\)$/.test(s)) return s
-  if (/^[a-zA-Z]+$/.test(s) && s.length <= 20) return s
-  return undefined
-}
+import { safeColor, safeHref, safeImgSrc } from "@/lib/page-config"
 
 function renderInline(node: any, idx: number): React.ReactNode {
   if (node.type === "text") {
@@ -33,7 +25,8 @@ function renderInline(node: any, idx: number): React.ReactNode {
           : <mark key={idx + "-h"}>{el}</mark>
       }
       if (m.type === "link") {
-        const href = m.attrs?.href || "#"
+        // href 白名单：http/https/mailto/tel/锚点/站内路径，其余降级为普通文本
+        const href = safeHref(m.attrs?.href) ?? "#"
         const target = m.attrs?.target || undefined
         el = <a key={idx + "-a"} href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined}>{el}</a>
       }
@@ -148,7 +141,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       return <li key={idx} data-checked={checked} className="flex gap-2"><label className="mt-1"><input type="checkbox" checked={checked} readOnly className="w-[18px] h-[18px] rounded border-zinc-300" /></label> <div className="flex-1">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</div></li>
     }
     case "image": {
-      const src = node.attrs?.src || ""
+      const src = safeImgSrc(node.attrs?.src) || ""
       const alt = node.attrs?.alt || ""
       const title = node.attrs?.title || ""
       const width = node.attrs?.width || null

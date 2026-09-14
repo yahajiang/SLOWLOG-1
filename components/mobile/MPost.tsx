@@ -10,6 +10,7 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { TocDrawer } from "@/components/TocDrawer";
 import { Lightbox } from "@/components/Lightbox";
 import { MFooter } from "./MFooter";
+import { parsePageConfig } from "@/lib/page-config";
 import { PostRenderer } from "@/components/editor/PostRenderer";
 import { formatDisplayDate } from "@/lib/relative-time";
 import type { PageConfig } from "@/lib/page-config";
@@ -47,7 +48,7 @@ export function MPost({
         }
       : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content;
-  const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined;
+  const pageConfig = parsePageConfig((prismaRaw as any)?.pageConfig);
   const [sysDark, setSysDark] = useState(false)
 
   // 浏览计数：每会话每篇一次（sessionStorage 去重；失败静默）
@@ -154,7 +155,7 @@ export function MPost({
             {content ? (
               <PostRenderer content={content} pageConfig={pageConfig} />
             ) : (
-              <div dangerouslySetInnerHTML={{ __html: post.html }} />
+              <p className="text-[15px] text-[var(--yh-muted)] py-6 text-center">内容暂缺，请稍后再试。</p>
             )}
             <div className="mt-8 p-4 rounded-none text-[13px] leading-relaxed border bg-[var(--dash-card)] border-[var(--yh-border)] text-[var(--yh-muted)]">
               <p>
