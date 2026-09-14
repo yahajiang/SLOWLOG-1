@@ -268,7 +268,7 @@ const C = [
 - fixed top-4 right-4 z-[100]；条 min-w-240 max-w-360 px-4 py-3 直角 border + backdrop-blur + shadow-pop
 - 入场 slideInRight **0.28s** ease-out（translateX **10px**→0）；2500ms 后 slideOutRight 0.28s 退场
 - 语义色：success emerald / error red / info 纸面；文字用 dash-bg 反色按钮场景禁 text-white`},
- {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，年份环节点，文章节点进入视口依次点亮。",
+ {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，大号衬线年份 + mono 计数，文章节点进入视口依次点亮。",
   pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">↻ 重播</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 · 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 封面系统</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 编辑器</span></div></div>`,
   prompt:`${P_BASE}
 新建「归档时间线 TimelineArchive」：
@@ -346,7 +346,7 @@ const C = [
 新建「确认对话框 ConfirmDialog」：
 - open/onOpenChange/variant；遮罩 black/40 + blur；面板 scaleIn 200ms；关闭 200ms 退场后卸载
 - Esc/遮罩点击关闭；danger=red-600；按钮取消=描边`},
- {id:"load",name:"加载状态",cat:"反馈",desc:"S 圆印 + 品牌字 + shimmer 骨架卡（三行递减宽度）+ accent 呼吸点 + mono LOADING。后台另有 compact 变体。",
+ {id:"load",name:"加载状态",cat:"反馈",desc:"S 圆印 + 品牌字 + shimmer 骨架卡（封面块 + 三行递减）+ accent 呼吸点 + mono LOADING；纸纹 + 四角装订线。后台另有 compact 变体。",
   pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">慢日志 · SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
   prompt:`${P_BASE}
 新建「加载状态 Loading」（还原 app/loading.tsx）：
@@ -437,7 +437,7 @@ const C = [
 - Input/Select：dash-bg → focus dash-card + border accent + ring accent/20
 - focus-visible 2px；过渡 180–200ms ease-out
 - 错误优先于 hint；固定高度防跳`},
- {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：装订线+暖晕+印章+墨字晕开；格言随机；首访一次。",
+ {id:"welcome",name:"墨字入场",cat:"动效",desc:"签名仪式：装订线+暖晕+侧注+印章+墨字晕开；格言随机；首访一次。",
   pv:`<div style="width:100%;max-width:230px;text-align:center;padding:8px 0"><div class="pv-ink" style="font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:24px;letter-spacing:.08em;color:var(--yh-text)"><span>慢</span><span>日</span><span>志</span><span style="color:var(--yh-muted);margin:0 4px">·</span><span style="font-size:16px">S</span><span style="font-size:16px">L</span><span style="font-size:16px">O</span><span style="font-size:16px">W</span></div><div class="pv-ink" style="margin-top:6px"><span style="font-size:9px;color:var(--yh-muted);letter-spacing:.3em">纸上有字 · 心里有空</span></div></div>`,
   prompt:`${P_BASE}
 新建「墨字入场 Welcome」（还原 components/Welcome.tsx）：
@@ -552,7 +552,7 @@ const C = [
    pv:`<div class="lp" style="width:100%;max-width:220px;height:32px;border-bottom:1px solid var(--yh-border);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:10px"><b>admin</b><span style="color:var(--yh-muted)">EN ☾</span></div>`,
    prompt:`${P_BASE}
 新建「MDashTopbar」：h-14 sticky；userName + LanguageSwitcher/ThemeToggle size=sm`},
- {id:"march",name:"移动归档 MArchive",cat:"数据展示",desc:"年份分组 + IO 点亮节点。点行高亮。",
+ {id:"march",name:"移动归档 MArchive",cat:"数据展示",desc:"大号衬线年份分组 + IO 点亮节点。点行高亮。",
    pv:`<div style="width:100%;max-width:180px;font-size:10px"><div class="mono lb" style="font-weight:600;margin-bottom:6px">2026 · 7</div><div class="nav-item on" onclick="navPick(this)" style="padding:5px 0;border-bottom:1px solid var(--yh-border);border-left:2px solid transparent">09-03 封面系统</div><div class="nav-item lp d2" onclick="navPick(this)" style="padding:5px 0;border-left:2px solid transparent;color:var(--yh-muted)">09-01 编辑器</div></div>`,
    prompt:`${P_BASE}
 新建「MArchive」（components/mobile/MArchive.tsx）：年份环 + IO is-in；MHeader 搜索过滤`},
@@ -626,6 +626,7 @@ function openAbout(){
         <dt>循环</dt><dd>cover-sway 只动 translateY(±1.5px)；关键帧禁止写死 opacity:1</dd>
         <dt>错峰</dt><dd>--cm-dur / --cm-delay 按文章 hash，多元素各自轻缓</dd>
         <dt>Reduced</dt><dd>prefers-reduced-motion 全关；静态直出</dd>
+        <dt>过场</dt><dd>纸纹 + 四角装订线 + 歪印；加载/错误/登录/404 共用同一语言</dd>
       </dl>
     </div>
     <div class="ab-card">

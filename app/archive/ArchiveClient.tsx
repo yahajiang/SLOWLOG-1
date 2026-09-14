@@ -23,6 +23,10 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
     ? years.map(([y, arr]) => [y, arr.filter((p:any)=> (p.titleZh||p.title).toLowerCase().includes(q.toLowerCase()) || p.category.toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
     : years
   const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|")
+  // 刊头统计：篇数 / 年数 / 分类数 / 最近更新（MM-DD）
+  const catCount = new Set(posts.map((p: any) => p.category)).size
+  const latestTs = posts.reduce((acc: number, p: any) => Math.max(acc, new Date(p.publishedAt || p.createdAt).getTime()), 0)
+  const latestMd = latestTs ? `${String(new Date(latestTs).getMonth() + 1).padStart(2, "0")}-${String(new Date(latestTs).getDate()).padStart(2, "0")}` : "—"
 
   useEffect(() => {
     const root = tlRef.current
@@ -85,8 +89,30 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
         </div>
       </div>
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-6">
-        <h1 className="serif text-[32px] font-semibold tracking-tight">{t.archiveTitle}</h1>
+        <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {lang === "zh" ? "全部日志" : "Archive"}</p>
+        <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">{t.archiveDesc(posts.length, years.length)}{q && ` · ${t.filteredCount(filteredYears.reduce((a, [,arr])=>a+arr.length,0))}`}</p>
+
+        {/* 统计条：POSTS / YEARS / CATEGORIES / LATEST */}
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 border border-[var(--yh-border)] bg-[var(--dash-card)]">
+          <div className="px-4 py-3 border-r border-b sm:border-b-0 border-[var(--yh-border)]">
+            <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Posts</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{posts.length}</p>
+          </div>
+          <div className="px-4 py-3 border-b sm:border-b-0 sm:border-r border-[var(--yh-border)]">
+            <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Years</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{years.length}</p>
+          </div>
+          <div className="px-4 py-3 border-r border-[var(--yh-border)]">
+            <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Categories</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{catCount}</p>
+          </div>
+          <div className="px-4 py-3">
+            <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Latest</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{latestMd}</p>
+          </div>
+        </div>
+
         <div className="relative mt-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
           <input
@@ -108,11 +134,12 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
 
           {filteredYears.map(([year, arr]) => (
             <section key={year} className="mb-12">
-              {/* 年份节点（环） */}
-              <div className="tl-item relative flex items-center gap-3 mb-5">
+              {/* 年份节点（环）+ 大号衬线年份 */}
+              <div className="tl-item relative flex items-baseline gap-3 mb-5">
                 <span aria-hidden className="tl-dot absolute -left-8 top-1/2 -translate-y-1/2 w-[11px] h-[11px] rounded-full border-2 border-[var(--yh-accent)] bg-[var(--dash-card)]" />
-                <h2 className="mono text-[13px] tracking-[0.14em] uppercase font-semibold">{year} · {t.postsCount2(arr.length)}</h2>
-                <span aria-hidden className="flex-1 h-px bg-[var(--yh-border)]" />
+                <h2 className="serif text-[26px] font-semibold tracking-tight leading-none">{year}</h2>
+                <span className="mono text-[10px] tracking-[0.18em] uppercase text-[var(--yh-muted)]">{t.postsCount2(arr.length)}</span>
+                <span aria-hidden className="flex-1 h-px bg-[var(--yh-border)] self-center" />
               </div>
               <div>
                 {arr.map((p:any, i:number)=> {
