@@ -150,8 +150,14 @@ export async function getAllPosts(opts?: { status?: string; locale?: string }) {
   const where: any = {}
   if (opts?.status) where.status = opts.status
   else where.status = "published"
-  const rows = await getCachedPostRows(where.status)
-  return rows.map(mapPost)
+  try {
+    const rows = await getCachedPostRows(where.status)
+    return rows.map(mapPost)
+  } catch {
+    // 构建机/CI 无 DB 时优雅降级为空列表——生产构建不再依赖数据库存活；
+    // 运行期由 ISR/revalidate 使用真实 DB 数据回填（交付可靠性 P1）
+    return []
+  }
 }
 
 export async function getPostBySlug(slug: string) {
