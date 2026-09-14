@@ -27,12 +27,15 @@ function uploadWithProgress(url: string, form: FormData, onProgress: (loaded: nu
 export default function MediaPage(){
   const [items,setItems]=useState<any[]>([])
   const [view,setView]=useState<"grid"|"list">("grid")
+  const [page,setPage]=useState(1)
+  const [total,setTotal]=useState(0)
+  const totalPages=Math.max(1,Math.ceil(total/100))
   const [delId,setDelId]=useState<string|null>(null)
   const [progress, setProgress] = useState<UploadProgress | null>(null)
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const { lang } = useLang()
-  const load = useCallback(() => fetch("/api/media", { cache: "no-store" }).then(r => r.json()).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }), [])
+  const load = useCallback((p = page) => fetch(`/api/media?page=${p}`, { cache: "no-store" }).then(r => { setTotal(parseInt(r.headers.get("X-Total-Count") || "0", 10)); return r.json() }).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }), [page])
   useEffect(() => { load() }, [load])
 
   const upload = useCallback(async (files: FileList | null) => {
@@ -148,6 +151,15 @@ export default function MediaPage(){
         </div>
       )}
       {items.length === 0 && <p className="text-center text-sm text-[var(--dash-muted)] py-12">{lang === "zh" ? "暂无图片，拖拽或粘贴上传" : "No images yet — drag, drop or paste to upload"}</p>}
+      {total > 100 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 张` : `Page ${page} / ${totalPages} · ${total} items`}</p>
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "上一页" : "Prev"}</button>
+            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "下一页" : "Next"}</button>
+          </div>
+        </div>
+      )}
       <ConfirmDialog open={!!delId} onOpenChange={(v) => !v && setDelId(null)} title={lang === "zh" ? "删除图片？" : "Delete this image?"} description={lang === "zh" ? "将同时从 Vercel Blob 删除，不可恢复。" : "Also removes from Vercel Blob. This cannot be undone."} confirmText={lang === "zh" ? "删除" : "Delete"} variant="danger" onConfirm={confirmDel} />
     </div>
   )

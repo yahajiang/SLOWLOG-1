@@ -25,6 +25,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const q = searchParams.get("q") || ""
   const status = searchParams.get("status") || ""
+  // 分页：page 从 1 起；不传 page = 全量（兼容旧调用方）
+  const pageParam = parseInt(searchParams.get("page") || "", 10)
+  const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : null
   const session = await auth()
 
   const filters: any[] = []
@@ -47,6 +50,8 @@ export async function GET(req: NextRequest) {
   const take = session ? 500 : 100
   const posts = await prisma.post.findMany({
     where,
+    skip: page ? (page - 1) * take : undefined,
+    take: page ? take : undefined,
     select: {
       id: true, title: true, titleZh: true, slug: true, excerpt: true,
       excerptZh: true, status: true, featured: true, tags: true, readTime: true,
@@ -55,12 +60,15 @@ export async function GET(req: NextRequest) {
       category: { select: { name: true, nameZh: true, slug: true } },
     },
     orderBy: { updatedAt: "desc" },
-    take,
   })
+  const total = page ? await prisma.post.count({ where }) : null
   return NextResponse.json(posts, {
-    headers: session
-      ? { "Cache-Control": "private, no-store", Vary: "Cookie" }
-      : { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300", Vary: "Cookie" },
+    headers: {
+      ...(session
+        ? { "Cache-Control": "private, no-store", Vary: "Cookie" }
+        : { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300", Vary: "Cookie" }),
+      ...(total !== null ? { "X-Total-Count": String(total) } : {}),
+    },
   })
 }
 

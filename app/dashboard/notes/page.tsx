@@ -11,11 +11,15 @@ export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const PAGE_SIZE = 50
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const [delId, setDelId] = useState<string | null>(null)
   const { toast } = useToast()
   const { lang } = useLang()
-  const fetchNotes = () => fetch("/api/thoughts", { cache: "no-store" }).then(r=>r.json()).then(data=> { setNotes(Array.isArray(data)? data.map((d:any)=>({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt })) : []); setLoading(false) })
-  useEffect(()=>{fetchNotes()},[])
+  const fetchNotes = (p = page) => fetch(`/api/thoughts?page=${p}`, { cache: "no-store" }).then(r=>{ setTotal(parseInt(r.headers.get("X-Total-Count") || "0", 10)); return r.json() }).then(data=> { setNotes(Array.isArray(data)? data.map((d:any)=>({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt })) : []); setLoading(false) })
+  useEffect(()=>{fetchNotes()},[page])
   const submit = async () => {
     if (!input.trim() || input.length>500) { toast(lang === "zh" ? "内容需 1-500 字" : "Content must be 1-500 characters","error"); return }
     const text = input.trim()
@@ -23,7 +27,8 @@ export default function NotesPage() {
     setInput("")
     const r=await fetch("/api/thoughts", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ text }), cache:"no-store" })
     if(!r.ok) toast(lang === "zh" ? "发布失败" : "Publish failed","error"); else toast(lang === "zh" ? "已发布" : "Published","success")
-    fetchNotes()
+    setPage(1)
+    fetchNotes(1)
   }
   const del = async (id:string)=> setDelId(id)
   const confirmDel=async()=>{
@@ -54,6 +59,15 @@ export default function NotesPage() {
         ))}
         {notes.length===0 && <p className="text-sm text-[var(--dash-muted)] text-center py-12">{lang === "zh" ? "暂无随想" : "No thoughts yet"}</p>}
       </div>
+      {total > 50 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 条` : `Page ${page} / ${totalPages} · ${total} items`}</p>
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "上一页" : "Prev"}</button>
+            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "下一页" : "Next"}</button>
+          </div>
+        </div>
+      )}
       <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title={lang === "zh" ? "删除随想？" : "Delete this thought?"} description={lang === "zh" ? "物理删除，不可恢复。" : "This will be permanently deleted."} confirmText={lang === "zh" ? "删除" : "Delete"} variant="danger" onConfirm={confirmDel} />
     </div>
   )

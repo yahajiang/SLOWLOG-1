@@ -11,11 +11,17 @@ const ALLOWED_MIMES = new Set([
   "image/gif",
 ])
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await auth()
   if (!session) return apiError(401, "未登录")
-  const items = await prisma.media.findMany({ orderBy: { createdAt: "desc" }, take: 100 })
-  return NextResponse.json(items)
+  // 分页：page 从 1 起（默认 1；每页 100）
+  const pageParam = parseInt(new URL(req.url).searchParams.get("page") || "", 10)
+  const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
+  const items = await prisma.media.findMany({ orderBy: { createdAt: "desc" }, take: 100, skip: (page - 1) * 100 })
+  const total = await prisma.media.count()
+  const res = NextResponse.json(items)
+  res.headers.set("X-Total-Count", String(total))
+  return res
 }
 
 export async function POST(req: NextRequest) {
