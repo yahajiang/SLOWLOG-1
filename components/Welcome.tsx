@@ -74,6 +74,8 @@ export function Welcome() {
       <span className="welcome-frame welcome-frame-bl" />
       <span className="welcome-frame welcome-frame-br" />
       <div className="welcome-vignette" />
+      <span aria-hidden className="welcome-side welcome-side-l">Slow Journal</span>
+      <span aria-hidden className="welcome-side welcome-side-r">Est · 2026</span>
       <div className="welcome-inner">
         <div className="wi-stamp">
           <span className="welcome-s">S</span>

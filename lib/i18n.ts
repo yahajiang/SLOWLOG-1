@@ -295,6 +295,10 @@ export const dict = {
     errorRetry: "重试",
     notFoundTitle: "页面未找到",
     notFoundBack: "返回首页",
+    nfHeadline: "这一页还没有被写下",
+    nfHint: "您访问的页面不存在，或已被移动到别处。",
+    nfArchive: "去归档页",
+    nfRandom: "随机一篇",
     // Thoughts
     addThought: "添加新随想",
     addThoughtZh: "中文",
@@ -578,6 +582,10 @@ export const dict = {
     errorRetry: "Retry",
     notFoundTitle: "Page not found",
     notFoundBack: "Back to home",
+    nfHeadline: "This page hasn't been written yet",
+    nfHint: "The page you're looking for doesn't exist, or has moved elsewhere.",
+    nfArchive: "Browse the archive",
+    nfRandom: "Read something random",
     addThought: "Add New Thought",
     addThoughtZh: "Chinese",
     addThoughtEn: "English",
@@ -832,8 +840,12 @@ export type Dict = {
   apply: string;
   errorTitle: string;
   errorRetry: string;
-notFoundTitle: string;
+  notFoundTitle: string;
   notFoundBack: string;
+  nfHeadline: string;
+  nfHint: string;
+  nfArchive: string;
+  nfRandom: string;
   addThought: string;
   addThoughtZh: string;
   addThoughtEn: string;

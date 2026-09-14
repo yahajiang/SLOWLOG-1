@@ -917,6 +917,28 @@ body::after {
   background: var(--yh-muted);
 }
 
+/* 纸纹与装订线：加载 / 错误 / 登录 / 404 等过场页共用（与欢迎幕同语言） */
+.paper-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+.dark .paper-grain { mix-blend-mode: screen; opacity: 0.05 }
+.tick { position: absolute; width: 28px; height: 28px; border-color: var(--yh-border); border-style: solid; opacity: 0; animation: frameIn 0.55s var(--ease-out) 0.05s both; pointer-events: none }
+.tick-tl { top: 28px; left: 28px; border-width: 1px 0 0 1px }
+.tick-tr { top: 28px; right: 28px; border-width: 1px 1px 0 0 }
+.tick-bl { bottom: 28px; left: 28px; border-width: 0 0 1px 1px }
+.tick-br { bottom: 28px; right: 28px; border-width: 0 1px 1px 0 }
+@keyframes nfBob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+.welcome-side { position: absolute; top: 50%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--yh-muted); opacity: 0; white-space: nowrap; animation: fadeIn 0.6s var(--ease-out) 1.15s both }
+.welcome-side-l { left: 36px; writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg) }
+.welcome-side-r { right: 36px; writing-mode: vertical-rl; transform: translateY(-50%) }
+@media (max-width: 560px) { .welcome-side { display: none } }
+
 /* 首访欢迎幕：「盖章仪式」+ 四角装订线 + 暖晕。回访者与 reduced-motion 直接隐藏。 */
 .welcome {
   position: fixed;

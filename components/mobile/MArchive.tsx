@@ -97,12 +97,11 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
 
           {filteredYears.map(([year, arr]) => (
             <section key={year} className="mb-9">
-              <div className="tl-item relative flex items-center gap-3 mb-4">
+              <div className="tl-item relative flex items-baseline gap-2.5 mb-4">
                 <span aria-hidden className="tl-dot absolute -left-6 top-1/2 -translate-y-1/2 w-[9px] h-[9px] rounded-full border-2 border-[var(--yh-accent)] bg-[var(--dash-card)]" />
-                <h2 className="mono text-[12px] tracking-[0.14em] uppercase font-semibold">
-                  {year} · {t.postsCount2(arr.length)}
-                </h2>
-                <span aria-hidden className="flex-1 h-px bg-[var(--yh-border)]" />
+                <h2 className="serif text-[22px] font-semibold tracking-tight leading-none">{year}</h2>
+                <span className="mono text-[10px] tracking-[0.16em] uppercase text-[var(--yh-muted)]">{t.postsCount2(arr.length)}</span>
+                <span aria-hidden className="flex-1 h-px bg-[var(--yh-border)] self-center" />
               </div>
               <div>
                 {arr.map((p: any, i: number) => {
