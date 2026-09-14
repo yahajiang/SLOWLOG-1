@@ -93,25 +93,23 @@ export function Sidebar() {
 
       {/* 页脚：第一行 前台+登出；第二行 主题+语言 */}
       <div className={`p-3 border-t border-[var(--dash-border)] space-y-2 ${collapsed ? "flex flex-col items-center" : ""}`}>
-        <div className={`w-full ${collapsed ? "space-y-1" : "grid grid-cols-2 gap-2"}`}>
+        <div className={`grid grid-cols-2 gap-1 ${collapsed ? "flex flex-col" : ""}`}>
           <Link
             href="/"
             title={t.dashFront}
-            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[11px] text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]" : "px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]"}`}
+            className={`${rowBase} justify-center h-11 text-[13px] text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]`}
           >
-            {!collapsed && <span className="whitespace-nowrap">{t.dashFront}</span>}
+            {t.dashFront}
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             title={t.dashLogout}
-            className={`${rowBase} ${collapsed ? "justify-center w-10 h-10 mx-auto text-[11px] text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50" : "w-full px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 text-left"}`}
+            className={`${rowBase} justify-center h-11 text-[13px] text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50`}
           >
-            {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
+            {t.dashLogout}
           </button>
-        </div>
-        <div className={`w-full ${collapsed ? "flex flex-col items-center gap-2" : "flex items-center gap-2 pt-1"}`}>
           <ThemeToggle />
-          <LanguageSwitcher />
+          <LanguageSwitcher ghost />
         </div>
         {!collapsed && (
           <p className="px-1 pt-1 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</p>
