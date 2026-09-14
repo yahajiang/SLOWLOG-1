@@ -23,6 +23,8 @@ Editorial Web Designer — 画廊是「设计契约的展品柜」，不是营�
 - 封面条目从旧 ArticleArt 改为 CoverArt/HeroCover —— 主站已切换，画廊不同步则误导 AI
 - 增加移动组件组 —— /m 平行树已落地，画廊缺则契约不完整
 - 动效契约：淡入 + cover-sway translateY；循环关键帧禁止写死 opacity:1（会把淡线拉黑）
+- 补过场组件组：桌面登录 / 404 幽灵页 / 错误边界入柜 —— 过场语言（纸纹 + 装订线 + 歪印）统一后契约补全（46 → 49）
+- 过场语言基元：`.paper-grain`（暗色 screen 混合）+ `.tick-{tl,tr,bl,br}` 四角装订线 —— 加载/错误/登录/404 共用；欢迎幕另有 `.welcome-side` 侧注
 
 ## Anti-Patterns
 - 禁紫蓝渐变 hero、圆角阴影卡、emoji 标题、假数据百分比三联
