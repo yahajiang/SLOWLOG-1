@@ -279,9 +279,9 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       </span>
                     )}
                   </div>
-                  <h2 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
+                  <h1 className="serif text-[28px] md:text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-3">
                     {localizedFeatured.title}
-                  </h2>
+                  </h1>
                   <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{localizedFeatured.excerpt}</p>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
