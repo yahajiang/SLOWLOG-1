@@ -109,10 +109,8 @@ export function Sidebar() {
           <LogOut className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
         </button>
-        <div className={`${collapsed ? "flex flex-col items-center gap-2 pt-1" : "flex items-center justify-between px-3 pt-1"}`}>
-          <ThemeToggle />
-          <LanguageSwitcher ghost />
-        </div>
+        <ThemeToggle variant={collapsed ? "icon" : "row"} />
+        <LanguageSwitcher variant={collapsed ? "icon" : "row"} ghost />
         {!collapsed && (
           <p className="px-1 pt-1 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</p>
         )}
