@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
@@ -17,6 +18,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (Object.keys(data).length === 0) return NextResponse.json({ error: "无有效字段" }, { status: 400 })
   try {
     const cat = await prisma.category.update({ where: { id }, data })
+    revalidateTag("categories")
     return NextResponse.json(cat)
   } catch (e: any) {
     if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -36,6 +38,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const count = await prisma.post.count({ where: { categoryId: id } })
     if (count > 0) return NextResponse.json({ error: `该分类下有 ${count} 篇文章，无法删除` }, { status: 400 })
     await prisma.category.delete({ where: { id } })
+    revalidateTag("categories")
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     if (e.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 })
