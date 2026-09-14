@@ -3,7 +3,6 @@
 // 前置：scripts/api-tests-fixtures.mjs 已运行（测试账户就位）
 // 覆盖六场景：①登录限流 ②改密（当前密码+两次确认）③草稿保护 ④定时发布 ⑤缓存隔离 ⑥上传校验
 const BASE = process.argv[2] || "http://127.0.0.1:3000"
-const QQ = "cmtzi1jfh000dtqe4p9cniez5" // 任意已发布文章（验证用）
 
 let pass = 0, fail = 0
 const failures = []
@@ -160,10 +159,28 @@ async function main() {
 
   // ═══ 场景 ①：浏览计数（公开、仅已发布）═══
   {
-    const pub = await fetch(`${BASE}/api/posts/${QQ}/view`, { method: "POST" })
+    const r = await fetch(`${BASE}/api/posts`, {
+      method: "POST",
+      headers: adminHeaders,
+      body: JSON.stringify({
+        title: "CI 浏览计数测试",
+        slug: `ci-view-${Date.now()}`,
+        content: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "views" }] }] },
+        categoryId,
+        tags: ["ci"],
+        status: "published",
+      }),
+    })
+    const d = await r.json()
+    const pubId = d.id || ""
+    t("浏览计数前置：创建已发布文章 → 200", r.status === 200 && !!pubId, `got ${r.status}`)
+    const pub = await fetch(`${BASE}/api/posts/${pubId}/view`, { method: "POST" })
     t("浏览计数：已发布文章 → ok", pub.status === 200, `got ${pub.status}`)
     const miss = await fetch(`${BASE}/api/posts/not-exist-id/view`, { method: "POST" })
     t("浏览计数：不存在文章 → 404", miss.status === 404, `got ${miss.status}`)
+    const detail = await (await fetch(`${BASE}/api/posts/${pubId}`)).json()
+    t("浏览计数：viewCount ≥ 1", (detail.viewCount || 0) >= 1, `got ${detail.viewCount}`)
+    await fetch(`${BASE}/api/posts/${pubId}`, { method: "DELETE", headers: { cookie: admin.cookie } })
   }
 
   // ═══ 清理草稿与未来文章（避免测试残留）═══
