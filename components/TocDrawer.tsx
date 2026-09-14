@@ -17,9 +17,12 @@ import { useScrollSpy } from "@/lib/hooks/use-scroll-spy";
 export function TocDrawer({
   headings,
   offsetPx = 64,
+  hideOnLg = false,
 }: {
   headings: { id: string; text: string }[];
   offsetPx?: number;
+  /** ≥lg 时隐藏 FAB——与桌面侧栏目录互斥（portal 内容不受外层 CSS 影响，需自带断点） */
+  hideOnLg?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -62,7 +65,7 @@ export function TocDrawer({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90"
+        className={`${hideOnLg ? "lg:hidden " : ""}fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90`}
         aria-label="TOC"
         hidden={open}
       >
