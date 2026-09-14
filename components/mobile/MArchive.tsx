@@ -7,7 +7,7 @@ import { useLang } from "@/lib/lang-context";
 import { mdInSiteTz } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
-import { mCatLabel } from "@/lib/madapt"
+import { mCatLabel } from "@/lib/adapt"
 import { EmptyState } from "@/components/EmptyState"
 
 // 归档页 = 查看全部的终点：移动端真时间线（与桌面 ArchiveClient 同套 tl-* 规范）
