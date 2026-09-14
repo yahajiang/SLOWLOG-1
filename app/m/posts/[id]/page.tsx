@@ -43,8 +43,8 @@ export default async function MobilePostPage({
   // 按发布时间排序，算出纵向上下篇（桌面是横向）
   const allRaw = await getAllPosts();
   const sorted = [...allRaw].sort((a, b) => {
-    const da = new Date((a as any).publishedAt || (a as any).createdAt || (a as any).date || 0).getTime();
-    const db = new Date((b as any).publishedAt || (b as any).createdAt || (b as any).date || 0).getTime();
+    const da = new Date(a.publishedAt || a.createdAt || 0).getTime();
+    const db = new Date(b.publishedAt || b.createdAt || 0).getTime();
     return db - da;
   });
   const idx = sorted.findIndex((p) => p.id === post.id);

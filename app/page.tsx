@@ -15,9 +15,9 @@ export default async function Page() {
     prisma.category.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []),
   ]);
   // adapt to legacy Post shape expected by HomeClient (titleZh etc)
-  const posts = postsRaw.map(stripPostHeavy).map(adaptLegacyPost) as any;
+  const posts = postsRaw.map(stripPostHeavy).map(adaptLegacyPost);
   const categories = dbCats.length
-    ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" } as any, ...dbCats]
+    ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" }, ...dbCats]
     : undefined
   return (
     <HomeClient posts={posts} categories={categories} />

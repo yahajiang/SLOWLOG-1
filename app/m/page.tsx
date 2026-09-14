@@ -19,9 +19,9 @@ export default async function MobileHomePage() {
     getAllPosts(),
     prisma.category.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []),
   ]);
-  const posts = postsRaw.map(stripPostHeavy).map(adaptLegacyPost) as any;
+  const posts = postsRaw.map(stripPostHeavy).map(adaptLegacyPost);
   const categories = dbCats.length
-    ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" } as any, ...dbCats]
+    ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" }, ...dbCats]
     : undefined;
   return <MHome posts={posts} categories={categories} />;
 }
