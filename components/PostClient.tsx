@@ -160,6 +160,7 @@ export function PostClient({
         </div>
       </div>
 
+      <main className="flex-1">
       {/* 文章头部 — 杂志式 */}
       <section className={`${isFullscreen ? "pt-10 pb-8 bg-[var(--dash-card)]/40 border-b border-[var(--yh-border)]" : "pt-8 pb-6 md:pt-12"}`}>
         <div className="w-full max-w-[min(92%,1180px)] 2xl:max-w-[min(70%,1600px)] mx-auto px-6">
@@ -305,6 +306,7 @@ export function PostClient({
         </section>
       )}
 
+      </main>
       <Footer />
     </div>
   );

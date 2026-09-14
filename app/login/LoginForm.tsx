@@ -39,7 +39,7 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-6 relative overflow-hidden">
+    <main className="min-h-screen bg-[var(--yh-bg)] flex items-center justify-center p-6 relative overflow-hidden">
       {/* 纸纹 + 装订线：与加载/错误/欢迎幕同语言 */}
       <div className="paper-grain" aria-hidden />
       <span aria-hidden className="tick tick-tl" />
@@ -132,6 +132,6 @@ export default function LoginForm() {
           </span>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

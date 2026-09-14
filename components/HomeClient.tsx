@@ -180,6 +180,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   return (
     <div className="min-h-screen flex flex-col">
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <main className="flex-1">
 
       <div className="flex-1 flex flex-col">
 
@@ -493,8 +494,9 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         </section>
       )}
 
-      <Footer />
     </div>
+    </main>
+      <Footer />
     </div>
   );
 }
