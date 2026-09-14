@@ -79,16 +79,26 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
               <Settings className="w-[18px] h-[18px]" />
             </Link>
 
-            <div className="relative">
+            {/* 搜索：≥xl 内联输入框；<xl 收成图标（点开全局搜索面板），70% 容器全程装得下 */}
+            <div className="relative hidden xl:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="pl-10 pr-[18px] py-2 mono text-[12px] tracking-[0.14em] border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors w-36 md:w-44 2xl:w-56 min-h-[48px] rounded-none"
+                className="pl-10 pr-[18px] py-2 mono text-[12px] tracking-[0.14em] border border-[var(--yh-border)] bg-[var(--dash-card)] focus:bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors w-56 min-h-[48px] rounded-none"
               />
             </div>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
+              className="xl:hidden w-11 h-11 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              aria-label={lang === "zh" ? "全局搜索" : "Search"}
+              title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
+            >
+              <Search className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
