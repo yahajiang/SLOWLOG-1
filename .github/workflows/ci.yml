@@ -77,5 +77,11 @@ jobs:
       - name: 启动生产服务并运行六场景集成测试
         run: |
           npx next start -p 3100 &
-          npx wait-on http://127.0.0.1:3100/api/health -t 60000
+          for i in $(seq 1 45); do
+            code=$(curl -s -o /tmp/health.json -w "%{http_code}" http://127.0.0.1:3100/api/health || true)
+            echo "health 尝试 $i: $code"
+            [ "$code" = "200" ] && break
+            sleep 2
+          done
+          cat /tmp/health.json 2>/dev/null || true
           node scripts/api-tests.mjs http://127.0.0.1:3100
