@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag } from "next/cache"
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { apiError, apiZodError } from "@/lib/api-utils"
+import { categoryCreateSchema } from "@/lib/schemas"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
 const getCachedCategories = unstable_cache(
@@ -22,10 +24,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
-  const body = await req.json()
-  if (!body.name || !body.slug) return NextResponse.json({ error: "名称和slug必填" }, { status: 400 })
+  const parsed = categoryCreateSchema.safeParse(await req.json())
+  if (!parsed.success) return apiZodError(parsed.error)
+  const body = parsed.data
   const cat = await prisma.category.create({ data: { name: body.name, nameZh: body.nameZh, slug: body.slug, description: body.description, coverImageUrl: body.coverImageUrl } })
   revalidateTag("categories")
   return NextResponse.json(cat)

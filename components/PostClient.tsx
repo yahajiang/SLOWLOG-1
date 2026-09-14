@@ -16,7 +16,7 @@ import { Footer } from "./Footer";
 import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
-import type { PageConfig } from "@/lib/page-config";
+import { parsePageConfig } from "@/lib/page-config";
 import { ChevronRight, Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
@@ -50,7 +50,7 @@ export function PostClient({
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content
-  const pageConfig = (prismaRaw as any)?.pageConfig as PageConfig | undefined
+  const pageConfig = parsePageConfig((prismaRaw as any)?.pageConfig)
   const [sysDark, setSysDark] = useState(false)
   useEffect(() => {
     if (pageConfig?.theme !== "system") return
@@ -229,27 +229,7 @@ export function PostClient({
               {content ? (
                 <PostRenderer content={content} pageConfig={pageConfig} isDark={isDark || pageConfig?.theme === "dark"} />
               ) : (
-                <div
-                  className="prose prose-zinc max-w-none
-                  prose-p:text-[17px] prose-p:leading-[1.9] prose-p:text-[var(--yh-text)]/85 prose-p:mb-5 prose-p:font-light
-                  prose-h1:text-3xl prose-h1:font-bold prose-h1:mt-10 prose-h1:mb-3 prose-h1:tracking-tight
-                  prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-10 prose-h2:mb-2 prose-h2:scroll-mt-[88px] prose-h2:tracking-tight prose-h2:border-b prose-h2:border-[var(--yh-border)] prose-h2:pb-2
-                  prose-h3:text-lg prose-h3:font-semibold prose-h3:mt-7 prose-h3:mb-1 prose-h4:text-base prose-h4:font-semibold prose-h4:mt-5 prose-h4:mb-1
-                  prose-a:text-[var(--yh-accent)] prose-a:underline prose-a:underline-offset-4 prose-a:decoration-2 prose-a:hover:decoration-[var(--yh-accent)]
-                  prose-strong:font-semibold prose-strong:text-[var(--yh-text)]
-                  prose-code:text-[13px] prose-code:bg-[var(--yh-border)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-none prose-code:font-mono prose-code:text-rose-600 prose-code:before:content-none prose-code:after:content-none
-                  prose-pre:bg-zinc-900 prose-pre:text-zinc-100 prose-pre:p-4 prose-pre:rounded-none prose-pre:overflow-x-auto prose-pre:border prose-pre:border-zinc-800 prose-pre:shadow-lg
-                  prose-blockquote:border-l-[3px] prose-blockquote:border-[var(--yh-accent)]/30 prose-blockquote:pl-5 prose-blockquote:text-[var(--yh-muted)] prose-blockquote:italic prose-blockquote:bg-[var(--dash-card)]/50 prose-blockquote:py-1 prose-blockquote:pr-4 prose-blockquote:rounded-none
-                  prose-ul:list-disc prose-ul:pl-6 prose-ul:marker:text-[var(--yh-muted)] prose-ol:list-decimal prose-ol:pl-6 prose-ol:marker:text-[var(--yh-muted)]
-                  prose-li:text-[15px] prose-li:leading-[1.8] prose-li:mb-1
-                  prose-hr:border-[var(--yh-border)] prose-hr:my-10
-                  prose-img:rounded-none prose-img:my-7 prose-img:shadow-md prose-img:border prose-img:border-[var(--yh-border)]
-                  prose-table:text-[14px] prose-table:border-collapse prose-table:w-full prose-table:my-7 prose-table:rounded-none prose-table:shadow-sm prose-table:border prose-table:border-[var(--yh-border)]
-                  prose-th:border-b-2 prose-th:border-[var(--yh-border)] prose-th:bg-[var(--dash-card)] prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:font-semibold prose-th:text-[var(--yh-muted)] prose-th:text-[13px] prose-th:tracking-wide prose-th:uppercase
-                  prose-td:border-b prose-td:border-[var(--yh-border)] prose-td:px-4 prose-td:py-3 prose-td:text-[var(--yh-muted)] prose-td:align-top
-                  prose-thead:border-b-2 prose-thead:border-[var(--yh-border)]"
-                  dangerouslySetInnerHTML={{ __html: post.html }}
-                />
+                <p className="text-[15px] text-[var(--yh-muted)] py-8">内容暂缺，请稍后再试。</p>
               )}
 
               {/* 底部标签：可点击进入标签聚合页 */}

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
+import { apiError } from "@/lib/api-utils"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session?.user?.id) return apiError(401, "未登录")
 
   const body = await req.json()
   const email = (body.email as string)?.toLowerCase().trim()
@@ -44,6 +45,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "该邮箱已被使用" }, { status: 400 })
     }
     console.error(e)
-    return NextResponse.json({ error: "修改失败" }, { status: 500 })
+    return apiError(500, "修改失败")
   }
 }
