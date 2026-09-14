@@ -2,7 +2,7 @@
 
 > 慢下来，写点值得读的东西。
 
-一个基于 Next.js 15 的双语（中文/英文）个人博客系统：杂志式前台排版、独立移动端、Prisma 后台管理、Tiptap 富文本编辑、Vercel Blob 媒体库，开箱即部署到 Vercel。
+一个基于 Next.js 15 的个人博客系统：杂志式前台排版、独立移动端、Prisma 后台管理、Tiptap 富文本编辑、Vercel Blob 媒体库，开箱即部署到 Vercel。**界面双语**（中文/英文界面一键切换），文章内容以中文为主。
 
 - 前台：`/` 首页 · `/archive` 归档 · `/posts/[id]` 阅读页 · `/login` 登录
 - 移动端：`/m`、`/m/archive`、`/m/posts/[id]`、`/m/login`、`/m/dashboard/*`（手机 UA 自动进入，平板走桌面）
@@ -65,7 +65,7 @@
 |------|------|
 | `User` | 管理员账户（邮箱＋bcrypt 密码 hash） |
 | `Category` | 分类（英文名＋中文名＋slug＋描述） |
-| `Post` | 文章（中英双语标题/摘要/正文 JSON、slug、状态、标签、阅读时长、浏览量、SEO、页面配置） |
+| `Post` | 文章（双语标题/摘要、中文正文 JSON、slug、状态、标签、阅读时长、浏览量、SEO、页面配置） |
 | `Note` | 随想（中英双语短内容） |
 | `Media` | 媒体文件（Vercel Blob URL＋尺寸＋MIME） |
 | `Setting` | 站点设置（键值） |

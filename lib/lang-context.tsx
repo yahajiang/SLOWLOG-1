@@ -15,14 +15,25 @@ const LangContext = createContext<LangCtx | null>(null);
 export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("zh");
 
+  // 界面双语策略：UI 文案双语，文章内容以中文为主——
+  // html lang 随界面语言同步，保证屏幕阅读器按正确语言发音（a11y）
+  function applyDocumentLang(l: Lang) {
+    try {
+      document.documentElement.lang = l === "en" ? "en" : "zh-CN"
+    } catch {}
+  }
+
   useEffect(() => {
     const saved = localStorage.getItem("yh-lang") as Lang | null;
-    if (saved === "en" || saved === "zh") setLangState(saved);
+    const l: Lang = saved === "en" || saved === "zh" ? saved : "zh";
+    setLangState(l);
+    applyDocumentLang(l);
   }, []);
 
   function setLang(l: Lang) {
     setLangState(l);
     localStorage.setItem("yh-lang", l);
+    applyDocumentLang(l);
   }
 
   return (
