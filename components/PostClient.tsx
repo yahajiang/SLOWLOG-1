@@ -131,7 +131,7 @@ export function PostClient({
 
       {/* 顶部导航 */}
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
-        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
+        <div className="w-full max-w-[min(92%,1180px)] xl:max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-60 transition-opacity">
             <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
             <span className="flex items-baseline gap-1">
@@ -159,7 +159,7 @@ export function PostClient({
 
       {/* 文章头部 — 杂志式 */}
       <section className={`${isFullscreen ? "pt-10 pb-8 bg-[var(--dash-card)]/40 border-b border-[var(--yh-border)]" : "pt-8 pb-6 md:pt-12"}`}>
-        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
+        <div className="w-full max-w-[min(92%,1180px)] xl:max-w-[min(70%,1600px)] mx-auto px-6">
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <CategoryBadge category={post.category} />
             <span className="text-[var(--yh-border)]">·</span>
@@ -209,7 +209,7 @@ export function PostClient({
 
       {/* 正文内容 — 宽栏 + 侧栏常驻 */}
       <section className={`pb-16 ${isDark ? "bg-[var(--yh-bg)]" : ""}`}>
-        <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6">
+        <div className="w-full max-w-[min(92%,1180px)] xl:max-w-[min(70%,1600px)] mx-auto px-6">
           <div className={`${isFullscreen ? "flex gap-8 max-w-6xl mx-auto" : "grid lg:grid-cols-[1fr_308px] gap-8"}`}>
             <article className={`min-w-0 ${isFullscreen ? "max-w-3xl mx-auto flex-1" : pageConfig?.maxWidth === "narrow" ? "max-w-2xl" : pageConfig?.maxWidth === "wide" ? "max-w-4xl" : "max-w-3xl"} ${isFullscreen ? "pt-8" : ""}`}>
               {content ? (
@@ -264,7 +264,7 @@ export function PostClient({
 
       {/* 继续阅读（v0.3 P1-6）：同分类优先的相关文章，最多 3 篇 */}
       {relatedPosts.length > 0 && (
-        <section className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pb-14">
+        <section className="w-full max-w-[min(92%,1180px)] xl:max-w-[min(70%,1600px)] mx-auto px-6 pb-14">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1.5 h-5 rounded-none bg-gradient-to-b from-[var(--yh-accent)] to-[var(--yh-accent)]/50" />
             <h2 className="text-[13px] font-medium tracking-[0.2em] uppercase text-[var(--yh-muted)]">
