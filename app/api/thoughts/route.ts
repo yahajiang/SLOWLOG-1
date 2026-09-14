@@ -6,8 +6,8 @@ import { thoughtSchema } from "@/lib/schemas"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
 const getCachedThoughts = unstable_cache(
-  async () => {
-    const rows = await prisma.note.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+  async (page: number) => {
+    const rows = await prisma.note.findMany({ orderBy: { createdAt: "desc" }, take: 50, skip: (page - 1) * 50 });
     return rows.map((doc) => ({
       id: doc.id,
       text: doc.content || "",
@@ -23,10 +23,16 @@ const getCachedThoughts = unstable_cache(
   { revalidate: 30, tags: ["thoughts"] }
 )
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const thoughts = await getCachedThoughts()
-    return NextResponse.json(thoughts);
+    // 分页：page 从 1 起（默认 1；每页 50）
+    const pageParam = parseInt(new URL(req.url).searchParams.get("page") || "", 10)
+    const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
+    const thoughts = await getCachedThoughts(page)
+    const total = await prisma.note.count()
+    const res = NextResponse.json(thoughts)
+    res.headers.set("X-Total-Count", String(total))
+    return res
   } catch (error) {
     console.error(error);
     return apiError(500, "随想加载失败");
