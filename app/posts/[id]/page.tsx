@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { PostClient } from "@/components/PostClient";
+import { adaptLegacyPost, pickRelated, postOgMeta } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -11,32 +12,6 @@ export async function generateStaticParams() {
   return posts.slice(0, 20).map((p) => ({ id: p.id }));
 }
 
-function toLegacy(post: any) {
-  if (!post) return null;
-  return {
-    id: post.id,
-    title: post.title,
-    titleZh: post.titleZh || post.title,
-    excerpt: post.excerpt || "",
-    excerptZh: post.excerptZh || post.excerpt || "",
-    category: post.category,
-    author: post.author || "Yahajiang",
-    authorInitial: post.authorInitial || "Y",
-    date: post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 10) : new Date(post.createdAt).toISOString().slice(0, 10),
-    displayDate: post.displayDate,
-    readTime: post.readTime || "5 min",
-    featured: post.featured,
-    tags: post.tags,
-    html: "",
-    htmlZh: "",
-    headings: post.headings,
-    headingsZh: post.headingsZh,
-    createdAt: new Date(post.createdAt).toISOString(),
-    content: post.content,
-    pageConfig: post.pageConfig,
-  } as any;
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -45,20 +20,12 @@ export async function generateMetadata({
   const { id } = await params;
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) return { title: "文章未找到" };
-  const post = toLegacy(raw)!;
+  const post = adaptLegacyPost(raw)!;
   const siteUrl = await getSiteUrl();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
-    openGraph: {
-      title: post.titleZh || post.title,
-      description: post.excerptZh || post.excerpt,
-      type: "article",
-      publishedTime: post.date,
-      tags: post.tags,
-      url: `${siteUrl}/posts/${post.id}`,
-      siteName: "慢日志",
-    },
+    openGraph: postOgMeta(post, siteUrl),
     other: {
       "article:author": post.author,
       "article:published_time": post.date,
@@ -74,23 +41,12 @@ export default async function PostPage({
   const { id } = await params;
   const raw = (await getPostBySlug(id)) || (await getPostById(id));
   if (!raw) notFound();
-  const post = toLegacy(raw)!;
+  const post = adaptLegacyPost(raw)!;
 
   const allRaw = await getAllPosts();
-  const all = allRaw.map((p) => toLegacy(p)!);
+  const all = allRaw.map(adaptLegacyPost);
   // 相关文章：同分类∩同标签 > 同分类 > 同标签 > 最新；最多 3 篇
-  const exclude = new Set([post.id]);
-  const curTags = new Set((post.tags || []).map((t: string) => String(t).toLowerCase()));
-  const scored = all
-    .filter((p) => !exclude.has(p.id))
-    .map((p: any) => {
-      const tags = (p.tags || []).map((t: string) => String(t).toLowerCase());
-      const overlap = tags.filter((t: string) => curTags.has(t)).length;
-      const sameCat = p.category === post.category ? 1 : 0;
-      return { p, score: sameCat * 10 + overlap * 3, createdAt: p.createdAt };
-    })
-    .sort((a, b) => b.score - a.score || +new Date(b.createdAt) - +new Date(a.createdAt));
-  const relatedPosts = scored.slice(0, 3).map((s) => s.p);
+  const relatedPosts = pickRelated(all, post, 3);
 
   const siteUrl = await getSiteUrl();
   const jsonLd = {
