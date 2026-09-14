@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, stripPostHeavy } from "@/lib/posts";
 import { MArchive } from "@/components/mobile/MArchive";
 import { getSiteUrlSync } from "@/lib/site-url";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MobileArchivePage() {
-  const posts = await getAllPosts();
+  const posts = (await getAllPosts()).map(stripPostHeavy);
   const sorted = [...posts].sort(
     (a, b) =>
       new Date((b as any).publishedAt || (b as any).createdAt || (b as any).date).getTime() -

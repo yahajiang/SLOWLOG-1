@@ -131,6 +131,12 @@ const getCachedPostRows = unstable_cache(
   { revalidate: 60, tags: ["posts"] }
 )
 
+/** 列表场景轻量化：剔除正文/渲染重字段（RSC 载荷瘦身；列表客户端不读取这些字段，阅读页请用原始 post） */
+export function stripPostHeavy<T extends Record<string, any>>(p: T) {
+  const { content, contentZh, markdown, markdownZh, html, htmlZh, headings, headingsZh, pageConfig, ...rest } = p as any;
+  return rest as T;
+}
+
 export async function getAllPosts(opts?: { status?: string; locale?: string }) {
   const where: any = {}
   if (opts?.status) where.status = opts.status

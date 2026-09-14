@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/posts"
+import { getAllPosts, stripPostHeavy } from "@/lib/posts"
 import ArchiveClient from "@/app/archive/ArchiveClient"
 import { DesktopEscape } from "@/components/DesktopEscape"
 
@@ -13,7 +13,7 @@ export const metadata = {
 }
 
 export default async function TabletArchivePage() {
-  const posts = await getAllPosts()
+  const posts = (await getAllPosts()).map(stripPostHeavy)
   const sorted = [...posts].sort((a,b)=> new Date((b as any).publishedAt||(b as any).createdAt||(b as any).date).getTime() - new Date((a as any).publishedAt||(a as any).createdAt||(a as any).date).getTime())
   const byYear = new Map<number, typeof sorted>()
   for (const p of sorted) {

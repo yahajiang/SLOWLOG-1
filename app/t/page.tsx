@@ -37,11 +37,11 @@ export default async function Page() {
     markdownZh: "",
     html: "",
     htmlZh: "",
-    headings: p.headings,
+    headings: [],
     headingsZh: p.headingsZh,
     createdAt: new Date(p.createdAt).toISOString(),
-    content: p.content,
-    pageConfig: p.pageConfig,
+    content: "",
+    pageConfig: undefined,
   })) as any;
   const categories = dbCats.length
     ? [{ id: "all", name: "All", nameZh: "全部", slug: "all" } as any, ...dbCats]
