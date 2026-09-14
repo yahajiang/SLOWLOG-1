@@ -1079,7 +1079,9 @@ body::after {
 }
 /* 路由切换：页面自然展开 500ms · translateY 8px */
 .page-enter > * {
-  animation: pageIn 500ms var(--ease-out) both;
+  /* backwards：入场照播，结束后不残留 transform——残留会让页面根成为
+     position:fixed 的包含块，FAB/顶栏进度条等被锚到文档而非视口 */
+  animation: pageIn 500ms var(--ease-out) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .page-enter > * { animation: none; }
@@ -1310,4 +1312,10 @@ body::after {
   .cover-inner svg [fill] {
     animation: none !important;
   }
+}
+
+/* 键盘可达：全局可见焦点圈（仅键盘 :focus-visible 时出现，不干扰鼠标交互） */
+:focus-visible {
+  outline: 2px solid var(--yh-accent);
+  outline-offset: 2px;
 }
