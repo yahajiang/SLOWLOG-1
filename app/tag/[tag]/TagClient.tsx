@@ -53,6 +53,7 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
       </div>
 
       {/* 刊头：TAG 眉题 + 大号衬线标签 + 分类分布 + 相关标签 */}
+      <main className="flex-1">
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pt-8 pb-6">
         <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">
           Tag · {zh ? "标签聚合" : "Collection"}
@@ -120,6 +121,7 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
         </div>
       </div>
 
+      </main>
       <Footer />
     </div>
   );

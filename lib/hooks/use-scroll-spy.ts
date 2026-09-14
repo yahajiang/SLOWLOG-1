@@ -206,9 +206,15 @@ export function useScrollSpy(
     window.addEventListener("scroll", onScroll, { passive: true })
     window.addEventListener("resize", onScroll, { passive: true })
 
+    // 正文由 next/dynamic 懒加载，首测可能落在内容撑开前（maxScroll≈0 → 误判贴底 100%）。
+    // 高度一变就重测，与 ReadingProgress 的兜底同款。
+    const ro = new ResizeObserver(() => onScroll())
+    ro.observe(document.body)
+
     return () => {
       cancelAnimationFrame(raf)
       stopWatching()
+      ro.disconnect()
       if (unlockTimer.current) clearTimeout(unlockTimer.current)
       window.removeEventListener("scroll", onScroll)
       window.removeEventListener("resize", onScroll)

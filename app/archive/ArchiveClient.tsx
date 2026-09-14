@@ -89,6 +89,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
           </div>
         </div>
       </div>
+      <main className="flex-1 flex flex-col">
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-6">
         <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {lang === "zh" ? "全部日志" : "Archive"}</p>
         <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
@@ -171,6 +172,7 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
           )}
         </div>
       </div>
+      </main>
       <Footer />
     </>
   )

@@ -82,6 +82,7 @@ export function MPost({
         </div>
       </div>
 
+      <main className="flex-1 flex flex-col">
       <section className="pt-6 pb-5">
         <div className="w-full mx-auto px-4">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -188,6 +189,7 @@ export function MPost({
         </section>
       )}
 
+      </main>
       <MFooter desktopHref={`/posts/${post.id}`} />
     </div>
   );

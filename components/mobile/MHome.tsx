@@ -183,6 +183,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
   return (
     <div data-m="1" className="min-h-screen flex flex-col bg-[var(--yh-bg)]">
       <MHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} showAdmin />
+      <main className="flex-1">
 
       <div className="sticky top-14 z-30 bg-[var(--yh-bg)]/90 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="flex items-center">
@@ -291,6 +292,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
       {showHero && <MThoughts />}
       {showHero && <MTimeline posts={posts} />}
 
+      </main>
       <MFooter desktopHref="/" />
     </div>
   );

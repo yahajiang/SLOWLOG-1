@@ -73,6 +73,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
   return (
     <div data-m="1" className="min-h-screen bg-[var(--yh-bg)] flex flex-col">
       <MHeader />
+      <main className="flex-1">
       <div className="w-full mx-auto px-4 py-6">
         <h1 className="serif text-[28px] font-semibold tracking-tight">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
@@ -135,6 +136,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
           )}
         </div>
       </div>
+      </main>
       <MFooter desktopHref="/archive" />
     </div>
   );
