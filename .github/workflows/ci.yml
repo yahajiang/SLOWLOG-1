@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    name: 类型检查 + 依赖审计
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: TypeScript 类型检查
+        run: npx tsc --noEmit
+      - name: 依赖审计（critical 门禁；high 待 Prisma 工具链上游修复后收紧为 high）
+        run: npm audit --audit-level=critical
+
+  build:
+    name: 生产构建（无 DB 优雅降级）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - name: 生产构建（无 DATABASE_URL，页面优雅降级为空列表）
+        env:
+          AUTH_SECRET: ci-build-secret
+        run: npx next build
+
+  api-tests:
+    name: 核心 API 集成测试（六场景）
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: slowlog
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/slowlog
+      AUTH_SECRET: ci-test-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prisma Client 生成
+        run: npx prisma generate
+      - name: 数据库结构同步
+        run: npx prisma db push --skip-generate
+      - name: 种子数据（类目 + 默认账户）
+        run: npm run db:seed
+      - name: 测试夹具（测试账户）
+        run: node scripts/api-tests-fixtures.mjs
+      - name: 生产构建
+        run: npx next build
+      - name: 启动生产服务
+        run: |
+          npx next start -p 3100 &
+          npx wait-on http://127.0.0.1:3100/api/health -t 60000 || (sleep 5 && curl -sf http://127.0.0.1:3100/api/health)
+      - name: 六场景集成测试（登录限流 / 改密 / 草稿保护 / 定时发布 / 缓存隔离 / 上传校验）
+        run: node scripts/api-tests.mjs http://127.0.0.1:3100

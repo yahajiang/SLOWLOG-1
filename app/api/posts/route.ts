@@ -75,6 +75,9 @@ export async function POST(req: NextRequest) {
   if (tags.length === 0) return apiError(400, "至少选择一个标签")
   if (!body.categoryId) return apiError(400, "请选择分类")
   const slug = body.slug?.trim() || body.title?.toLowerCase().replace(/[^\w]+/g, "-") || `post-${Date.now()}`
+  // 定时发布创建路径：显式 publishedAt（未来时间）优先于默认 now（与 PUT 对齐）
+  const scheduledAt = body.publishedAt !== undefined ? new Date(body.publishedAt) : null
+  const scheduled = scheduledAt && !isNaN(scheduledAt.getTime()) ? scheduledAt : null
   try {
     const post = await prisma.post.create({
       data: {
@@ -95,7 +98,7 @@ export async function POST(req: NextRequest) {
         author: body.author,
         authorInitial: body.authorInitial,
         featured: !!body.featured,
-        publishedAt: body.status === "published" ? new Date() : null,
+        publishedAt: body.status === "published" ? (scheduled ?? new Date()) : scheduled,
       },
     })
     revalidatePostViews(post)
