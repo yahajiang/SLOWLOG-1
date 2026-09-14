@@ -43,13 +43,7 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      {
-        // API 路由缓存
-        source: '/api/posts',
-        headers: [
-          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=300' },
-        ],
-      },
+
       {
         // Dashboard list API - 列表数据，浏览器+CDN 都可缓存
         source: '/api/categories',

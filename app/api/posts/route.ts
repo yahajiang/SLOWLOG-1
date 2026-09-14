@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { publicPostWhere } from "@/lib/posts"
 
 export const dynamic = "force-dynamic"
 
@@ -24,22 +25,22 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status") || ""
   const session = await auth()
 
-  const where: any = {}
-  // 未认证：仅返回已发布文章
-  // 已认证 + status=all：返回全部
-  // 已认证 + 指定 status：返回该状态
+  const filters: any[] = []
+  // 未认证：仅返回已发布且已到发布时间的文章。
+  // 已认证 + status=all：返回全部；后台响应不会进入共享缓存。
   if (!session) {
-    where.status = "published"
+    filters.push(publicPostWhere())
   } else if (status && status !== "all") {
-    where.status = status
+    filters.push({ status })
   }
-  if (q) where.OR = [
+  if (q) filters.push({ OR: [
     { title: { contains: q, mode: "insensitive" } },
     { titleZh: { contains: q, mode: "insensitive" } },
     { excerpt: { contains: q, mode: "insensitive" } },
     { excerptZh: { contains: q, mode: "insensitive" } },
     { tags: { has: q } },
-  ]
+  ] })
+  const where = filters.length ? { AND: filters } : {}
   // 登录态拉全量（列表无 content 大字段），游客保持 100 上限
   const take = session ? 500 : 100
   const posts = await prisma.post.findMany({
@@ -54,7 +55,11 @@ export async function GET(req: NextRequest) {
     orderBy: { updatedAt: "desc" },
     take,
   })
-  return NextResponse.json(posts)
+  return NextResponse.json(posts, {
+    headers: session
+      ? { "Cache-Control": "private, no-store", Vary: "Cookie" }
+      : { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300", Vary: "Cookie" },
+  })
 }
 
 export async function POST(req: NextRequest) {
