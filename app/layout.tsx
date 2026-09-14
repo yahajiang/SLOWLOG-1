@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./Providers";
 import { Welcome } from "@/components/Welcome";
 import { SearchPanel } from "@/components/SearchPanel";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -38,6 +39,8 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
+  // 单域名不变式：OG/绝对地址一律走 env 域（与访客域一致），见 lib/site-url.ts
+  metadataBase: new URL(getSiteUrlSync()),
   title: {
     default: "慢日志",
     template: "%s | 慢日志",
