@@ -93,23 +93,23 @@ export function Sidebar() {
 
       {/* 页脚：第一行 前台+登出；第二行 主题+语言 */}
       <div className={`p-3 border-t border-[var(--dash-border)] space-y-2 ${collapsed ? "flex flex-col items-center" : ""}`}>
-        <div className={`grid grid-cols-2 gap-1 ${collapsed ? "flex flex-col items-center" : ""}`}>
-          <Link
-            href="/"
-            title={t.dashFront}
-            className={`${rowBase} ${collapsed ? "justify-center w-full h-11" : "justify-center gap-1.5 px-2 h-11"} text-[13px] text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]`}
-          >
-            <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-            {!collapsed && <span className="whitespace-nowrap">{t.dashFront}</span>}
-          </Link>
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            title={t.dashLogout}
-            className={`${rowBase} ${collapsed ? "justify-center w-full h-11" : "justify-center gap-1.5 px-2 h-11"} text-[13px] text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50`}
-          >
-            <LogOut className="w-3.5 h-3.5 shrink-0" />
-            {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
-          </button>
+        <Link
+          href="/"
+          title={t.dashFront}
+          className={`${rowBase} ${collapsed ? "justify-center w-full h-10" : "w-full gap-3 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]"}`}
+        >
+          <ExternalLink className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="whitespace-nowrap">{t.dashFront}</span>}
+        </Link>
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          title={t.dashLogout}
+          className={`${rowBase} ${collapsed ? "justify-center w-full h-10" : "w-full gap-3 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50"}`}
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
+        </button>
+        <div className={`${collapsed ? "flex flex-col items-center gap-2 pt-1" : "flex items-center justify-between px-3 pt-1"}`}>
           <ThemeToggle />
           <LanguageSwitcher ghost />
         </div>
