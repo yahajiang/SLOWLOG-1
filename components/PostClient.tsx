@@ -16,7 +16,8 @@ import { Footer } from "./Footer";
 import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
-import { parsePageConfig } from "@/lib/page-config";
+import { parsePageConfig, withSiteDefaults } from "@/lib/page-config";
+import { useSiteSettings } from "@/lib/settings-context";
 import { Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
@@ -50,7 +51,12 @@ export function PostClient({
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content
-  const pageConfig = parsePageConfig((prismaRaw as any)?.pageConfig)
+  // 站点级默认页配置回退：文章未定制（=内置默认值）的字段取「站点设置·页面默认配置」
+  const siteSettings = useSiteSettings()
+  const pageConfig = withSiteDefaults(
+    parsePageConfig((prismaRaw as any)?.pageConfig),
+    parsePageConfig(siteSettings.defaultPageConfig)
+  )
   const [sysDark, setSysDark] = useState(false)
   useEffect(() => {
     if (pageConfig?.theme !== "system") return

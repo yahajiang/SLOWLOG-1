@@ -70,3 +70,22 @@ export function parsePageConfig(raw: unknown): PageConfig {
     showTOC: typeof o.showTOC === "boolean" ? o.showTOC : DEFAULT_PAGE_CONFIG.showTOC,
   }
 }
+
+/**
+ * 站点级默认页配置回退（Setting.defaultPageConfig 的消费入口）。
+ *
+ * 文章创建时 schema 默认 JSON 会全量写入 pageConfig，因此**无法从"字段缺失"
+ * 判断是否定制**——改用逐字段比对：值仍等于内置默认（DEFAULT_PAGE_CONFIG）的
+ * 字段视为"未定制"，回退到站点设置；作者显式改过的字段保持不变。
+ */
+export function withSiteDefaults(post: PageConfig, site: PageConfig): PageConfig {
+  const out: PageConfig = { ...post }
+  const p = post as unknown as Record<string, unknown>
+  const s = site as unknown as Record<string, unknown>
+  const o = out as unknown as Record<string, unknown>
+  const d = DEFAULT_PAGE_CONFIG as unknown as Record<string, unknown>
+  for (const k of Object.keys(d)) {
+    if (p[k] === d[k] && s[k] !== undefined) o[k] = s[k]
+  }
+  return out
+}

@@ -10,7 +10,8 @@ import { ReadingProgress } from "@/components/ReadingProgress";
 import { TocDrawer } from "@/components/TocDrawer";
 import { Lightbox } from "@/components/Lightbox";
 import { MFooter } from "./MFooter";
-import { parsePageConfig } from "@/lib/page-config";
+import { parsePageConfig, withSiteDefaults } from "@/lib/page-config";
+import { useSiteSettings } from "@/lib/settings-context";
 import { PostRenderer } from "@/components/editor/PostRenderer";
 import { formatDisplayDate } from "@/lib/relative-time";
 
@@ -47,7 +48,12 @@ export function MPost({
         }
       : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content;
-  const pageConfig = parsePageConfig((prismaRaw as any)?.pageConfig);
+  // 站点级默认页配置回退：文章未定制（=内置默认值）的字段取「站点设置·页面默认配置」
+  const siteSettings = useSiteSettings();
+  const pageConfig = withSiteDefaults(
+    parsePageConfig((prismaRaw as any)?.pageConfig),
+    parsePageConfig(siteSettings.defaultPageConfig)
+  );
   const [sysDark, setSysDark] = useState(false)
 
   // 浏览计数：每会话每篇一次（sessionStorage 去重；失败静默）

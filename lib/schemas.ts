@@ -127,6 +127,9 @@ export const settingsSchema = z.object({
     .optional(),
   postsPerPage: z.number().int().min(1).max(100).optional(),
   theme: z.enum(["light", "dark", "system"]).optional(),
+  // 站点级默认页配置（parsePageConfig 消费）。此前 schema 漏了该字段——zod 静默剥离，
+  // PUT 从未写入过它，这是 defaultPageConfig「只存不用」的真正根因之一
+  defaultPageConfig: pageConfigSchema.optional(),
 });
 
 export const changePasswordSchema = z
