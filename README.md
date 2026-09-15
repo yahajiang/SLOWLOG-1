@@ -116,12 +116,12 @@ ANALYZE=true npm run build  # 包体积可视化分析
 
 ```
 ├── app/
-│   ├── page.tsx              # 首页（服务端取数 → HomeClient）
-│   ├── archive/              # 归档页（按年份分组）
+│   ├── (shell)/              # 永不会 404 的列表页路由组（/、/archive、/login）＋全站过场骨架
+│   │                         # ⚠️ 会 notFound 的详情段（/posts、/tag 等）必须留在组外
 │   ├── posts/[id]/           # 阅读页（slug/id 双兼容＋上一篇/下一篇＋opengraph-image）
 │   ├── tag/[tag]/            # 标签聚合页
-│   ├── login/                # 登录页
 │   ├── m/                    # 移动端独立版（/m、/m/archive、/m/posts/[id]、/m/login、/m/dashboard/*）
+│   │                         # 后台：概览/文章/随想/更多/设置（底部 5 Tab）
 │   ├── t/                    # 平板树（/t、/t/archive、/t/posts/[id]，与桌面同构 + noindex）
 │   ├── dashboard/            # 后台（仪表盘/文章编辑器/分类/媒体/随想/设置/改密）
 │   ├── api/                  # posts / categories / thoughts / media / settings / auth / health / search-index
@@ -130,25 +130,34 @@ ANALYZE=true npm run build  # 包体积可视化分析
 │   └── Providers.tsx         # LangProvider + ToastProvider
 ├── components/
 │   ├── mobile/               # 移动端组件（MHeader/MFooter/MHome/MArchive/MPost/MLogin/移动后台）
-│   ├── dashboard/            # 后台组件（Sidebar/StatCard/DashboardHome/Skeleton/AccountCard）
+│   ├── dashboard/            # 后台组件（Sidebar/StatCard/DashboardHome/Skeleton/AccountCard/SettingsForm）
 │   ├── editor/               # Tiptap 编辑器 + PostRenderer 阅读渲染器
 │   ├── ui/                   # 基础 UI（Button/Input/Dialog/Toast/DropdownSelect…）
 │   ├── CoverArt.tsx          # 程序化 SVG 封面系统
+│   ├── LoadingShell.tsx      # 全站导航过场骨架（仅 (shell) 路由组，见「加载边界」说明）
 │   ├── TabletGate / DesktopEscape   # 平板引导与「桌面版」逃生口
 │   └── ...                   # Header/Footer/HomeClient/PostClient/TableOfContents/Thinking/…
 ├── lib/
 │   ├── posts.ts              # 文章服务层（唯一可见性规则 + unstable_cache + 构建期降级）
 │   ├── i18n.ts               # 270 条中英字典 + Dict 类型
 │   ├── adapt.ts              # 三端共享适配层（post 适配 / 相关文章打分 / OG 元数据 / safeJsonLd）
+│   ├── settings.ts           # 站点设置服务端唯一来源（getSettings + unstable_cache + 降级）
+│   ├── settings-shared.ts    # 设置类型与默认值（无 prisma，客户端可安全引用）
+│   ├── settings-context.tsx  # SettingsProvider / useSiteSettings（根 layout 读一次全站分发）
 │   ├── categories.ts         # 分类色板/缩写/标签符号映射
-│   ├── schemas.ts            # zod 写接口校验（含渲染配置白名单）
+│   ├── schemas.ts            # zod 写接口校验（含渲染配置白名单、社交链接 http(s) 白名单）
+│   ├── page-config.ts        # 页面渲染配置白名单 + withSiteDefaults（站点级默认回退）
 │   ├── site-url.ts           # 站点 Origin 唯一真相源（只信任 env）
 │   ├── slug.ts / headings.ts / xml.ts / relative-time.ts / read-progress.ts
-│   ├── auth.ts / auth-config.ts / prisma.ts / blob.ts / page-config.ts / api-utils.ts
+│   ├── auth.ts / auth-config.ts / prisma.ts / blob.ts / api-utils.ts
 │   └── hooks/                # use-media-query · use-scroll-spy
 ├── docs/                     # 设计蓝图、审查报告、画廊契约
 ├── scripts/                  # 备份 / 内容管线 / 类目迁移 / 端到端测试 / 截图
-├── .github/workflows/ci.yml  # 类型检查 + 依赖审计 + 构建 + API 集成测试
+│   ├── api-tests.mjs         # 六场景 API 集成测试（限流/改密/草稿保护/定时发布/缓存隔离/上传）
+│   ├── review-e2e/           # 全功能只读扫描 + 缺陷回归（full-functional / extra-tests）
+│   └── qa-*.cjs              # Playwright 视觉验证脚本（后台/移动设置页截图断言）
+├── eslint.config.mjs         # ESLint 平面配置（typescript-eslint + react-hooks 最小集）
+├── .github/workflows/ci.yml  # 类型检查 + lint + 依赖审计 + 构建 + API 集成测试
 ├── middleware.ts             # /admin 兼容跳转＋三端分流＋后台鉴权＋强制改密
 ├── prisma/schema.prisma
 └── public/                   # favicon / 字体 / design/gallery.html
@@ -162,6 +171,9 @@ ANALYZE=true npm run build  # 包体积可视化分析
 - **重定向白名单**：middleware 的运行期 302 目标只信任 `ALLOWED_REDIRECT_HOSTS`（默认仅 `NEXT_PUBLIC_SITE_URL` 的 host），避免 Host 头注入把访客跳到攻击者站点。SEO 输出（canonical/RSS/sitemap）走 `lib/site-url.ts`，**只信任 env**，不读请求头
 - **分类色板**：`ART_PALETTES`（paper/wash/ink/accent）＋`CAT_ABBR` 缩写，前后台徽标同源
 - **日期**：服务端存 ISO，展示层按语言格式化；相对时间 60s 自动刷新
+- **站点设置驱动**：`Setting` 表经 `lib/settings.ts`（`getSettings()`，unstable_cache + tag 失效）下发，根 layout 通过 `SettingsProvider` 全站分发，消费端为 layout 元数据（标题/描述/关键词/Favicon）、Header（站名双语/Logo）、Footer（页脚文案中英/社交链接）、PWA manifest、文章页 OG siteName。保存走 `PUT /api/settings` 后立即 `revalidateTag("settings")` + `revalidatePath("/", "layout")`
+- **加载边界作用域**：`loading.tsx` 是流式 Suspense 边界，会**先冲刷 200 状态头**——凡被它包住的路由，`notFound()` 只能内联渲染 404 UI 而改不了状态码（soft-404）。因此过场骨架只放三树 `(shell)` 路由组（列表页），详情段留在组外
+- **动画选型**：滚动长列表用 `Reveal` / `tl-armed` 时间线机制（滚到哪播到哪），首屏网格与后台列表用 `.stagger`（挂载即错落播）；`prefers-reduced-motion` 下全部关闭
 
 ## API 一览
 
