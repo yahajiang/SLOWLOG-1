@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
 import { catDescription } from "@/lib/adapt";
-import { HOME_GROUP_LIMIT } from "@/lib/posts";
+import { HOME_GROUP_LIMIT } from "@/lib/list-constants";
 import type { Post } from "@/lib/types";
 import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { useLang } from "@/lib/lang-context";
