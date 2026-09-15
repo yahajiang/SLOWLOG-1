@@ -8,7 +8,11 @@ import { AccountCard } from "@/components/dashboard/AccountCard"
 
 // 与 AccountCard 共用的控件风格（避免逐字段内联长 class 漂移）
 const input = "mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
+// 行内输入（社交链接行）：无 mt-1，宽度由行内 flex 分配
+const rowInput = "w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
 const label = "text-xs text-[var(--dash-muted)]"
+
+type SocialLink = { name: string; url: string }
 
 export default function SettingsPage(){
   const [form,setForm]=useState<any>(null)
@@ -16,11 +20,24 @@ export default function SettingsPage(){
   const { toast } = useToast()
   const { t, lang } = useLang()
   useEffect(()=>{fetch("/api/settings",{cache:"no-store"}).then(r=>r.json()).then(setForm)},[])
+
+  // 社交链接编辑（保存时随 form 一起 PUT；schema 限 10 条、http(s) 前缀）
+  const links: SocialLink[] = Array.isArray(form?.socialLinks) ? form.socialLinks : []
+  const setLink=(i:number, patch: Partial<SocialLink>)=>{
+    const arr=[...links]; arr[i]={...arr[i], ...patch}
+    setForm({...form, socialLinks: arr})
+  }
+  const addLink=()=>setForm({...form, socialLinks:[...links, { name:"", url:"https://" }]})
+  const delLink=(i:number)=>setForm({...form, socialLinks: links.filter((_:SocialLink,j:number)=>j!==i)})
+
   const save=async()=>{
     setSaving(true)
     const r=await fetch("/api/settings",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)})
     setSaving(false)
-    if(r.ok) toast(lang === "zh" ? "已保存" : "Saved","success"); else toast(lang === "zh" ? "保存失败" : "Save failed","error")
+    if(r.ok) toast(lang === "zh" ? "已保存" : "Saved","success"); else {
+      const j=await r.json().catch(()=>({}))
+      toast(j.error || (lang === "zh" ? "保存失败" : "Save failed"),"error")
+    }
   }
   if(!form) return <SettingsPageSkeleton />
   return (
@@ -43,25 +60,59 @@ export default function SettingsPage(){
             <input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className={input} />
           </div>
           <div>
-            <label className={label}>{lang === "zh" ? "关键词" : "Keywords"}</label>
-            <input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className={input} />
+            <label className={label}>{lang === "zh" ? "英文站名" : "Site Name (EN)"}</label>
+            <input value={form.siteNameEn||""} onChange={e=>setForm({...form,siteNameEn:e.target.value})} className={input} placeholder="SlowLog" />
           </div>
           <div>
             <label className={label}>{lang === "zh" ? "站点描述" : "Description"}</label>
             <input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className={input} />
           </div>
           <div>
-            <label className={label}>Favicon URL</label>
-            <input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className={input} placeholder="https://…" />
+            <label className={label}>{lang === "zh" ? "英文描述" : "Description (EN)"}</label>
+            <input value={form.siteDescriptionEn||""} onChange={e=>setForm({...form,siteDescriptionEn:e.target.value})} className={input} />
           </div>
           <div>
-            <label className={label}>Logo URL</label>
-            <input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className={input} placeholder="https://…" />
+            <label className={label}>{lang === "zh" ? "关键词" : "Keywords"}</label>
+            <input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className={input} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={label}>Favicon URL</label>
+              <input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className={input} placeholder="https://…" />
+            </div>
+            <div>
+              <label className={label}>Logo URL</label>
+              <input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className={input} placeholder="https://…" />
+            </div>
           </div>
           <div>
             <label className={label}>{lang === "zh" ? "页脚文案" : "Footer text"}</label>
             <input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className={input} />
           </div>
+          <div>
+            <label className={label}>{lang === "zh" ? "页脚文案（英文）" : "Footer text (EN)"}</label>
+            <input value={form.footerTextEn||""} onChange={e=>setForm({...form,footerTextEn:e.target.value})} className={input} />
+          </div>
+
+          {/* 社交链接：结构化编辑，渲染在 Footer 链接组 */}
+          <div>
+            <label className={label}>{lang === "zh" ? "社交链接" : "Social links"}</label>
+            <div className="mt-1 space-y-2">
+              {links.map((l, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input value={l.name} onChange={e=>setLink(i,{name:e.target.value})} className={`${rowInput} w-28 shrink-0`} placeholder={lang === "zh" ? "名称" : "Name"} />
+                  <input value={l.url} onChange={e=>setLink(i,{url:e.target.value})} className={`${rowInput} flex-1`} placeholder="https://…" />
+                  <button onClick={()=>delLink(i)} title={lang === "zh" ? "删除" : "Remove"} className="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 border border-[var(--dash-border)] rounded-none transition-colors" aria-label={lang === "zh" ? "删除社交链接" : "Remove social link"}>×</button>
+                </div>
+              ))}
+              {links.length < 10 && (
+                <button onClick={addLink} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors">
+                  + {lang === "zh" ? "添加链接" : "Add link"}
+                </button>
+              )}
+            </div>
+          </div>
+
           <div>
             <label className={label}>{lang === "zh" ? "每页文章数" : "Posts per page"}</label>
             <input type="number" min={1} max={100} value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className={input} />

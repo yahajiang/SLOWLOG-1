@@ -4,6 +4,7 @@ import { MPost } from "@/components/mobile/MPost";
 import { adaptLegacyPost, postOgMeta } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
+import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
 
@@ -22,11 +23,12 @@ export async function generateMetadata({
   if (!raw) return { title: "文章未找到" };
   const post = adaptLegacyPost(raw)!;
   const siteUrl = await getSiteUrl();
+  const site = await getSettings();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
     alternates: { canonical: `${siteUrl}/posts/${post.id}` },
-    openGraph: postOgMeta(post, siteUrl),
+    openGraph: postOgMeta(post, siteUrl, site.siteName),
   };
 }
 

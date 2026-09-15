@@ -4,6 +4,7 @@ import { PostClient } from "@/components/PostClient";
 import { adaptLegacyPost, pickRelated, postOgMeta, safeJsonLd } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
+import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
 
@@ -22,6 +23,7 @@ export async function generateMetadata({
   if (!raw) return { title: "文章未找到" };
   const post = adaptLegacyPost(raw)!;
   const siteUrl = await getSiteUrl();
+  const site = await getSettings();
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
@@ -31,7 +33,7 @@ export async function generateMetadata({
     alternates: { canonical: raw.canonicalUrl || `${siteUrl}/posts/${post.id}` },
     // noIndex（SEO 面板字段）此前全站无消费方，此处接上
     ...(raw.noIndex ? { robots: { index: false, follow: true } } : {}),
-    openGraph: postOgMeta(post, siteUrl),
+    openGraph: postOgMeta(post, siteUrl, site.siteName),
     other: {
       "article:author": post.author,
       "article:published_time": post.date,
