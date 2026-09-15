@@ -15,13 +15,14 @@ const label = "text-xs text-[var(--dash-muted)]"
 
 /** 编辑板块：全宽卡片（占满行宽）+ 板块内字段两列栅格，板块间依次堆叠——
     无锯齿、无右侧留白；节头 + 「作用于」说明对应前台消费位置 */
-function Section({ title, applies, children }: {
+function Section({ title, applies, children, className = "" }: {
   title: string;
   applies: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)]">
+    <div className={`bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)] ${className}`}>
       <div className="flex items-center gap-2.5">
         <span className="w-5 h-px bg-[var(--dash-accent)]/60" aria-hidden />
         <h2 className="text-sm font-semibold tracking-wide text-[var(--dash-text)]">{title}</h2>
@@ -66,7 +67,7 @@ export function SettingsForm() {
   }
   if(!form) return <SettingsPageSkeleton />
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
       <Section
         title={lang === "zh" ? "站点信息" : "Site Info"}
         applies={lang === "zh" ? "作用于：浏览器标题 · 顶部导航 · 搜索引擎摘要 · RSS" : "Applies to: browser title · header · SEO snippets · RSS"}
@@ -96,6 +97,7 @@ export function SettingsForm() {
       <Section
         title={lang === "zh" ? "页脚" : "Footer"}
         applies={lang === "zh" ? "作用于：全站页脚文案与社交链接（英文访客显示英文侧）" : "Applies to: footer text & social links (EN side for English visitors)"}
+        className="flex flex-col"
       >
         <div>
           <label className={label}>{lang === "zh" ? "页脚文案" : "Footer text"}</label>
@@ -141,6 +143,7 @@ export function SettingsForm() {
       <Section
         title={lang === "zh" ? "阅读与外观" : "Reading & Appearance"}
         applies={lang === "zh" ? "作用于：后台文章列表分页 · 访客未选择主题时的默认外观" : "Applies to: dashboard pagination & default theme for visitors"}
+        className="flex flex-col"
       >
         <div>
           <label className={label}>{lang === "zh" ? "每页文章数" : "Posts per page"}</label>
@@ -162,12 +165,15 @@ export function SettingsForm() {
             />
           </div>
         </div>
+        {/* 等高行内沉底：与左侧「页脚」板块底缘对齐 */}
+        <div className="mt-auto pt-5 flex justify-end">
+          <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存设置" : "Save settings")}</button>
+        </div>
       </Section>
 
-      <AccountCard />
-
-      <div className="flex justify-end">
-        <button onClick={save} disabled={saving} className="px-8 py-2.5 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存全部设置" : "Save all")}</button>
+      {/* 账号管理：独立凭证域，跨两列 */}
+      <div className="md:col-span-2">
+        <AccountCard />
       </div>
     </div>
   )
