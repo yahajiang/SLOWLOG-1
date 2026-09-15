@@ -64,7 +64,7 @@ export function AccountCard() {
           <label className={label}>{t.acctCurrent}</label>
           <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="current-password" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={label}>{t.acctEmail}</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`mt-1 ${input}`} placeholder="your@email.com" />
@@ -74,7 +74,7 @@ export function AccountCard() {
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={`mt-1 ${input}`} placeholder={lang === "zh" ? "显示名称" : "Display name"} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={label}>{t.acctNewPass}</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="new-password" placeholder={lang === "zh" ? "至少 8 位" : "At least 8 characters"} />
@@ -89,13 +89,15 @@ export function AccountCard() {
           <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">{error}</div>
         )}
 
-        <button
-          type="submit"
-          disabled={saving || !currentPassword || !email || !password || !confirmPassword || !name}
-          className="w-full py-2.5 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:bg-[var(--dash-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none font-medium"
-        >
-          {saving ? (lang === "zh" ? "保存中..." : "Saving...") : t.acctSave}
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={saving || !currentPassword || !email || !password || !confirmPassword || !name}
+            className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 font-medium"
+          >
+            {saving ? (lang === "zh" ? "保存中..." : "Saving...") : t.acctSave}
+          </button>
+        </div>
       </form>
     </div>
   )
