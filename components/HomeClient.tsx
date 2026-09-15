@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
 import { catDescription } from "@/lib/adapt";
+import { HOME_GROUP_LIMIT } from "@/lib/posts";
 import type { Post } from "@/lib/types";
 import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { useLang } from "@/lib/lang-context";
@@ -435,13 +436,17 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     <span className="text-[11px] text-[var(--yh-muted)]">· {t.postsCount2(group.posts.length)}</span>
                     <div className="flex-1 h-px bg-[var(--yh-border)] ml-2 hidden sm:block" />
                     {/* legacy zinc（历史还原豁免，勿模仿）：待令牌化 hover:bg-[--yh-text]，登记于 慢日志UI一致性基线.md */}
-                    <button type="button" onClick={() => setActiveCategory(group.cat)} className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] hover:border-[var(--yh-text)] transition-colors">
+                    {/* 每组只展示最新 HOME_GROUP_LIMIT 篇（默认 8），其余在归档分类页查看 */}
+                    <Link
+                      href={`/archive?category=${encodeURIComponent(group.cat)}&page=1`}
+                      className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] hover:border-[var(--yh-text)] transition-colors"
+                    >
                       {t.viewAllGrouped}
-                    </button>
+                    </Link>
                   </div>
                   {desc && <p className="text-[12px] leading-relaxed text-[var(--yh-muted)] max-w-2xl -mt-1 mb-4">{desc}</p>}
                   <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {group.posts.map((post, idx) => (
+                    {group.posts.slice(0, HOME_GROUP_LIMIT).map((post, idx) => (
                       <ArticleCard key={post.id} post={post} index={idx} />
                     ))}
                   </div>
