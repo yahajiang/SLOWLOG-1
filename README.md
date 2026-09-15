@@ -186,7 +186,9 @@ wrangler deploy
 
 ## 许可
 
-MIT License
+本项目以 **GNU GPL-3.0** 许可开源（copyleft）：可自由使用、学习、修改与再分发，任何衍生作品须同样以 GPL-3.0 发布并保留版权声明。
+
+许可全文见仓库根目录 [`LICENSE`](./LICENSE)。
 
 ---
 
