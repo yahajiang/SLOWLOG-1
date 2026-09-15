@@ -53,7 +53,11 @@ function allowedRedirectHosts(): string[] {
 
 function redirectFor(req: NextRequest, target: string) {
   const h = req.headers
-  const proto = (h.get("x-forwarded-proto") || "https").split(",")[0].trim() || "https"
+  // 协议：代理链（Vercel/CF）注入的 x-forwarded-proto 优先；本地直连没有该头，
+  // 回退 req.nextUrl.protocol（http://localhost:3000 → http），不能硬编码 https
+  // —— 否则本地即使 host 落在白名单内，也会被 307 到打不开的 https://localhost:3000
+  const proto =
+    (h.get("x-forwarded-proto") || req.nextUrl.protocol.replace(":", "") || "https").split(",")[0].trim() || "https"
   const reqHost =
     (h.get("x-forwarded-host") || "").split(",")[0].trim() ||
     h.get("host") ||
