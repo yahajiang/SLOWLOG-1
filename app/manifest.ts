@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
+import { getSettings } from "@/lib/settings";
 
-export default function manifest(): MetadataRoute.Manifest {
+// PWA manifest 由站点设置下发（站名/描述随后台「站点设置」变化）
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const s = await getSettings();
   return {
-    name: "慢日志",
-    short_name: "慢日志",
-    description: "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
+    name: s.siteName,
+    short_name: s.siteNameEn || s.siteName,
+    description: s.siteDescription,
     start_url: "/",
     display: "standalone",
     background_color: "#fefdfa",

@@ -6,6 +6,8 @@ import { Welcome } from "@/components/Welcome";
 import { SearchPanel } from "@/components/SearchPanel";
 import { TabletGate } from "@/components/TabletGate";
 import { getSiteUrlSync } from "@/lib/site-url";
+import { getSettings } from "@/lib/settings";
+import { SettingsProvider } from "@/lib/settings-context";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -39,30 +41,41 @@ const notoSerifSC = Noto_Serif_SC({
   preload: false,
 });
 
-export const metadata: Metadata = {
-  // 单域名不变式：OG/绝对地址一律走 env 域（与访客域一致），见 lib/site-url.ts
-  metadataBase: new URL(getSiteUrlSync()),
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-    ],
-    apple: "/icon-192.png",
-  },
-  title: {
-    default: "慢日志",
-    template: "%s | 慢日志",
-  },
-  description:
-    "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
-  authors: [{ name: "Yahajiang" }],
-  openGraph: {
-    title: "慢日志",
-    description: "慢下来，写点值得读的东西。",
-    type: "website",
-  },
-};
+// 设置驱动（后端补全）：站点名/描述/关键词/图标由 Setting 表下发（lib/settings.ts），
+// 此前全部硬编码——后台改设置对前台零影响。DB 不可达时 getSettings 回退默认值。
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSettings();
+  const keywords = s.siteKeywords
+    .split(/[,，]/)
+    .map((k) => k.trim())
+    .filter(Boolean);
+  return {
+    // 单域名不变式：OG/绝对地址一律走 env 域（与访客域一致），见 lib/site-url.ts
+    metadataBase: new URL(getSiteUrlSync()),
+    icons: s.siteIconUrl
+      ? [{ url: s.siteIconUrl }]
+      : {
+          icon: [
+            { url: "/favicon.svg", type: "image/svg+xml" },
+            { url: "/favicon.ico", sizes: "any" },
+            { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          ],
+          apple: "/icon-192.png",
+        },
+    title: {
+      default: s.siteName,
+      template: `%s | ${s.siteName}`,
+    },
+    description: s.siteDescription,
+    ...(keywords.length ? { keywords } : {}),
+    authors: [{ name: "Yahajiang" }],
+    openGraph: {
+      title: s.siteName,
+      description: s.siteDescription,
+      type: "website",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#fefdfa",
@@ -72,11 +85,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSettings();
   return (
     <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable} ${notoSerifSC.variable}`} suppressHydrationWarning>
       <head>
@@ -117,11 +131,13 @@ export default function RootLayout({
           <style>{".welcome{display:none!important}"}</style>
         </noscript>
         <Providers>
-          {/* 欢迎幕放在内容之前：流式渲染时首帧即覆盖页面，避免"先见页面后盖幕" */}
-          <Welcome />
-          {children}
-          <SearchPanel />
-          <TabletGate />
+          <SettingsProvider settings={settings}>
+            {/* 欢迎幕放在内容之前：流式渲染时首帧即覆盖页面，避免"先见页面后盖幕" */}
+            <Welcome />
+            {children}
+            <SearchPanel />
+            <TabletGate />
+          </SettingsProvider>
         </Providers>
       </body>
     </html>

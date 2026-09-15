@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
+import { useSiteSettings } from "@/lib/settings-context";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -15,6 +16,10 @@ interface HeaderProps {
 export function Header({ searchQuery, onSearchChange }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const { t, lang } = useLang();
+  // 站名/Logo 由 Setting 下发（后台「站点设置」可改）；无值回退内置品牌
+  const settings = useSiteSettings();
+  const siteName = settings.siteName || "慢日志";
+  const siteNameEn = settings.siteNameEn || "SLOWLOG";
 
   useEffect(() => {
     // P2-14：包 rAF + 值变更判断，避免每个 scroll 事件都 setState 触发整页重渲染
@@ -43,10 +48,14 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full">
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+            {settings.logoUrl ? (
+              <img src={settings.logoUrl} alt="" className="w-[26px] h-[26px] rounded-full object-cover shrink-0" />
+            ) : (
+              <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+            )}
             <span className="flex items-baseline gap-1 whitespace-nowrap">
-              <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">慢日志</span>
-              <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-text)]">· SLOWLOG</span>
+              <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">{siteName}</span>
+              <span className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-text)]">· {siteNameEn}</span>
             </span>
             <span className="hidden 2xl:inline mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] border-l border-[var(--yh-border)] pl-3">
               {t.siteSlogan}

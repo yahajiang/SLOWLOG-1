@@ -103,17 +103,28 @@ export const thoughtSchema = z
     message: "内容不能为空",
   });
 
+// 可空字段必须 .nullable()：GET 返回 DB 的 null，设置页全量回写时若只允许
+// optional 会收到 null → 400（既有 bug，全量回写一触即发）
 export const settingsSchema = z.object({
   siteName: z.string().trim().max(60).optional(),
-  siteNameEn: z.string().trim().max(60).optional(),
+  siteNameEn: z.string().trim().max(60).nullable().optional(),
   siteDescription: z.string().trim().max(300).optional(),
-  siteDescriptionEn: z.string().trim().max(300).optional(),
+  siteDescriptionEn: z.string().trim().max(300).nullable().optional(),
   siteKeywords: z.string().trim().max(200).optional(),
-  siteIconUrl: z.string().trim().max(500).optional(),
-  logoUrl: z.string().trim().max(500).optional(),
-  footerText: z.string().trim().max(300).optional(),
-  footerTextEn: z.string().trim().max(300).optional(),
-  socialLinks: z.unknown().optional(),
+  siteIconUrl: z.string().trim().max(500).nullable().optional(),
+  logoUrl: z.string().trim().max(500).nullable().optional(),
+  footerText: z.string().trim().max(300).nullable().optional(),
+  footerTextEn: z.string().trim().max(300).nullable().optional(),
+  socialLinks: z
+    .array(
+      z.object({
+        // 渲染在 Footer 的外链——url 强制 http(s) 前缀，杜绝 javascript:/data: 注入
+        name: z.string().trim().min(1, "社交链接名称不能为空").max(30, "名称最多 30 字"),
+        url: z.string().trim().max(500).regex(/^https?:\/\//i, "链接需以 http(s):// 开头"),
+      })
+    )
+    .max(10, "社交链接最多 10 条")
+    .optional(),
   postsPerPage: z.number().int().min(1).max(100).optional(),
   theme: z.enum(["light", "dark", "system"]).optional(),
 });
