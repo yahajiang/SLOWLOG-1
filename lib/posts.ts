@@ -243,6 +243,160 @@ export async function getAllPosts(opts?: { status?: string; locale?: string }) {
   )
 }
 
+export interface PostPage {
+  items: PostDTO[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+/** 前台列表每页上限：站点设置的 postsPerPage 可下调，但不允许超过该值 */
+export const FRONT_PAGE_SIZE_MAX = 12
+
+/** 首页每个分类分组默认展示的最新篇数（其余走归档/标签页查看） */
+export const HOME_GROUP_LIMIT = 8
+
+/**
+ * 前台分页查询（服务端真分页，归档 / 标签页 / 移动归档共用）。
+ *
+ * 为什么不放客户端分页：此前前台一律 `getAllPosts()` 全量下发，受
+ * FRONT_LIST_LIMIT 硬顶（超出即静默丢文）且 RSC 载荷随文章数线性膨胀。
+ * 服务端分页后上限由 pageSize 决定，不再有"第 101 篇消失"的问题。
+ *
+ * - 只返回已发布且已到发布时间的文章（复用 publicPostWhere，唯一可见性规则）
+ * - 搜索在服务端完成（标题/摘要中英 + 分类名），保证"搜索结果分页"语义正确
+ * - 支持按分类名 / 标签过滤（首页分组「查看全部」走归档 + category 参数）
+ * - 页码越界自动回退到最后一页，避免空页
+ */
+const getCachedPostPage = unstable_cache(
+  async (page: number, pageSize: number, q: string, tag: string, category: string) => {
+    const where: any = { ...publicPostWhere() }
+    const and: any[] = []
+    if (tag) {
+      // 数组精确匹配 + 常见大小写变体：保持原先 toLowerCase 比较的容错行为
+      and.push({ tags: { hasSome: [...new Set([tag, tag.toLowerCase(), tag.toUpperCase()])] } })
+    }
+    if (category) and.push({ category: { name: category } })
+    if (q) {
+      const qs = q.trim()
+      and.push({
+        OR: [
+          { title: { contains: qs, mode: "insensitive" } },
+          { titleZh: { contains: qs, mode: "insensitive" } },
+          { excerpt: { contains: qs, mode: "insensitive" } },
+          { excerptZh: { contains: qs, mode: "insensitive" } },
+          { category: { name: { contains: qs, mode: "insensitive" } } },
+        ],
+      })
+    }
+    if (and.length) where.AND = and
+    const [rows, total] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        include: { category: true },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.post.count({ where }),
+    ])
+    return { rows: rows.map(mapPost), total }
+  },
+  ["posts-page"],
+  { revalidate: 60, tags: ["posts"] }
+)
+
+export async function getPostsPage(opts: {
+  page?: number
+  pageSize?: number
+  q?: string
+  tag?: string
+  category?: string
+} = {}): Promise<PostPage> {
+  const pageSize = Math.min(Math.max(Number(opts.pageSize) || 10, 1), 100)
+  const requested = Math.max(Number(opts.page) || 1, 1)
+  const q = opts.q || ""
+  const tag = opts.tag || ""
+  const category = opts.category || ""
+  return degrade(
+    async () => {
+      let { rows, total } = await getCachedPostPage(requested, pageSize, q, tag, category)
+      const totalPages = Math.max(1, Math.ceil(total / pageSize))
+      let page = requested
+      if (requested > totalPages) {
+        page = totalPages
+        ;({ rows, total } = await getCachedPostPage(page, pageSize, q, tag, category))
+      }
+      return { items: rows, total, page, pageSize, totalPages }
+    },
+    { items: [], total: 0, page: requested, pageSize, totalPages: 1 },
+    "getPostsPage"
+  )
+}
+
+/** 归档刊头统计（全站口径，不随分页变化）：年数 / 分类数 / 最近更新 */
+export async function getArchiveStats() {
+  return degrade(
+    async () => {
+      const rows = await prisma.post.findMany({
+        where: publicPostWhere(),
+        select: { publishedAt: true, createdAt: true, category: { select: { name: true } } },
+      })
+      const years = new Set<number>()
+      const cats = new Set<string>()
+      let latest = 0
+      for (const r of rows) {
+        const d = r.publishedAt || r.createdAt
+        if (d) {
+          const t = new Date(d)
+          if (!Number.isNaN(t.getTime())) {
+            years.add(t.getFullYear())
+            latest = Math.max(latest, t.getTime())
+          }
+        }
+        if (r.category?.name) cats.add(r.category.name)
+      }
+      return {
+        yearCount: years.size,
+        categoryCount: cats.size,
+        latestAt: latest ? new Date(latest).toISOString() : null,
+      }
+    },
+    { yearCount: 0, categoryCount: 0, latestAt: null as string | null },
+    "getArchiveStats"
+  )
+}
+
+/**
+ * 标签共现（相关标签）：基于该标签的**全部**文章计算，不随分页变化。
+ * 只 select tags 字段，不受分页影响、也不把正文带进内存。
+ */
+export async function getRelatedTags(tag: string, limit = 10): Promise<string[]> {
+  return degrade(
+    async () => {
+      const rows = await prisma.post.findMany({
+        where: { ...publicPostWhere(), tags: { hasSome: [...new Set([tag, tag.toLowerCase(), tag.toUpperCase()])] } },
+        select: { tags: true },
+      });
+      const freq = new Map<string, number>();
+      for (const r of rows) {
+        for (const tg of r.tags || []) {
+          const key = String(tg).trim();
+          if (!key || key.toLowerCase() === tag.toLowerCase()) continue;
+          freq.set(key, (freq.get(key) || 0) + 1);
+        }
+      }
+      return [...freq.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, limit)
+        .map(([k]) => k);
+    },
+    [] as string[],
+    "getRelatedTags"
+  );
+}
+
 export async function getPostBySlug(slug: string) {
   return degrade(
     async () => {

@@ -2,38 +2,65 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChevronRight, Search } from "lucide-react"
 import { Footer } from "@/components/Footer"
 import { CategoryBadge } from "@/components/CategoryBadge"
 import { EmptyState } from "@/components/EmptyState"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { Pagination } from "@/components/Pagination"
 import { useLang } from "@/lib/lang-context"
 import { mdInSiteTz } from "@/lib/relative-time"
 
 // 归档页 = 查看全部的终点：真时间线（Motion 02 生长 + Motion 05 阅读）
 // 轴线随滚动生长（scaleY），节点进入视口依次点亮，文章从节点侧淡入。
 // 渐进增强：`tl-armed` 类由 JS 挂载——无 JS / 爬虫拿到的是完全可见的静态列表。
-export default function ArchiveClient({ posts, years }: { posts: any[]; years: [number, any[]][] }) {
-  const { t, lang } = useLang()
-  const [q, setQ] = useState("")
-  const [armed, setArmed] = useState(false)
-  const [grow, setGrow] = useState(0)
-  const tlRef = useRef<HTMLDivElement>(null)
-  // P2-13：title / category 均可能缺失（历史脏数据），统一兜底为空串——
-  // 否则 .toLowerCase() 抛 TypeError 会让整页白屏
+/**
+ * 归档页（服务端分页）。
+ * - `posts` / `years` 只含**当前页**，统计（篇数/年数/分类数/最近更新）走全站口径 stats
+ * - 搜索在服务端完成：输入防抖 → 替换 URL 的 q → RSC 重取（保证"搜索结果分页"语义）
+ */
+export default function ArchiveClient({
+  years,
+  total,
+  stats,
+  page,
+  totalPages,
+  initialQ = "",
+  category = "",
+}: {
+  years: [number, any[]][];
+  total: number;
+  stats: { yearCount: number; categoryCount: number; latestAt: string | null };
+  page: number;
+  totalPages: number;
+  initialQ?: string;
+  category?: string;
+}) {
+  const { t, lang } = useLang();
+  const router = useRouter();
+  const [q, setQ] = useState(initialQ);
+  const [armed, setArmed] = useState(false);
+  const [grow, setGrow] = useState(0);
+  const tlRef = useRef<HTMLDivElement>(null);
+
+  // 输入防抖 → 服务端重取（首次挂载不同步，避免多余导航）
+  useEffect(() => {
+    if (q === initialQ) return;
+    const id = setTimeout(() => {
+      const qs = q.trim();
+      router.replace(qs ? `/archive?q=${encodeURIComponent(qs)}` : "/archive", { scroll: false });
+    }, 320);
+    return () => clearTimeout(id);
+  }, [q, initialQ, router]);
+  // 当页内搜索（服务端已按 q 过滤过，这里仅作时间线分组展示）
   const filteredYears = q.trim()
     ? years.map(([y, arr]) => [y, arr.filter((p:any)=> ((p.titleZh||p.title||"") as string).toLowerCase().includes(q.toLowerCase()) || ((p.category||"") as string).toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
     : years
-  const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|")
-  // 刊头统计：篇数 / 年数 / 分类数 / 最近更新（MM-DD）
-  const catCount = new Set(posts.map((p: any) => p.category).filter(Boolean)).size
-  // P2-13：单篇日期非法会让 Math.max 得到 NaN，导致整块统计退化为"—"，故逐条校验
-  const latestTs = posts.reduce((acc: number, p: any) => {
-    const ts = new Date(p.publishedAt || p.createdAt).getTime()
-    return Number.isNaN(ts) ? acc : Math.max(acc, ts)
-  }, 0)
-  const latestMd = latestTs ? mdInSiteTz(new Date(latestTs).toISOString()) : "—"
+  const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|");
+  const catCount = stats.categoryCount;
+  const latestMd = stats.latestAt ? mdInSiteTz(stats.latestAt) : "—";
 
   useEffect(() => {
     const root = tlRef.current
@@ -98,17 +125,29 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-6">
         <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {lang === "zh" ? "全部日志" : "Archive"}</p>
         <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
-        <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">{t.archiveDesc(posts.length, years.length)}{q && ` · ${t.filteredCount(filteredYears.reduce((a, [,arr])=>a+arr.length,0))}`}</p>
+        <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
+          {t.archiveDesc(total, stats.yearCount)}
+          {category && ` · ${lang === "zh" ? "分类" : "Category"}: ${category}`}
+          {q && ` · ${lang === "zh" ? "搜索" : "Search"}: “${q}”`}
+          {(category || q) && (
+            <button
+              onClick={() => router.replace(category ? `/archive?category=${encodeURIComponent(category)}` : "/archive", { scroll: false })}
+              className="ml-2 underline underline-offset-4 hover:text-[var(--yh-text)]"
+            >
+              {lang === "zh" ? "清除筛选" : "Clear"}
+            </button>
+          )}
+        </p>
 
         {/* 统计条：POSTS / YEARS / CATEGORIES / LATEST */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 border border-[var(--yh-border)] bg-[var(--dash-card)]">
           <div className="px-4 py-3 border-r border-b sm:border-b-0 border-[var(--yh-border)]">
             <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Posts</p>
-            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{posts.length}</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{total}</p>
           </div>
           <div className="px-4 py-3 border-b sm:border-b-0 sm:border-r border-[var(--yh-border)]">
             <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Years</p>
-            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{years.length}</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{stats.yearCount}</p>
           </div>
           <div className="px-4 py-3 border-r border-[var(--yh-border)]">
             <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Categories</p>
@@ -177,6 +216,21 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
           )}
         </div>
       </div>
+
+      {/* 分页：链接直指 ?page=N（爬虫可抓、可预取） */}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        hrefFor={(p) => {
+          const params = new URLSearchParams();
+          if (q.trim()) params.set("q", q.trim());
+          if (category) params.set("category", category);
+          params.set("page", String(p));
+          const qs = params.toString();
+          return `/archive${qs ? `?${qs}` : ""}`;
+        }}
+        className="mt-2 mb-10"
+      />
       </main>
       <Footer />
     </>
