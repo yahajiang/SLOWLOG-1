@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React from "react";
 
 // 统一空态（v0.3 细节统一）：dashed 直角卡 + 印章符号 + 标题 + 提示 + 可选行动出口。

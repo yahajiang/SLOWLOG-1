@@ -46,7 +46,7 @@ export default function MediaPage(){
       const form = new FormData()
       form.append("file", f)
       setProgress({ name: f.name, loaded: 0, total: f.size })
-      const { ok, body } = await uploadWithProgress("/api/media", form, (loaded, total) => {
+      const { ok } = await uploadWithProgress("/api/media", form, (loaded, total) => {
         setProgress({ name: f.name, loaded, total })
       })
       if (ok) successCount++; else failCount++

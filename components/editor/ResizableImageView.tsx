@@ -87,7 +87,9 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
           </button>
         </div>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* 说明：这里必须用原生 <img> 而非 next/image —— 需要 ref 实测尺寸与原始 src
+            （编辑器内的自适应预览）。本仓未装 eslint-config-next，无需 disable
+            @next/next/no-img-element；若日后接入该配置，请在此恢复对应 disable 注释。 */}
         <img
           ref={imgRef}
           src={src}

@@ -76,7 +76,7 @@ export default function PostsPage() {
   const paged = filtered.slice((safePage-1)*pageSize, safePage*pageSize)
   const allPagedSelected = paged.length > 0 && paged.every(p => selected.has(p.id))
 
-  const toggleSelect = useCallback((id:string)=> setSelected(s=>{const n=new Set(s); n.has(id)?n.delete(id):n.add(id); return n}), [])
+  const toggleSelect = useCallback((id:string)=> setSelected(s=>{const n=new Set(s); if(n.has(id)) n.delete(id); else n.add(id); return n}), [])
   const toggleAll = useCallback(()=>{
     if (allPagedSelected) {
       const ids = new Set(paged.map(p=>p.id))

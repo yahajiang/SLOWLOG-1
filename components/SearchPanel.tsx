@@ -15,10 +15,8 @@ type IndexCat = { name: string; count: number; py?: string; abbr?: string };
 type IndexData = { v: number; posts: IndexPost[]; thoughts: IndexThought[]; categories: IndexCat[]; offline?: boolean };
 type Row = { key: string; group: string; title: string; meta: string; kind: "post" | "cat" | "thought"; href: string; matchText: string };
 
-const VISIBLE = 4;
-
 export function SearchPanel() {
-  const { t, lang } = useLang();
+  const { lang } = useLang();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -166,7 +164,6 @@ export function SearchPanel() {
   if (!open) return null;
 
   let lastGroup = "";
-  let groupIdx = -1;
   const rendered: React.ReactNode[] = [];
   rows.forEach((r, i) => {
     if (r.group !== lastGroup) {
