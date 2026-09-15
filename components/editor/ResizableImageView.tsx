@@ -24,12 +24,15 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
     startRef.current = { x: e.clientX, w: img.getBoundingClientRect().width }
     setResizing(true)
 
+    // P3-10：maxW 加下限。容器尚未测量完成时 maxW 可能为 0，
+    // 此时 newW/maxW 会算出 Infinity，写入 "Infinity%" 这类非法宽度。
+    const safeMaxW = Math.max(1, maxW)
     const onMove = (ev: PointerEvent) => {
       ev.preventDefault()
       const delta = ev.clientX - startRef.current.x
-      const newW = Math.max(80, Math.min(maxW, startRef.current.w + delta))
+      const newW = Math.max(80, Math.min(safeMaxW, startRef.current.w + delta))
       // 用像素直接计算百分比，更跟手
-      const percent = (newW / maxW) * 100
+      const percent = (newW / safeMaxW) * 100
       updateAttributes({ width: `${Math.round(percent)}%` })
     }
     const onUp = () => {
@@ -39,6 +42,12 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
     }
     window.addEventListener("pointermove", onMove)
     window.addEventListener("pointerup", onUp)
+    // P3-10：兜底清理。旧实现只在 pointerup 中移除监听——若拖拽过程中组件被卸载
+    // （切换文章 / 关闭配置面板），这两个 window 监听会永久残留并持续触发 updateAttributes。
+    return () => {
+      window.removeEventListener("pointermove", onMove)
+      window.removeEventListener("pointerup", onUp)
+    }
   }, [updateAttributes])
 
   // 阻止图片点击时的默认拖拽行为

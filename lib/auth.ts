@@ -6,37 +6,76 @@ import { authConfig } from "./auth-config"
 const DEFAULT_EMAIL = "admin@slowlog.dev"
 const DEFAULT_PASSWORD = "admin123"
 
-// ── 登录限流（P1）：内存滑窗，5 次失败/15 分钟锁（按 email 键控）。
+// ── 登录防护（P1-2 重做）─────────────────────────────────────────
+// 旧实现：按 email 硬锁 5 次 / 15 分钟。两个问题：
+//   ① 攻击者无需知道密码，只要对已知管理员邮箱（README 公开）连打 5 次错误密码，
+//      就能让真实管理员 15 分钟进不去 —— 限流器本身成了 DoS 工具；
+//   ② 清理只在 size>100 时执行且仅删过期项，而窗口内的失败项永不过期，
+//      于是每次 recordFail 都要全表遍历 → 表无上界增长 + CPU 放大。
+//
+// 现在：
+//   ① 双维度计数：IP 为主闸（防跨账户滥用），email 为辅（防定向爆破）；
+//   ② 超阈值改为**渐进延迟**，正确凭据始终可以登录 → DoS 面关闭；
+//   ③ 只对"异常高频"来源硬拒（阈值远高于正常用户行为），保留最终防线；
+//   ④ 表容量固定，超限时按时间戳批量淘汰最旧一半，单次操作摊销 O(1)。
+//
 // ⚠️ serverless 内存为实例级——多实例部署下限流按实例生效，仍显著提高暴力成本。
-const LOCK_THRESHOLD = 5
-const LOCK_WINDOW_MS = 15 * 60 * 1000
-const loginFails = new Map<string, { count: number; firstFailAt: number }>()
+const IP_DELAY_THRESHOLD = 10 // 同一来源开始延迟
+const IP_HARD_LIMIT = 30 // 同一来源直接拒绝（正常用户绝不会触及）
+const EMAIL_DELAY_THRESHOLD = 5 // 同一账号开始延迟
+const WINDOW_MS = 15 * 60 * 1000
+const MAX_ENTRIES = 2000
+const MAX_DELAY_MS = 3000
 
-function isLocked(key: string): boolean {
-  const rec = loginFails.get(key)
-  if (!rec) return false
-  if (Date.now() - rec.firstFailAt > LOCK_WINDOW_MS) {
-    loginFails.delete(key)
-    return false
-  }
-  return rec.count >= LOCK_THRESHOLD
+type FailRec = { count: number; firstFailAt: number }
+const failTable = new Map<string, FailRec>()
+
+/** 超容量时批量淘汰最旧的一半，避免每次写入都做全表扫描 */
+function pruneIfNeeded() {
+  if (failTable.size <= MAX_ENTRIES) return
+  const victims = [...failTable.entries()]
+    .sort((a, b) => a[1].firstFailAt - b[1].firstFailAt)
+    .slice(0, Math.floor(MAX_ENTRIES / 2))
+  for (const [k] of victims) failTable.delete(k)
 }
 
-function recordFail(key: string) {
-  const now = Date.now()
-  const rec = loginFails.get(key)
-  if (!rec || now - rec.firstFailAt > LOCK_WINDOW_MS) loginFails.set(key, { count: 1, firstFailAt: now })
+function failCount(key: string, now: number): number {
+  const rec = failTable.get(key)
+  if (!rec) return 0
+  if (now - rec.firstFailAt > WINDOW_MS) {
+    failTable.delete(key)
+    return 0
+  }
+  return rec.count
+}
+
+function recordFail(key: string, now: number) {
+  const rec = failTable.get(key)
+  if (!rec || now - rec.firstFailAt > WINDOW_MS) failTable.set(key, { count: 1, firstFailAt: now })
   else rec.count++
-  // 防无限增长：超过 100 键时顺手清理过期项
-  if (loginFails.size > 100) {
-    for (const [k, v] of loginFails) {
-      if (now - v.firstFailAt > LOCK_WINDOW_MS) loginFails.delete(k)
-    }
-  }
+  pruneIfNeeded()
 }
 
-function clearFails(key: string) {
-  loginFails.delete(key)
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/** 客户端 IP：取 x-forwarded-for 首段（与 app/api/posts/[id]/view/route.ts 同一取法） */
+function clientIp(request?: Request): string {
+  const h = request?.headers
+  if (!h) return "unknown"
+  const xff = h.get("x-forwarded-for")?.split(",")[0]?.trim()
+  return xff || h.get("x-real-ip")?.trim() || "unknown"
+}
+
+/**
+ * 渐进退避：失败越多等待越久，但**不阻断**正确凭据。
+ * 这既显著提高暴力破解成本，又不会被攻击者反过来当作锁死管理员的工具。
+ */
+async function applyBackoff(ipKey: string, emailKey: string, now: number) {
+  const overIp = failCount(ipKey, now) - IP_DELAY_THRESHOLD
+  const overEmail = failCount(emailKey, now) - EMAIL_DELAY_THRESHOLD
+  const over = Math.max(overIp, overEmail)
+  if (over < 0) return
+  await sleep(Math.min(MAX_DELAY_MS, 2 ** Math.min(over, 6) * 250))
 }
 
 /** 默认密码会话在改密前禁止一切写操作与后台页 */
@@ -49,26 +88,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
-      async authorize(creds) {
+      async authorize(creds, request) {
         // 惰性加载：避免 middleware/edge 打包链拉入 pg
         const { prisma } = await import("./prisma")
         const email = (creds?.email as string)?.toLowerCase().trim()
         const password = creds?.password as string
         if (!email || !password) return null
-        // 限流：锁定期间静默拒绝（与"密码错误"同 UX，不泄漏锁定状态）
-        if (isLocked(email)) return null
+
+        const ipKey = `ip:${clientIp(request)}`
+        const emailKey = `email:${email}`
+        const now = Date.now()
+
+        // 最终防线：同一来源短窗内异常高频失败
+        if (failCount(ipKey, now) >= IP_HARD_LIMIT) return null
+
+        await applyBackoff(ipKey, emailKey, now)
+
         // case-insensitive: legacy rows may store mixed-case emails
         const user = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } })
         if (!user) {
-          recordFail(email)
+          recordFail(ipKey, now)
+          recordFail(emailKey, now)
           return null
         }
         const ok = await bcrypt.compare(password, user.password)
         if (!ok) {
-          recordFail(email)
+          recordFail(ipKey, now)
+          recordFail(emailKey, now)
           return null
         }
-        clearFails(email)
+        // 成功即同时复位该来源与账号的失败计数
+        failTable.delete(ipKey)
+        failTable.delete(emailKey)
         // 检测是否为默认账户（首次登录未改密）
         const isDefault = user.email.toLowerCase() === DEFAULT_EMAIL && password === DEFAULT_PASSWORD
         return { id: user.id, email: user.email, name: user.name ?? undefined, needsPasswordChange: isDefault }

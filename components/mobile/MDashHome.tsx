@@ -28,7 +28,8 @@ export function MDashHome({ data }: {
 }) {
   const { toast } = useToast();
   const { t, lang } = useLang();
-  const { total, published, draft, totalViews, recent, noteCount = 0, catCount = 0, mediaCount = 0 } = data;
+  // P2-10：data 可能为空（上游取数失败/未传入），加兜底避免解构抛错白屏
+  const { total, published, draft, totalViews, recent, noteCount = 0, catCount = 0, mediaCount = 0 } = data ?? {};
   return (
     <div className="space-y-5 section-in">
       <div>

@@ -179,7 +179,10 @@ export function PostClient({
             <span className="text-[var(--yh-border)]">·</span>
             <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-[var(--yh-muted)]" data-reading-meta>
               <Clock className="w-3 h-3" />
-              <span data-remaining>{t.readingRemaining(10)}</span>
+              {/* P2-4：留空占位，剩余时间由 ReadingProgress 命令式写入。
+                  旧实现写死 {t.readingRemaining(10)}，导致任何父级重渲染都会把
+                  进度文案打回"剩余 10 分钟"（命令式写入与虚拟 DOM 双源互相覆盖） */}
+              <span data-remaining suppressHydrationWarning />
             </span>
             {((prismaRaw as any)?.repoUrl || (rawPost as any)?.repoUrl || REPO_MAP[rawPost.id]) && (
               <>

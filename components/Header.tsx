@@ -17,11 +17,21 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
   const { t, lang } = useLang();
 
   useEffect(() => {
+    // P2-14：包 rAF + 值变更判断，避免每个 scroll 事件都 setState 触发整页重渲染
+    let raf = 0;
     function onScroll() {
-      setScrolled(window.scrollY > 20);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const next = window.scrollY > 20;
+        setScrolled((prev) => (prev === next ? prev : next));
+      });
     }
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (

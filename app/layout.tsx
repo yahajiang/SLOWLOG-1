@@ -85,6 +85,11 @@ export default function RootLayout({
             ⚠️ 只允许 CSS 变量与 body 级规则——任何元素/通配选择器（如 *{margin:0}）
             都是未分层规则，会覆盖 @layer utilities 里的全部 Tailwind 工具类
             （曾导致 mx-auto/px-6 全线失效、容器贴左的线上回归） */}
+        {/* ⚠️ P3-17 安全约束：本文件所有 dangerouslySetInnerHTML 的 __html 必须是
+            **硬编码字面量**，禁止拼接用户输入 / 数据库字段 / 环境变量。
+            以下四处（内联 CSS、CSS 加载探针、主题首帧、回访标记）均满足该约束，
+            故当前无 HTML 注入风险；一旦有人往这些字面量里加入插值，
+            就等于凭空开出一个注入点——改动前请先看这条注释。 */}
         <style dangerouslySetInnerHTML={{ __html: `:root{--yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#6e6e73;--yh-border:#e5e5e7;--yh-accent:#4a6fb5;--yh-accent:oklch(.55 .15 250);--dash-bg:var(--yh-bg);--dash-card:#fff;--dash-border:var(--yh-border);--dash-text:var(--yh-text);--dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent)}body{background:var(--yh-bg);color:var(--yh-text);font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}.welcome{position:fixed;inset:0;z-index:90;background:var(--yh-bg)}.html-returning .welcome{display:none}` }} />
         {/* 外链 CSS 加载失败时自动重载一次（sessionStorage 防循环）：
             探针读 .css-probe 的自定义属性——它只存在于外链 globals.css 中 */}

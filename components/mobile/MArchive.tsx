@@ -24,10 +24,11 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
           ([y, arr]) =>
             [
               y,
+              // P2-13：title / category 可能缺失，统一兜底为空串，避免 .toLowerCase() 抛错白屏
               arr.filter(
                 (p: any) =>
-                  (p.titleZh || p.title).toLowerCase().includes(q.toLowerCase()) ||
-                  p.category.toLowerCase().includes(q.toLowerCase())
+                  ((p.titleZh || p.title || "") as string).toLowerCase().includes(q.toLowerCase()) ||
+                  ((p.category || "") as string).toLowerCase().includes(q.toLowerCase())
               ),
             ] as [number, any[]]
         )

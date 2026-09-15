@@ -54,11 +54,41 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
     });
   }, [posts, activeCategory, searchQuery]);
 
-  const localizedFiltered = filtered.map((p) =>
-    lang === "zh"
-      ? { ...p, title: p.titleZh || p.title, excerpt: p.excerptZh || p.excerpt }
-      : p
+  // P2-14：memo 化。旧实现每次渲染都重建整个数组的对象引用，
+  // 会击穿下游的 useMemo（groupedByCategory）以及 CoverArt 的 memo
+  const localizedFiltered = useMemo(
+    () =>
+      filtered.map((p) =>
+        lang === "zh"
+          ? { ...p, title: p.titleZh || p.title, excerpt: p.excerptZh || p.excerpt }
+          : p
+      ),
+    [filtered, lang]
   );
+
+  // P2-14：时间线分组移出渲染路径。原实现在 JSX 内用 IIFE 计算，
+  // 每次渲染（含 hero 每 5 秒轮播）都要重做一遍 O(n log n) 排序与逐条 Date 解析
+  const timelineGroups = useMemo(() => {
+    const tsOf = (p: any) => new Date(p.publishedAt || p.createdAt || p.date).getTime()
+    const byYear = new Map<number, typeof posts>()
+    for (const p of [...posts].sort((a, b) => tsOf(b) - tsOf(a))) {
+      const y = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date).getFullYear()
+      if (!byYear.has(y)) byYear.set(y, [])
+      byYear.get(y)!.push(p)
+    }
+    const recent = [...byYear.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .slice(0, 2)
+      .flatMap(([, arr]) => arr)
+      .slice(0, 8)
+    const grouped = new Map<number, typeof posts>()
+    for (const p of recent) {
+      const y = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date).getFullYear()
+      if (!grouped.has(y)) grouped.set(y, [])
+      grouped.get(y)!.push(p)
+    }
+    return [...grouped.entries()].sort((a, b) => b[0] - a[0])
+  }, [posts]);
 
   const featuredPosts = useMemo(() => posts.filter((p) => p.featured), [posts])
   // Hero 候选池：全部 → 推荐文章；选中某分类 → 该分类的推荐，无推荐则取其最新一篇。
@@ -448,25 +478,9 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                 {t.viewAll}
               </Link>
             </div>
-            {(() => {
-              const byYear = new Map<number, typeof posts>()
-              for (const p of [...posts].sort((a,b)=> new Date((b as any).publishedAt||(b as any).createdAt||(b as any).date).getTime() - new Date((a as any).publishedAt||(a as any).createdAt||(a as any).date).getTime())) {
-                const y = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date).getFullYear()
-                if (!byYear.has(y)) byYear.set(y, [])
-                byYear.get(y)!.push(p)
-              }
-              const years = [...byYear.entries()].sort((a,b)=> b[0]-a[0]).slice(0,2)
-              const recent = years.flatMap(([,arr])=> arr).slice(0,8)
-              // 继续阅读标记（readMarks 由顶部 effect 水合后填充）
-              const grouped = new Map<number, typeof posts>()
-              for (const p of recent) {
-                const y = new Date((p as any).publishedAt || (p as any).createdAt || (p as any).date).getFullYear()
-                if (!grouped.has(y)) grouped.set(y, [])
-                grouped.get(y)!.push(p)
-              }
-              return (
-                <div className="space-y-3">
-                  {[...grouped.entries()].sort((a,b)=> b[0]-a[0]).map(([year, arr]) => (
+            <div className="space-y-3">
+              {/* P2-14：分组结果来自上方 useMemo（timelineGroups），渲染期不再重算 */}
+              {timelineGroups.map(([year, arr]) => (
                     <div key={year}>
                       <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-1.5">{year} · {t.postsCount2(arr.length)}</p>
                       {/* 迷你时间线：细竖线 + 骑线圆点，hover 点亮品牌色 */}
@@ -486,10 +500,8 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       </div>
                     </div>
                   ))}
-                  {posts.length>8 && <p className="mono text-[10px] text-[var(--yh-muted)] pt-2 border-t border-[var(--yh-border)]/50">{t.expandThoughts(posts.length-8)}</p>}
-                </div>
-              )
-            })()}
+              {posts.length>8 && <p className="mono text-[10px] text-[var(--yh-muted)] pt-2 border-t border-[var(--yh-border)]/50">{t.expandThoughts(posts.length-8)}</p>}
+            </div>
           </div>
         </section>
       )}

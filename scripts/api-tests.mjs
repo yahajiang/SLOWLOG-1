@@ -67,13 +67,17 @@ async function main() {
     t("改密：新密码可登录", re.hasSession)
   }
 
-  // ═══ 场景 ⑥：登录限流（rate-user 专用，5 败后正确密码也应被锁）═══
+  // ═══ 场景 ⑥：登录防护（rate-user 专用）═══
+  // 设计意图（2026-09-15 加固，见 docs/full-review-2026-09-15.md P1-2）：
+  // 连续失败采用**渐进延迟**而非硬锁——原先的"5 次即锁"会让攻击者仅凭
+  // 对已知管理员邮箱打 5 次错误密码就锁死真实管理员（DoS）。
+  // 因此正确凭据必须始终可以登录成功，只是响应逐步变慢。
   {
     for (let i = 1; i <= 5; i++) {
       await login("rate-user@test.local", `WrongPass${i}`)
     }
     const sixth = await login("rate-user@test.local", "RatePass123")
-    t("限流：5 败后正确密码仍被锁", !sixth.hasSession)
+    t("限流：连续失败后正确密码仍可登录（渐进延迟而非硬锁，防 DoS）", sixth.hasSession)
   }
 
   // ═══ test-admin 登录（写场景前置）═══

@@ -30,24 +30,45 @@ export function SearchPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
   const indexRef = useRef<IndexData | null>(null);
 
+  // P2-11：关闭动画定时器需可清理，避免卸载后仍 setState
+  const closeTimerRef = useRef<number | null>(null);
   const requestClose = useCallback(() => {
     setClosing(true);
-    window.setTimeout(() => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = window.setTimeout(() => {
       setOpen(false);
       setClosing(false);
       setQuery("");
+      closeTimerRef.current = null;
     }, 200);
   }, []);
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    },
+    []
+  );
 
   // 打开时懒加载索引（只取一次，之后用内存）
   useEffect(() => {
     if (!open || indexRef.current) return;
+    // P2-10：补 res.ok 判定与 AbortController。旧实现只靠 catch 兜底：
+    // 接口返回 5xx/HTML 时 r.json() 抛错被静默吞掉，面板停在"无结果"而非报错；
+    // 且组件卸载后仍会 setIndex/setLoading。
+    const ctrl = new AbortController();
     setLoading(true);
-    fetch("/api/search-index")
-      .then((r) => r.json())
+    fetch("/api/search-index", { signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((d: IndexData) => { indexRef.current = d; setIndex(d); })
-      .catch(() => setIndex({ v: 1, posts: [], thoughts: [], categories: [], offline: true }))
-      .finally(() => setLoading(false));
+      .catch((e: any) => {
+        if (e?.name === "AbortError") return;
+        setIndex({ v: 1, posts: [], thoughts: [], categories: [], offline: true });
+      })
+      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
+    return () => ctrl.abort();
   }, [open]);
 
   // 全局快捷键：/ 与 ⌘K 唤起（输入框聚焦时 / 不触发），Esc 关闭
