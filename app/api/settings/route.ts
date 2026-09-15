@@ -1,34 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag, revalidatePath } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { settingsSchema } from "@/lib/schemas"
 import { auth, passwordChangeRequired } from "@/lib/auth"
-
-/** 与 prisma/schema.prisma 的 Setting 默认值保持一致，用于「单例尚未落库」时的只读兜底 */
-const DEFAULT_SETTINGS = {
-  id: "singleton",
-  siteName: "慢日志",
-  siteNameEn: "SlowLog",
-  siteDescription: "慢下来，写点值得读的东西。",
-  siteDescriptionEn: null,
-  siteKeywords: "设计,博客,思考",
-  siteIconUrl: null,
-  logoUrl: null,
-  footerText: null,
-  footerTextEn: null,
-  socialLinks: [],
-  defaultPageConfig: {
-    layout: "standard",
-    theme: "light",
-    primaryColor: "oklch(0.55 0.15 250)",
-    fontFamily: "sans",
-    backgroundColor: "#FFFFFF",
-    maxWidth: "medium",
-    showTOC: false,
-  },
-  postsPerPage: 10,
-  theme: "system",
-}
+import { SETTINGS_DEFAULTS } from "@/lib/settings"
 
 // GET 为公开读接口：加 CDN 缓存，避免每次请求都打库
 const GET_CACHE = { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
@@ -39,7 +15,7 @@ export async function GET() {
     // 使一个幂等的读接口因预取/爬虫/健康检查而产生写库行为。
     // 单例初始化交由 prisma/seed.ts 负责；此处未命中则返回只读默认值。
     const s = await prisma.setting.findUnique({ where: { id: "singleton" } })
-    return NextResponse.json(s ?? DEFAULT_SETTINGS, { headers: GET_CACHE })
+    return NextResponse.json(s ?? { id: "singleton", ...SETTINGS_DEFAULTS }, { headers: GET_CACHE })
   } catch (e) {
     console.error(e)
     return apiError(500, "设置加载失败")
@@ -58,6 +34,10 @@ export async function PUT(req: NextRequest) {
     const safeData: any = parsed.data
     if (Object.keys(safeData).length === 0) return apiError(400, "无有效字段")
     const s = await prisma.setting.upsert({ where: { id: "singleton" }, update: safeData, create: { id: "singleton", ...safeData } })
+    // 设置已被 layout metadata / Header / Footer / manifest 消费（lib/settings.ts）——
+    // 保存后立即失效缓存并按 layout 级刷新全站路由，改动即时可见
+    revalidateTag("settings")
+    revalidatePath("/", "layout")
     return NextResponse.json(s)
   } catch (e: any) {
     console.error(e)

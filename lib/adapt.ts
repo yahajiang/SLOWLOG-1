@@ -97,8 +97,8 @@ export function pickRelated(
     .map((s) => s.p);
 }
 
-/** 文章 openGraph 元数据组装（桌面/移动/平板 SEO 共用） */
-export function postOgMeta(post: LegacyPost, siteUrl: string) {
+/** 文章 openGraph 元数据组装（桌面/移动/平板 SEO 共用）；siteName 由调用方从 Setting 传入 */
+export function postOgMeta(post: LegacyPost, siteUrl: string, siteName = "慢日志") {
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
@@ -106,7 +106,7 @@ export function postOgMeta(post: LegacyPost, siteUrl: string) {
     publishedTime: post.date,
     tags: post.tags,
     url: `${siteUrl}/posts/${post.id}`,
-    siteName: "慢日志",
+    siteName,
   };
 }
 

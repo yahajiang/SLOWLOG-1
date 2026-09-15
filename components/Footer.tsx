@@ -2,12 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { useSiteSettings } from "@/lib/settings-context";
 import { pickTagline } from "@/lib/taglines";
 
 export function Footer() {
   const { t, lang } = useLang();
   const [showTop, setShowTop] = useState(false);
   const [tagline, setTagline] = useState(t.footerTagline);
+  // 站点设置下发：站名/页脚文案/社交链接（后台可改）；无值回退内置品牌
+  const settings = useSiteSettings();
+  const siteName = settings.siteName || "慢日志";
+  const siteNameEn = settings.siteNameEn || "SLOWLOG";
+  // 用户自定义页脚文案优先（按语言取对应侧）；未填时保留随机格言
+  const motto = (lang === "zh" ? settings.footerText : settings.footerTextEn) || tagline;
+  const socialLinks = settings.socialLinks;
 
   useEffect(() => {
     // P2-14：包 rAF + 值变更判断。旧实现每个 scroll 事件都 setState，
@@ -38,16 +46,21 @@ export function Footer() {
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-[11px] flex flex-col lg:flex-row items-center justify-between gap-[9px]">
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-[22px] h-[22px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px]">S</span>
-          <span className="font-medium">慢日志 · SLOWLOG</span>
+          <span className="font-medium">{siteName} · {siteNameEn}</span>
           <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.9"}</span>
-          <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {tagline}</span>
+          <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {motto}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
           <span>© {new Date().getFullYear()} Yahajiang</span>
           <span>·</span>
           <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
-          <span>·</span>
-          <a href="https://github.com/yahajiang" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
+          {socialLinks.map((s) => (
+            <span key={s.url} className="flex items-center gap-[7px]">
+              <span>·</span>
+              {/* schema 层已限 http(s) 前缀，渲染前再守一道 */}
+              <a href={/^https?:\/\//i.test(s.url) ? s.url : "#"} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors">{s.name}</a>
+            </span>
+          ))}
           <span>·</span>
           <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors" title="RSS 订阅">RSS</a>
           <span className="hidden md:inline">·</span>
