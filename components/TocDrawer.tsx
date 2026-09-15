@@ -33,13 +33,23 @@ export function TocDrawer({
 
   useEffect(() => setMounted(true), []);
 
+  // P2-11：退场定时器需可清理，避免抽屉卸载后仍 setState
+  const closeTimerRef = useRef<number | null>(null);
   const requestClose = useCallback(() => {
     setClosing(true);
-    window.setTimeout(() => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = window.setTimeout(() => {
       setOpen(false);
       setClosing(false);
+      closeTimerRef.current = null;
     }, 200);
   }, []);
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    },
+    []
+  );
 
   // 抽屉打开时锁背景滚动 + 把当前项滚进列表视野
   useEffect(() => {

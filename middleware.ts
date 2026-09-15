@@ -28,17 +28,38 @@ function tabletTarget(pathname: string): string | null {
 }
 
 /**
- * 重定向必须基于「请求真值」：Vercel + Cloudflare 代理链路下，nextUrl.origin
+ * 重定向目标应基于「请求真值」：Vercel + Cloudflare 代理链路下，nextUrl.origin
  * 可能被解析成部署域（slowlog.vercel.app——被墙，访客侧直接超时）。
- * 优先 x-forwarded-host / x-forwarded-proto，退回 host，最后才用 nextUrl 兜底。
+ *
+ * P3-19（加固）：但不能无条件信任客户端可提供的 Host / X-Forwarded-Host ——
+ * 它们是开放的 302 目标注入面（把访客跳到攻击者站点做钓鱼）。因此：
+ *   ① 请求 host 在**白名单内**才采用（保留原有绕过被墙域名的能力）；
+ *   ② 否则回退到站点自身的 env 配置，与 lib/site-url.ts「只信任 env」的策略对齐。
+ * 白名单：环境变量 ALLOWED_REDIRECT_HOSTS（逗号分隔）扩展；
+ * 未配置时默认只信任 NEXT_PUBLIC_SITE_URL 的 host。
  */
+function allowedRedirectHosts(): string[] {
+  const extra = (process.env.ALLOWED_REDIRECT_HOSTS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+  if (extra.length) return extra
+  try {
+    return [new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").host]
+  } catch {
+    return []
+  }
+}
+
 function redirectFor(req: NextRequest, target: string) {
   const h = req.headers
   const proto = (h.get("x-forwarded-proto") || "https").split(",")[0].trim() || "https"
-  const host =
+  const reqHost =
     (h.get("x-forwarded-host") || "").split(",")[0].trim() ||
     h.get("host") ||
     req.nextUrl.host
+  const allow = allowedRedirectHosts()
+  const host = allow.includes(reqHost) ? reqHost : allow[0] || req.nextUrl.host
   return NextResponse.redirect(new URL(target, `${proto}://${host}`))
 }
 

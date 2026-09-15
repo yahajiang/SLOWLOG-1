@@ -39,9 +39,27 @@ function renderInline(node: any, idx: number): React.ReactNode {
 
 function CopyBtn({ code }: { code: string }) {
   const [copied, setCopied] = React.useState(false)
+  // P2-11：复位定时器需可清理，避免卸载后 setState
+  const timerRef = React.useRef<number | null>(null)
+  React.useEffect(
+    () => () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+    },
+    []
+  )
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      if (timerRef.current) window.clearTimeout(timerRef.current)
+      timerRef.current = window.setTimeout(() => setCopied(false), 1200)
+    } catch {
+      // 剪贴板不可用（非 HTTPS / 权限拒绝）时静默忽略
+    }
+  }
   return (
     <button
-      onClick={async () => { try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1200) } catch {} }}
+      onClick={onCopy}
       className="px-3 py-1 rounded-none text-[11px] font-medium border bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700 hover:bg-[#3a3a3e] hover:text-white hover:border-zinc-600 transition-colors flex items-center gap-1"
     >{copied ? "✓ 已复制" : "复制"}</button>
   )
@@ -63,14 +81,26 @@ function LangBadge({ lang }: { lang: string }) {
   return <span className={`px-2.5 py-1 rounded-none text-[10px] font-semibold tracking-wider uppercase border ${cls}`}>{lang || "TEXT"}</span>
 }
 
-function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boolean, isFirstPara?: boolean, isDarkMode?: boolean, headingId?: string): React.ReactNode {
+/** P3-23：渲染递归深度上限——防御畸形深嵌套 JSON 造成的栈溢出 */
+const MAX_RENDER_DEPTH = 40
+
+function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boolean, isFirstPara?: boolean, isDarkMode?: boolean, headingId?: string, depth = 0): React.ReactNode {
+  // 超过深度上限直接截断，避免异常结构把渲染栈打爆
+  if (depth > MAX_RENDER_DEPTH) return null
   const content = node.content || []
   const inline = content.map((c: any, i: number) => renderInline(c, i))
 
   switch (node.type) {
     case "heading": {
-      const level = node.attrs?.level || 2
-      const id = headingId || slugifyHeading(content.map((c: any) => c.text || "").join("").trim(), idx)
+      // P3-21：level 必须白名单化——`h${level}` 直接拼接会让非法的 attrs.level
+      // 生成非法标签名（React 渲染期报错），与 page-config 的白名单风格保持一致
+      const rawLevel = node.attrs?.level
+      const level = [1, 2, 3, 4].includes(rawLevel) ? rawLevel : 2
+      // P3-24：id 优先取上方预生成的映射（按「递归 + 全局序号」构建，与
+      // lib/posts.ts 的 extractHeadings 同序），因此嵌套标题同样能拿到与目录
+      // 一致的唯一 id；仅当映射缺失时才就地兜底生成。
+      const id =
+        headingId || slugifyHeading(content.map((c: any) => c.text || "").join("").trim(), idx)
       const Tag = `h${level}` as any
       const cls =
         level === 1 ? "group text-3xl font-bold mt-[50px] mb-[18px] tracking-tight scroll-mt-[72px] flex items-center gap-2" :
@@ -81,7 +111,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const alignStyle = align && align !== "left" ? { textAlign: align as React.CSSProperties["textAlign"] } : undefined
       return (
         <Tag key={idx} id={id} className={cls} style={alignStyle}>
-          <a href={`#${id}`} aria-label=".Anchor" className="opacity-40 md:opacity-0 md:group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>
+          {id && <a href={`#${id}`} aria-label=".Anchor" className="opacity-40 md:opacity-0 md:group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>}
           <span className="flex-1">{inline}</span>
         </Tag>
       )
@@ -94,7 +124,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       return <p key={idx} data-paragraph style={pStyle} className={`text-[17px] leading-[1.9] text-[var(--yh-text)]/85 mb-[22px] font-light transition-colors ${isFirstPara ? "first-letter:float-left first-letter:text-[3.2em] first-letter:font-serif first-letter:font-semibold first-letter:leading-[0.8] first-letter:mr-2 first-letter:mt-1.5" : ""}`}>{inline.length ? inline : <br />}</p>
     }
     case "blockquote":
-      return <blockquote key={idx} className="relative border-l-[3px] border-[var(--yh-accent)]/30 pl-6 text-[var(--yh-muted)] italic bg-[var(--yh-bg)]/60 py-[11px] pr-6 rounded-none my-[29px] text-[15px] leading-[1.85] overflow-hidden"><span className="absolute top-2 left-3 serif text-3xl leading-none select-none opacity-15" style={{ color: "var(--yh-accent)" }}>“</span>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</blockquote>
+      return <blockquote key={idx} className="relative border-l-[3px] border-[var(--yh-accent)]/30 pl-6 text-[var(--yh-muted)] italic bg-[var(--yh-bg)]/60 py-[11px] pr-6 rounded-none my-[29px] text-[15px] leading-[1.85] overflow-hidden"><span className="absolute top-2 left-3 serif text-3xl leading-none select-none opacity-15" style={{ color: "var(--yh-accent)" }}>“</span>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</blockquote>
     case "codeBlock": {
       const lang = node.attrs?.language || ""
       const code = content.map((c: any) => c.text || "").join("")
@@ -127,18 +157,18 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       )
     }
     case "bulletList":
-      return <ul key={idx} className="list-disc pl-6 my-[18px] marker:text-[var(--yh-muted)] space-y-[5px] marker:text-[11px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</ul>
+      return <ul key={idx} className="list-disc pl-6 my-[18px] marker:text-[var(--yh-muted)] space-y-[5px] marker:text-[11px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</ul>
     case "orderedList":
-      return <ol key={idx} className="list-decimal pl-6 my-[18px] marker:text-[var(--yh-muted)] marker:font-medium space-y-[5px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</ol>
+      return <ol key={idx} className="list-decimal pl-6 my-[18px] marker:text-[var(--yh-muted)] marker:font-medium space-y-[5px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</ol>
     case "listItem": {
-      if (inTable) return <li key={idx} className="text-[13px] leading-[1.5] mb-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</li>
-      return <li key={idx} className="text-[16px] leading-[1.85] mb-[5px] marker:font-medium">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</li>
+      if (inTable) return <li key={idx} className="text-[13px] leading-[1.5] mb-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</li>
+      return <li key={idx} className="text-[16px] leading-[1.85] mb-[5px] marker:font-medium">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</li>
     }
     case "taskList":
-      return <ul key={idx} data-type="taskList" className="list-none pl-0 my-[18px] space-y-[5px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</ul>
+      return <ul key={idx} data-type="taskList" className="list-none pl-0 my-[18px] space-y-[5px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</ul>
     case "taskItem": {
       const checked = node.attrs?.checked || false
-      return <li key={idx} data-checked={checked} className="flex gap-2"><label className="mt-1"><input type="checkbox" checked={checked} readOnly className="w-[18px] h-[18px] rounded border-zinc-300" /></label> <div className="flex-1">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</div></li>
+      return <li key={idx} data-checked={checked} className="flex gap-2"><label className="mt-1"><input type="checkbox" checked={checked} readOnly className="w-[18px] h-[18px] rounded border-zinc-300" /></label> <div className="flex-1">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</div></li>
     }
     case "image": {
       const src = safeImgSrc(node.attrs?.src) || ""
@@ -163,21 +193,21 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       return (
         <div key={idx} className="overflow-x-auto my-[29px] rounded-none border border-[var(--yh-border)] shadow-sm">
           <table className="w-full border-collapse text-[14px]">
-            {headerRows.length > 0 && <thead>{headerRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode))}</thead>}
-            <tbody>{bodyRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode))}</tbody>
+            {headerRows.length > 0 && <thead>{headerRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</thead>}
+            <tbody>{bodyRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</tbody>
           </table>
         </div>
       )
     }
     case "tableRow":
-      return <tr key={idx} className="border-b border-[var(--yh-border)] last:border-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</tr>
+      return <tr key={idx} className="border-b border-[var(--yh-border)] last:border-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</tr>
     case "tableHeader":
-      return <th key={idx} className={`border px-4 py-[9px] text-left font-semibold text-[13px] ${isDarkMode ? "border-[#2c2a26] bg-[#1c1915] text-[#d4c8b8]" : "border-[var(--yh-border)] bg-[var(--dash-card)] text-zinc-700"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</th>
+      return <th key={idx} className={`border px-4 py-[9px] text-left font-semibold text-[13px] ${isDarkMode ? "border-[#2c2a26] bg-[#1c1915] text-[#d4c8b8]" : "border-[var(--yh-border)] bg-[var(--dash-card)] text-zinc-700"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</th>
     case "tableCell":
-      return <td key={idx} className={`border px-4 py-[9px] align-top ${isDarkMode ? "border-[#2c2a26] text-[#c9c0b4]" : "border-[var(--yh-border)] text-zinc-600"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode))}</td>
+      return <td key={idx} className={`border px-4 py-[9px] align-top ${isDarkMode ? "border-[#2c2a26] text-[#c9c0b4]" : "border-[var(--yh-border)] text-zinc-600"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</td>
     default:
       // fallback: try render content
-      if (content.length) return <div key={idx}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode))}</div>
+      if (content.length) return <div key={idx}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</div>
       return null
   }
 }
@@ -188,23 +218,34 @@ export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { cont
   const nodes: any[] = doc.content || doc.root?.children || []
   if (!Array.isArray(nodes) || nodes.length === 0) return <p className="text-sm text-[var(--yh-muted)]">暂无内容</p>
 
-  const headingIds = new Map<number, string>()
+  // P3-13 / P3-24：递归遍历并按「文档顺序 + 全局序号」生成锚点 id，
+  // 与 lib/posts.ts 的 extractHeadings 保持完全一致的顺序 ——
+  // 这样目录（含嵌套在引用/列表中的标题）与正文 id 才能严格一一对应。
+  // 旧实现只看顶层、且以数组下标为键：嵌套标题要么进不了目录，要么与顶层 id 撞车。
+  const headingIds = new Map<any, string>()
   {
     const seen = new Map<string, number>()
-    let h = 0
-    nodes.forEach((n: any, i: number) => {
-      if (n.type === "heading") {
-        const text = (n.content || []).map((c: any) => c.text || "").join("").trim()
-        if (text) {
-          headingIds.set(i, dedupeHeadingId(slugifyHeading(text, h), seen))
-          h++
+    let n = 0
+    const walk = (parent: any) => {
+      const kids = Array.isArray(parent?.content) ? parent.content : []
+      for (const c of kids) {
+        if (c?.type === "heading") {
+          const text = (c.content || []).map((x: any) => x.text || "").join("").trim()
+          if (text) {
+            headingIds.set(c, dedupeHeadingId(slugifyHeading(text, n), seen))
+            n++
+          }
         }
+        walk(c)
       }
-    })
+    }
+    walk({ content: nodes })
   }
 
   const pc = pageConfig
-  const isDarkMode = isDarkProp ?? (typeof document !== "undefined" ? document.documentElement.classList.contains("dark") : false)
+  // P3-22：此处原有 `const isDarkMode = ... document.documentElement.classList.contains("dark")`，
+  // 但从未被使用（下方传的是 isDark(pc)）——既属死代码，又因在渲染期读取 document
+  // 而构成 SSR/CSR 水合不一致的典型来源，已删除。
   const maxW = pc?.maxWidth === "narrow" ? "max-w-2xl" : pc?.maxWidth === "wide" ? "max-w-none" : "max-w-none"
   const font = pc?.fontFamily === "serif" ? "font-serif" : ""
   const bg = pc?.backgroundColor && pc.backgroundColor !== "#FFFFFF" ? pc.backgroundColor : "transparent"
@@ -216,7 +257,7 @@ export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { cont
       className={`max-w-none ${maxW} ${font} ${isDark(pc) ? "text-zinc-100" : "text-zinc-900"}`}
       style={{ backgroundColor: bg, ...(pc?.primaryColor ? { ["--yh-accent" as any]: pc.primaryColor } : {}) }}
     >
-      {nodes.map((n, i) => renderNode(n, i, pc?.primaryColor, false, i === firstParaIdx && pc?.fontFamily === "serif", isDark(pc), headingIds.get(i)))}
+      {nodes.map((n, i) => renderNode(n, i, pc?.primaryColor, false, i === firstParaIdx && pc?.fontFamily === "serif", isDark(pc), headingIds.get(n)))}
     </div>
   )
 }

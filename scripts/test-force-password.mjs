@@ -1,5 +1,18 @@
 // Functional test: default-password session force-change + write API 403
-const base = 'http://localhost:3000';
+//
+// P3-7：不再内置默认账户的明文凭据。此前 `admin@slowlog.dev / admin123` 直接写死在
+// 源码里——既会随默认密码变更而静默失效，也让仓库长期带着一份可被误用的凭据。
+// 现改为从环境变量读取：
+//   TEST_BASE_URL（可选，默认 http://localhost:3000）
+//   TEST_EMAIL   （可选，默认 admin@slowlog.dev）
+//   TEST_PASSWORD（必填，无默认值）
+const base = process.env.TEST_BASE_URL || 'http://localhost:3000';
+const EMAIL = process.env.TEST_EMAIL || 'admin@slowlog.dev';
+const PASSWORD = process.env.TEST_PASSWORD;
+if (!PASSWORD) {
+  console.error('[test-force-password] 请先设置 TEST_PASSWORD 环境变量（默认账户的当前密码）。');
+  process.exit(1);
+}
 
 async function req(url, opts = {}) {
   const res = await fetch(url, {
@@ -32,7 +45,7 @@ async function main() {
   // 2. login with default password
   const loginRes = await req(base + '/api/auth/callback/credentials', {
     method: 'POST',
-    body: JSON.stringify({ email: 'admin@slowlog.dev', password: 'admin123', csrfToken: csrf }),
+    body: JSON.stringify({ email: EMAIL, password: PASSWORD, csrfToken: csrf }),
     headers: { Cookie: cookieHeader },
   });
   for (const c of loginRes.setCookies) {
@@ -75,7 +88,7 @@ async function main() {
   console.log('GET /api/posts?status=all', postsGet.status, 'len', postsGet.text.length);
 
   const ok =
-    /admin@slowlog\.dev/.test(ses.text) &&
+    ses.text.includes(EMAIL) &&
     (dash.loc || '').includes('change-password') &&
     (mdash.loc || '').includes('change-password') &&
     change.status === 200 &&

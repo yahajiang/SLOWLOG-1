@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { PostClient } from "@/components/PostClient";
-import { adaptLegacyPost, pickRelated, postOgMeta } from "@/lib/adapt";
+import { adaptLegacyPost, pickRelated, postOgMeta, safeJsonLd } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -69,7 +69,7 @@ export default async function PostPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <PostClient post={post} rawPost={raw} relatedPosts={relatedPosts} />
     </>

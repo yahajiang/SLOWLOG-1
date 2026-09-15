@@ -112,7 +112,7 @@ export function Sidebar() {
         <ThemeToggle variant={collapsed ? "icon" : "row"} />
         <LanguageSwitcher variant={collapsed ? "icon" : "row"} ghost />
         {!collapsed && (
-          <p className="px-1 pt-1 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden">© 2026 {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</p>
+          <p className="px-1 pt-1 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden">© {new Date().getFullYear()} {lang === "zh" ? "慢日志" : "SlowLog"} · {t.dashFocus}</p>
         )}
       </div>
     </aside>

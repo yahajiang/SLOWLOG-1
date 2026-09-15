@@ -1,32 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
-import { apiError } from "@/lib/api-utils"
+import { apiError, apiZodError } from "@/lib/api-utils"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { changePasswordSchema } from "@/lib/schemas"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return apiError(401, "未登录")
 
-  const body = await req.json()
-  const email = (body.email as string)?.toLowerCase().trim()
-  const password = body.password as string
-  const confirmPassword = body.confirmPassword as string | undefined
-  const name = (body.name as string)?.trim()
-  const currentPassword = body.currentPassword as string
-
-  if (!currentPassword || !email || !password || !name) {
-    return NextResponse.json({ error: "请填写所有字段" }, { status: 400 })
-  }
-  if (password.length < 8) {
-    return NextResponse.json({ error: "密码至少 8 位" }, { status: 400 })
-  }
-  if (confirmPassword !== undefined && confirmPassword !== password) {
-    return NextResponse.json({ error: "两次输入的密码不一致" }, { status: 400 })
-  }
-  if (!email.includes("@")) {
-    return NextResponse.json({ error: "请输入有效邮箱" }, { status: 400 })
-  }
+  // P3-3：改用 lib/schemas.ts 的共享 changePasswordSchema。
+  // 此前路由内手写了一套等价校验，与 schema 定义长期存在漂移风险
+  // （改了 schema 忘记同步路由，或反之）。
+  const parsed = changePasswordSchema.safeParse(await req.json().catch(() => ({})))
+  if (!parsed.success) return apiZodError(parsed.error)
+  const { currentPassword, email, password, name } = parsed.data
 
   try {
     const user = await prisma.user.findUnique({ where: { id: (session.user as any).id } })
@@ -37,7 +25,7 @@ export async function POST(req: NextRequest) {
     const hashed = await bcrypt.hash(password, 12)
     await prisma.user.update({
       where: { id: user.id },
-      data: { email, password: hashed, name },
+      data: { email: email.toLowerCase(), password: hashed, name },
     })
     return NextResponse.json({ ok: true })
   } catch (e: any) {

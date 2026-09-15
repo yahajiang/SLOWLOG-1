@@ -253,6 +253,11 @@ export const dict = {
     editorRollback: "回滚到此版",
     editorRollbackNote: "回滚会先保存当前内容为一版，不会丢失。",
     editorRollbackDone: "已回滚到此版本（未保存，确认后再保存草稿）",
+    editorDraftRestored: "已恢复上次未保存的草稿",
+    editorAutosaveFailed: "自动保存失败",
+    editorAutosaveSaving: "保存中…",
+    editorAutosaveHint: "已开启自动保存 · 拖拽分隔条调整列宽",
+    editorLeaveConfirm: "有未保存的内容，离开将丢失，确定继续？",
     editorScheduledOk: "已定时发布",
     toastPublished: "发布成功",
     toastUnpublished: "已下架为草稿",
@@ -556,6 +561,11 @@ export const dict = {
     editorRollback: "Roll back",
     editorRollbackNote: "Current content is snapshotted before rollback, so nothing is lost.",
     editorRollbackDone: "Rolled back (unsaved — save draft to confirm)",
+    editorDraftRestored: "Restored your unsaved draft",
+    editorAutosaveFailed: "Autosave failed",
+    editorAutosaveSaving: "Saving…",
+    editorAutosaveHint: "Autosave on · drag the divider to resize",
+    editorLeaveConfirm: "You have unsaved changes. Leave anyway?",
     editorScheduledOk: "Scheduled",
     toastPublished: "Published",
     toastUnpublished: "Unpublished to draft",
@@ -827,6 +837,11 @@ export type Dict = {
   editorVersions: string;
   editorClose: string;
   editorRollbackDone: string;
+  editorDraftRestored: string;
+  editorAutosaveFailed: string;
+  editorAutosaveSaving: string;
+  editorAutosaveHint: string;
+  editorLeaveConfirm: string;
   editorLatest: string;
   editorMinAgo: (n: number) => string;
   editorRollback: string;

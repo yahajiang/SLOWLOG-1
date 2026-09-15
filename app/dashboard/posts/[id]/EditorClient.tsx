@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/components/ui/Dialog"
 import { CalendarClock, Settings, RotateCcw } from "lucide-react"
 import { useLang } from "@/lib/lang-context"
 import { getVersions, snapVersion, forceSnap, type PostVersion } from "@/lib/post-versions"
+import { slugify } from "@/lib/slug"
 import { useToast } from "@/components/ui/Toast"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -35,6 +36,9 @@ const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor").th
 })
 
 const t = dict.zh
+
+// 新文章本地草稿键（P0-2）：与已存在文章的 sl-versions:* 分开存放
+const NEW_DRAFT_KEY = "sl-draft:new"
 
 // 预览面板独立组件，只在内容变化时重渲染
 function PreviewPanel({ content, post, pageConfig, categories }: { content: any; post: any; pageConfig: PageConfig; categories: any[] }) {
@@ -75,6 +79,9 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   postRef.current = post
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  // P2-2：自动保存状态——失败必须对用户可见，否则会误以为已保存而丢失内容
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle")
+  const [autosaveError, setAutosaveError] = useState("")
   const [showConfig, setShowConfig] = useState(false)
   // 定时发布（v0.3 P1-8）：published + 未来 publishedAt，到期惰性放出（无需 cron）
   const [scheduleOpen, setScheduleOpen] = useState(false)
@@ -132,6 +139,62 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     return () => { document.body.style.userSelect = "" }
   }, [dragging])
 
+  // ── 新文章本地草稿（P0-2）────────────────────────────────────────
+  // isNew 时服务端自动保存不可用（尚无 id），旧实现下刷新/误关页面会丢失全部
+  // 已输入内容。这里用 localStorage 暂存 + beforeunload 拦截兜底，
+  // 首次成功落库后清除。
+  const toastRef = useRef(toast)
+  toastRef.current = toast
+  const [hasUnsaved, setHasUnsaved] = useState(false)
+  const draftRestoredRef = useRef(false)
+
+  const isDraftDirty = (p: any) =>
+    (p?.title || "").trim().length > 0 || JSON.stringify(p?.content ?? {}).length > 80
+
+  // 挂载时恢复上次未发布的草稿（只执行一次，避免被 toast 引用变化反复触发）
+  useEffect(() => {
+    if (!isNew || draftRestoredRef.current) return
+    draftRestoredRef.current = true
+    try {
+      const raw = localStorage.getItem(NEW_DRAFT_KEY)
+      if (!raw) return
+      const saved = JSON.parse(raw)
+      if (!isDraftDirty(saved)) return
+      setPost((prev: any) => ({ ...prev, ...saved, id: "new" }))
+      setHasUnsaved(true)
+      toastRef.current(dict.zh.editorDraftRestored, "success")
+    } catch {
+      // 草稿损坏则忽略，不阻塞编辑
+    }
+  }, [isNew])
+
+  // 新文章：停止输入 1 秒后写入 localStorage
+  useEffect(() => {
+    if (!isNew) return
+    const timer = setTimeout(() => {
+      const cur = postRef.current
+      if (!isDraftDirty(cur)) return
+      try {
+        localStorage.setItem(NEW_DRAFT_KEY, JSON.stringify(cur))
+        setHasUnsaved(true)
+      } catch {
+        // 配额溢出：忽略，不打断编辑
+      }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [post, isNew])
+
+  // 有未保存内容时拦截页面离开
+  useEffect(() => {
+    if (!isNew || !hasUnsaved) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ""
+    }
+    window.addEventListener("beforeunload", onBeforeUnload)
+    return () => window.removeEventListener("beforeunload", onBeforeUnload)
+  }, [isNew, hasUnsaved])
+
   // 防抖自动保存 - 用户停止输入 3 秒后保存（不改 status）
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
@@ -152,25 +215,37 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     const tagsArr: string[] = typeof current.tags === "string" ? (current.tags as string).split(",").map((s: string) => s.trim()).filter(Boolean) : (Array.isArray(current.tags) ? current.tags.map((t: string) => String(t).trim()).filter(Boolean) : [])
     const payload: any = {
       title: current.title, titleZh: current.titleZh,
-      slug: current.slug || current.title?.toLowerCase().replace(/[^\w]+/g, "-"),
+      slug: current.slug || slugify(current.title || "") || undefined,
       excerpt: current.excerpt, excerptZh: current.excerptZh,
       content: current.content, categoryId: current.categoryId,
       tags: tagsArr, pageConfig,
       readTime: current.readTime, author: current.author, authorInitial: current.authorInitial,
       featured: current.featured,
     }
+    setSaveState("saving")
     try {
       const res = await fetch(`/api/posts/${current.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-      if (res.ok) setLastSaved(new Date())
-      } catch (e) { console.error("autosave failed:", e) }
+      // P2-2：旧实现只判断 res.ok 且无 else 分支——接口 4xx/5xx 时静默无感。
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        throw new Error(j.error || `HTTP ${res.status}`)
+      }
+      setLastSaved(new Date())
+      setAutosaveError("")
+      setSaveState("saved")
+    } catch (e: any) {
+      // 失败必须落到 UI：状态栏显示错误，让用户知道内容尚未保存
+      console.error("autosave failed:", e)
+      setAutosaveError(e?.message || "unknown")
+      setSaveState("error")
+    }
   }, [isNew, pageConfig])
 
-  const slugifyTitle = (title: string) =>
-    title.toLowerCase().replace(/[^\w]+/g, "-").replace(/^-+|-+$/g, "")
+  const slugifyTitle = (title: string) => slugify(title)
 
   const handleTitleChange = useCallback((v: string) => {
     setPost((prev: any) => {
@@ -214,7 +289,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     if (!silent && !current.categoryId) { setCategoryError(t.dashNeedCategory); return }
     if (!silent) setSaving(true)
     const payload = {
-      title: current.title, titleZh: current.titleZh, slug: current.slug || current.title?.toLowerCase().replace(/[^\w]+/g, "-"),
+      title: current.title, titleZh: current.titleZh, slug: current.slug || slugify(current.title || "") || undefined,
       excerpt: current.excerpt, excerptZh: current.excerptZh, content: current.content, status, categoryId: current.categoryId,
       tags: tagsArr, pageConfig, seoTitle: current.seoTitle, seoDescription: current.seoDescription, seoKeywords: current.seoKeywords,
       canonicalUrl: current.canonicalUrl, ogImage: current.ogImage, noIndex: current.noIndex, featured: current.featured,
@@ -222,8 +297,18 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
     }
     try {
       let res: Response
-      if (isNew) { res = await fetch("/api/posts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }); if (res.ok) { const d = await res.json(); router.replace(`/dashboard/posts/${d.id}`) } }
-      else { res = await fetch(`/api/posts/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }) }
+      if (isNew) {
+        res = await fetch("/api/posts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+        if (res.ok) {
+          const d = await res.json()
+          // 已成功落库：清除本地草稿，解除离开拦截
+          try { localStorage.removeItem(NEW_DRAFT_KEY) } catch {}
+          setHasUnsaved(false)
+          router.replace(`/dashboard/posts/${d.id}`)
+        }
+      } else {
+        res = await fetch(`/api/posts/${current.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      }
       if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || "save failed") }
       setLastSaved(new Date()); if (!silent) toast(t.dashSaved, "success")
       router.refresh()
@@ -232,9 +317,21 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   }, [isNew, pageConfig, router, toast])
 
   const confirmDelete = useCallback(async () => {
-    await fetch(`/api/posts/${postRef.current.id}`, { method: "DELETE" })
-    toast(t.dashDeleted, "success")
-    router.push("/dashboard/posts")
+    try {
+      const res = await fetch(`/api/posts/${postRef.current.id}`, { method: "DELETE" })
+      // P2-1：旧实现不看 res.ok 就提示成功并跳转——删除失败（401/404/500）时
+      // 用户看到的是"已删除"，但列表里文章仍在
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        throw new Error(j.error || `HTTP ${res.status}`)
+      }
+      toast(t.dashDeleted, "success")
+      router.push("/dashboard/posts")
+    } catch (e: any) {
+      const msg = e?.message || "删除失败"
+      setErrorMsg(msg)
+      toast(msg, "error")
+    }
   }, [router, toast])
 
   const onDividerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -270,7 +367,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         <div className="flex-1" />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={() => handleSave("draft")} disabled={saving}>{saving ? t.editorSaving : t.editorSaveDraft}</Button>
-          <Button variant="primary" onClick={() => handleSave("published")}>{t.editorPublish}</Button>
+          <Button variant="primary" onClick={() => handleSave("published")} disabled={saving}>{saving ? t.editorSaving : t.editorPublish}</Button>
           <button
             onClick={openVersions}
             className="h-8 px-2.5 border border-[var(--dash-border)] rounded-none flex items-center justify-center hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] text-xs text-[var(--dash-text)] hover:text-[var(--dash-accent)] transition-colors"
@@ -401,7 +498,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <div className="flex flex-col min-w-0" style={{ width: `${split * 100}%` }}>
             <div className="flex-1 min-h-0 overflow-y-auto bg-[var(--dash-bg)]">
               <div className="w-full p-4">
-                <TiptapEditor content={post.content} onUpdate={(json) => setPost({ ...post, content: json })} />
+                <TiptapEditor content={post.content} onUpdate={(json) => setPost((prev: any) => ({ ...prev, content: json }))} />
               </div>
             </div>
           </div>
@@ -427,13 +524,19 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
             </div>
           </div>
         </div>
-        {showConfig && <ConfigPanel value={pageConfig} onChange={(v) => setPost({ ...post, pageConfig: v })} />}
+        {showConfig && <ConfigPanel value={pageConfig} onChange={(v) => setPost((prev: any) => ({ ...prev, pageConfig: v }))} />}
       </div>
 
       {/* ===== Bottom status ===== */}
       <div className="h-6 border-t border-[var(--dash-border)] bg-[var(--dash-card)] px-4 flex items-center justify-between text-[11px] text-[var(--dash-muted)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
         <span>{t.editorWords(wordCount)} · {post.status === "published" ? t.editorPublished : t.editorDraftBadge} {lastSaved && `· ${t.editorLastSaved} ${lastSaved.toLocaleTimeString()}`}</span>
-        <span>自动保存中 · 拖拽分隔条调整列宽</span>
+        <span className={saveState === "error" ? "text-red-600 font-medium" : undefined}>
+          {saveState === "error"
+            ? `${t.editorAutosaveFailed}：${autosaveError}`
+            : saveState === "saving"
+              ? t.editorAutosaveSaving
+              : t.editorAutosaveHint}
+        </span>
       </div>
     </div>
   )

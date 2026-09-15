@@ -146,9 +146,11 @@ export default function ChangePasswordPage() {
               </div>
             )}
 
+            {/* P3-18：与提交时的 trim 保持一致——否则用户输入纯空格也能点提交，
+                请求发出后才被服务端校验拒绝，多一次无意义的往返与报错 */}
             <button
               type="submit"
-              disabled={loading || !currentPassword || !newEmail || !newPassword || !confirmPassword || !newName}
+              disabled={loading || !currentPassword || !newEmail.trim() || !newPassword.trim() || !confirmPassword || !newName.trim()}
               className="w-full py-3 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-none font-medium"
             >
               {loading ? (lang === "zh" ? "保存中..." : "Saving...") : (lang === "zh" ? "确认修改" : "Confirm")}

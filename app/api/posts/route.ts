@@ -1,25 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath, revalidateTag } from "next/cache"
 import { postCreateSchema } from "@/lib/schemas"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { publicPostWhere } from "@/lib/posts"
+import { publicPostWhere, revalidatePostPaths } from "@/lib/posts"
+import { slugFromTitle } from "@/lib/slug"
 
 export const dynamic = "force-dynamic"
-
-// 文章数据变更后立即再生前台缓存：数据缓存 tag + 首页 + 文章详情路由（覆盖 id/slug 两种地址形态）
-function revalidatePostViews(post?: { id: string; slug?: string | null }) {
-  revalidateTag("posts")
-  revalidatePath("/")
-  revalidatePath("/rss.xml")
-  revalidatePath("/sitemap.xml")
-  revalidatePath("/posts/[id]", "page")
-  if (post) {
-    revalidatePath(`/posts/${post.id}`)
-    if (post.slug) revalidatePath(`/posts/${post.slug}`)
-  }
-}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -38,13 +25,20 @@ export async function GET(req: NextRequest) {
   } else if (status && status !== "all") {
     filters.push({ status })
   }
-  if (q) filters.push({ OR: [
-    { title: { contains: q, mode: "insensitive" } },
-    { titleZh: { contains: q, mode: "insensitive" } },
-    { excerpt: { contains: q, mode: "insensitive" } },
-    { excerptZh: { contains: q, mode: "insensitive" } },
-    { tags: { has: q } },
-  ] })
+  if (q) {
+    // P3-12：转义 LIKE 元字符。Prisma 的 contains 会把值直接拼进 LIKE 模式，
+    // 于是用户搜 "%" 会匹配全部记录、搜 "_" 可逐位爆破，既返回错误结果，
+    // 也让一次搜索退化成全表扫描。PostgreSQL 的 LIKE 默认以反斜杠为转义符，
+    // 因此只需转义 \ % _ 三者；tags 走数组 has 语义，不参与 LIKE，用原值。
+    const qSafe = q.replace(/[\\%_]/g, (m) => "\\" + m)
+    filters.push({ OR: [
+      { title: { contains: qSafe, mode: "insensitive" } },
+      { titleZh: { contains: qSafe, mode: "insensitive" } },
+      { excerpt: { contains: qSafe, mode: "insensitive" } },
+      { excerptZh: { contains: qSafe, mode: "insensitive" } },
+      { tags: { has: q } },
+    ] })
+  }
   const where = filters.length ? { AND: filters } : {}
   // 登录态拉全量（列表无 content 大字段），游客保持 100 上限
   const take = session ? 500 : 100
@@ -82,7 +76,8 @@ export async function POST(req: NextRequest) {
   const tags: string[] = Array.isArray(body.tags) ? body.tags.map((t: string) => String(t).trim()).filter(Boolean) : []
   if (tags.length === 0) return apiError(400, "至少选择一个标签")
   if (!body.categoryId) return apiError(400, "请选择分类")
-  const slug = body.slug?.trim() || body.title?.toLowerCase().replace(/[^\w]+/g, "-") || `post-${Date.now()}`
+  // slug 兜底：中文标题走拼音，保证非空且唯一（P0-1：旧实现对中文恒返回 "-"）
+  const slug = body.slug?.trim() || (await slugFromTitle(body.title || "未命名"))
   // 定时发布创建路径：显式 publishedAt（未来时间）优先于默认 now（与 PUT 对齐）
   const scheduledAt = body.publishedAt !== undefined ? new Date(body.publishedAt) : null
   const scheduled = scheduledAt && !isNaN(scheduledAt.getTime()) ? scheduledAt : null
@@ -109,7 +104,7 @@ export async function POST(req: NextRequest) {
         publishedAt: body.status === "published" ? (scheduled ?? new Date()) : scheduled,
       },
     })
-    revalidatePostViews(post)
+    revalidatePostPaths(post)
     return NextResponse.json(post)
   } catch (e: any) {
     if (e.code === "P2002") return apiError(400, "Slug 已存在")

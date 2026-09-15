@@ -17,9 +17,16 @@ function pyOf(text: string): { py: string; abbr: string } {
   }
 }
 
-// 全局搜索索引：运行时按需生成（数据量小 ≤100 篇），CDN 缓存 1h + SWR。
-// 发布/编辑文章触发的 revalidateTag 会连带刷新，索引自动跟进。
+// 全局搜索索引：数据量小（≤100 篇），走 CDN 缓存 + SWR。
+// 发布/编辑文章触发的 revalidateTag("posts") 会连带刷新，索引自动跟进。
 // DB 不可达时降级为空索引（面板显示空态，页面不报错）。
+//
+// ⚠️ P2-15 缓存语义说明（经实测确认，勿按"纯运行时生成"理解本路由）：
+// 声明 `revalidate = 3600` 意味着 App Router 会把它**预渲染并写入 Full Route Cache**，
+// 构建产物中标记为 `○ (Static)`。若构建机数据库不可达，该次产物里就是空索引；
+// 但运行期 ISR 会在 revalidate 窗口内重新生成，实测 `next start` 后返回正常数据
+// （posts=3, offline=false），因此线上影响有限（这是把它定为观察项而非缺陷的原因）。
+// 若希望彻底避免"构建期固化空索引"，可改用 `export const dynamic = "force-dynamic"`。
 export const revalidate = 3600
 
 function stripMd(md: string): string {

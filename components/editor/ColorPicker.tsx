@@ -1,5 +1,5 @@
 ﻿"use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Check } from "lucide-react"
 
 const PALETTE = [
@@ -33,6 +33,15 @@ interface ColorPickerProps {
 export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProps) {
   const [custom, setCustom] = useState(value || "#000000")
 
+  // P3-9：value 是父级受控值——点色板或重置后它才变，本地 custom 不会自动跟随，
+  // 于是 #hex 输入框会一直显示旧颜色，与已生效的颜色不一致。这里做单向同步。
+  useEffect(() => {
+    if (value) setCustom(value)
+  }, [value])
+
+  // 原生 color input 只接受完整的 6 位十六进制；用户输到一半时不能把非法值传给它
+  const validCustom = /^#[0-9a-fA-F]{6}$/.test(custom) ? custom : value || "#000000"
+
   return (
     <div className="p-3">
       {label && <p className="text-[11px] font-medium text-[var(--yh-muted)] mb-2">{label}</p>}
@@ -59,7 +68,7 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
       <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--yh-border)]">
         <input
           type="color"
-          value={custom}
+          value={validCustom}
           onChange={(e) => { setCustom(e.target.value); onChange(e.target.value); }}
           className="w-7 h-7 rounded-none border border-[var(--yh-border)] cursor-pointer p-0"
         />

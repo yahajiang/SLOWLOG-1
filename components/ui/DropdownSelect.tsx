@@ -31,13 +31,23 @@ export function DropdownSelect({
   const listId = useId()
   const selected = options.find((o) => o.value === value) ?? options[0]
 
+  // P2-11：退场定时器需可清理，避免卸载后仍 setState
+  const closeTimerRef = useRef<number | null>(null)
   const close = useCallback(() => {
     setClosing(true)
-    window.setTimeout(() => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current)
+    closeTimerRef.current = window.setTimeout(() => {
       setOpen(false)
       setClosing(false)
+      closeTimerRef.current = null
     }, 180)
   }, [])
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!open) return

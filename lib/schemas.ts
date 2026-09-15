@@ -5,11 +5,17 @@ import { z } from "zod";
  * 约定：错误响应统一 { error: string }（中文），由 lib/api-utils.ts apiError 输出。
  */
 
+// P0-1：旧正则 /^[a-zA-Z0-9-]+$/ 会放行 "-"、"--"、"hello-" 等退化值，
+// 导致多篇文章生成同一 slug 后撞唯一约束。要求首尾为字母/数字，连字符仅出现在中间。
 const slugField = z
   .string()
   .trim()
-  .regex(/^[a-zA-Z0-9-]+$/, "slug 仅限字母、数字与连字符")
-  .max(120);
+  .min(2, "slug 至少 2 个字符")
+  .max(120)
+  .regex(
+    /^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$/,
+    "slug 需以字母或数字开头结尾，仅含字母、数字与中间连字符"
+  );
 
 const colorField = z
   .string()
@@ -31,7 +37,18 @@ export const pageConfigSchema = z.object({
   showTOC: z.boolean().optional(),
 });
 
-const tiptapDoc = z.record(z.string(), z.unknown());
+const tiptapDoc = z
+  .record(z.string(), z.unknown())
+  // P3-4：给正文字体积设上限。此前该字段无任何约束，配合渲染侧的递归展开，
+  // 一个超大 JSON 就能造成内存与 CPU 放大（写入侧不设限 = 渲染侧必然承压）。
+  // 1MB 对常规长文（实测 50~200KB）留足余量。
+  .refine((v) => {
+    try {
+      return JSON.stringify(v).length <= 1_000_000
+    } catch {
+      return false
+    }
+  }, "正文内容过大（上限约 1MB）");
 
 export const postCreateSchema = z.object({
   title: z.string().trim().min(1, "标题必填").max(200),

@@ -10,9 +10,22 @@ export function Footer() {
   const [tagline, setTagline] = useState(t.footerTagline);
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 400);
+    // P2-14：包 rAF + 值变更判断。旧实现每个 scroll 事件都 setState，
+    // 即使 showTop 未变化也会触发整页（含全部卡片）重渲染
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const next = window.scrollY > 400;
+        setShowTop((prev) => (prev === next ? prev : next));
+      });
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
@@ -34,9 +47,9 @@ export function Footer() {
           <span>·</span>
           <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
           <span>·</span>
-          <a href="https://github.com/yahajiang" target="_blank" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
+          <a href="https://github.com/yahajiang" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors">GitHub</a>
           <span>·</span>
-          <a href="/rss.xml" target="_blank" className="hover:text-[var(--yh-text)] transition-colors" title="RSS 订阅">RSS</a>
+          <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors" title="RSS 订阅">RSS</a>
           <span className="hidden md:inline">·</span>
           <span className="hidden md:inline">{t.footerBuilt}</span>
         </div>

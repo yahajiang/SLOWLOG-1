@@ -4,10 +4,46 @@ import { apiError, apiZodError } from "@/lib/api-utils"
 import { settingsSchema } from "@/lib/schemas"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 
+/** 与 prisma/schema.prisma 的 Setting 默认值保持一致，用于「单例尚未落库」时的只读兜底 */
+const DEFAULT_SETTINGS = {
+  id: "singleton",
+  siteName: "慢日志",
+  siteNameEn: "SlowLog",
+  siteDescription: "慢下来，写点值得读的东西。",
+  siteDescriptionEn: null,
+  siteKeywords: "设计,博客,思考",
+  siteIconUrl: null,
+  logoUrl: null,
+  footerText: null,
+  footerTextEn: null,
+  socialLinks: [],
+  defaultPageConfig: {
+    layout: "standard",
+    theme: "light",
+    primaryColor: "oklch(0.55 0.15 250)",
+    fontFamily: "sans",
+    backgroundColor: "#FFFFFF",
+    maxWidth: "medium",
+    showTOC: false,
+  },
+  postsPerPage: 10,
+  theme: "system",
+}
+
+// GET 为公开读接口：加 CDN 缓存，避免每次请求都打库
+const GET_CACHE = { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+
 export async function GET() {
-  let s = await prisma.setting.findUnique({ where: { id: "singleton" } })
-  if (!s) s = await prisma.setting.create({ data: { id: "singleton" } })
-  return NextResponse.json(s)
+  try {
+    // P2-6：GET 不再承担写副作用。旧实现在查不到单例时直接 create，
+    // 使一个幂等的读接口因预取/爬虫/健康检查而产生写库行为。
+    // 单例初始化交由 prisma/seed.ts 负责；此处未命中则返回只读默认值。
+    const s = await prisma.setting.findUnique({ where: { id: "singleton" } })
+    return NextResponse.json(s ?? DEFAULT_SETTINGS, { headers: GET_CACHE })
+  } catch (e) {
+    console.error(e)
+    return apiError(500, "设置加载失败")
+  }
 }
 
 const ALLOWED_FIELDS = [

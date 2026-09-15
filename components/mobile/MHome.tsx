@@ -14,15 +14,31 @@ import { MFooter } from "./MFooter";
 import { MArticleCard } from "./MArticleCard";
 import { mCatLabel } from "@/lib/adapt";
 
+/** P2-10：日期非法时返回空串，避免把 "Invalid Date" 渲染给用户 */
+function formatShortDate(v: unknown, lang: string): string {
+  const d = new Date(v as any);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric" });
+}
+
 function MThoughts() {
   const { t, lang } = useLang();
   const [thoughts, setThoughts] = useState<any[]>([]);
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    fetch("/api/thoughts")
-      .then((r) => r.json())
+    // P2-10：补 res.ok 判定与 AbortController——旧实现只靠 catch 兜底，
+    // 5xx/HTML 响应会被静默吞掉，且组件卸载后仍会 setState
+    const ctrl = new AbortController();
+    fetch("/api/thoughts", { signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((d) => setThoughts(Array.isArray(d) ? d : []))
-      .catch(() => {});
+      .catch((e: any) => {
+        if (e?.name !== "AbortError") setThoughts([]);
+      });
+    return () => ctrl.abort();
   }, []);
   if (thoughts.length === 0) return null;
   // 默认只展示 4 条，其余折叠（与桌面同款）
@@ -44,7 +60,7 @@ function MThoughts() {
               {lang === "zh" ? th.contentZh || th.content : th.content}
             </p>
             <p className="mono text-[10px] text-[var(--yh-muted)] mt-2">
-              {new Date(th.createdAt).toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric" })}
+              {formatShortDate(th.createdAt, lang)}
             </p>
           </div>
         ))}

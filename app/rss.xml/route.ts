@@ -1,5 +1,6 @@
 import { getAllPosts } from "@/lib/posts";
 import { getSiteUrl } from "@/lib/site-url";
+import { cdata } from "@/lib/xml";
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -13,12 +14,12 @@ export async function GET() {
     .map(
       (post) => `
     <item>
-      <title><![CDATA[${post.titleZh || post.title}]]></title>
+      <title><![CDATA[${cdata(post.titleZh || post.title)}]]></title>
       <link>${siteUrl}/posts/${post.id}</link>
       <guid>${siteUrl}/posts/${post.id}</guid>
       <pubDate>${new Date(post.publishedAt || post.createdAt).toUTCString()}</pubDate>
-      <description><![CDATA[${post.excerptZh || post.excerpt || ""}]]></description>
-      <category><![CDATA[${post.category}]]></category>
+      <description><![CDATA[${cdata(post.excerptZh || post.excerpt || "")}]]></description>
+      <category><![CDATA[${cdata(post.category)}]]></category>
     </item>`
     )
     .join("");
