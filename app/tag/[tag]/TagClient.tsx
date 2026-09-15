@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import { Pagination } from "@/components/Pagination";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SearchButton } from "@/components/SearchButton";
 import { useLang } from "@/lib/lang-context";
@@ -20,7 +21,21 @@ export type TagItem = {
 };
 
 // 标签聚合页客户端：TAG 刊头 + 分类分布（本地化徽章）+ 相关标签 + 行列表
-export function TagClient({ tagName, items, related }: { tagName: string; items: TagItem[]; related: string[] }) {
+export function TagClient({
+  tagName,
+  items,
+  related,
+  page = 1,
+  totalPages = 1,
+  total,
+}: {
+  tagName: string;
+  items: TagItem[];
+  related: string[];
+  page?: number;
+  totalPages?: number;
+  total?: number;
+}) {
   const { t, lang } = useLang();
   const zh = lang === "zh";
 
@@ -63,7 +78,8 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
           {tagName}
         </h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
-          {zh ? `${items.length} 篇文章` : `${items.length} ${items.length === 1 ? "post" : "posts"}`}
+          {zh ? `${total} 篇文章` : `${total} ${total === 1 ? "post" : "posts"}`}
+          {totalPages > 1 && ` · ${t.pageStatus(page, totalPages)}`}
         </p>
 
         <div className="flex items-center flex-wrap gap-2 mt-4">
@@ -119,6 +135,14 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
             })}
           </div>
         </div>
+
+        {/* 分页：上一页 / 下一页 + 页码（每页 ≤ 12 篇） */}
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          hrefFor={(p) => `/tag/${encodeURIComponent(tagName)}?page=${p}`}
+          className="mt-6"
+        />
       </div>
 
       </main>

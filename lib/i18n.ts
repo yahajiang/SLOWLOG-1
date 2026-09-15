@@ -56,6 +56,9 @@ export const dict = {
     almostDone: "即将读完",
     readDone: "已读完",
     postsCount2: (n: number) => `${n} 篇`,
+    pagePrev: "上一页",
+    pageNext: "下一页",
+    pageStatus: (page: number, total: number) => `${page} / ${total} 页`,
     thoughtUnit: "条",
     yearUnit: "年",
     viewRepo: "仓库地址",
@@ -370,6 +373,9 @@ export const dict = {
     almostDone: "Almost done",
     readDone: "Finished",
     postsCount2: (n: number) => `${n} posts`,
+    pagePrev: "Previous",
+    pageNext: "Next",
+    pageStatus: (page: number, total: number) => `Page ${page} of ${total}`,
     thoughtUnit: "",
     yearUnit: "",
     viewRepo: "Repository",
@@ -670,6 +676,9 @@ export type Dict = {
   almostDone: string;
   readDone: string;
   postsCount2: (n: number) => string;
+  pagePrev: string;
+  pageNext: string;
+  pageStatus: (page: number, total: number) => string;
   thoughtUnit: string;
   yearUnit: string;
   viewRepo: string;
