@@ -1,6 +1,6 @@
 {
   "name": "yohaku-editorial-blog",
-  "version": "0.3.9",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {
