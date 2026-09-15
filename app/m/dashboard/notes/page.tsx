@@ -104,7 +104,7 @@ export default function MobileNotesPage() {
           ))}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 stagger">
           {notes.map((n) => (
             <div
               key={n.id}
