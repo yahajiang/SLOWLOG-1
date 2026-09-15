@@ -61,8 +61,6 @@ export function Footer() {
               <a href={/^https?:\/\//i.test(s.url) ? s.url : "#"} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors">{s.name}</a>
             </span>
           ))}
-          <span>·</span>
-          <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors" title="RSS 订阅">RSS</a>
           <span className="hidden md:inline">·</span>
           <span className="hidden md:inline">{t.footerBuilt}</span>
         </div>

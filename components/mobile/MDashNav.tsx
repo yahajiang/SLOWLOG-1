@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileText, MessageSquare, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, FileText, MessageSquare, MoreHorizontal, Settings } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 
 /** 移动后台底部 Tab（桌面 Sidebar 的手机版） */
@@ -14,10 +14,11 @@ export function MDashNav() {
     { href: "/m/dashboard/posts", label: t.dashPosts, icon: FileText },
     { href: "/m/dashboard/notes", label: t.dashNotes, icon: MessageSquare },
     { href: "/m/dashboard/more", label: t.dashMore, icon: MoreHorizontal },
+    { href: "/m/dashboard/settings", label: t.dashSettings, icon: Settings },
   ];
   return (
     <nav className="sticky bottom-0 z-40 bg-[var(--dash-card)] border-t border-[var(--dash-border)] pb-[env(safe-area-inset-bottom)]">
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-5">
         {tabs.map((item) => {
           const active =
             pathname === item.href ||
