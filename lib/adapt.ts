@@ -122,6 +122,21 @@ export function mCatLabel(cat: string, t: Dict): string {
 }
 
 /**
+ * 分类描述本地化（前台分组头/列表头用；与 mCatLabel 同居适配层，保证三端唯一规则）。
+ * zh 优先中文（descriptionZh），en 优先英文（description），一侧缺失时回退另一侧，
+ * 两边皆空返回空串（调用方据此不渲染该行）。
+ */
+export function catDescription(
+  cat: { description?: string | null; descriptionZh?: string | null } | null | undefined,
+  lang: "zh" | "en"
+): string {
+  if (!cat) return "";
+  const d = (cat.description || "").trim();
+  const dz = (cat.descriptionZh || "").trim();
+  return (lang === "zh" ? dz || d : d || dz).trim();
+}
+
+/**
  * JSON-LD 安全序列化（P1-4）。
  *
  * `JSON.stringify` 不转义 `<`、`>`、`&`，而 JSON-LD 是通过

@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
 import { CategoriesPageSkeleton } from "@/components/dashboard/Skeleton"
 
-type CatDraft = { id: string; name: string; nameZh: string; slug: string; description: string }
+type CatDraft = { id: string; name: string; nameZh: string; slug: string; description: string; descriptionZh: string }
 
 export default function CategoriesPage(){
   const [cats,setCats]=useState<any[]>([])
@@ -13,6 +13,7 @@ export default function CategoriesPage(){
   const [nameZh,setNameZh]=useState("")
   const [slug,setSlug]=useState("")
   const [desc,setDesc]=useState("")
+  const [descZh,setDescZh]=useState("")
   const [loading, setLoading] = useState(true)
   const [delId,setDelId]=useState<string|null>(null)
   const [editingId,setEditingId]=useState<string|null>(null)
@@ -24,24 +25,24 @@ export default function CategoriesPage(){
   useEffect(()=>{load()},[])
   const create=async()=>{
     if(!name||!slug) { toast(lang === "zh" ? "名称和Slug必填" : "Name and Slug are required","error"); return }
-    const r=await fetch("/api/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,nameZh,slug,description:desc}),cache:"no-store"})
+    const r=await fetch("/api/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,nameZh,slug,description:desc,descriptionZh:descZh}),cache:"no-store"})
     if(!r.ok){ const j=await r.json().catch(()=>({})); toast(j.error||"创建失败","error"); return }
     const created = await r.json().catch(() => null)
     toast(lang === "zh" ? "创建成功" : "Created", "success")
-    setName("");setNameZh("");setSlug("");setDesc("")
+    setName("");setNameZh("");setSlug("");setDesc("");setDescZh("")
     if (created?.id) {
       setCats(prev => [...prev, { ...created, _count: created._count ?? { posts: 0 } }])
     } else load()
   }
-  const startEdit=(c:any)=>{ setEditingId(c.id); setDraft({ id:c.id, name:c.name||"", nameZh:c.nameZh||"", slug:c.slug||"", description:c.description||"" }) }
+  const startEdit=(c:any)=>{ setEditingId(c.id); setDraft({ id:c.id, name:c.name||"", nameZh:c.nameZh||"", slug:c.slug||"", description:c.description||"", descriptionZh:c.descriptionZh||"" }) }
   const cancelEdit=()=>{ setEditingId(null); setDraft(null) }
   const saveEdit=async()=>{
     if(!draft) return
     if(!draft.name||!draft.slug){ toast(lang === "zh" ? "名称和Slug必填" : "Name and Slug are required","error"); return }
     setSaving(true)
     const prev = cats
-    setCats(list => list.map(x => x.id===draft.id ? { ...x, name:draft.name, nameZh:draft.nameZh, slug:draft.slug, description:draft.description } : x))
-    const r=await fetch(`/api/categories/${draft.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:draft.name,nameZh:draft.nameZh,slug:draft.slug,description:draft.description}),cache:"no-store"})
+    setCats(list => list.map(x => x.id===draft.id ? { ...x, name:draft.name, nameZh:draft.nameZh, slug:draft.slug, description:draft.description, descriptionZh:draft.descriptionZh } : x))
+    const r=await fetch(`/api/categories/${draft.id}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:draft.name,nameZh:draft.nameZh,slug:draft.slug,description:draft.description,descriptionZh:draft.descriptionZh}),cache:"no-store"})
     setSaving(false)
     if(!r.ok){
       const j=await r.json().catch(()=>({}))
@@ -73,11 +74,15 @@ export default function CategoriesPage(){
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "Design" : "Design"} /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={nameZh} onChange={e=>setNameZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "设计" : "设计"} /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">Slug</label><input value={slug} onChange={e=>setSlug(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder="design" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={desc} onChange={e=>setDesc(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={desc} onChange={e=>setDesc(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "英文描述，可选" : "Optional"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
         <button onClick={create} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "新建" : "New"}</button>
       </div>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)]">
-        {cats.map(c=>(
+        {cats.map(c=>{
+          // 列表副行按界面语言显示描述（与前台 catDescription 同规则：当前语言缺失时回退另一侧）
+          const shown = lang === "zh" ? (c.descriptionZh || c.description) : (c.description || c.descriptionZh)
+          return (
           <div key={c.id} className="p-4 hover:bg-[var(--dash-bg)]">
             {editingId===c.id && draft ? (
               <div className="space-y-2.5">
@@ -85,7 +90,8 @@ export default function CategoriesPage(){
                   <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
                   <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={draft.nameZh} onChange={e=>setDraft({...draft,nameZh:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
                   <div><label className="text-[11px] text-[var(--dash-muted)]">Slug</label><input value={draft.slug} onChange={e=>setDraft({...draft,slug:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm font-mono border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "英文描述" : "English"} /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={draft.descriptionZh} onChange={e=>setDraft({...draft,descriptionZh:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={saveEdit} disabled={saving} className="px-4 py-1.5 bg-[var(--dash-text)] text-white text-xs rounded-none disabled:opacity-50">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
@@ -96,7 +102,7 @@ export default function CategoriesPage(){
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-[var(--dash-text)]">{c.name} {c.nameZh && <span className="text-[var(--dash-muted)]">/ {c.nameZh}</span>}</p>
-                  <p className="text-xs text-[var(--dash-muted)] truncate">{c.slug} · {c._count?.posts ?? 0} {lang === "zh" ? "篇" : " posts"}{c.description ? ` · ${c.description}` : ""}</p>
+                  <p className="text-xs text-[var(--dash-muted)] truncate">{c.slug} · {c._count?.posts ?? 0} {lang === "zh" ? "篇" : " posts"}{shown ? ` · ${shown}` : ""}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={()=>startEdit(c)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">{lang === "zh" ? "编辑" : "Edit"}</button>
@@ -105,7 +111,8 @@ export default function CategoriesPage(){
               </div>
             )}
           </div>
-        ))}
+          )
+        })}
         {cats.length===0 && <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{lang === "zh" ? "暂无分类" : "No categories yet"}</p>}
       </div>
       <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title={lang === "zh" ? "删除分类？" : "Delete this category?"} description={lang === "zh" ? "若该分类下有文章将无法删除。" : "Cannot delete if this category has posts."} confirmText={lang === "zh" ? "删除" : "Delete"} variant="danger" onConfirm={confirmDel} />
