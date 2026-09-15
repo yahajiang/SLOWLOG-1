@@ -25,6 +25,12 @@ export async function generateMetadata({
   return {
     title: post.titleZh || post.title,
     description: post.excerptZh || post.excerpt,
+    // canonical：统一到 /posts/<id>（与 sitemap、JSON-LD url 同形态；slug 是双兼容别名），
+    // 作者在 SEO 面板填了自定义 canonicalUrl 则优先。此前桌面阅读页完全没有 canonical
+    //（移动端反而有）——id/slug 双流量权重无法归一。
+    alternates: { canonical: raw.canonicalUrl || `${siteUrl}/posts/${post.id}` },
+    // noIndex（SEO 面板字段）此前全站无消费方，此处接上
+    ...(raw.noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: postOgMeta(post, siteUrl),
     other: {
       "article:author": post.author,

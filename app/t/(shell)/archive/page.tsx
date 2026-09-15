@@ -1,5 +1,5 @@
 import { getAllPosts, stripPostHeavy } from "@/lib/posts"
-import ArchiveClient from "@/app/archive/ArchiveClient"
+import ArchiveClient from "@/app/(shell)/archive/ArchiveClient"
 import { DesktopEscape } from "@/components/DesktopEscape"
 
 export const dynamic = "force-dynamic"

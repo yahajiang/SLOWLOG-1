@@ -4,7 +4,16 @@ import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 import { pickTagline } from "@/lib/taglines";
 
-export default function Loading() {
+/**
+ * 全站导航过场骨架（纸纹 + 装订线 + 扫光骨架卡，与欢迎幕/错误页同语言）。
+ *
+ * ⚠️ 作用域纪律（2026-09-15 审查 F1 实证）：loading.tsx 是流式 Suspense 边界，
+ * 会**先冲刷 200 状态头**——凡包住它的路由，页面后抛的 notFound() 只能内联渲染
+ * 404 UI 而改不了状态码（soft-404，SEO 灾难）。因此本骨架只允许出现在
+ * `(shell)` 路由组（首页/归档/登录等**永notFound 的列表页**），
+ * `/posts`、`/m/posts`、`/t/posts`、`/tag` 等会 404 的详情段**不得**包 loading 边界。
+ */
+export default function LoadingShell() {
   const { t, lang } = useLang();
   const [tagline, setTagline] = useState(t.footerTagline);
   useEffect(() => {
