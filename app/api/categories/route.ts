@@ -39,7 +39,27 @@ export async function POST(req: NextRequest) {
   const parsed = categoryCreateSchema.safeParse(await req.json())
   if (!parsed.success) return apiZodError(parsed.error)
   const body = parsed.data
-  const cat = await prisma.category.create({ data: { name: body.name, nameZh: body.nameZh, slug: body.slug, description: body.description, coverImageUrl: body.coverImageUrl } })
-  revalidateTag("categories")
-  return NextResponse.json(cat)
+  // P2-新增：create 的 data 必须与 categoryCreateSchema 的字段一一对应。
+  // 旧实现漏了 descriptionZh —— schema 收下了它、create 却没传，于是"英文描述
+  // 永远存不进去"（只有 PUT 的 ALLOWED_FIELDS 里有它，先建后改才能写成功）。
+  try {
+    const cat = await prisma.category.create({
+      data: {
+        name: body.name,
+        nameZh: body.nameZh,
+        slug: body.slug,
+        description: body.description,
+        descriptionZh: body.descriptionZh,
+        coverImageUrl: body.coverImageUrl,
+      },
+    })
+    revalidateTag("categories")
+    return NextResponse.json(cat)
+  } catch (e: any) {
+    // 与 PUT/DELETE 对齐：slug 是 @unique，重复创建抛 P2002。旧实现无 try/catch，
+    // 未捕获异常会退化成框架级 500，前端按 data.error 解析会拿到 undefined。
+    if (e.code === "P2002") return apiError(400, "Slug 已存在")
+    console.error(e)
+    return apiError(500, "创建失败")
+  }
 }

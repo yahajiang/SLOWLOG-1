@@ -47,7 +47,8 @@ async function toDataUri(buffer: Buffer, mime: string): Promise<string> {
 }
 
 // 写出链：Vercel Blob → 本地 public/uploads（仅本地开发可用，serverless 只读 FS 会失败）→ data URI
-async function putLocal(name: string, data: Buffer, mime: string) {
+// （mime 参数与 Blob 链保持同签名以便调用方复用，本地落盘不需要它）
+async function putLocal(name: string, data: Buffer, _mime: string) {
   const uploadsDir = path.join(process.cwd(), "public", "uploads")
   await fs.mkdir(uploadsDir, { recursive: true })
   const safeName = `${Date.now()}-${sanitizeFilename(name)}`

@@ -35,8 +35,6 @@ const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor").th
   )
 })
 
-const t = dict.zh
-
 // 新文章本地草稿键（P0-2）：与已存在文章的 sl-versions:* 分开存放
 const NEW_DRAFT_KEY = "sl-draft:new"
 

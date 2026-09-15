@@ -105,8 +105,8 @@ export default auth((req) => {
     }
   }
 
-  // 未认证用户重定向到登录页（移动后台走 /m/login）
-  if (pathname.startsWith("/m/dashboard") && !req.auth) {
+  // 未认证用户重定向到登录页（移动后台与移动改密页走 /m/login）
+  if ((pathname.startsWith("/m/dashboard") || pathname === "/m/change-password") && !req.auth) {
     return redirectFor(req, "/m/login")
   }
   if (pathname.startsWith("/dashboard") && !req.auth) {
@@ -115,8 +115,10 @@ export default auth((req) => {
 
   const needsChange = (req.auth?.user as any)?.needsPasswordChange
   if (needsChange) {
+    // N-7：移动端改密走移动版页面，不再把手机用户踢进桌面壳。
+    // 注意 /m/change-password 自身不在此分支内 —— 否则会自我重定向成死循环。
     if (pathname.startsWith("/m/dashboard")) {
-      return redirectFor(req, "/dashboard/change-password")
+      return redirectFor(req, "/m/change-password")
     }
     if (pathname.startsWith("/dashboard") && pathname !== "/dashboard/change-password") {
       return redirectFor(req, "/dashboard/change-password")
@@ -132,6 +134,7 @@ export const config = {
     "/login",
     "/dashboard/:path*",
     "/admin/:path*",
+    "/m/change-password",
     "/m/dashboard/:path*",
   ],
 }

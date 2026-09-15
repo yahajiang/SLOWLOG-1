@@ -66,7 +66,6 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
       window.removeEventListener("scroll", onScroll)
       window.removeEventListener("resize", onScroll)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tlKey])
 
   return (

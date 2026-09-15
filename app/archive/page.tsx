@@ -1,7 +1,4 @@
-import Link from "next/link"
 import { getAllPosts, stripPostHeavy } from "@/lib/posts"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
 import ArchiveClient from "./ArchiveClient"
 
 export const dynamic = "force-dynamic"

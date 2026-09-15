@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Clock, ExternalLink, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -13,7 +13,6 @@ import { MFooter } from "./MFooter";
 import { parsePageConfig } from "@/lib/page-config";
 import { PostRenderer } from "@/components/editor/PostRenderer";
 import { formatDisplayDate } from "@/lib/relative-time";
-import type { PageConfig } from "@/lib/page-config";
 
 const REPO_MAP: Record<string, string> = {
   "soulsync-emotion-engine-architecture": "https://github.com/yahajiang/astrbot_plugin_soulsync",

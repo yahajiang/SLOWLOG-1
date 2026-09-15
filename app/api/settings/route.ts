@@ -46,18 +46,13 @@ export async function GET() {
   }
 }
 
-const ALLOWED_FIELDS = [
-  "siteName", "siteNameEn", "siteDescription", "siteDescriptionEn",
-  "siteKeywords", "siteIconUrl", "logoUrl", "footerText", "footerTextEn",
-  "socialLinks", "defaultPageConfig", "postsPerPage", "theme",
-]
-
 export async function PUT(req: NextRequest) {
   const session = await auth()
   if (!session) return apiError(401, "未登录")
   if (passwordChangeRequired(session)) return apiError(403, "请先修改默认密码")
   try {
-    // zod 白名单：未声明字段直接剥离（后端审查 P1-3）
+    // zod 白名单：未声明字段直接剥离（后端审查 P1-3）。白名单以 lib/schemas.ts 的
+    // settingsSchema 为唯一事实源，此处不再维护第二份字段列表（旧的 ALLOWED_FIELDS 已删）。
     const parsed = settingsSchema.safeParse(await req.json())
     if (!parsed.success) return apiZodError(parsed.error)
     const safeData: any = parsed.data

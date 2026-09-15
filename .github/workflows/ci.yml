@@ -16,6 +16,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: ESLint（hooks 规则 + 未用变量）
+        run: npm run lint
       - name: TypeScript 类型检查
         run: npx tsc --noEmit
       - name: 依赖审计（critical 门禁；high 待 Prisma 工具链上游修复后收紧为 high）

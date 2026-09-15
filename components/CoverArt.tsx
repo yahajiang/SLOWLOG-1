@@ -37,7 +37,7 @@ const STAMP_CODE: Record<string, string> = {
 
 /** 标签签名章：强轮廓 + accent 特征 + 下方 mono 代号，一眼可辨 */
 function Stamp({ symbol, pal, variant4 }: { symbol: TagSymbol | null; pal: Pal; variant4: number }) {
-  const { ink, wash, accent } = pal;
+  const { ink, accent } = pal;
   const code = symbol ? STAMP_CODE[symbol] : "GEN";
   const mark = (() => {
     if (symbol === "grid") {

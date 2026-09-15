@@ -58,7 +58,10 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          // 注：原先还有 `X-XSS-Protection: 1; mode=block`，已移除 ——
+          // 该头在所有现代浏览器（Chrome ≥78 / Firefox / Safari）中均已废弃或移除，
+          // 其 XSS Auditor 反而是历史上多个绕过漏洞的来源。防 XSS 由本 CSP 的
+          // script-src 与渲染侧白名单（safeColor/safeHref/safeImgSrc）负责。
         ],
       },
       {

@@ -13,7 +13,7 @@ export default function MobileMorePage() {
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { t, lang } = useLang();
+  const { t } = useLang();
 
   useEffect(() => {
     Promise.all([

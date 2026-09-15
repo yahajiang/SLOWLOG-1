@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { apiError, apiZodError } from "@/lib/api-utils"

@@ -17,7 +17,7 @@ import { useRelativeTime, formatDisplayDate } from "@/lib/relative-time";
 import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import { parsePageConfig } from "@/lib/page-config";
-import { ChevronRight, Clock, ExternalLink, Search } from "lucide-react";
+import { Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
   loading: () => <div className="animate-pulse h-96 bg-[var(--dash-card)]/30 rounded-none" />,

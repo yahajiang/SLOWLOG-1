@@ -40,12 +40,18 @@ export async function GET(req: NextRequest) {
     ] })
   }
   const where = filters.length ? { AND: filters } : {}
-  // 登录态拉全量（列表无 content 大字段），游客保持 100 上限
-  const take = session ? 500 : 100
-  const posts = await prisma.post.findMany({
+  // 上界——**不传 page 时同样生效**：
+  //  · 后台文章列表（桌面 /dashboard/posts 与 /m/dashboard/posts）是在客户端分页的
+  //    （一次取全量、本地切 15 条/页），故登录态留 500 的余量；
+  //  · 游客 60 足矣（公开调用方只有 not-found 的"近期文章"）。
+  // ⚠️ 旧实现是 `take: page ? take : undefined`：不传 page 时 take 为 undefined
+  //    = 完全无限制（而上方注释却写「游客保持 100 上限」——注释与实现相反）。
+  const take = session ? 500 : 60
+  // 多取 1 条仅用于探测截断，避免为每个列表请求都额外做一次 count
+  const rows = await prisma.post.findMany({
     where,
-    skip: page ? (page - 1) * take : undefined,
-    take: page ? take : undefined,
+    skip: page ? (page - 1) * take : 0,
+    take: take + 1,
     select: {
       id: true, title: true, titleZh: true, slug: true, excerpt: true,
       excerptZh: true, status: true, featured: true, tags: true, readTime: true,
@@ -55,6 +61,8 @@ export async function GET(req: NextRequest) {
     },
     orderBy: { updatedAt: "desc" },
   })
+  const truncated = rows.length > take
+  const posts = truncated ? rows.slice(0, take) : rows
   const total = page ? await prisma.post.count({ where }) : null
   return NextResponse.json(posts, {
     headers: {
@@ -62,6 +70,8 @@ export async function GET(req: NextRequest) {
         ? { "Cache-Control": "private, no-store", Vary: "Cookie" }
         : { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300", Vary: "Cookie" }),
       ...(total !== null ? { "X-Total-Count": String(total) } : {}),
+      // 结果被上界截断时显式告知调用方——旧实现在这条路径上静默丢数据
+      ...(truncated ? { "X-Truncated": "true" } : {}),
     },
   })
 }

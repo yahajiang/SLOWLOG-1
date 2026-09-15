@@ -212,7 +212,9 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
   }
 }
 
-export function PostRenderer({ content, pageConfig, isDark: isDarkProp }: { content: unknown; pageConfig?: PageConfig | null; isDark?: boolean }) {
+// 注：历史签名保留 isDark prop（调用方仍在传），但组件内部一律自行判定暗色（isDarkMode），
+// 该 prop 当前不被消费 —— 若确需外部覆盖，请在 renderNode 链路里接回。
+export function PostRenderer({ content, pageConfig }: { content: unknown; pageConfig?: PageConfig | null; isDark?: boolean }) {
   if (!content || typeof content !== "object") return null
   const doc = content as any
   const nodes: any[] = doc.content || doc.root?.children || []
