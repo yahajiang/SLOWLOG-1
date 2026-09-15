@@ -3,6 +3,9 @@ import { unstable_cache, revalidateTag, revalidatePath } from "next/cache"
 import type { ContentCategory } from "./categories"
 import { slugifyHeading, dedupeHeadingId } from "./headings"
 
+// 前台列表常量（client 组件请从 lib/list-constants 引入，勿直接 import 本文件）
+export { FRONT_PAGE_SIZE_MAX, HOME_GROUP_LIMIT } from "./list-constants"
+
 export interface PostDTO {
   id: string
   title: string
@@ -250,12 +253,6 @@ export interface PostPage {
   pageSize: number
   totalPages: number
 }
-
-/** 前台列表每页上限：站点设置的 postsPerPage 可下调，但不允许超过该值 */
-export const FRONT_PAGE_SIZE_MAX = 12
-
-/** 首页每个分类分组默认展示的最新篇数（其余走归档/标签页查看） */
-export const HOME_GROUP_LIMIT = 8
 
 /**
  * 前台分页查询（服务端真分页，归档 / 标签页 / 移动归档共用）。
