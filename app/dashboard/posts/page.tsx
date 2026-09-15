@@ -237,7 +237,7 @@ export default function PostsPage() {
           <label className="flex items-center gap-2"><input type="checkbox" checked={allPagedSelected} onChange={toggleAll} className="accent-[var(--dash-accent)]" /> {lang === "zh" ? "全选" : "All"}</label>
           <span className="ml-auto">{lang === "zh" ? "标题 / 分类 / 状态 · 操作" : "Title / Category / Status · Actions"}</span>
         </div>
-        <div className="divide-y divide-[var(--dash-border)]">
+        <div className="divide-y divide-[var(--dash-border)] stagger">
           {paged.map((p) => (
             <div key={p.id} className="flex items-center gap-3 p-4 hover:bg-[var(--dash-bg)] group">
               <input type="checkbox" checked={selected.has(p.id)} onChange={()=>toggleSelect(p.id)} className="accent-[var(--dash-accent)]" />

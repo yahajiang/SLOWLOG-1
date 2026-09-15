@@ -237,7 +237,7 @@ export default function MobilePostsPage() {
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-[var(--dash-border)]">
+          <div className="divide-y divide-[var(--dash-border)] stagger">
             {Array.from({ length: 5 }).map((_, i) => (
               <ListItemSkeleton key={i} />
             ))}
@@ -245,7 +245,7 @@ export default function MobilePostsPage() {
         ) : paged.length === 0 ? (
           <div className="p-12 text-center text-sm text-[var(--dash-muted)]">{t.dashEmptyFiltered}</div>
         ) : (
-          <div className="divide-y divide-[var(--dash-border)]">
+          <div className="divide-y divide-[var(--dash-border)] stagger">
             {paged.map((p) => (
               <div key={p.id} className="p-4 space-y-2.5">
                 <button type="button" onClick={editNotice} className="w-full text-left min-h-[44px]">

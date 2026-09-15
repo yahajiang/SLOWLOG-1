@@ -47,7 +47,7 @@ export default function NotesPage() {
         <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()} placeholder={lang === "zh" ? "写点什么... (≤500字，自动识别链接)" : "Write something... (≤500 chars, links auto-detected)"} maxLength={500} className="flex-1 px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--dash-accent)]/20" />
         <button onClick={submit} disabled={loading||!input.trim()} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{lang === "zh" ? "发布" : "Publish"}</button>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 stagger">
         {notes.map(n=>(
           <div key={n.id} className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 flex justify-between gap-4 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow">
             <div className="flex-1">
