@@ -303,7 +303,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 section-in" key={activeCategory}>
+          <div className="grid grid-cols-1 gap-4 section-in stagger" key={activeCategory}>
             {filtered.map((post) => (
               <MArticleCard key={post.id} post={post} />
             ))}

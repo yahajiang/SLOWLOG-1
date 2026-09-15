@@ -97,7 +97,7 @@ export function TagClient({ tagName, items, related }: { tagName: string; items:
       {/* 列表：与归档列表行同语言 */}
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 pb-16 flex-1">
         <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-6 rounded-none">
-          <div className="space-y-2">
+          <div className="space-y-2 stagger">
             {items.map((p) => {
               const md = mdInSiteTz(p.date);
               const title = zh ? (p.titleZh || p.title) : p.title;
