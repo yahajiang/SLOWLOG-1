@@ -18,8 +18,8 @@ export default async function MobileDashboardLayout({
 }) {
   const session = await auth();
   if (!session) redirect("/m/login");
-  // 默认密码：强制去桌面改密页（移动无改密 UI）
-  if (passwordChangeRequired(session)) redirect("/dashboard/change-password");
+  // 默认密码：强制去**移动版**改密页（N-7）——不再把手机用户踢进桌面壳
+  if (passwordChangeRequired(session)) redirect("/m/change-password");
   const userName = (session.user as any)?.name || (session.user as any)?.email || "";
   return (
     <div data-m="1" className="min-h-screen bg-[var(--dash-bg)] flex flex-col">

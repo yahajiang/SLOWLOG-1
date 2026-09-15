@@ -4,8 +4,9 @@
 
 一个基于 Next.js 15 的个人博客系统：杂志式前台排版、独立移动端、Prisma 后台管理、Tiptap 富文本编辑、Vercel Blob 媒体库，开箱即部署到 Vercel。**界面双语**（中文/英文界面一键切换），文章内容以中文为主。
 
-- 前台：`/` 首页 · `/archive` 归档 · `/posts/[id]` 阅读页 · `/login` 登录
-- 移动端：`/m`、`/m/archive`、`/m/posts/[id]`、`/m/login`、`/m/dashboard/*`（手机 UA 自动进入，平板走桌面）
+- 前台：`/` 首页 · `/archive` 归档 · `/posts/[id]` 阅读页 · `/tag/[tag]` 标签聚合 · `/login` 登录
+- 移动端：`/m`、`/m/archive`、`/m/posts/[id]`、`/m/login`、`/m/dashboard/*`（手机 UA 自动进入）
+- 平板端：`/t`、`/t/archive`、`/t/posts/[id]`（iPad / Android 平板 UA 或 `view=tablet` cookie 自动进入）
 - 后台：`/dashboard`（仪表盘/文章/分类/媒体库/随想/设置）
 
 ## 功能特性
@@ -18,16 +19,22 @@
 - RSS 订阅（`/rss.xml`）与 Sitemap（`/sitemap.xml`），文章页 JSON-LD 结构化数据
 
 ### 国际化（中/英一键切换）
-- `lib/i18n.ts` 161 条 zh/en 1:1 字典，`LangProvider` 全局语言上下文（localStorage 记忆）
+- `lib/i18n.ts` 270 条 zh/en 1:1 字典（`Dict` 类型），`LangProvider` 全局语言上下文（localStorage 记忆）
 - 前台文案、分类名、日期、相对时间（刚刚/x 分钟前 ↔ just now/x min ago）全部本地化
 - Logo `慢日志·SLOWLOG` 为统一品牌标识，不随语言切换；标签、标题摘要为作者原文（中英独立字段），不做机器翻译
 - 后台保持中文（面向站长）
 
 ### 移动端独立版（`/m`）
 - 与桌面**同风格**（同一套 CSS 变量/字体/封面/文案），只改版式：单列全宽、紧凑顶栏、分类横滑、纵向上下篇、悬浮目录钮＋底部抽屉、44px+ 触摸目标
-- `middleware` 按手机 UA 自动改写（地址栏不变），`view=desktop` cookie 可切回桌面，平板默认走桌面
+- `middleware` 按手机 UA 自动改写（地址栏不变），`view=desktop` cookie 可切回桌面；平板默认进 `/t` 平板树
 - 移动页 `canonical` 全部指回桌面 URL，权重归一；Sitemap 只收录桌面地址
 - 轻量移动后台 `/m/dashboard`：数据概览、文章管理（搜索/上下架/删除/复制链接）、随想速记、分类与媒体查看；完整编辑请用桌面版
+
+### 平板端（`/t`）
+- 与桌面**同构**——直接复用 `HomeClient` / `PostClient`，不维护第二套版式；竖持（<1024）时目录改走抽屉
+- 进入方式：iPad / Android 平板 UA，或 `view=tablet` cookie；桌面树另有 `TabletGate` 兜底 iPadOS 13+（其 UA 与 macOS 相同）
+- 左下角常驻「桌面版」逃生口，点击种 `view=desktop` 并跳回桌面路径
+- SEO：`/t/*` 一律 `robots: { index: false, follow: true }`，权重归一给桌面 URL（与 `/m` 同策略）
 
 ### 后台管理（桌面）
 - 仪表盘：文章/发布/草稿/访问量统计（groupBy 单查询＋60s 缓存）、近期文章、快速入口
@@ -50,7 +57,7 @@
 
 | 层级 | 技术 |
 |------|------|
-| 框架 | Next.js 15.4 (App Router) + React 19 |
+| 框架 | Next.js 15.5 (App Router) + React 19 |
 | 样式 | Tailwind CSS v4（CSS 变量设计令牌 `--yh-*`/`--dash-*`，全站直角） |
 | 数据库 | PostgreSQL (Neon) + Prisma 6 (`@prisma/adapter-pg`) |
 | 认证 | NextAuth 5 (Credentials + JWT) + bcryptjs |
@@ -111,38 +118,48 @@ ANALYZE=true npm run build  # 包体积可视化分析
 ├── app/
 │   ├── page.tsx              # 首页（服务端取数 → HomeClient）
 │   ├── archive/              # 归档页（按年份分组）
-│   ├── posts/[id]/           # 阅读页（slug/id 双兼容＋上一篇/下一篇）
+│   ├── posts/[id]/           # 阅读页（slug/id 双兼容＋上一篇/下一篇＋opengraph-image）
+│   ├── tag/[tag]/            # 标签聚合页
 │   ├── login/                # 登录页
 │   ├── m/                    # 移动端独立版（/m、/m/archive、/m/posts/[id]、/m/login、/m/dashboard/*）
-│   ├── dashboard/            # 后台（仪表盘/文章编辑器/分类/媒体/随想/设置）
-│   ├── api/                  # posts / categories / thoughts / media / settings / auth
-│   ├── rss.xml/ sitemap.ts   # RSS 与站点地图
-│   ├── loading.tsx           # 全局加载骨架
+│   ├── t/                    # 平板树（/t、/t/archive、/t/posts/[id]，与桌面同构 + noindex）
+│   ├── dashboard/            # 后台（仪表盘/文章编辑器/分类/媒体/随想/设置/改密）
+│   ├── api/                  # posts / categories / thoughts / media / settings / auth / health / search-index
+│   ├── rss.xml/ sitemap.ts/ manifest.ts   # RSS · 站点地图 · PWA manifest
+│   ├── error.tsx / loading.tsx / not-found.tsx
 │   └── Providers.tsx         # LangProvider + ToastProvider
 ├── components/
-│   ├── mobile/               # 移动端组件（MHeader/MFooter/MHome/MArchive/MPost/MLogin/后台）
-│   ├── dashboard/            # 后台组件（Sidebar/StatCard/Skeleton）
+│   ├── mobile/               # 移动端组件（MHeader/MFooter/MHome/MArchive/MPost/MLogin/移动后台）
+│   ├── dashboard/            # 后台组件（Sidebar/StatCard/DashboardHome/Skeleton/AccountCard）
 │   ├── editor/               # Tiptap 编辑器 + PostRenderer 阅读渲染器
-│   ├── ui/                   # 基础 UI（Button/Input/Dialog/Toast…）
-│   ├── ArticleArt.tsx        # 程序化 SVG 封面系统
-│   └── ...                   # Header/Footer/HomeClient/PostClient/TOC/Thinking/…
+│   ├── ui/                   # 基础 UI（Button/Input/Dialog/Toast/DropdownSelect…）
+│   ├── CoverArt.tsx          # 程序化 SVG 封面系统
+│   ├── TabletGate / DesktopEscape   # 平板引导与「桌面版」逃生口
+│   └── ...                   # Header/Footer/HomeClient/PostClient/TableOfContents/Thinking/…
 ├── lib/
-│   ├── posts.ts              # 文章服务层（含 unstable_cache）
-│   ├── i18n.ts               # 161 条中英字典 + Dict 类型
-│   ├── madapt.ts             # 移动端数据适配
+│   ├── posts.ts              # 文章服务层（唯一可见性规则 + unstable_cache + 构建期降级）
+│   ├── i18n.ts               # 270 条中英字典 + Dict 类型
+│   ├── adapt.ts              # 三端共享适配层（post 适配 / 相关文章打分 / OG 元数据 / safeJsonLd）
 │   ├── categories.ts         # 分类色板/缩写/标签符号映射
-│   ├── relative-time.ts      # 相对时间 + 本地化日期
-│   ├── auth.ts / prisma.ts / blob.ts / page-config.ts
-│   └── hooks/use-media-query.ts
-├── middleware.ts             # /admin兼容跳转＋移动UA改写＋后台鉴权＋强制改密
+│   ├── schemas.ts            # zod 写接口校验（含渲染配置白名单）
+│   ├── site-url.ts           # 站点 Origin 唯一真相源（只信任 env）
+│   ├── slug.ts / headings.ts / xml.ts / relative-time.ts / read-progress.ts
+│   ├── auth.ts / auth-config.ts / prisma.ts / blob.ts / page-config.ts / api-utils.ts
+│   └── hooks/                # use-media-query · use-scroll-spy
+├── docs/                     # 设计蓝图、审查报告、画廊契约
+├── scripts/                  # 备份 / 内容管线 / 类目迁移 / 端到端测试 / 截图
+├── .github/workflows/ci.yml  # 类型检查 + 依赖审计 + 构建 + API 集成测试
+├── middleware.ts             # /admin 兼容跳转＋三端分流＋后台鉴权＋强制改密
 ├── prisma/schema.prisma
-└── public/                   # favicon / apple-icon
+└── public/                   # favicon / 字体 / design/gallery.html
 ```
 
 ## 关键设计说明
 
 - **容器规范**：前台各区块 `w-full max-w-[min(70%,1600px)] mx-auto px-6` 同线居中（≤1920px 即 70%，超宽屏封顶 1600px）；文章正文 `max-w-5xl`；目录侧栏 308px
-- **移动端分流**：`middleware.ts` 内 `MOBILE_UA_RE`（仅手机，不含平板）命中 `/`、`/archive*`、`/posts/*`、`/login` 时 rewrite 到 `/m` 对应页；`view=desktop` cookie 跳过；`/m/*`、`/api/*`、`/dashboard/*` 永不改写
+- **移动端分流**：`middleware.ts` 内 `MOBILE_UA_RE`（仅手机，不含平板）命中 `/`、`/archive*`、`/posts/*`、`/login` 时 rewrite 到 `/m` 对应页；`view=desktop` cookie 跳过；`/m/*`、`/t/*`、`/api/*`、`/dashboard/*` 永不改写
+- **平板分流**：`TABLET_UA_RE`（iPad / Tablet / Android 无 Mobile）命中 `/`、`/archive`、`/posts/*` 时 rewrite 到 `/t`；`view=tablet` cookie 可主动进入、`view=desktop` 可退出。iPadOS 13+ 的 UA 与 macOS 相同，由桌面树内的 `TabletGate`（视口 + 粗指针）兜底
+- **重定向白名单**：middleware 的运行期 302 目标只信任 `ALLOWED_REDIRECT_HOSTS`（默认仅 `NEXT_PUBLIC_SITE_URL` 的 host），避免 Host 头注入把访客跳到攻击者站点。SEO 输出（canonical/RSS/sitemap）走 `lib/site-url.ts`，**只信任 env**，不读请求头
 - **分类色板**：`ART_PALETTES`（paper/wash/ink/accent）＋`CAT_ABBR` 缩写，前后台徽标同源
 - **日期**：服务端存 ISO，展示层按语言格式化；相对时间 60s 自动刷新
 
@@ -150,21 +167,24 @@ ANALYZE=true npm run build  # 包体积可视化分析
 
 | 方法与路径 | 说明 | 鉴权 |
 |------------|------|------|
-| `GET /api/posts?q=&status=` | 文章列表（无 `content` 字段） | 公开（未登录仅 published） |
+| `GET /api/posts?q=&status=&page=` | 文章列表（无 `content` 字段）。不传 `page` 时按上界截断（游客 60 / 登录 500），被截断会返回 `X-Truncated: true`；传 `page` 时附 `X-Total-Count` | 公开（未登录仅 published） |
 | `POST /api/posts` | 新建 | 登录 |
-| `GET/PUT/DELETE /api/posts/[id]` | 详情/更新/删除 | GET 公开 published，其余登录 |
-| `GET/POST /api/categories`、`DELETE /api/categories/[id]` | 分类 | 读公开，写登录 |
-| `GET/POST /api/thoughts`、`DELETE /api/thoughts/[id]` | 随想 | 读公开，写登录 |
-| `GET/POST/DELETE /api/media` | 媒体（Blob） | 登录 |
+| `GET/PUT/DELETE /api/posts/[id]` | 详情/更新/删除（id 与 slug 双兼容） | GET 公开 published，其余登录 |
+| `POST /api/posts/[id]/view` | 浏览计数（IP + 15 分钟窗口去重） | 公开 |
+| `GET/POST /api/categories`、`PUT/DELETE /api/categories/[id]` | 分类 | 读公开，写登录 |
+| `GET/POST /api/thoughts`、`PUT/DELETE /api/thoughts/[id]` | 随想（`page`，每页 50） | 读公开，写登录 |
+| `GET/POST/DELETE /api/media` | 媒体（Blob，`page`，每页 100） | 登录 |
 | `GET/PUT /api/settings` | 设置 | 登录 |
-| `/api/auth/*` | NextAuth（登录/改密/状态） | — |
+| `GET /api/search-index` | 全局搜索索引（含拼音字段，供搜索面板） | 公开 |
+| `GET /api/health` | 健康检查；未登录只返回 `status`，登录后附诊断明细 | 公开 |
+| `/api/auth/*` | NextAuth（登录 / 改密 / 默认账户检测） | — |
 
 ## 部署
 
 ### Vercel（推荐，Git 推送自动部署）
 1. Fork 本仓库到 GitHub，在 Vercel 导入项目
 2. 配置上表全部环境变量
-3. `git push origin main` 即触发生产构建（`prisma generate && next build`，36 页静态化）
+3. `git push origin main` 即触发生产构建（`prisma generate && next build`，43 条路由 / 25 页静态化）
 
 ### Cloudflare Workers 代理（中国大陆访问）
 Vercel 默认域名在大陆可能无法访问，可用 Workers 代理：

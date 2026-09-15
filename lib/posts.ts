@@ -181,18 +181,41 @@ function mapPost(row: any): PostDTO {
   }
 }
 
+/**
+ * 前台一次性拉取的硬上限。
+ *
+ * 首页 `/`、移动 `/m`、平板 `/t`、归档、以及 `/api/search-index` 共用本查询，
+ * 因此**超出此上限的文章不会出现在这些入口**（不会报错，是静默的）。
+ * 目前 17 篇，离上限还远；一旦触顶会打 warn 便于及时发现，而不是无声少内容。
+ * 真要突破时应当给首页/归档引入分页，而不是简单调大这个数字。
+ */
+const FRONT_LIST_LIMIT = 100
+let warnedFrontLimit = false
+
 const getCachedPostRows = unstable_cache(
   async (status: string) => {
     const where: any = { status }
     if (status === "published") {
       Object.assign(where, publicPostWhere())
     }
-    return prisma.post.findMany({
+    // 多取 1 条仅用于探测是否触顶
+    const rows = await prisma.post.findMany({
       where,
       include: { category: true },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: FRONT_LIST_LIMIT + 1,
     })
+    if (rows.length > FRONT_LIST_LIMIT) {
+      rows.length = FRONT_LIST_LIMIT
+      if (!warnedFrontLimit) {
+        warnedFrontLimit = true
+        console.warn(
+          `[posts] 前台列表已达 ${FRONT_LIST_LIMIT} 篇上限，超出部分不会展示在任何前台入口（含搜索索引）。` +
+            `请为首页/归档引入分页后调高 FRONT_LIST_LIMIT。`
+        )
+      }
+    }
+    return rows
   },
   ["posts-by-status"],
   { revalidate: 60, tags: ["posts"] }
@@ -200,6 +223,8 @@ const getCachedPostRows = unstable_cache(
 
 /** 列表场景轻量化：剔除正文/渲染重字段（RSC 载荷瘦身；列表客户端不读取这些字段，阅读页请用原始 post） */
 export function stripPostHeavy<T extends Record<string, any>>(p: T) {
+  // 解构即"剔除"：这些重字段被刻意丢弃、永不进入列表载荷，故对 no-unused-vars 抑制
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { content, contentZh, markdown, markdownZh, html, htmlZh, headings, headingsZh, pageConfig, ...rest } = p as any;
   return rest as T;
 }

@@ -155,12 +155,6 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
   if (!editor) return <div className="p-8 text-sm text-[var(--yh-muted)]">加载编辑器...</div>
 
-  const toolbarBtn = (icon: React.ReactNode, label: string, active: boolean, action: () => void) => (
-    <button key={label} title={label} onMouseDown={(e) => e.preventDefault()} onClick={action}
-      className={`p-1.5 rounded transition-colors ${active ? "bg-[var(--yh-text)] text-[var(--yh-bg)]" : "text-[var(--yh-text)] hover:bg-[var(--yh-border)]"}`}
-    >{icon}</button>
-  )
-
   return (
     <div className="tiptap-editor">
       {/* BubbleMenu 选中文字浮出 */}

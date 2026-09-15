@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
-import type { Category } from "@/lib/categories";
 import type { Post } from "@/lib/types";
 import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { useLang } from "@/lib/lang-context";
