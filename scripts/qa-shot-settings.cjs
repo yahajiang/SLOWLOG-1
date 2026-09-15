@@ -27,7 +27,7 @@ const cookieOf = (jar) => Object.entries(jar).map(([k, v]) => `${k}=${v}`).join(
   if (!sessionKey) throw new Error("登录失败");
 
   const browser = await chromium.launch({ channel: "msedge", headless: true });
-  for (const [tag, width] of [["desktop", 1440], ["narrow", 480]]) {
+  for (const [tag, width] of [["desktop", 1440], ["mid", 794], ["narrow", 480]]) {
     const ctx = await browser.newContext({ viewport: { width, height: 1000 } });
     await ctx.addCookies([{ name: sessionKey, value: jar[sessionKey], url: BASE }]);
     const page = await ctx.newPage();

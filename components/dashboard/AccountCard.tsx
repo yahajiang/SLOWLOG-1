@@ -66,7 +66,7 @@ export function AccountCard() {
           <label className={label}>{t.acctCurrent}</label>
           <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="current-password" />
         </div>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={label}>{t.acctEmail}</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`mt-1 ${input}`} placeholder="your@email.com" />
@@ -76,7 +76,7 @@ export function AccountCard() {
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={`mt-1 ${input}`} placeholder={lang === "zh" ? "显示名称" : "Display name"} />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={label}>{t.acctNewPass}</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="new-password" placeholder={lang === "zh" ? "至少 8 位" : "At least 8 characters"} />
