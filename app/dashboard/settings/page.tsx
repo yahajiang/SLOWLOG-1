@@ -12,6 +12,25 @@ const input = "mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] 
 const rowInput = "w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
 const label = "text-xs text-[var(--dash-muted)]"
 
+/** 编辑板块：节头 + 「作用于」说明——每个板块对应一个前台消费位置，改哪看哪 */
+function Section({ title, applies, children, className = "" }: {
+  title: string;
+  applies: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)] ${className}`}>
+      <div className="flex items-center gap-2.5">
+        <span className="w-5 h-px bg-[var(--dash-accent)]/60" aria-hidden />
+        <h2 className="text-sm font-semibold tracking-wide text-[var(--dash-text)]">{title}</h2>
+      </div>
+      <p className="text-[11px] text-[var(--dash-muted)] mt-1.5">{applies}</p>
+      <div className="mt-5 space-y-5">{children}</div>
+    </div>
+  )
+}
+
 type SocialLink = { name: string; url: string }
 
 export default function SettingsPage(){
@@ -44,17 +63,13 @@ export default function SettingsPage(){
     <div className="max-w-4xl section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)] mb-6" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashSettings}</h1>
 
-      {/* 两卡并排一行且等高（grid 默认 stretch）；窄屏回退堆叠。
-          并排后卡内改单列窄栏；按钮统一 mt-auto 沉底，两卡底缘对齐 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* 站点设置 */}
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)] flex flex-col">
-        <div className="flex items-center gap-2.5 mb-5">
-          <span className="w-5 h-px bg-[var(--dash-accent)]/60" aria-hidden />
-          <h2 className="text-sm font-semibold tracking-wide text-[var(--dash-text)]">{lang === "zh" ? "站点设置" : "Site Settings"}</h2>
-        </div>
+      {/* 板块 = 前台消费位置：每个板块标注「作用于」，设置项与生效处一一对应 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-        <div className="space-y-5">
+        <Section
+          title={lang === "zh" ? "站点信息" : "Site Info"}
+          applies={lang === "zh" ? "作用于：浏览器标题 · 顶部导航 · 搜索引擎摘要 · RSS" : "Applies to: browser title · header · SEO snippets · RSS"}
+        >
           <div>
             <label className={label}>{lang === "zh" ? "站点名称" : "Site Name"}</label>
             <input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className={input} />
@@ -75,16 +90,12 @@ export default function SettingsPage(){
             <label className={label}>{lang === "zh" ? "关键词" : "Keywords"}</label>
             <input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className={input} />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={label}>Favicon URL</label>
-              <input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className={input} placeholder="https://…" />
-            </div>
-            <div>
-              <label className={label}>Logo URL</label>
-              <input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className={input} placeholder="https://…" />
-            </div>
-          </div>
+        </Section>
+
+        <Section
+          title={lang === "zh" ? "页脚" : "Footer"}
+          applies={lang === "zh" ? "作用于：全站页脚文案与社交链接（英文访客显示英文侧）" : "Applies to: footer text & social links (EN side for English visitors)"}
+        >
           <div>
             <label className={label}>{lang === "zh" ? "页脚文案" : "Footer text"}</label>
             <input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className={input} />
@@ -94,7 +105,6 @@ export default function SettingsPage(){
             <input value={form.footerTextEn||""} onChange={e=>setForm({...form,footerTextEn:e.target.value})} className={input} />
           </div>
 
-          {/* 社交链接：结构化编辑，渲染在 Footer 链接组 */}
           <div>
             <label className={label}>{lang === "zh" ? "社交链接" : "Social links"}</label>
             <div className="mt-1 space-y-2">
@@ -112,7 +122,26 @@ export default function SettingsPage(){
               )}
             </div>
           </div>
+        </Section>
 
+        <Section
+          title={lang === "zh" ? "品牌资源" : "Brand Assets"}
+          applies={lang === "zh" ? "作用于：浏览器标签图标（Favicon）· 顶部导航 Logo（留空用内置 S 章）" : "Applies to: favicon & header logo (empty = built-in mark)"}
+        >
+          <div>
+            <label className={label}>Favicon URL</label>
+            <input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className={input} placeholder="https://…" />
+          </div>
+          <div>
+            <label className={label}>Logo URL</label>
+            <input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className={input} placeholder="https://…" />
+          </div>
+        </Section>
+
+        <Section
+          title={lang === "zh" ? "阅读与外观" : "Reading & Appearance"}
+          applies={lang === "zh" ? "作用于：后台文章列表分页 · 访客未选择主题时的默认外观" : "Applies to: dashboard pagination & default theme for visitors"}
+        >
           <div>
             <label className={label}>{lang === "zh" ? "每页文章数" : "Posts per page"}</label>
             <input type="number" min={1} max={100} value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className={input} />
@@ -133,14 +162,16 @@ export default function SettingsPage(){
               />
             </div>
           </div>
-        </div>
 
-        <div className="mt-auto pt-6 flex justify-end">
-          <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
-        </div>
-      </div>
+          <div className="pt-1 flex justify-end">
+            <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
+          </div>
+        </Section>
 
-      <AccountCard />
+        {/* 账号管理：独立凭证域，跨两列 */}
+        <div className="lg:col-span-2">
+          <AccountCard />
+        </div>
       </div>
     </div>
   )
