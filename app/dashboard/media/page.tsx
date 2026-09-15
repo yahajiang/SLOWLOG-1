@@ -116,7 +116,7 @@ export default function MediaPage(){
         </div>
       )}
       {view === "grid" ? (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4 stagger">
           {items.map(m => (
             <div key={m.id} className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow">
               <div className="aspect-[4/3] bg-[var(--dash-bg)] flex items-center justify-center overflow-hidden">
@@ -136,7 +136,7 @@ export default function MediaPage(){
           ))}
         </div>
       ) : (
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)]">
+        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger">
           {items.map(m => (
             <div key={m.id} className="flex items-center gap-4 p-3 hover:bg-[var(--dash-bg)]">
               <img src={m.url} alt="" loading="lazy" decoding="async" className="w-12 h-12 object-cover rounded-none border border-[var(--dash-border)]" />

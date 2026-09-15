@@ -78,7 +78,7 @@ export default function CategoriesPage(){
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
         <button onClick={create} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "新建" : "New"}</button>
       </div>
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)]">
+      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger">
         {cats.map(c=>{
           // 列表副行按界面语言显示描述（与前台 catDescription 同规则：当前语言缺失时回退另一侧）
           const shown = lang === "zh" ? (c.descriptionZh || c.description) : (c.description || c.descriptionZh)

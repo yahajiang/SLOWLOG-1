@@ -66,7 +66,7 @@ export function DashboardHome({ data }: { data: DashData }) {
       </div>
 
       {/* 指标一行：7 项等分 */}
-      <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
+      <div className="grid grid-cols-4 md:grid-cols-7 gap-3 stagger">
         <StatCard label={t.dashTotalPosts} value={total} href="/dashboard/posts" />
         <StatCard label={t.dashPublished} value={published} href="/dashboard/posts" />
         <StatCard label={t.dashDraft} value={draft} href="/dashboard/posts" />
@@ -85,7 +85,7 @@ export function DashboardHome({ data }: { data: DashData }) {
               {t.dashViewAll}
             </Link>
           </div>
-          <div className="divide-y divide-[var(--dash-border)]">
+          <div className="divide-y divide-[var(--dash-border)] stagger">
             {recent.map((p) => {
               const meta = [catOf(p), tagsOf(p)].filter(Boolean).join(" · ");
               return (
