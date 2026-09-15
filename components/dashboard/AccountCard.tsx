@@ -52,14 +52,16 @@ export function AccountCard() {
   const label = "text-xs text-[var(--dash-muted)]"
 
   return (
-    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 space-y-5 shadow-[var(--shadow-card)]">
-      <div className="flex items-center gap-2.5">
+    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)] flex flex-col">
+      <div className="flex items-center gap-2.5 mb-1.5">
         <span className="w-5 h-px bg-[var(--dash-accent)]/60" aria-hidden />
         <h2 className="text-sm font-semibold tracking-wide text-[var(--dash-text)]">{t.acctTitle}</h2>
       </div>
-      <p className="text-xs text-[var(--dash-muted)] -mt-2">{t.acctDesc}</p>
+      <p className="text-xs text-[var(--dash-muted)] mb-4">{t.acctDesc}</p>
 
-      <form onSubmit={submit} className="space-y-4">
+      {/* flex-1 + 按钮 mt-auto：并排等高时按钮沉到卡底，与站点卡底缘对齐 */}
+      <form onSubmit={submit} className="flex-1 flex flex-col">
+        <div className="space-y-4">
         <div>
           <label className={label}>{t.acctCurrent}</label>
           <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="current-password" />
@@ -84,12 +86,13 @@ export function AccountCard() {
             <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={`mt-1 ${input}`} autoComplete="new-password" placeholder={lang === "zh" ? "再次输入新密码" : "Re-enter new password"} />
           </div>
         </div>
+        </div>
 
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">{error}</div>
+          <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">{error}</div>
         )}
 
-        <div className="flex justify-end">
+        <div className="mt-auto pt-4 flex justify-end">
           <button
             type="submit"
             disabled={saving || !currentPassword || !email || !password || !confirmPassword || !name}
