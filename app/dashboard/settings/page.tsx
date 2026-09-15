@@ -6,6 +6,10 @@ import { useLang } from "@/lib/lang-context"
 import { SettingsPageSkeleton } from "@/components/dashboard/Skeleton"
 import { AccountCard } from "@/components/dashboard/AccountCard"
 
+// 与 AccountCard 共用的控件风格（避免逐字段内联长 class 漂移）
+const input = "mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none"
+const label = "text-xs text-[var(--dash-muted)]"
+
 export default function SettingsPage(){
   const [form,setForm]=useState<any>(null)
   const [saving,setSaving]=useState(false)
@@ -20,34 +24,66 @@ export default function SettingsPage(){
   }
   if(!form) return <SettingsPageSkeleton />
   return (
-    <div className="space-y-6 max-w-2xl section-in">
+    <div className="space-y-6 max-w-4xl section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashSettings}</h1>
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 space-y-5 shadow-[var(--shadow-card)]">
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点名称" : "Site Name"}</label><input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "站点描述" : "Description"}</label><input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "关键词" : "Keywords"}</label><input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div className="grid grid-cols-2 gap-4">
-          <div><label className="text-xs text-[var(--dash-muted)]">{"Favicon URL"}</label><input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-          <div><label className="text-xs text-[var(--dash-muted)]">{"Logo URL"}</label><input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+
+      {/* 站点设置：响应式两列栅格——短字段成对、长字段跨列，宽屏不再一条长队列 */}
+      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 shadow-[var(--shadow-card)]">
+        <div className="flex items-center gap-2.5 mb-5">
+          <span className="w-5 h-px bg-[var(--dash-accent)]/60" aria-hidden />
+          <h2 className="text-sm font-semibold tracking-wide text-[var(--dash-text)]">{lang === "zh" ? "站点设置" : "Site Settings"}</h2>
         </div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "页脚文案" : "Footer text"}</label><input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className="mt-1 w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "每页文章数" : "Posts per page"}</label><input type="number" value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className="mt-1 w-32 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-        <div>
-          <label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "主题" : "Theme"}</label>
-          <div className="mt-1 w-40">
-            <DropdownSelect
-              value={form.theme || "system"}
-              onChange={(v) => setForm({ ...form, theme: v })}
-              options={[
-                { value: "light", label: lang === "zh" ? "浅色" : "Light" },
-                { value: "dark", label: lang === "zh" ? "深色" : "Dark" },
-                { value: "system", label: lang === "zh" ? "跟随系统" : "System" },
-              ]}
-              ariaLabel={lang === "zh" ? "主题" : "Theme"}
-            />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5">
+          <div>
+            <label className={label}>{lang === "zh" ? "站点名称" : "Site Name"}</label>
+            <input value={form.siteName||""} onChange={e=>setForm({...form,siteName:e.target.value})} className={input} />
+          </div>
+          <div>
+            <label className={label}>{lang === "zh" ? "关键词" : "Keywords"}</label>
+            <input value={form.siteKeywords||""} onChange={e=>setForm({...form,siteKeywords:e.target.value})} className={input} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={label}>{lang === "zh" ? "站点描述" : "Description"}</label>
+            <input value={form.siteDescription||""} onChange={e=>setForm({...form,siteDescription:e.target.value})} className={input} />
+          </div>
+          <div>
+            <label className={label}>Favicon URL</label>
+            <input value={form.siteIconUrl||""} onChange={e=>setForm({...form,siteIconUrl:e.target.value})} className={input} placeholder="https://…" />
+          </div>
+          <div>
+            <label className={label}>Logo URL</label>
+            <input value={form.logoUrl||""} onChange={e=>setForm({...form,logoUrl:e.target.value})} className={input} placeholder="https://…" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={label}>{lang === "zh" ? "页脚文案" : "Footer text"}</label>
+            <input value={form.footerText||""} onChange={e=>setForm({...form,footerText:e.target.value})} className={input} />
+          </div>
+          <div>
+            <label className={label}>{lang === "zh" ? "每页文章数" : "Posts per page"}</label>
+            <input type="number" min={1} max={100} value={form.postsPerPage||10} onChange={e=>setForm({...form,postsPerPage:parseInt(e.target.value)||10})} className={input} />
+          </div>
+          <div>
+            <label className={label}>{lang === "zh" ? "主题" : "Theme"}</label>
+            <div className="mt-1">
+              <DropdownSelect
+                className="w-full"
+                value={form.theme || "system"}
+                onChange={(v) => setForm({ ...form, theme: v })}
+                options={[
+                  { value: "light", label: lang === "zh" ? "浅色" : "Light" },
+                  { value: "dark", label: lang === "zh" ? "深色" : "Dark" },
+                  { value: "system", label: lang === "zh" ? "跟随系统" : "System" },
+                ]}
+                ariaLabel={lang === "zh" ? "主题" : "Theme"}
+              />
+            </div>
           </div>
         </div>
-        <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
+
+        <div className="mt-6 flex justify-end">
+          <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
+        </div>
       </div>
 
       <AccountCard />
