@@ -12,7 +12,7 @@ import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { MArticleCard } from "./MArticleCard";
-import { mCatLabel } from "@/lib/adapt";
+import { mCatLabel, catDescription } from "@/lib/adapt";
 
 /** P2-10：日期非法时返回空串，避免把 "Invalid Date" 渲染给用户 */
 function formatShortDate(v: unknown, lang: string): string {
@@ -283,6 +283,12 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
           </p>
           <span className="text-[11px] text-[var(--yh-muted)]">· {filtered.length}</span>
         </div>
+        {/* 选中具体分类时显示该分类描述（本地化规则在 lib/adapt.ts，与桌面同源） */}
+        {(() => {
+          const dbCat = activeCategory === "All" ? null : dbCategories?.find((c: any) => c.name === activeCategory);
+          const desc = catDescription(dbCat, lang);
+          return desc ? <p className="text-xs leading-relaxed text-[var(--yh-muted)] -mt-2 mb-4">{desc}</p> : null;
+        })()}
 
         {filtered.length === 0 ? (
           <div className="py-16 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
