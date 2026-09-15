@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CATEGORIES, ART_PALETTES, CAT_ABBR } from "@/lib/categories";
+import { catDescription } from "@/lib/adapt";
 import type { Post } from "@/lib/types";
 import { formatDisplayDate, mdInSiteTz } from "@/lib/relative-time";
 import { useLang } from "@/lib/lang-context";
@@ -420,7 +421,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
             {groupedByCategory.map((group) => {
               const palette: any = (ART_PALETTES as any)[group.cat] || { paper: "#F8F7F4", ink: "#2B2926", wash: "#E8E2DA", accent: "#C9A98A" }
               const abbr = (CAT_ABBR as any)[group.cat] || group.cat.slice(0, 3).toUpperCase()
-              const label = lang === "zh" ? (dbCategories?.find((c: any) => c.name === group.cat)?.nameZh || catLabel(group.cat, t)) : catLabel(group.cat, t)
+              const dbCat = dbCategories?.find((c: any) => c.name === group.cat)
+              const label = lang === "zh" ? (dbCat?.nameZh || catLabel(group.cat, t)) : catLabel(group.cat, t)
+              // 分类描述：本地化规则收口在 lib/adapt.ts（zh 优先中文 / en 优先英文，缺时任取另一侧）
+              const desc = catDescription(dbCat, lang)
               return (
                 <div key={group.cat}>
                   <div className="flex items-center gap-3 mb-4">
@@ -435,6 +439,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       {t.viewAllGrouped}
                     </button>
                   </div>
+                  {desc && <p className="text-[12px] leading-relaxed text-[var(--yh-muted)] max-w-2xl -mt-1 mb-4">{desc}</p>}
                   <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     {group.posts.map((post, idx) => (
                       <ArticleCard key={post.id} post={post} index={idx} />
