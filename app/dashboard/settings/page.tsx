@@ -64,7 +64,7 @@ export default function SettingsPage(){
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)] mb-6" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashSettings}</h1>
 
       {/* 板块 = 前台消费位置：每个板块标注「作用于」，设置项与生效处一一对应 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
         <Section
           title={lang === "zh" ? "站点信息" : "Site Info"}

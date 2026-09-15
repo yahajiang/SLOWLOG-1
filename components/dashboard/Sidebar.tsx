@@ -19,6 +19,23 @@ export function Sidebar() {
     } catch {}
   }, [])
 
+  // 窄视口（<1024px，平板竖持/小窗口）自动折叠成图标栏，给内容区让位；
+  // 用户手动切换仍以 localStorage 为准（与视口状态叠加：手动展开优先于视口折叠）
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)")
+    const apply = () => {
+      if (mq.matches) {
+        try { localStorage.setItem("dash-sidebar-collapsed-pre-auto", localStorage.getItem("dash-sidebar-collapsed") || "0") } catch {}
+        setCollapsed(true)
+      } else {
+        try { setCollapsed(localStorage.getItem("dash-sidebar-collapsed") === "1") } catch {}
+      }
+    }
+    apply()
+    mq.addEventListener("change", apply)
+    return () => mq.removeEventListener("change", apply)
+  }, [])
+
   function toggleCollapsed() {
     setCollapsed((v) => {
       const next = !v
