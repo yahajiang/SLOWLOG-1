@@ -120,3 +120,18 @@ export function mCatLabel(cat: string, t: Dict): string {
   if (cat === "Log") return t.catLog;
   return cat;
 }
+
+/**
+ * JSON-LD 安全序列化（P1-4）。
+ *
+ * `JSON.stringify` 不转义 `<`、`>`、`&`，而 JSON-LD 是通过
+ * `dangerouslySetInnerHTML` 注入 `<script type="application/ld+json">` 的——
+ * 标题若为 `</script><img src=x onerror=...>` 即可提前闭合脚本标签并执行任意脚本。
+ * 转成 `\u003c` 等 Unicode 转义后 JSON 语义不变，但浏览器不再识别为标签边界。
+ */
+export function safeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}

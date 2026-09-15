@@ -20,13 +20,19 @@ export default function ArchiveClient({ posts, years }: { posts: any[]; years: [
   const [armed, setArmed] = useState(false)
   const [grow, setGrow] = useState(0)
   const tlRef = useRef<HTMLDivElement>(null)
+  // P2-13：title / category 均可能缺失（历史脏数据），统一兜底为空串——
+  // 否则 .toLowerCase() 抛 TypeError 会让整页白屏
   const filteredYears = q.trim()
-    ? years.map(([y, arr]) => [y, arr.filter((p:any)=> (p.titleZh||p.title).toLowerCase().includes(q.toLowerCase()) || p.category.toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
+    ? years.map(([y, arr]) => [y, arr.filter((p:any)=> ((p.titleZh||p.title||"") as string).toLowerCase().includes(q.toLowerCase()) || ((p.category||"") as string).toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
     : years
   const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|")
   // 刊头统计：篇数 / 年数 / 分类数 / 最近更新（MM-DD）
-  const catCount = new Set(posts.map((p: any) => p.category)).size
-  const latestTs = posts.reduce((acc: number, p: any) => Math.max(acc, new Date(p.publishedAt || p.createdAt).getTime()), 0)
+  const catCount = new Set(posts.map((p: any) => p.category).filter(Boolean)).size
+  // P2-13：单篇日期非法会让 Math.max 得到 NaN，导致整块统计退化为"—"，故逐条校验
+  const latestTs = posts.reduce((acc: number, p: any) => {
+    const ts = new Date(p.publishedAt || p.createdAt).getTime()
+    return Number.isNaN(ts) ? acc : Math.max(acc, ts)
+  }, 0)
   const latestMd = latestTs ? mdInSiteTz(new Date(latestTs).toISOString()) : "—"
 
   useEffect(() => {

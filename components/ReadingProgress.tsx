@@ -10,7 +10,6 @@ export function ReadingProgress() {
   const { t } = useLang();
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [remaining, setRemaining] = useState<string>("");
 
   // 目录（桌面 TOC / 移动端 MTOC）存在时，进度由 useScrollSpy 广播，顶栏不再自算，
   // 否则两套算法会打架（历史上顶栏因此慢一拍）。只有无目录的页面才走本地兜底。
@@ -22,7 +21,9 @@ export function ReadingProgress() {
       setProgress(p);
       setVisible(window.scrollY > 120);
       const mins = Math.max(1, Math.round((100 - p) * 0.08));
-      setRemaining(t.readingRemaining(mins));
+      // 剩余时间直接写入占位节点（P2-4）。配套改动：PostClient 中该节点已改为
+      // 空占位 <span data-remaining /> —— 否则 React 每次重渲染都会把文案打回初始值，
+      // 造成"命令式写入 vs 虚拟 DOM"双源互相覆盖。
       const el = document.querySelector("[data-remaining]") as HTMLElement | null;
       if (el)
         el.textContent =
@@ -68,21 +69,26 @@ export function ReadingProgress() {
         }
         paint(pct, pct);
 
-        // 无目录页的段落聚焦：当前阅读段保持实色，其余压暗
+        // 无目录页的段落聚焦：当前阅读段保持实色，其余压暗。
+        // P2-5：先批量读几何、再批量写样式。旧实现把 getBoundingClientRect() 与
+        // style 写入交错在同一循环里，每次迭代都强制一次样式重算/重排（layout thrashing），
+        // 长文滚动明显掉帧。
         const paras = Array.from(document.querySelectorAll("[data-paragraph]")) as HTMLElement[];
-        let best: HTMLElement | null = null;
-        let bestDist = Infinity;
+        const rects = paras.map((el) => el.getBoundingClientRect());
         const mid = window.innerHeight * 0.45;
-        for (const para of paras) {
-          const r = para.getBoundingClientRect();
+        let bestIdx = -1;
+        let bestDist = Infinity;
+        rects.forEach((r, i) => {
           if (r.top < window.innerHeight && r.bottom > 0) {
             const d = Math.abs(r.top + r.height / 2 - mid);
-            if (d < bestDist) { bestDist = d; best = para }
+            if (d < bestDist) { bestDist = d; bestIdx = i }
           }
-          para.style.opacity = "0.72";
-          para.style.transition = "opacity 0.3s var(--ease-out)";
-        }
-        if (best) best.style.opacity = "1";
+        });
+        paras.forEach((el, i) => {
+          // transition 只在首次写入，避免每帧重置
+          if (!el.style.transition) el.style.transition = "opacity 0.3s var(--ease-out)";
+          el.style.opacity = i === bestIdx ? "1" : "0.72";
+        });
       });
     }
 

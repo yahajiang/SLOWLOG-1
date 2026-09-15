@@ -1,28 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath, revalidateTag } from "next/cache"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { postUpdateSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
-import { isPublicPost } from "@/lib/posts"
-
-// 文章数据变更后立即再生前台缓存：数据缓存 tag + 首页 + 文章详情路由（覆盖 id/slug 两种地址形态）
-function revalidatePostViews(post?: { id: string; slug?: string | null }) {
-  revalidateTag("posts")
-  revalidatePath("/")
-  revalidatePath("/rss.xml")
-  revalidatePath("/sitemap.xml")
-  revalidatePath("/posts/[id]", "page")
-  if (post) {
-    revalidatePath(`/posts/${post.id}`)
-    if (post.slug) revalidatePath(`/posts/${post.slug}`)
-  }
-}
+import { isPublicPost, revalidatePostPaths } from "@/lib/posts"
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = await auth()
-  const post = await prisma.post.findUnique({ where: { id }, include: { category: true } })
+  const post =
+    (await prisma.post.findUnique({ where: { id }, include: { category: true } })) ||
+    // P3-25：与页面层（app/posts/[id]/page.tsx 的 `slug || id` 双兼容）对齐。
+    // 旧实现只按 id 查询，导致同一地址「页面能打开、API 却 404」。
+    (await prisma.post.findUnique({ where: { slug: id }, include: { category: true } }))
   if (!post) return apiError(404, "内容不存在")
   if (!session && !isPublicPost(post)) {
     return apiError(404, "内容不存在")
@@ -79,7 +69,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   try {
     const post = await prisma.post.update({ where: { id }, data })
-    revalidatePostViews(post)
+    revalidatePostPaths(post)
     return NextResponse.json(post)
   } catch (e: any) {
     if (e.code === "P2025") return apiError(404, "内容不存在")
@@ -97,7 +87,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   try {
     const existing = await prisma.post.findUnique({ where: { id }, select: { slug: true } })
     await prisma.post.delete({ where: { id } })
-    revalidatePostViews({ id, slug: existing?.slug })
+    revalidatePostPaths({ id, slug: existing?.slug })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     if (e.code === "P2025") return apiError(404, "内容不存在")

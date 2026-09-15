@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, Settings, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -20,12 +20,23 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
   const { t } = useLang();
   const searchable = typeof onSearchChange === "function";
 
+  // P2-11：搜索面板退场定时器需可清理，避免顶栏卸载后仍 setState
+  const closeTimerRef = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    },
+    []
+  );
+
   function toggleSearch() {
     if (open) {
       setClosing(true);
-      window.setTimeout(() => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = window.setTimeout(() => {
         setOpen(false);
         setClosing(false);
+        closeTimerRef.current = null;
       }, 200);
     } else {
       setOpen(true);

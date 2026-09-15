@@ -1,5 +1,5 @@
 import { prisma } from "./prisma"
-import { unstable_cache } from "next/cache"
+import { unstable_cache, revalidateTag, revalidatePath } from "next/cache"
 import type { ContentCategory } from "./categories"
 import { slugifyHeading, dedupeHeadingId } from "./headings"
 
@@ -52,23 +52,43 @@ function extractCategory(dto: any): ContentCategory {
   return "Design"
 }
 
+/**
+ * 提取目录（P3-13：递归遍历）。
+ * 旧实现只遍历顶层 `doc.content`，于是写在引用块 / 列表里的标题永远进不了目录，
+ * 读者会遇到"正文明明有小标题、目录里却找不到"的错位。
+ *
+ * ⚠️ 遍历顺序（先序、按文档顺序、全局递增序号）必须与
+ * `components/editor/PostRenderer.tsx` 中 headingIds 的构建方式保持一致，
+ * 否则目录锚点会指向不存在的 id。
+ */
 function extractHeadings(content: unknown): { id: string; text: string; level: number }[] {
   if (!content || typeof content !== "object") return []
   const doc = content as any
-  const nodes: any[] = doc.content || doc.root?.children || []
-  const headings: { id: string; text: string; level: number }[] = []
-  const seen = new Map<string, number>()
-  for (const n of nodes) {
-    if (n.type === "heading") {
-      const level = n.attrs?.level || 2
-      const text = (n.content || []).map((c: any) => c.text || "").join("").trim()
-      if (text) {
-        const id = dedupeHeadingId(slugifyHeading(text, headings.length), seen)
-        headings.push({ id, text, level })
+  const roots: any[] = doc.content || doc.root?.children || []
+
+  const flat: { text: string; level: number }[] = []
+  const walk = (parent: any, depth = 0) => {
+    if (depth > 20) return // 与渲染端一致：防御畸形深嵌套结构
+    const kids = Array.isArray(parent?.content) ? parent.content : []
+    for (const c of kids) {
+      if (c?.type === "heading") {
+        // level 白名单化，与 PostRenderer 的 h${level} 保持一致
+        const rawLevel = c.attrs?.level
+        const level = [1, 2, 3, 4].includes(rawLevel) ? rawLevel : 2
+        const text = (c.content || []).map((x: any) => x.text || "").join("").trim()
+        if (text) flat.push({ text, level })
       }
+      walk(c, depth + 1)
     }
   }
-  return headings
+  walk({ content: roots })
+
+  const seen = new Map<string, number>()
+  return flat.map((h, i) => ({
+    id: dedupeHeadingId(slugifyHeading(h.text, i), seen),
+    text: h.text,
+    level: h.level,
+  }))
 }
 
 /** 唯一的公开可见性规则：草稿、归档和未来定时文章均不可从任何公开入口读取。 */
@@ -79,6 +99,40 @@ export function isPublicPost(row: { status?: string; publishedAt?: Date | string
 
 export function publicPostWhere(now = new Date()) {
   return { status: "published", OR: [{ publishedAt: null }, { publishedAt: { lte: now } }] }
+}
+
+/**
+ * 数据层降级策略（统一收口）。
+ *
+ * ⚠️ 背景：此前只有 `getAllPosts()` 带 `catch → []`，详情查询没有任何保护。
+ * 于是出现这样一条必崩路径——`.next/cache` 里已缓存了文章列表，而本次构建
+ * 数据库不可达时：
+ *   ① `generateStaticParams()` 从**缓存**拿到文章 id 列表并返回；
+ *   ② 预渲染 `/posts/<id>` 调用 `getPostBySlug()`；
+ *   ③ `prisma.post.findUnique` 抛 P1001 → 预渲染失败 → **整个 next build 退出码 1**。
+ * 也就是说：构建能否成功，取决于缓存是否恰好为空。DB 一次抖动就能阻断部署。
+ *
+ * 现在统一为：
+ *  - **构建期**（NEXT_PHASE=phase-production-build）：DB 不可达一律降级为空数据，
+ *    保证 `next build` 不因数据库抖动而失败；
+ *  - **运行期**：不吞异常，交由 error boundary 呈现——避免把线上故障静默伪装成空列表。
+ *
+ * ✅ 2026-09-15 已与作者确认：**保持此策略，不要改回"运行期静默返回空列表"**。
+ *    旧行为会让数据库故障表现为"站点没有内容"，运维侧完全无从察觉。
+ */
+const IS_BUILD_PHASE = process.env.NEXT_PHASE === "phase-production-build"
+
+async function degrade<T>(fn: () => Promise<T>, fallback: T, ctx: string): Promise<T> {
+  try {
+    return await fn()
+  } catch (e) {
+    if (!IS_BUILD_PHASE) throw e
+    console.warn(
+      `[posts] ${ctx} 构建期降级（数据库不可达）:`,
+      e instanceof Error ? e.message : e
+    )
+    return fallback
+  }
 }
 
 function scheduledGuard(row: any) {
@@ -119,6 +173,10 @@ function mapPost(row: any): PostDTO {
     category: extractCategory(row),
     displayDate: toDisplayDate(row.publishedAt || row.createdAt),
     headings,
+    // P3-14：目前中英共用同一份 Tiptap 正文（content），故 headingsZh 与 headings
+    // 内容相同。消费方（PostClient / MPost）按「中文优先取 headingsZh」的规则取值，
+    // 因此该字段必须保留。将来若正文做双语分离，需在此按 contentZh 单独提取，
+    // 而不是继续复用 headings——否则中文目录会悄悄变成英文标题。
     headingsZh: headings,
   }
 }
@@ -150,35 +208,80 @@ export async function getAllPosts(opts?: { status?: string; locale?: string }) {
   const where: any = {}
   if (opts?.status) where.status = opts.status
   else where.status = "published"
-  try {
-    const rows = await getCachedPostRows(where.status)
-    return rows.map(mapPost)
-  } catch {
-    // 构建机/CI 无 DB 时优雅降级为空列表——生产构建不再依赖数据库存活；
-    // 运行期由 ISR/revalidate 使用真实 DB 数据回填（交付可靠性 P1）
-    return []
-  }
+  return degrade(
+    async () => {
+      const rows = await getCachedPostRows(where.status)
+      return rows.map(mapPost)
+    },
+    [] as PostDTO[],
+    "getAllPosts"
+  )
 }
 
 export async function getPostBySlug(slug: string) {
-  const row = await prisma.post.findUnique({ where: { slug }, include: { category: true } })
-  return scheduledGuard(row)
+  return degrade(
+    async () => {
+      const row = await prisma.post.findUnique({ where: { slug }, include: { category: true } })
+      return scheduledGuard(row)
+    },
+    null,
+    `getPostBySlug(${slug})`
+  )
 }
 
 export async function getPostById(id: string) {
-  const row = await prisma.post.findUnique({ where: { id }, include: { category: true } })
-  return scheduledGuard(row)
+  return degrade(
+    async () => {
+      const row = await prisma.post.findUnique({ where: { id }, include: { category: true } })
+      return scheduledGuard(row)
+    },
+    null,
+    `getPostById(${id})`
+  )
 }
 
 export async function getFeaturedPost() {
-  const row = await prisma.post.findFirst({ where: { ...publicPostWhere(), featured: true }, include: { category: true } })
-  if (!row) return null
-  return mapPost(row)
+  return degrade(
+    async () => {
+      const row = await prisma.post.findFirst({ where: { ...publicPostWhere(), featured: true }, include: { category: true } })
+      if (!row) return null
+      return mapPost(row)
+    },
+    null,
+    "getFeaturedPost"
+  )
 }
 
 export async function getAllPostSlugs() {
-  const rows = await prisma.post.findMany({ where: publicPostWhere(), select: { slug: true } })
-  return rows.map((r) => r.slug)
+  return degrade(
+    async () => {
+      const rows = await prisma.post.findMany({ where: publicPostWhere(), select: { slug: true } })
+      return rows.map((r) => r.slug)
+    },
+    [] as string[],
+    "getAllPostSlugs"
+  )
+}
+
+/**
+ * 文章变更后的缓存失效（P3-16）。
+ *
+ * 此前 `/api/posts` 与 `/api/posts/[id]` 各自内联了一份**内容重复**的实现，
+ * 是典型的漂移源——本次修复就发现旧版本只覆盖了桌面路径，移动端 `/m/posts/*`
+ * 与平板 `/t/posts/*` 的缓存不会随之失效（读者会看到旧的移动端页面）。
+ */
+export function revalidatePostPaths(post?: { id: string; slug?: string | null }) {
+  revalidateTag("posts")
+  revalidatePath("/")
+  revalidatePath("/rss.xml")
+  revalidatePath("/sitemap.xml")
+  for (const base of ["/posts", "/m/posts", "/t/posts"]) {
+    revalidatePath(`${base}/[id]`, "page")
+    if (post) {
+      revalidatePath(`${base}/${post.id}`)
+      if (post.slug) revalidatePath(`${base}/${post.slug}`)
+    }
+  }
 }
 
 export async function incrementViewCount(id: string) {
