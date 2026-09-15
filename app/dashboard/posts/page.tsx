@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/Toast"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { useLang } from "@/lib/lang-context"
+import { useSiteSettings } from "@/lib/settings-context"
 import { PostsPageSkeleton } from "@/components/dashboard/Skeleton"
 
 export default function PostsPage() {
@@ -15,7 +16,9 @@ export default function PostsPage() {
   const [catFilter, setCatFilter] = useState("all")
   const [featuredOnly, setFeaturedOnly] = useState(false)
   const [sort, setSort] = useState("updatedAt-desc")
-  const [pageSize, setPageSize] = useState(15)
+  // 每页条数由「站点设置·每页文章数」下发（settings-context）；无值回退 15
+  const siteSettings = useSiteSettings()
+  const [pageSize, setPageSize] = useState(siteSettings.postsPerPage || 15)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [booted, setBooted] = useState(false)
@@ -177,10 +180,14 @@ export default function PostsPage() {
     { value: "views-asc", label: lang === "zh" ? "浏览量 ↑" : "Views ↑" },
     { value: "featured-first", label: lang === "zh" ? "推荐优先" : "Featured first" },
   ]
-  const pageSizeOptions = [10, 15, 25, 50, 100].map((n) => ({
-    value: String(n),
-    label: `${n} / ${lang === "zh" ? "页" : "page"}`,
-  }))
+  // 选项并入站点设置的每页文章数（任意 1-100 值也能选回当前值）
+  const pageSizeOptions = [...new Set([10, 15, 25, 50, 100, siteSettings.postsPerPage || 15])]
+    .filter((n) => n >= 1 && n <= 100)
+    .sort((a, b) => a - b)
+    .map((n) => ({
+      value: String(n),
+      label: `${n} / ${lang === "zh" ? "页" : "page"}`,
+    }))
 
   return (
     <div className="space-y-4 section-in">

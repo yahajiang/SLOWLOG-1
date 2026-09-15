@@ -92,7 +92,7 @@ export default async function RootLayout({
 }) {
   const settings = await getSettings();
   return (
-    <html lang="zh-CN" className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable} ${notoSerifSC.variable}`} suppressHydrationWarning>
+    <html lang="zh-CN" data-default-theme={settings.theme} className={`${plusJakarta.variable} ${jetbrainsMono.variable} ${cormorant.variable} ${notoSerifSC.variable}`} suppressHydrationWarning>
       <head>
         {/* 关键样式内联：外链 CSS 被网络链路掐断时（国内访问 CF/Vercel 间歇失败），
             页面仍保持纸底/字色/字体的基本排版，不裸奔。
@@ -114,11 +114,13 @@ export default async function RootLayout({
         />
       </head>
       <body className="bg-[var(--yh-bg)] text-[var(--yh-text)] antialiased min-h-screen flex flex-col">
-        {/* 主题首帧同步：localStorage sl-theme 显式偏好优先，否则跟随系统——
-            首帧前给 html 打 dark class，避免暗色用户看到白闪 */}
+        {/* 主题首帧同步：localStorage sl-theme 显式偏好优先；无偏好时依次取
+            data-default-theme（后台「站点设置·主题」经 RSC 注入的白名单枚举，
+            非用户输入，不违反 P3-17 字面量约束）→ system。首帧前打 dark class，
+            避免暗色用户看到白闪 */}
         <script
           dangerouslySetInnerHTML={{
-            __html: "try{var t=localStorage.getItem('sl-theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d){document.documentElement.classList.add('dark');var m=document.querySelector('meta[name=theme-color]');if(m)m.content='#14110d'}}catch(e){}",
+            __html: "try{var t=localStorage.getItem('sl-theme');var dt=document.documentElement.getAttribute('data-default-theme');var d=t?t==='dark':(dt==='dark'?true:dt==='light'?false:matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');var m=document.querySelector('meta[name=theme-color]');if(m)m.content='#14110d'}}catch(e){}",
           }}
         />
         {/* 首帧前同步检查回访标记：回访者给 html 打 class，CSS 直接隐藏欢迎幕（零闪烁） */}

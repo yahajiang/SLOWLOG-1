@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/components/ui/Dialog";
 import { DropdownSelect } from "@/components/ui/DropdownSelect";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
 import { useLang } from "@/lib/lang-context";
+import { useSiteSettings } from "@/lib/settings-context";
 
 /** 移动端文章管理：搜索/状态/分类/排序/条数 · 上下架/删除/复制链接（编辑走桌面版） */
 export default function MobilePostsPage() {
@@ -15,7 +16,9 @@ export default function MobilePostsPage() {
   const [status, setStatus] = useState("all");
   const [catFilter, setCatFilter] = useState("all");
   const [sort, setSort] = useState("updatedAt-desc");
-  const [pageSize, setPageSize] = useState(15);
+  // 每页条数由「站点设置·每页文章数」下发（settings-context）；无值回退 15
+  const siteSettings = useSiteSettings();
+  const [pageSize, setPageSize] = useState(siteSettings.postsPerPage || 15);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [delId, setDelId] = useState<string | null>(null);
@@ -204,10 +207,13 @@ export default function MobilePostsPage() {
               setPageSize(Number(v));
               setPage(1);
             }}
-            options={[10, 15, 25, 50].map((n) => ({
-              value: String(n),
-              label: `${n} / ${lang === "zh" ? "页" : "page"}`,
-            }))}
+            options={[...new Set([10, 15, 25, 50, siteSettings.postsPerPage || 15])]
+              .filter((n) => n >= 1 && n <= 100)
+              .sort((a, b) => a - b)
+              .map((n) => ({
+                value: String(n),
+                label: `${n} / ${lang === "zh" ? "页" : "page"}`,
+              }))}
             ariaLabel={lang === "zh" ? "每页条数" : "Page size"}
             triggerClassName="min-h-[44px]"
           />
