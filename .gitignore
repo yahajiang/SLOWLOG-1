@@ -29,6 +29,7 @@ dev.log
 *.tsbuildinfo
 
 # IDE / agent
+.tool-state/
 .agents/
 .commandcode/
 .mimosa/
