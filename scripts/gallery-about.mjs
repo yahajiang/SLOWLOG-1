@@ -13,7 +13,7 @@ const e = h.indexOf("`;", s);
 if (s < 0 || e < 0) throw new Error("template bounds");
 const replacement = `
     <h2 class="m-h2">设计蓝图 · 慢日志 UI</h2>
-    <div class="m-meta"><span class="tag">DESIGN.md v1.6</span><span class="tag">46 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta"><span class="tag">DESIGN.md v1.8</span><span class="tag">58 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">§ Identity · 你是谁在设计</div>
       <p class="ab-lead" style="margin:0">Editorial Web Designer — 画廊是设计契约的展品柜，不是营销落地页。每条提示词都应对齐真站源码路径与令牌。</p>
@@ -56,6 +56,14 @@ const replacement = `
       <div class="bp-trace"><span class="q">DECISION</span>循环关键帧不写死 opacity —— 淡描边被拉成满黑会突然出现</div>
       <div class="bp-trace"><span class="q">DECISION</span>可交互预览真点击；不可交互用循环动效 —— 展品柜要能试</div>
       <div class="bp-trace"><span class="q">TRADEOFF</span>不做圆角卡片与渐变 hero —— 编辑气质优先</div>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ v1.8 · 本次同步（49 → 58）</div>
+      <div class="bp-trace"><span class="q">ADD</span>平板三件套入柜：tablet-gate / desktop-escape / tablet-tree（/t 与桌面同构 + noindex）</div>
+      <div class="bp-trace"><span class="q">ADD</span>数据链路入柜：rss-feed（FEED_LIMIT=20）/ seo-canonical（权重归一）/ settings-form（12 字段四板块）</div>
+      <div class="bp-trace"><span class="q">ADD</span>交互与边界入柜：home-group-8（查看全部=首页内过滤）/ pagination-20（Link 窗口）/ loading-scope（soft-404 红线）</div>
+      <div class="bp-trace"><span class="q">FIX</span>后台五 Tab・侧栏折叠 68/240（<1024px 自动）・顶栏去切换器・页脚设置驱动 + 回顶・MDashTopbar 真形</div>
+      <div class="bp-trace"><span class="q">FIX</span>分页口径统一 FRONT_PAGE_SIZE_MAX=20；移动归档明确全量不分页；LoadingShell 作用域只 (shell)</div>
     </div>
     <div class="ab-card" style="margin-bottom:0">
       <div class="ab-k mono">§ Workflow · 怎么用</div>
