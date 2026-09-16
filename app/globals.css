@@ -73,9 +73,9 @@ h1, h2, h3 {
 
 body {
   background: var(--yh-bg);
-  background-image: radial-gradient(circle at 20% 45%, oklch(0.985 0.012 250 / 0.5) 0%, transparent 55%),
-                    radial-gradient(circle at 82% 18%, oklch(0.975 0.012 30 / 0.35) 0%, transparent 50%),
-                    radial-gradient(circle at 50% 112%, oklch(0.965 0.01 80 / 0.3) 0%, transparent 55%);
+  background-image: radial-gradient(circle at 20% 45%, oklch(0.985 0.012 250 / 0.55) 0%, transparent 55%),
+                    radial-gradient(circle at 82% 18%, oklch(0.975 0.012 30 / 0.385) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 112%, oklch(0.965 0.01 80 / 0.33) 0%, transparent 55%);
   color: var(--yh-text);
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
@@ -350,7 +350,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.065;
+  opacity: 0.072;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
@@ -362,13 +362,13 @@ body::after {
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.07;
+  opacity: 0.077;
   mix-blend-mode: multiply;
   background-image:
     /* 台灯：上中略亮，向下渐暗 */
-    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 252, 245, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 252, 245, 0.495) 0%, transparent 55%),
     /* 暖晕影：四周微黄，像灯下旧纸 */
-    radial-gradient(ellipse 125% 95% at 50% 40%, transparent 52%, rgba(151, 118, 82, 0.5) 100%),
+    radial-gradient(ellipse 125% 95% at 50% 40%, transparent 52%, rgba(151, 118, 82, 0.55) 100%),
     /* 中频云纹：大块不均，避免纯平 */
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='720' height='720' filter='url(%23f)'/%3E%3C/svg%3E");
   background-size: 100% 100%, 100% 100%, 720px 720px;
@@ -945,12 +945,12 @@ body::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.044;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
 }
-.dark .paper-grain { mix-blend-mode: screen; opacity: 0.05 }
+.dark .paper-grain { mix-blend-mode: screen; opacity: 0.055 }
 .tick { position: absolute; width: 28px; height: 28px; border-color: var(--yh-border); border-style: solid; opacity: 0; animation: frameIn 0.55s var(--ease-out) 0.05s both; pointer-events: none }
 .tick-tl { top: 28px; left: 28px; border-width: 1px 0 0 1px }
 .tick-tr { top: 28px; right: 28px; border-width: 1px 1px 0 0 }
@@ -982,7 +982,7 @@ body::after {
 .welcome-grain {
   position: absolute;
   inset: 0;
-  opacity: 0.07;
+  opacity: 0.077;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
 }
@@ -990,7 +990,7 @@ body::after {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 70% 55% at 50% 42%, transparent 40%, rgba(151, 118, 82, 0.06) 100%);
+  background: radial-gradient(ellipse 70% 55% at 50% 42%, transparent 40%, rgba(151, 118, 82, 0.066) 100%);
 }
 .welcome-frame {
   position: absolute;
@@ -1140,14 +1140,14 @@ body::after {
 /* 夜里：细噪 screen 微光；边缘保留一点墨色暖棕，像台灯照不到的纸角 */
 .dark body::before {
   mix-blend-mode: screen;
-  opacity: 0.045;
+  opacity: 0.05;
 }
 .dark body::after {
   mix-blend-mode: screen;
-  opacity: 0.045;
+  opacity: 0.05;
   background-image:
-    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(140, 130, 110, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(80, 60, 40, 0.25) 100%),
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(140, 130, 110, 0.132) 0%, transparent 50%),
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(80, 60, 40, 0.275) 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='720' height='720' filter='url(%23f)'/%3E%3C/svg%3E");
 }
 
