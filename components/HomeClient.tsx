@@ -110,6 +110,34 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
   const [listMinH, setListMinH] = useState<number | undefined>(undefined)
   const [listFadingOut, setListFadingOut] = useState(false)
   const [shownListKey, setShownListKey] = useState("All|")
+  // 分组「查看全部」= 首页内过滤：不跳转归档，直接切到该分类全量视图并滚到列表顶
+  const catBarRef = useRef<HTMLDivElement | null>(null)
+  const showAllInCategory = (cat: string) => {
+    if (searchQuery.trim() !== "") setSearchQuery("")
+    setActiveCategory(cat)
+    requestAnimationFrame(() => {
+      const el = document.getElementById("posts")
+      if (!el) return
+      const reduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" })
+    })
+  }
+  // 窄屏下分类条可横滑：切分类后把 active 项滚进视野（与 MHome 同策略）
+  useEffect(() => {
+    const bar = catBarRef.current
+    if (!bar) return
+    const active = bar.querySelector<HTMLElement>(`[data-cat="${activeCategory}"]`)
+    if (!active) return
+    const barRect = bar.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+    if (activeRect.left < barRect.left || activeRect.right > barRect.right) {
+      const delta = activeRect.left - barRect.left - bar.clientWidth / 2 + activeRect.width / 2
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      bar.scrollTo({ left: bar.scrollLeft + delta, behavior: reduced ? "auto" : "smooth" })
+    }
+  }, [activeCategory])
   // 继续阅读标记：水合后从 localStorage 读取（渲染期直读会导致 SSR/客户端不一致 → 水合错误）
   const [readMarks, setReadMarks] = useState<Record<string, number>>({});
   useEffect(() => {
@@ -219,7 +247,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         <div className="relative">
           {/* 窄屏放开 70% 宽度约束：否则平板/小窗口下分类条被压成一条，只能横向溢出。
               lg 及以上恢复与正文同宽，保持对齐。 */}
-          <div className="w-full lg:max-w-[min(70%,1600px)] mx-auto px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
+          <div ref={catBarRef} className="w-full lg:max-w-[min(70%,1600px)] mx-auto px-4 md:px-6 flex items-center gap-0 overflow-x-auto scrollbar-none">
             {allCats.map((cat) => {
               const dbCat = dbCategories?.find((c: any) => c.name === cat)
               const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : catLabel(cat, t)
@@ -227,6 +255,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                 <button
                   key={cat}
                   type="button"
+                  data-cat={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3 md:px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-[220ms] ease-[var(--ease-out)] ${
                     activeCategory === cat
@@ -361,7 +390,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         </section>
       )}
 
-      <section id="posts" className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-10">
+      <section id="posts" className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-10 scroll-mt-[120px]">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-[var(--yh-text)]" />
@@ -436,13 +465,15 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                     <span className="text-[11px] text-[var(--yh-muted)]">· {t.postsCount2(group.posts.length)}</span>
                     <div className="flex-1 h-px bg-[var(--yh-border)] ml-2 hidden sm:block" />
                     {/* legacy zinc（历史还原豁免，勿模仿）：待令牌化 hover:bg-[--yh-text]，登记于 慢日志UI一致性基线.md */}
-                    {/* 每组只展示最新 HOME_GROUP_LIMIT 篇（默认 8），其余在归档分类页查看 */}
-                    <Link
-                      href={`/archive?category=${encodeURIComponent(group.cat)}&page=1`}
+                    {/* 每组只展示最新 HOME_GROUP_LIMIT 篇，点击切到该分类首页内过滤全量视图 */}
+                    <button
+                      type="button"
+                      onClick={() => showAllInCategory(group.cat)}
+                      aria-label={`${label} ${t.viewAllGrouped}`}
                       className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-3 py-1 rounded-none hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] hover:border-[var(--yh-text)] transition-colors"
                     >
                       {t.viewAllGrouped}
-                    </Link>
+                    </button>
                   </div>
                   {desc && <p className="text-[12px] leading-relaxed text-[var(--yh-muted)] max-w-2xl -mt-1 mb-4">{desc}</p>}
                   <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
