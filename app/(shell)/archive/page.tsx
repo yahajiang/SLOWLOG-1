@@ -24,7 +24,7 @@ export default async function ArchivePage({
   const requested = Math.max(1, Number(sp.page) || 1);
 
   const settings = await getSettings();
-  // 每页条数：站点设置可下调，但不允许超过 12（前台列表单页上限）
+  // 每页条数：站点设置可下调，但不允许超过 FRONT_PAGE_SIZE_MAX（前台列表单页上限）
   const pageSize = Math.min(settings.postsPerPage || FRONT_PAGE_SIZE_MAX, FRONT_PAGE_SIZE_MAX);
 
   const [pageData, stats] = await Promise.all([
