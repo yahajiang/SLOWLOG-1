@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/api-utils"
 import { auth, passwordChangeRequired } from "@/lib/auth"
+import { requireSessionOrBearer } from "@/lib/app-auth"
 import { prisma } from "@/lib/prisma"
 import { compressAndUpload, deleteFromBlob, sanitizeFilename } from "@/lib/blob"
 
@@ -29,9 +30,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
 
   const form = await req.formData()
   const files = form.getAll("file") as File[]
@@ -94,9 +95,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id")
   if (!id) return apiError(400, "缺少 id")

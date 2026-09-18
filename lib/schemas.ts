@@ -149,3 +149,17 @@ export const changePasswordSchema = z
     message: "两次输入的密码不一致",
     path: ["confirmPassword"],
   });
+
+// ── Android App 配套 ─────────────────────────────────────────────
+export const tokenCreateSchema = z.object({
+  name: z.string().trim().min(1, "名称必填").max(60, "名称最多 60 字"),
+});
+
+export const deviceUpsertSchema = z.object({
+  fcmToken: z.string().trim().min(1, "fcmToken 必填").max(4096),
+  platform: z.string().trim().max(32).optional(),
+});
+
+export const deviceDeleteSchema = z.object({
+  fcmToken: z.string().trim().min(1, "fcmToken 必填").max(4096),
+});
