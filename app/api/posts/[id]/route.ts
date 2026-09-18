@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { apiError, apiZodError } from "@/lib/api-utils"
+import { requireSessionOrBearer } from "@/lib/app-auth"
 import { postUpdateSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
 import { isPublicPost, revalidatePostPaths } from "@/lib/posts"
@@ -25,9 +26,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return apiError(403, "请先修改默认密码")
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) {
+    return apiError(403, "请先修改默认密码")
+  }
   const { id } = await params
   const parsed = postUpdateSchema.safeParse(await req.json())
   if (!parsed.success) return apiZodError(parsed.error)
@@ -70,6 +73,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const post = await prisma.post.update({ where: { id }, data })
     revalidatePostPaths(post)
+    if (isPublicPost(post)) {
+      const { notifyPublishedPost } = await import("@/lib/fcm")
+      void notifyPublishedPost(post)
+    }
     return NextResponse.json(post)
   } catch (e: any) {
     if (e.code === "P2025") return apiError(404, "内容不存在")
@@ -80,13 +87,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return apiError(403, "请先修改默认密码")
+  const gate = await requireSessionOrBearer(_req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) {
+    return apiError(403, "请先修改默认密码")
+  }
   const { id } = await params
   try {
     const existing = await prisma.post.findUnique({ where: { id }, select: { slug: true } })
     await prisma.post.delete({ where: { id } })
+    await prisma.deletedPost.upsert({
+      where: { postId: id },
+      create: { postId: id },
+      update: { deletedAt: new Date() },
+    })
     revalidatePostPaths({ id, slug: existing?.slug })
     return NextResponse.json({ ok: true })
   } catch (e: any) {

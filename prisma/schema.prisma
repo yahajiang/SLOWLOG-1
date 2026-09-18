@@ -109,3 +109,32 @@ model Setting {
   theme             String   @default("system")
   updatedAt         DateTime @updatedAt
 }
+
+// Android App 配套：长期 API Token（只存 SHA-256，明文仅创建时返回一次）
+model ApiToken {
+  id         String    @id @default(cuid())
+  name       String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([tokenHash])
+}
+
+// Android App 配套：FCM 推送设备
+model AppDevice {
+  id         String   @id @default(cuid())
+  fcmToken   String   @unique
+  platform   String   @default("android")
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+}
+
+// Android App 配套：文章硬删 tombstone（增量同步删除用）
+model DeletedPost {
+  postId    String   @id
+  deletedAt DateTime @default(now())
+
+  @@index([deletedAt])
+}

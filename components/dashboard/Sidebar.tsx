@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { LayoutDashboard, FileText, MessageSquare, Folder, Image as ImageIcon, Settings, ExternalLink, LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { LayoutDashboard, FileText, MessageSquare, Folder, Image as ImageIcon, Settings, ExternalLink, LogOut, PanelLeftClose, PanelLeftOpen, KeyRound } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useLang } from "@/lib/lang-context"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
@@ -52,6 +52,7 @@ export function Sidebar() {
     { href: "/dashboard/notes", label: t.dashNotes, icon: MessageSquare },
     { href: "/dashboard/categories", label: t.dashCategories, icon: Folder },
     { href: "/dashboard/media", label: t.dashMedia, icon: ImageIcon },
+    { href: "/dashboard/tokens", label: lang === "en" ? "App Tokens" : "App 令牌", icon: KeyRound },
     { href: "/dashboard/settings", label: t.dashSettings, icon: Settings },
   ]
 
