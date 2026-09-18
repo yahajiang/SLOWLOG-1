@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { apiError } from "@/lib/api-utils"
-import { auth, passwordChangeRequired } from "@/lib/auth"
+import { passwordChangeRequired } from "@/lib/auth"
+import { requireSessionOrBearer } from "@/lib/app-auth"
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -19,9 +20,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   const { id } = await params
   const body = await req.json()
   const text = body.textZh || body.text || body.content || ""
@@ -37,10 +38,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
-  if (passwordChangeRequired(session)) return NextResponse.json({ error: "请先修改默认密码" }, { status: 403 })
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   const { id } = await params
   try {
     await prisma.note.delete({ where: { id } })
