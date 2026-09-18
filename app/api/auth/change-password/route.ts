@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { auth } from "@/lib/auth"
+import { bearerToken } from "@/lib/app-auth"
 import { prisma } from "@/lib/prisma"
 import { changePasswordSchema } from "@/lib/schemas"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session?.user?.id) return apiError(401, "未登录")
+  let userId = (session?.user as any)?.id as string | undefined
+  if (!userId) {
+    // App Bearer：单管理员站点，改密落到唯一 User；多用户时拒绝以免误改
+    const bearer = await bearerToken(req)
+    if (!bearer) return apiError(401, "未登录")
+    const users = await prisma.user.findMany({ take: 2, select: { id: true } })
+    if (users.length !== 1) return apiError(403, "无法确定目标用户，请使用网页端改密")
+    userId = users[0].id
+  }
 
   // P3-3：改用 lib/schemas.ts 的共享 changePasswordSchema。
   // 此前路由内手写了一套等价校验，与 schema 定义长期存在漂移风险
@@ -17,7 +26,7 @@ export async function POST(req: NextRequest) {
   const { currentPassword, email, password, name } = parsed.data
 
   try {
-    const user = await prisma.user.findUnique({ where: { id: (session.user as any).id } })
+    const user = await prisma.user.findUnique({ where: { id: userId } })
     if (!user) return NextResponse.json({ error: "用户不存在" }, { status: 404 })
     // 当前密码验证：持会话不等于持凭据，改密必须复核身份
     const currentOk = await bcrypt.compare(currentPassword, user.password)
@@ -27,6 +36,8 @@ export async function POST(req: NextRequest) {
       where: { id: user.id },
       data: { email: email.toLowerCase(), password: hashed, name },
     })
+    // 凭据轮换后作废全部 App Token（Bearer 不得活过密码变更）
+    await prisma.apiToken.updateMany({ where: { revokedAt: null }, data: { revokedAt: new Date() } })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     if (e.code === "P2002") {
