@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { apiError } from "@/lib/api-utils"
 import { bearerToken } from "@/lib/app-auth"
 import { isPublicPost } from "@/lib/posts"
-import { deriveCover, renderCoverSvg } from "@/lib/cover-derive"
+import { deriveCover, renderCoverSvg } from "@/lib/cover-svg"
 
 export const dynamic = "force-dynamic"
 
@@ -25,20 +25,28 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const derived = deriveCover({
     id: post.id,
-    title: post.titleZh || post.title || "",
+    // 与 CoverArt.tsx 同源：seed 用 title（而非 titleZh），保证 Web/App 构图族一致
+    title: post.title || "",
     category: post.category,
     tags: post.tags,
   })
   const svg = renderCoverSvg(derived, width, height)
   const png = await sharp(Buffer.from(svg)).png().toBuffer()
 
+  // 草稿/定时封面禁止进入公共 CDN 缓存，避免 id/slug 被猜中后间接公开
+  const publicPost = isPublicPost(post)
+  const cacheControl = !publicPost
+    ? "private, no-store"
+    : v
+      ? "public, max-age=31536000, immutable"
+      : "public, max-age=300"
+
   return new NextResponse(new Uint8Array(png), {
     headers: {
       "Content-Type": "image/png",
       "Content-Length": String(png.length),
-      "Cache-Control": v
-        ? "public, max-age=31536000, immutable"
-        : "public, max-age=300",
+      "Cache-Control": cacheControl,
+      Vary: "Authorization",
     },
   })
 }

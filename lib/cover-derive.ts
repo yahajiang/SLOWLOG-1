@@ -51,7 +51,7 @@ export function deriveCover(input: {
 }): CoverDerive {
   const getCategoryName = (c: any): string => {
     if (typeof c === "string") return c
-    if (c && typeof c === "object") return c.name || ""
+    if (c && typeof c === "object") return c.name || c.nameZh || ""
     return ""
   }
   const rawCat = getCategoryName(input.category)
@@ -62,6 +62,7 @@ export function deriveCover(input: {
       : "Design"
   const pal = ((ART_PALETTES as any)[cat] as CoverPal) || FALLBACK_PAL
   const tags = input.tags || []
+  // CoverArt.tsx: post.title；category name 已由调用方从 category.name 解析
   const title = input.title || ""
   const id = input.id || ""
   const seed = title + cat + id + tags.join(",")

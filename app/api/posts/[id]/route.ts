@@ -35,6 +35,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const parsed = postUpdateSchema.safeParse(await req.json())
   if (!parsed.success) return apiZodError(parsed.error)
   const body = parsed.data as any
+  const prev = await prisma.post.findUnique({ where: { id }, select: { status: true, publishedAt: true } })
+  if (!prev) return apiError(404, "内容不存在")
+  const prevPublic = isPublicPost({ status: prev.status, publishedAt: prev.publishedAt })
 
   const data: any = {}
   if (body.title !== undefined) data.title = body.title
@@ -73,7 +76,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const post = await prisma.post.update({ where: { id }, data })
     revalidatePostPaths(post)
-    if (isPublicPost(post)) {
+    // 仅「新进入公开可见」时推送，避免对已发布文章的日常编辑重复通知
+    if (!prevPublic && isPublicPost(post)) {
       const { notifyPublishedPost } = await import("@/lib/fcm")
       void notifyPublishedPost(post)
     }
@@ -96,11 +100,16 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   try {
     const existing = await prisma.post.findUnique({ where: { id }, select: { slug: true } })
     await prisma.post.delete({ where: { id } })
-    await prisma.deletedPost.upsert({
-      where: { postId: id },
-      create: { postId: id },
-      update: { deletedAt: new Date() },
-    })
+    // 墓碑失败不得掩盖「文章已删」：捕获后仍返回 ok，App 下次全量同步可补
+    try {
+      await prisma.deletedPost.upsert({
+        where: { postId: id },
+        create: { postId: id },
+        update: { deletedAt: new Date() },
+      })
+    } catch (te) {
+      console.error("[posts/delete] tombstone upsert failed:", te)
+    }
     revalidatePostPaths({ id, slug: existing?.slug })
     return NextResponse.json({ ok: true })
   } catch (e: any) {

@@ -8,7 +8,7 @@ import { getSettings } from "@/lib/settings"
 export const dynamic = "force-dynamic"
 
 const WINDOW_MS = 90 * 24 * 60 * 60 * 1000
-const FULL_TAKE = 100
+const FRONT_LIST_LIMIT = 100
 const PAGE_MAX = 200
 
 export async function GET(req: NextRequest) {
@@ -22,14 +22,19 @@ export async function GET(req: NextRequest) {
   const bearer = await bearerToken(req)
   const now = new Date()
 
+  // 契约（S2.5）：since 缺失或非法 → 全量模式，**不 400**；
+  // 仅「合法日期且早于 now-90d」才 400 提示全量重拉。
   let since: Date | null = null
   if (sinceRaw) {
     const d = new Date(sinceRaw)
-    if (isNaN(d.getTime())) return apiError(400, "since 不是合法日期")
-    if (now.getTime() - d.getTime() > WINDOW_MS) {
-      return apiError(400, "同步窗口过期，请全量重拉")
+    if (!isNaN(d.getTime())) {
+      if (now.getTime() - d.getTime() > WINDOW_MS) {
+        return apiError(400, "同步窗口过期，请全量重拉")
+      }
+      since = d
+    } else {
+      console.warn("[app/sync] invalid since, falling back to full mode:", sinceRaw)
     }
-    since = d
   }
 
   try {
@@ -41,7 +46,7 @@ export async function GET(req: NextRequest) {
         ? { AND: [publicPostWhere(), { updatedAt: { gt: since } }] }
         : publicPostWhere()
 
-    const take = since ? pageSize : Math.min(pageSize, FULL_TAKE)
+    const take = since ? pageSize : Math.min(pageSize, FRONT_LIST_LIMIT + 1)
     const postRows = await prisma.post.findMany({
       where: postWhere,
       include: { category: true },

@@ -116,11 +116,11 @@ zod：`tokenCreateSchema = { name: string.trim().min(1).max(60) }`（写入 `lib
 | 调用方 | posts | 内容字段 |
 |--------|-------|----------|
 | 无 Bearer | `publicPostWhere()` | `stripPostHeavy`（无 content/pageConfig 等） |
-| 有 Bearer | 全部 status（含 draft/scheduled） | `mapPost` 全字段（**含 content**，供 App 渲染与本地搜索索引） |
+| 有 Bearer | 全部 status（含 draft/scheduled） | 内联 PostDTO 形字段（**含 content**）；`mapPost` 在 `lib/posts.ts` 为模块私有，首版接受与 mapPost 的 headings/displayDate 差异 |
 
 **since 语义**
 
-- `since` 缺失或非日期：全量模式。`posts` 取 `take = min(FRONT_LIST_LIMIT + 1, pageSize||100)` 上限（触顶 `warn`），与 `GET /api/posts` 无 page 时同量级；不 `400`。
+- `since` 缺失或**非法/非日期**：全量模式（warn 日志），**绝不 400**。全量 `take = min(pageSize, FRONT_LIST_LIMIT+1)`（101）。
 - `since` 合法：只返回 `updatedAt > since` 的 posts / notes。
 - `since` 早于 `now - 90d`：`400 { error: "同步窗口过期，请全量重拉" }`（App 丢弃 since 重拉）。
 
@@ -128,20 +128,20 @@ zod：`tokenCreateSchema = { name: string.trim().min(1).max(60) }`（写入 `lib
 
 ```ts
 {
-  postsChanged: PostDTO[] | LitePost[],  // bearer: mapPost 全量；guest: stripPostHeavy
-  deletedIds: string[],                  // DeletedPost.deletedAt > since（全量模式返回全部墓碑）
-  categories: Category[] ,          // 与 GET /api/categories 同结构（含 _count.published）
-  thoughtsChanged: ThoughtDto[],         // Note.updatedAt > since；全量取近 50 条
-  settings: SiteSettings,                // SETTINGS_DEFAULTS + getSettings()
-  serverTime: string                     // ISO
+  postsChanged: PostDTO[] | LitePost[],
+  deletedIds: string[],
+  categories: Category[],
+  thoughtsChanged: ThoughtDto[],
+  settings: SiteSettings,
+  serverTime: string
 }
 ```
 
-排序：posts 客户端契约 `publishedAt ?? createdAt desc`（接口本身 `orderBy: [{ updatedAt: "asc" }]` 不强制展示序）。
+排序：posts 客户端契约 `publishedAt ?? createdAt desc`。
 
-缓存：`Cache-Control: private, no-store`（含登录数据路径）；错误体 `{ error: 中文 }`。
+缓存：`Cache-Control: private, no-store`；错误体 `{ error: 中文 }`。
 
-`pageSize`：可选，1–200，默认 100，仅限制 postsChanged 行数。
+`pageSize`：可选，1–200，默认 100，仅限制增量 postsChanged 行数。
 
 ### S2.6 删除墓碑
 
@@ -159,25 +159,20 @@ await prisma.deletedPost.upsert({
 
 ### S2.7 封面 PNG `app/api/covers/[id]/route.ts`
 
-派生规则抽出到 **`lib/cover-derive.ts`**（服务端可引用，无 React）：
+派生规则在 **`lib/cover-derive.ts`**；**`lib/cover-svg.ts`** 为服务端渲染入口（re-export）。
 
-- `fnv1a(seed, max)`：`0x811c9dc5` / `0x01000193`，`Math.abs(h) % max`（与 `CoverArt.tsx` 一致）。
-- `layout = fnv1a(title + id + "L", 8)`（L0–L7）。
-- `seed = title + cat + id + tags.join(",")`；`variant = fnv1a(seed, 8)`；`variant4 = fnv1a(seed+"4", 4)`。
-- 分类：已知 5 族否则 `fnv1a(cat, 5)` 归入；色板用 `ART_PALETTES` **实色 hex**（不用 CSS 变量）。
-- `symbol = resolveTagSymbol(tags)`；`STAMP_CODE` 同 `CoverArt.tsx`。
-- `abbr = CAT_ABBR[cat]`；`noNum = String(fnv1a(id||title, 9000)+1000).padStart(4,"0")`。
-- 元信息条文案：`{abbr} · {noNum}` + 首标签大写（若有）。
+- `fnv1a(seed, max)`：与 `CoverArt.tsx` 一致。
+- **seed 标题源：`post.title`**（与 CoverArt 一致，**不用 titleZh 优先**）；分类解析 `name || nameZh`。
+- layout/variant/variant4/abbr/noNum/meta 条与 CoverArt 规则同源。
 
-`lib/cover-svg.ts`：纯函数 `renderCoverSvg(params, { width, height }) => string`，用同一套派生参数画 **静态 SVG**（直角、纸底、简化 collage 骨架 + 签名章 + meta 条）。**不要求与前端 CoverArt 像素级一致**；要求同 seeds → 同 layout 族/色/章/编号。
+`renderCoverSvg(d, width, height)` 静态 SVG；**不要求与前端 CoverArt 像素级一致**；要求同 seeds → 同 layout 族/色/章/编号。
 
 路由行为：
 
-- `[id]` 支持 id 与 slug（与 posts GET 双兼容一致）。
-- 可见性：无 Bearer 仅 `isPublicPost`；Bearer 可见草稿。
-- Query：`w=800|1600`（默认 800，高度按 16:9 → 800×450 / 1600×900）；`v` 任意字符串作为缓存键提示（App 传 `updatedAt`）。
-- 渲染：`sharp(Buffer.from(svg)).png().toBuffer()`。
-- 缓存头：有 `v` → `public, max-age=31536000, immutable`；无 `v` → `public, max-age=300`。
+- `[id]` 支持 id 与 slug；可见性：无 Bearer 仅 `isPublicPost`；Bearer 可见草稿。
+- Query：`w=800|1600`（默认 800，16:9）；`v` 缓存键提示。
+- 渲染：`sharp(Buffer.from(svg)).png()`。
+- 缓存头：**非公开文章** → `private, no-store`（防 CDN 缓存草稿封面）；公开 + `v` → `public, max-age=31536000, immutable`；公开无 `v` → `public, max-age=300`。
 - 错误：404 `{ error: "内容不存在" }`。
 
 ### S2.8 FCM 发布通知
@@ -194,8 +189,9 @@ await prisma.deletedPost.upsert({
     5. catch → `console.error` only，**绝不 throw**。
 - 调用点（`fire-and-forget`，不 `await` 阻塞响应）：
   - `POST /api/posts`：`status === "published"` 且 `publishedAt` 空或 `<= now` 时；
-  - `PUT /api/posts/[id]`：更新后 status 为 published 且进入公开可见（`isPublicPost`）时。
+  - `PUT /api/posts/[id]`：**仅当更新前非公开、更新后 `isPublicPost`（发布跃迁）**时；已发布文章的日常编辑不推送。
 - 定时发布到达时刻：首版**不**自动推送（与开发文档一致）。
+- 密码变更成功后：撤销全部未撤销 `ApiToken`（Bearer 不得活过凭据轮换）。
 
 ### S2.9 隐私页 `app/privacy/page.tsx`
 

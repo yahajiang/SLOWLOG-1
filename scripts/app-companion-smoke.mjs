@@ -51,6 +51,11 @@ async function main() {
   r = await fetch(`${BASE}/api/app/sync?since=${new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString()}`)
   t("sync since>90d 400", r.status === 400, String(r.status))
 
+  r = await fetch(`${BASE}/api/app/sync?since=not-a-date`)
+  t("sync invalid since full mode 200", r.status === 200, String(r.status))
+  const syncBad = await r.json().catch(() => ({}))
+  t("sync invalid since has postsChanged", Array.isArray(syncBad.postsChanged))
+
   const postsRes = await fetch(`${BASE}/api/posts`)
   const posts = await postsRes.json()
   const first = posts[0]
