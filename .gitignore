@@ -37,6 +37,8 @@ dev.log
 skills-lock.json
 backups/
 .workbuddy/
+.worktrees/
+App123/
 
 # content exports
 content-export/
