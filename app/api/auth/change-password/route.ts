@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
       where: { id: user.id },
       data: { email: email.toLowerCase(), password: hashed, name },
     })
+    // 凭据轮换后作废全部 App Token（Bearer 不得活过密码变更）
+    await prisma.apiToken.updateMany({ where: { revokedAt: null }, data: { revokedAt: new Date() } })
     return NextResponse.json({ ok: true })
   } catch (e: any) {
     if (e.code === "P2002") {
