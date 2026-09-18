@@ -1,229 +1,281 @@
-# SlowLog 慢日志
+# 慢日志 SlowLog · 设计蓝图与理念
 
-> 慢下来，写点值得读的东西。
-
-一个基于 Next.js 15 的个人博客系统：杂志式前台排版、独立移动端、Prisma 后台管理、Tiptap 富文本编辑、Vercel Blob 媒体库，开箱即部署到 Vercel。**界面双语**（中文/英文界面一键切换），文章内容以中文为主。
-
-- 前台：`/` 首页 · `/archive` 归档 · `/posts/[id]` 阅读页 · `/tag/[tag]` 标签聚合 · `/login` 登录
-- 移动端：`/m`、`/m/archive`、`/m/posts/[id]`、`/m/login`、`/m/dashboard/*`（手机 UA 自动进入）
-- 平板端：`/t`、`/t/archive`、`/t/posts/[id]`（iPad / Android 平板 UA 或 `view=tablet` cookie 自动进入）
-- 后台：`/dashboard`（仪表盘/文章/分类/媒体库/随想/设置）
-
-## 功能特性
-
-### 前台阅读
-- 首页：推荐 Hero（自动轮播）、分类 Tab 筛选、全文搜索、按分类分区分组展示、随想时间线、近 2 年时间线卡
-- 归档页：全部文章按年份分组，支持标题/分类搜索
-- 阅读页：杂志式头图区、吸顶阅读进度条（按文章滚动计算＋剩余分钟）、常驻目录侧栏（滚动高亮＋点击锁定 800ms）、侧栏阅读进度卡、图片灯箱、上一篇/下一篇导航、CC BY-NC-SA 版权声明
-- 封面系统：7大家族纸色 × 8 场景符号 × 多徽章位置的程序化 SVG 封面（FNV-1a 哈希稳定映射），分类决定配色、首标签决定场景
-- RSS 订阅（`/rss.xml`）与 Sitemap（`/sitemap.xml`），文章页 JSON-LD 结构化数据
-
-### 国际化（中/英一键切换）
-- `lib/i18n.ts` 270 条 zh/en 1:1 字典（`Dict` 类型），`LangProvider` 全局语言上下文（localStorage 记忆）
-- 前台文案、分类名、日期、相对时间（刚刚/x 分钟前 ↔ just now/x min ago）全部本地化
-- Logo `慢日志·SLOWLOG` 为统一品牌标识，不随语言切换；标签、标题摘要为作者原文（中英独立字段），不做机器翻译
-- 后台保持中文（面向站长）
-
-### 移动端独立版（`/m`）
-- 与桌面**同风格**（同一套 CSS 变量/字体/封面/文案），只改版式：单列全宽、紧凑顶栏、分类横滑、纵向上下篇、悬浮目录钮＋底部抽屉、44px+ 触摸目标
-- `middleware` 按手机 UA 自动改写（地址栏不变），`view=desktop` cookie 可切回桌面；平板默认进 `/t` 平板树
-- 移动页 `canonical` 全部指回桌面 URL，权重归一；Sitemap 只收录桌面地址
-- 轻量移动后台 `/m/dashboard`：数据概览、文章管理（搜索/上下架/删除/复制链接）、随想速记、分类与媒体查看；完整编辑请用桌面版
-
-### 平板端（`/t`）
-- 与桌面**同构**——直接复用 `HomeClient` / `PostClient`，不维护第二套版式；竖持（<1024）时目录改走抽屉
-- 进入方式：iPad / Android 平板 UA，或 `view=tablet` cookie；桌面树另有 `TabletGate` 兜底 iPadOS 13+（其 UA 与 macOS 相同）
-- 左下角常驻「桌面版」逃生口，点击种 `view=desktop` 并跳回桌面路径
-- SEO：`/t/*` 一律 `robots: { index: false, follow: true }`，权重归一给桌面 URL（与 `/m` 同策略）
-
-### 后台管理（桌面）
-- 仪表盘：文章/发布/草稿/访问量统计（groupBy 单查询＋60s 缓存）、近期文章、快速入口
-- 文章：Tiptap 图形化编辑（分栏/源码三模式、查找替换、特殊字符、版本历史保留 4 版）、发布/草稿/推荐/复制/批量删除、SEO 字段、页面主题配置（布局/深色/主色/字体/宽度/目录显隐）
-- 分类 / 媒体库（拖拽上传、JPEG/PNG quality:75 压缩、复制链接）/ 随想（≤500字）/ 站点设置
-- 列表骨架屏、全局错误边界、操作 Toast 反馈
-
-### 性能
-- `/api/posts` 列表接口排除 `content` 大字段（~66KB → ~6KB）；`unstable_cache` 包裹列表/分类/随想/统计查询；API `Cache-Control` 分级缓存
-- `next/font` 三字体自托管（Plus Jakarta Sans / JetBrains Mono / Cormorant Garamond，`display: swap`）
-- Tiptap 编辑器与阅读器 `next/dynamic` 懒加载；`lucide-react` 按需 modularize；`@next/bundle-analyzer` 可观测（`ANALYZE=true npm run build`）
-- 图片 AVIF/WebP、静态资源长缓存、Gzip 压缩
-
-### 安全
-- NextAuth 5 Credentials + JWT；Middleware 鉴权保护后台路由；默认账户首次登录强制改密
-- API：GET 公开，POST/PUT/DELETE 需认证；媒体上传 MIME 白名单（JPEG/PNG/WebP/GIF），SVG 禁止（防存储型 XSS）
-- 富文本颜色走白名单渲染（hex/rgb/hsl/命名色），`expression()`/`url()` 等注入直接过滤
-
-## 技术栈
-
-| 层级 | 技术 |
-|------|------|
-| 框架 | Next.js 15.5 (App Router) + React 19 |
-| 样式 | Tailwind CSS v4（CSS 变量设计令牌 `--yh-*`/`--dash-*`，全站直角） |
-| 数据库 | PostgreSQL (Neon) + Prisma 6 (`@prisma/adapter-pg`) |
-| 认证 | NextAuth 5 (Credentials + JWT) + bcryptjs |
-| 编辑器 | Tiptap 3（StarterKit＋表格/任务列表/代码高亮/文字颜色/链接/图片等） |
-| 媒体 | Vercel Blob + sharp 压缩 |
-| 校验 | zod |
-| 部署 | Vercel（Git 推送自动部署） |
-
-## 数据模型（`prisma/schema.prisma`）
-
-| 模型 | 说明 |
-|------|------|
-| `User` | 管理员账户（邮箱＋bcrypt 密码 hash） |
-| `Category` | 分类（英文名＋中文名＋slug＋描述） |
-| `Post` | 文章（双语标题/摘要、中文正文 JSON、slug、状态、标签、阅读时长、浏览量、SEO、页面配置） |
-| `Note` | 随想（中英双语短内容） |
-| `Media` | 媒体文件（Vercel Blob URL＋尺寸＋MIME） |
-| `Setting` | 站点设置（键值） |
-
-## 快速开始
-
-```bash
-# 1. 安装依赖
-npm install
-
-# 2. 复制环境变量并填写（见下表）
-cp .env.example .env
-
-# 3. 同步数据库结构
-npx prisma db push
-
-# 4. 启动开发服务器
-npm run dev
-# → http://localhost:3000
-```
-
-**默认管理员**：`admin@slowlog.dev` / `admin123`（首次登录强制改密；生產环境请先改密或删除默认账户）
-
-```bash
-npm run build    # prisma generate && next build（生产构建）
-npm start        # 启动生产服务
-ANALYZE=true npm run build  # 包体积可视化分析
-```
-
-### 环境变量
-
-| 变量 | 说明 |
-|------|------|
-| `DATABASE_URL` | Neon PostgreSQL 连接串（`?sslmode=require`） |
-| `AUTH_SECRET` | NextAuth JWT 密钥（NextAuth 5 默认变量名） |
-| `NEXTAUTH_URL` | 站点地址（如 `https://your-domain.vercel.app`） |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob 读写 token |
-| `NEXT_PUBLIC_SITE_URL` | 站点地址（SEO canonical / OG / sitemap 用） |
-| `NEXT_PUBLIC_APP_VERSION` | 页脚显示的版本号（可选，缺省回退 `package.json` 的当前版本） |
-
-## 项目结构
-
-```
-├── app/
-│   ├── (shell)/              # 永不会 404 的列表页路由组（/、/archive、/login）＋全站过场骨架
-│   │                         # ⚠️ 会 notFound 的详情段（/posts、/tag 等）必须留在组外
-│   ├── posts/[id]/           # 阅读页（slug/id 双兼容＋上一篇/下一篇＋opengraph-image）
-│   ├── tag/[tag]/            # 标签聚合页
-│   ├── m/                    # 移动端独立版（/m、/m/archive、/m/posts/[id]、/m/login、/m/dashboard/*）
-│   │                         # 后台：概览/文章/随想/更多/设置（底部 5 Tab）
-│   ├── t/                    # 平板树（/t、/t/archive、/t/posts/[id]，与桌面同构 + noindex）
-│   ├── dashboard/            # 后台（仪表盘/文章编辑器/分类/媒体/随想/设置/改密）
-│   ├── api/                  # posts / categories / thoughts / media / settings / auth / health / search-index
-│   ├── rss.xml/ sitemap.ts/ manifest.ts   # RSS · 站点地图 · PWA manifest
-│   ├── error.tsx / loading.tsx / not-found.tsx
-│   └── Providers.tsx         # LangProvider + ToastProvider
-├── components/
-│   ├── mobile/               # 移动端组件（MHeader/MFooter/MHome/MArchive/MPost/MLogin/移动后台）
-│   ├── dashboard/            # 后台组件（Sidebar/StatCard/DashboardHome/Skeleton/AccountCard/SettingsForm）
-│   ├── editor/               # Tiptap 编辑器 + PostRenderer 阅读渲染器
-│   ├── ui/                   # 基础 UI（Button/Input/Dialog/Toast/DropdownSelect…）
-│   ├── CoverArt.tsx          # 程序化 SVG 封面系统
-│   ├── LoadingShell.tsx      # 全站导航过场骨架（仅 (shell) 路由组，见「加载边界」说明）
-│   ├── TabletGate / DesktopEscape   # 平板引导与「桌面版」逃生口
-│   └── ...                   # Header/Footer/HomeClient/PostClient/TableOfContents/Thinking/…
-├── lib/
-│   ├── posts.ts              # 文章服务层（唯一可见性规则 + unstable_cache + 构建期降级）
-│   ├── i18n.ts               # 270 条中英字典 + Dict 类型
-│   ├── adapt.ts              # 三端共享适配层（post 适配 / 相关文章打分 / OG 元数据 / safeJsonLd）
-│   ├── settings.ts           # 站点设置服务端唯一来源（getSettings + unstable_cache + 降级）
-│   ├── settings-shared.ts    # 设置类型与默认值（无 prisma，客户端可安全引用）
-│   ├── settings-context.tsx  # SettingsProvider / useSiteSettings（根 layout 读一次全站分发）
-│   ├── categories.ts         # 分类色板/缩写/标签符号映射
-│   ├── schemas.ts            # zod 写接口校验（含渲染配置白名单、社交链接 http(s) 白名单）
-│   ├── page-config.ts        # 页面渲染配置白名单 + withSiteDefaults（站点级默认回退）
-│   ├── site-url.ts           # 站点 Origin 唯一真相源（只信任 env）
-│   ├── slug.ts / headings.ts / xml.ts / relative-time.ts / read-progress.ts
-│   ├── auth.ts / auth-config.ts / prisma.ts / blob.ts / api-utils.ts
-│   └── hooks/                # use-media-query · use-scroll-spy
-├── docs/                     # 设计蓝图、审查报告、画廊契约
-├── scripts/                  # 备份 / 内容管线 / 类目迁移 / 端到端测试 / 截图
-│   ├── api-tests.mjs         # 六场景 API 集成测试（限流/改密/草稿保护/定时发布/缓存隔离/上传）
-│   ├── review-e2e/           # 全功能只读扫描 + 缺陷回归（full-functional / extra-tests）
-│   └── qa-*.cjs              # Playwright 视觉验证脚本（后台/移动设置页截图断言）
-├── eslint.config.mjs         # ESLint 平面配置（typescript-eslint + react-hooks 最小集）
-├── .github/workflows/ci.yml  # 类型检查 + lint + 依赖审计 + 构建 + API 集成测试
-├── middleware.ts             # /admin 兼容跳转＋三端分流＋后台鉴权＋强制改密
-├── prisma/schema.prisma
-└── public/                   # favicon / 字体 / design/gallery.html
-```
-
-## 关键设计说明
-
-- **容器规范**：前台各区块 `w-full max-w-[min(70%,1600px)] mx-auto px-6` 同线居中（≤1920px 即 70%，超宽屏封顶 1600px）；文章正文 `max-w-5xl`；目录侧栏 308px
-- **移动端分流**：`middleware.ts` 内 `MOBILE_UA_RE`（仅手机，不含平板）命中 `/`、`/archive*`、`/posts/*`、`/login` 时 rewrite 到 `/m` 对应页；`view=desktop` cookie 跳过；`/m/*`、`/t/*`、`/api/*`、`/dashboard/*` 永不改写
-- **平板分流**：`TABLET_UA_RE`（iPad / Tablet / Android 无 Mobile）命中 `/`、`/archive`、`/posts/*` 时 rewrite 到 `/t`；`view=tablet` cookie 可主动进入、`view=desktop` 可退出。iPadOS 13+ 的 UA 与 macOS 相同，由桌面树内的 `TabletGate`（视口 + 粗指针）兜底
-- **重定向白名单**：middleware 的运行期 302 目标只信任 `ALLOWED_REDIRECT_HOSTS`（默认仅 `NEXT_PUBLIC_SITE_URL` 的 host），避免 Host 头注入把访客跳到攻击者站点。SEO 输出（canonical/RSS/sitemap）走 `lib/site-url.ts`，**只信任 env**，不读请求头
-- **分类色板**：`ART_PALETTES`（paper/wash/ink/accent）＋`CAT_ABBR` 缩写，前后台徽标同源
-- **日期**：服务端存 ISO，展示层按语言格式化；相对时间 60s 自动刷新
-- **站点设置驱动**：`Setting` 表经 `lib/settings.ts`（`getSettings()`，unstable_cache + tag 失效）下发，根 layout 通过 `SettingsProvider` 全站分发，消费端为 layout 元数据（标题/描述/关键词/Favicon）、Header（站名双语/Logo）、Footer（页脚文案中英/社交链接）、PWA manifest、文章页 OG siteName。保存走 `PUT /api/settings` 后立即 `revalidateTag("settings")` + `revalidatePath("/", "layout")`
-- **加载边界作用域**：`loading.tsx` 是流式 Suspense 边界，会**先冲刷 200 状态头**——凡被它包住的路由，`notFound()` 只能内联渲染 404 UI 而改不了状态码（soft-404）。因此过场骨架只放三树 `(shell)` 路由组（列表页），详情段留在组外
-- **动画选型**：滚动长列表用 `Reveal` / `tl-armed` 时间线机制（滚到哪播到哪），首屏网格与后台列表用 `.stagger`（挂载即错落播）；`prefers-reduced-motion` 下全部关闭
-
-## API 一览
-
-| 方法与路径 | 说明 | 鉴权 |
-|------------|------|------|
-| `GET /api/posts?q=&status=&page=` | 文章列表（无 `content` 字段）。不传 `page` 时按上界截断（游客 60 / 登录 500），被截断会返回 `X-Truncated: true`；传 `page` 时附 `X-Total-Count` | 公开（未登录仅 published） |
-| `POST /api/posts` | 新建 | 登录 |
-| `GET/PUT/DELETE /api/posts/[id]` | 详情/更新/删除（id 与 slug 双兼容） | GET 公开 published，其余登录 |
-| `POST /api/posts/[id]/view` | 浏览计数（IP + 15 分钟窗口去重） | 公开 |
-| `GET/POST /api/categories`、`PUT/DELETE /api/categories/[id]` | 分类 | 读公开，写登录 |
-| `GET/POST /api/thoughts`、`PUT/DELETE /api/thoughts/[id]` | 随想（`page`，每页 50） | 读公开，写登录 |
-| `GET/POST/DELETE /api/media` | 媒体（Blob，`page`，每页 100） | 登录 |
-| `GET/PUT /api/settings` | 设置 | 登录 |
-| `GET /api/search-index` | 全局搜索索引（含拼音字段，供搜索面板） | 公开 |
-| `GET /api/health` | 健康检查；未登录只返回 `status`，登录后附诊断明细 | 公开 |
-| `/api/auth/*` | NextAuth（登录 / 改密 / 默认账户检测） | — |
-
-## 部署
-
-### Vercel（推荐，Git 推送自动部署）
-1. Fork 本仓库到 GitHub，在 Vercel 导入项目
-2. 配置上表全部环境变量
-3. `git push origin main` 即触发生产构建（`prisma generate && next build`，43 条路由 / 25 页静态化）
-
-### Cloudflare Workers 代理（中国大陆访问）
-Vercel 默认域名在大陆可能无法访问，可用 Workers 代理：
-```bash
-npm install -g wrangler
-wrangler login
-wrangler deploy
-```
-
-## 版本历史
-
-| 版本 | 日期 | 更新内容 |
-|------|------|----------|
-| **0.5.0** | **2026-09** | **正式版**。站点设置全链路打通（12 字段此前 11 个「只存不用」→ 元数据/Header/Footer/manifest/OG 全部由后台驱动）＋ 移动后台设置板块（底部 5 Tab）＋ 设置页按消费端板块化（站点信息/页脚/品牌资源/阅读与外观）＋ 后台过渡动画体系（整块落定＋条目错落，reduced-motion 全关）＋ 消除 soft-404（loading 边界作用域重构，详情段真 404）＋ 阅读页 canonical/noIndex 接入 SEO ＋ 建立 ESLint 门禁（CI 已接）＋ 发布脚本 fail-closed 重写（防 data 泄漏）＋ 后台响应式（侧栏窄视口自动折叠） |
-| 0.3.9 | 2026-09 | 类目体系重构 7→5（设计/开发/实验/发现/记录：调色板、全站文案、17 篇重挂）＋ 封面系统与画廊契约同步 ＋ 8 篇脏标签数据清理 ＋ 全站回归三连测（81 项×3 全绿） |
-| 0.3.8 | 2026-09 | 目录进度重做（点击即时反馈 / 末尾几节渐进点亮不跳节 / 左轨对齐小节行）＋ 17 篇文章重写（去模板化，用上任务列表、表格、对齐、行内色等编辑器能力）＋ 内容管线修复（行内格式与段落不再丢失、对齐真正落地）＋ 标签页整页报错与脏标签修复 |
-| 0.2.0 | 2026-09 | 移动端独立版（/m＋轻量后台）＋后台性能优化（API瘦身/缓存/骨架屏）＋全站i18n补齐＋阅读页彩色字＋next/font自托管 |
-| 0.1.x | 2026-08 | 文章封面系统、Footer、随想优化、升级 Next.js 15.4.11（安全漏洞修复） |
-| 0.1.0 | 2026-08 | 初始版本：Prisma 后台＋安全加固＋Tiptap 编辑器＋强制改密 |
-
-## 许可
-
-本项目以 **GNU GPL-3.0** 许可开源（copyleft）：可自由使用、学习、修改与再分发，任何衍生作品须同样以 GPL-3.0 发布并保留版权声明。
-
-许可全文见仓库根目录 [`LICENSE`](./LICENSE)。
+> **版本 v0.3.9 · 对齐落地 2026-09-15** —— 数值与能力均取自当前仓库代码。
+> 一套「纸感排印」的个人博客设计语言 —— 写给正在使用它、以及未来会接手它的人。
+> 本文件按**设计蓝图**口径讲述：我们想要一个什么样的慢日志，每个体系为什么这样设计，以及它如何共同工作。
+> 配套：《整站风格蓝图》（整站风格蓝图.html）与《封面系统蓝图》（封面系统蓝图.html）两份交互稿，可对照浏览。
+> **版本对齐**：本文已于 2026-09-11 按代码库当前落地修订（v1.4 动效三档 / Hero spotlight / 随机格言 / 视口 Reveal / 正文 max-w-3xl / 安全 Host 白名单 / 后台中英）；令牌与组件细则以 `UI/慢日志UI设计系统.html` 与画廊 `public/design/gallery.html`（49 组件）为准。
+> **2026-09-15 核对**：类目体系 **5 族**（Design/Build/Lab/Found/Log，非旧的 7 族）；标签符号映射 **32 键**（非 56）；画廊 **49 组件**（非 31）；应用版本 **0.3.9**；平板已有独立 `/t` 平行树（旧述「平板走桌面版」已过期）。
+> **在线预览**：[yahajiang.dpdns.org](https://yahajiang.dpdns.org/) · **项目源码**：[GitHub](https://github.com/yahajiang/SLOWLOG-1) —— 蓝图已落地为真实站点，可对照实站与源码阅读本文。
 
 ---
 
-*Built with Next.js, Tailwind CSS, and lots of ☕*
+## 一、一句话理念
+
+**用纸感排印做外衣，用慢阅读做内胆，用系统化做骨架。**
+
+慢日志不是「又一个博客模板」，而是一间**安静的文字工作室**：
+
+- **纸** —— 暖纸底、冷墨字、细发丝线、克制的纸纹。让屏幕像一张被认真对待的纸。
+- **慢** —— 排版为长时间阅读服务：克制的字号节奏、充裕的行距、专注的阅读区、可追踪的阅读进度。
+- **系统** —— 从配色到封面到版式，全部由规则自动派生。作者只管写字与选分类，剩下的交给体系。
+
+一句话格言贯穿始终：**慢下来，写点值得读的东西。**
+
+---
+
+## 二、设计语言的四个支柱
+
+| 支柱 | 表达 | 落点 |
+|---|---|---|
+| **暖纸** | `--yh-bg #fefdfa`、纸纹、噪点、径向光晕 | 前台阅读 + 后台编辑共用一张纸 |
+| **冷墨** | `--yh-text #1c1c1e` 克制的主文本 | 正文、标题、导航 |
+| **强调蓝** | `--yh-accent` 变量级双声明：`#4a6fb5` 先、`oklch(0.55 0.15 250)` 后（暗色 `#8ea6e8` + oklch 0.78）——旧内核自然保留 hex，使用处直接 `var()` | 激活态 / 链接 / 进度 / 强调 |
+| **同源后台** | `--dash-*` 全部映射回 `--yh-*` | 后台零独立色板，「写」与「读」不割裂 |
+
+色彩之外，还有三套被反复使用的「气质工具」：
+
+- **直角为骨，圆润为魂**：UI 以直角为默认语言——直角像编辑台与纸面，诚实、冷静；**rounded-none 是身份，弹层（对话框/Toast/搜索面板）同为直角**。圆角令牌 `--radius-sm/md/lg`（8/12/16px）虽仍定义于 globals.css，但全站零引用，属历史遗留，勿在新代码使用。圆润只留给「生命感」元素：Logo 圆标、作者头像、时间线圆点、轮播指示点。
+- **阴影三档**：`card`（卡片微浮）、`float`（悬停抬起）、`pop`（弹层深远），由近及远。
+- **动效三档**：`fast 180ms / normal 300ms / slow 500ms`；`ease-out` cubic-bezier(0.22,1,0.36,1)；`ease-spring` cubic-bezier(0.34,1.15,0.64,1)。只动 transform/opacity；禁 Tailwind `scale-*` 与 JS transform 同节点。
+
+「暖纸」由**纸感四层**落地（2026-09-11）：① `body::before` 高频纤维细噪（multiply ~6.5%）；② `body::after` 中频云纹 + 台灯顶部光带 + 四周暖褐晕影（multiply ~7%）；暗色换 screen 微光与墨褐纸角。合成可见度约 5–8%——「看得到但要很努力才看得到」。
+
+---
+
+## 三、排印体系 · 四族分工
+
+> 慢阅读首先是一套**字**的设计。
+
+| 字体 | 角色 | 使用 |
+|---|---|---|
+| **Noto Serif SC** | 中文标题 | 中文大字标题（h1–h3）与衬线模式的杂志气质；**v1.3 规范字体**（替代早期 MiSans 方案）。**已接入**：layout.tsx `Noto_Serif_SC`（400/600，`--font-serif-sc`，preload:false），globals 标题衬线栈 `var(--font-serif), var(--font-serif-sc), "Noto Serif SC"` 已生效 |
+| **Plus Jakarta Sans** | 西文界面 | 西文/拉丁标题、小标、按钮；衬线感克制 |
+| **Cormorant Garamond** | 装饰衬线 | 引语、字母脚、杂志式大标题的斜体气质 |
+| **JetBrains Mono** | 度量与代码 | 编号 / 标签 / 目录 / 小标（11px·0.14em 大写）/ 代码（13.5px/1.7） |
+
+字级节奏固定为四档：**7px 度量 → 10–13px 小标 → 15–17px 正文 → 26–32px 标题**。阅读正文 `17px / 1.9`（PostClient 与 PostRenderer 一致，勿改为 16px/1.75）。行宽：**默认 `max-w-3xl`(768)**，narrow `max-w-2xl`(672)，wide `max-w-4xl`（沉浸）；界面组件遵循 10–13px 小标体系。Noto Serif SC 已由 `next/font/google` 接入（`--font-serif-sc`），中文标题不再跌回宋体合成加粗。
+
+中英双语天然共处：中文负责大字气质，西文负责界面理性——这也是「慢日志 · SLOWLOG」双写并置的由来。
+
+---
+
+## 四、布局体系 · 留白是一等公民
+
+- **主线容器**：`min(70%, 1600px)` 居中于全站——Header、分类、Hero、分区、正文、Footer 全部共线，形成一条「书脊」。
+- **次级容器**：时间线浏览卡收窄到 `min(63%, 1440px)`，在同一页里制造「正文宽、附注窄」的层次。
+- **响应式断点**：sm 640 / md 768 / lg 1024 / xl 1280；关键切换——卡片 sm2→xl4、目录 lg 起显示、桌面版右轨 ≥1500px。
+- **内容宽度三档**（按文章气质选用）：
+
+| 档位 | 宽度 | 语义 |
+|---|---|---|
+| narrow（默认） | 672px · `max-w-2xl` | 随笔、摘录，窄到刚好聚焦 |
+| medium | 768px · `max-w-3xl` | 常规文章的排印舒适区 |
+| wide | 896px · `max-w-4xl` | 技术长文，容纳表格、图表、代码 |
+
+- **主题两态**：light / dark。深色走 `.dark` 类整体覆盖的暖黑「夜读纸」：底 `#14110d`、标题 `#E8E4DC`、正文同系暖白、边框 `#2C2A26`、muted `#8E8478`——令牌整体切换，不逐处覆盖（早期「标题纯白 + 一成白边框」方案已废弃）。
+- **布局三型**：`standard`（常规带目录）、`fullscreen`（沉浸：正文 3xl 居中、目录让位）、`magazine`（杂志向宽栏）。宽度 × 主题 × 布局组合出文章的多种阅读气质，而字号、行距、令牌始终一致——换的只是呼吸的宽窄。
+
+---
+
+## 五、首页 · 一间杂志的门面
+
+首页是「按类分区的编辑部」：
+
+1. **顶栏** `h-62`：S 圆标 + 慢日志·SLOWLOG（品牌永不翻译）+ slogan + 首页/文章/归档 + 语言切换 + ☀/☾ 主题切换 + 搜索（48px 触达）。
+2. **分类 Tabs**：粘顶（顶栏之下），横滑、选中态 2px 强调下划线；分类名优先取中文名。
+3. **Hero 推荐位**：分类切换时不再整块消失——选中分类则该分类推荐或最新一篇作 spotlight；左文右图（封面 `4:5` 竖版），多篇时 5s 轮播；标题/摘要/meta 错峰 `inkSettle` 交叠淡入（550ms / 80–160ms delay）。
+4. **分区栅格**：按分类切 section，`2→4 列` 随断点展开；分区徽标直接取该族的 `paper/ink/wash` 着色——徽标即封面色，色不出第二套。
+5. **文章卡片**：16:9 视窗收纳 4:3 杂志画面；标题 2 行、摘要 2 行、标签至多 1 枚弱化、底部「相对时间 · 时长」；**无作者头像**（头像仅 Hero）。入场走视口 `Reveal`（IO + fadeInUp 300ms + index×45ms）。
+6. **随想 · Thinking**：一条时间线，默认展示最近 **4 条**，其余折叠——「展开更多 · N 条 / 收起」随手切换；逐条级联落入（duration 320ms，延迟按序封顶）；空则整段收起，不占留白。
+7. **时间线卡**：最近两年的「按时间线浏览」，与归档页呼应。
+8. **Footer**：品牌 + 版本 + **随机格言**（`lib/taglines.ts` 中英各 8 条，mount 后 `pickTagline` 抽一条）+ 邮箱/GitHub/RSS；与欢迎幕、路由加载页共用格言池。
+
+首页的呼吸感来自「一屏只讲一件事」：主场景展示推荐，浏览时退到分区，专注时进入文章。
+
+---
+
+## 六、文章页 · 为长时间阅读而设计
+
+- **阅读进度**：顶边 **2px · opacity-60** 细线按 article 矩形计算（rAF 节流），滚动 >120px 淡入；侧栏 `data-side-progress` 用 `scaleX` 同步（勿用 Tailwind `scale-*` 与 JS transform 同节点）；当前段落微高亮。
+- **顶栏**：`h-53` 的极简工具条，只留 S 圆标、品牌、语言与「返回」——与首页 `h-62` 构成两档并存：门户页宽、内容页窄（归档页同为 53px），均为代码真值。
+- **标题区**：顶栏「徽章 + 剩余分钟 + 仓库」；标题下**一行 meta**「作者 · 时间 · 时长」（分类只靠徽章，不重复）；标签 ≤3 弱化；标题 32px 跟随文章主色。
+- **引言**：左侧 3px 细线的斜体导语，一进来就告诉你「这篇文章值得读」。
+- **正文**：段落 `17px/1.9`、细字重；标题带自动锚点；首字下沉是可选开关（衬线模式下的杂志彩蛋）。
+- **目录侧栏** `308px`：常驻右边；**蓝轨按标题区间插值**与高亮同步（禁用整页 scrollY）；标题 id 与 `lib/headings.ts` 共用 slug+去重（重名 `-1` 后缀）；标题行可折叠（250/200ms）；点击平滑滚动并短暂锁定；下方阅读进度卡 +「阅读中」静态点。
+- **继续阅读** — 重访时出现提示条：「上次读到 N%，继续？」（阅读深度记忆，≥98% 视为读完自动清除）；一键回位或从头开始。
+- **代码块**：macOS 窗口风格（始终深色），三色点 + 语言徽标 + **行号 gutter** + 一键复制（复制纯 code，不含行号）。
+- **引用 / 表格 / 图片 / 任务清单**：全套编辑器能力都以同一套排印规则呈现；图片点击可开灯箱。
+- **继续阅读**：同分类∩同标签 > 同分类 > 同标签 > 最新，最多 3 篇（`sameCat*10 + overlap*3`）。
+
+---
+
+## 七、封面系统 · 自动绘图机
+
+封面引擎只有一个：`components/CoverArt.tsx`（419 行，v3 密拼贴 Collage）。它把画一张封面拆成三个正交的轴，交给哈希去编排——**作者只管选分类、写标签**。
+
+**三根轴**
+
+- **构图轴**：`layout = hash(标题 + id + "L", 8)` —— 8 套密拼贴骨架（L0 色块网格 / L1 三横阶梯 / L2 斜切圆环 / L3 上带分栏 / L4 双框散点 / L5 折线路径 / L6 竖栏杂志 / L7 点阵浮块），每套 ≥5 个视觉件。刻意**不含标签**：同一标签的系列文章，靠标题差异获得不同构图。
+- **符号轴**：标签经 32 键映射为 8 种**签名章 Stamp**（含 GEN 回退），每种带 mono 代号（GRD/SHL/MIR/WAV/DMN/WIN/HEX/CIR），`variant4` 驱动章内一格/一态变化。
+- **微变轴**：`variant = hash(种子, 8)`、`variant4 = hash(种子+"4", 4)`，种子 = 标题+分类+id+标签——驱动条宽、高亮、摆位等小差异。
+
+**族调色 · CSS 变量供墨**：5 族 + Generic 以 `.art-{分类}` 类定义 `--ap/--ai/--aw/--aa`（纸/墨/洗/强调），封面组件内零硬编码色值；**暗色模式有成套夜版**（同色相下沉、夜光文字）。全族 ink-on-paper ≥ 10:1（AAA）。
+
+**动效 · 相位系统**：`cover-breathe` 整章呼吸、`cover-pulse` accent 心点脉冲、`cover-flow` 流光描线、`cover-piece-*` 件浮；每篇自带 `--cm-dur 7–9.8s / --cm-delay 0.6–1.95s` 相位差，元素各自轻缓、互不同步；reduced-motion 全静止。
+
+**元信息条**：底部单行 `ABBR · No.XXXX · TAG`（9px / 0.14em，去方括号大写，超长省略）——一行读完「谁、第几期、关于什么」。
+
+**比例**：card **16:9**（列表/归档/后台/标签聚合）、wide **16:10**（首页推荐位，HeroCover 封装）；ArticleArt/HeroCover 为兼容封装。
+
+**兜底链**：未知分类按哈希稳定归入 5 族（同名永同族）；分类为空 → Generic 通用纸；标签未命中 → GEN 方块章。任何一篇文章发出来都有一张体面的封面。
+
+> 与旧版（v2 场景 SVG × 白底角标）的关系：场景与角标已升级为「密拼贴构图 + 签名章」——视觉语言从"居中插画"进化为"满版拼贴"，去同质能力从 96 组合升级为 8×8×8×4 的自由度。
+
+---
+
+## 八、双语言 · 双端（桌面 / 移动）
+
+**双语**：前台 + **后台**（仪表盘/移动后台/编辑器/列表操作）均已接入 `useLang` 与 `dash*`/`editor*` 词典；Logo 品牌不翻译；分类、日期、相对时间、空态、Toast、分页全量本地化；正文标题/摘要/标签保留双语字段，内容不机翻。
+
+**移动端是「同一套设计的另一种呼吸」**：
+- 手机 UA 自动进入 `/m` 平行树，地址栏不变；**平板（iPad / Android 平板，或 `view=tablet`）进入 `/t` 平板树**——结构与桌面同构（用户定策「平板风格同桌面端」），只解决「装得下」与「对齐」。
+- `/m` 覆盖首页、归档、文章、登录；移动后台（概览/文章/随想/更多）**已接中英词典**，重编辑引导回桌面端。
+- SEO 权重收敛到桌面地址：移动页 `/m` canonical 指向桌面、平板页 `/t` 走 `noindex,follow`，站点地图与 RSS 只收录桌面 URL。
+- 任意移动页页脚都有「桌面版」按钮，偏好以 cookie 记忆一年，双向切换不迷路。
+- 组件规格：`MHeader` h-14 吸顶（S 标 + 品牌 + EN，可展开搜索）；`MHome` 搜索顶栏 + 分类横滑（h-11）+ Hero + 单列列表 + 随想 + 时间线；`MPost` mini 顶栏 + 全宽正文 + 抽屉目录 + 纵向上下篇；`MFooter` 纵向堆叠链接 + 「桌面版」按钮；移动后台以 `MDashNav` 底部导航串起四页。折叠节奏与桌面同规：随想默认 4 条可展开，时间线固定 8 条、出口去归档。
+
+---
+
+## 九、写与读的闭环 · 后台
+
+后台与前台共用一张纸，让「写」的人提前看到「读」的样子：
+
+- **同源令牌**：卡片、输入、按钮、强调色全部来自前台那套令牌——所见即所得不是口号，是同一份 CSS 变量。
+- **编辑器**：17 组 Tiptap 扩展。停笔 3 秒自动保存，且从不篡改发布状态；**版本历史**保留最近快照可回滚；**定时发布**：`publishedAt` 未来时间惰性放出（`scheduledGuard`，无需 cron）。
+- **交互三层**：选中文字浮出 **BubbleMenu**（墨色直角条：粗体/斜体/下划线/高亮/行内码/链接）；空行呼出 **FloatingMenu**（标题 H1–H4 与三类列表）；顶部**工具栏**分组收纳标题、列表、对齐、插入、字色与高亮、清除格式——常用一键直达，低频收进下拉。
+- **分栏预览**：左写右读，分隔条可拖（0.25–0.75，记住你的习惯）；右栏直接用正文渲染器渲染——前台什么字体行距，后台预览就是什么。
+- **页面配置**：每篇文章可选主题、主色、正文宽度、字体、布局与目录开关（默认 narrow）。
+- **版本历史**：编辑器侧 localStorage 快照（≥5 分钟一版、10 版 FIFO），随时回滚。
+- **颜色链**：取色器（90 色 + 自定义吸色）→ 存成富文本 mark → 阅读器过白名单渲染。编辑时看到的红字，读者看到的就是那个红字；段落对齐 textAlign 已落地。
+- **暗色模式**：☀/☾ 二态切换（sl-theme 持久化，首帧内联防闪烁），封面/正文/后台成套夜版；夜里封面 multiply 叠层切换为 screen 微光（14%）避免深底成黑块；文章级可强制浅色（sl-force-light）。
+- **两套颜色的边界**：页面氛围色（accent）只调氛围不进正文；正文里的字色是可检索的富文本。互不越界。
+
+---
+
+## 十、这套体系的原则清单
+
+1. **纸感是暗示，不是噪音**：纹理透明度全部 ≤ 0.2，纸纹「看得到但要很努力才看得到」。
+2. **直角是品牌**：不随手加圆角；圆润只留给有生命感的元素。
+3. **颜色不许打架**：分类徽标、分区标题、封面纸色三处共用同一组家族色。
+4. **写与读同源**：后台即前台，预览即正稿。
+5. **空是有意的**：随想空则隐藏、目录空则收起、搜索无果给温柔的引导。
+6. **每篇文章都值得一张脸**：封面、配色、宽度全自动派生，作者的精力留给文字本身。
+
+---
+
+## 十一、归档与工具页 · 体系的「背面」
+
+一套完整的设计语言，不光要照顾「正页」，也要照顾那些低频但必经的页面：
+
+| 页面 | 结构 | 设计要点 |
+|---|---|---|
+| **归档 /archive** | 53px 顶栏（同文章页）+ 标题区 + 年份卡列表 | 标题 serif 32px；mono 描述「N 篇 · M 个年份」；按年分组的直角卡，行 = mono 日期 + 标题（hover 强调色下划线）+ 分类徽标 + 时长（sm 起显示）；顶部搜索即时过滤标题/分类，并显示「过滤 N 篇」 |
+| **登录 /login** | 全屏纸面居中，`max-w-sm` 直角卡 | 用户名可只填前缀（自动补全域名）；输入 focus 加深边框；改密成功显示绿色回执条；错误红条 + 按钮 loading；成功进入后台 |
+| **404** | 全屏居中 | 巨号「404」用极淡墨色压住情绪；一句解释 + 返回首页黑按钮 |
+| **加载态** | S 标 + 骨架卡 + 标语 | 主站：shimmer 骨架三条（200ms 级联）+ accent 呼吸点 + 「加载中」mono；后台：11 个路由级 loading——S 标紧凑行 + shimmer 扫光骨架按页面真实占位取形（概览统计卡 / 列表搜索条 / 随想输入条 / 媒体网格 / 分类表单 / 设置字段 / 改密表单，移动端 compact），导航切换零空白 |
+| **出错边界** | 全屏居中，红色警示图标 | 展示错误信息 + 重试按钮；后台有独立边界，前台不被后台错误波及 |
+
+这些页面共用同一张纸、同一套直角与 mono 小标——**低频页面也是品牌**。
+
+---
+
+## 十二、状态 · 反馈 · 可达性
+
+- **Toast**：底部居中浮出，成功/错误两种语气，承担「已保存、发布成功、已删除 N 篇」这类即席反馈。
+- **确认弹窗**：删除等危险操作先出红色确认框，文案复述对象名称；按钮 loading 防连点。
+- **空态家族**：统一 `border-dashed` 直角卡 + 一句解释 + 一个出口——搜索无果给「清除筛选」；无文章给后台引导；只有 1 篇推荐时温和提示；归档/随想/分类/媒体库各有安静文案。
+- **骨架屏**：永远不让用户对着白屏。
+- **灯箱**：文章内图片点击放大（黑 85% + 模糊层），支持缩放/旋转，Esc 或点遮罩关闭；只对文章容器内的图片生效。
+- **可达性**：交互目标 44–48px；focus 统一强调色描边 + 20% 光环；轮播/关闭/翻页均带 aria-label；键盘 Esc 可退出灯箱。
+
+---
+
+## 十三、性能与工程化
+
+| 维度 | 策略 |
+|---|---|
+| 页面缓存 | 首页 60s 增量再生；站点地图 / 动态接口按需即时生成；发布与编辑后 `revalidateTag("posts")` + 文章详情路由即时再生，前台零延迟可见 |
+| 接口缓存 | 文章列表 `s-maxage 60 + SWR 300`；分类 private 30+120；随想 30+60；媒体 60+120 |
+| 静态资源 | js/css/字体/图片 一年 `immutable` 长缓存 |
+| 图片管线 | AVIF/WebP 自动协商；Vercel Blob 远端白名单；上传 JPEG/PNG 自动压缩（质量 75），单张 ≤5MB；写出三级链 Blob → 本地 → data URI，存储不可用时上传永不中断 |
+| 包体 | 图标按需引入；关闭生产 sourcemap；传输压缩；可选 bundle 分析 |
+| 安全 | 安全响应头；正文颜色白名单；bcrypt；middleware 鉴权 + **强制改密闭环**（桌面 /m 后台 + 全部写 API 403）；**Site origin 只信 `NEXT_PUBLIC_SITE_URL`**（禁 Host/X-Forwarded-Host，防 SEO 投毒） |
+| 数据模型 | 六张主表：User / Category / Post / Note / Media / Setting；Post 承载双语字段、`pageConfig`、SEO 字段与富文本 JSON |
+| 全局模块 | hooks/use-scroll-spy（目录+进度同源）· read-progress（阅读记忆）· post-versions（版本历史）· headings（共用锚点）· site-url（Origin 唯一真相源）· taglines（格言池） |
+
+工程化的目标只有一句话：**让「慢」只体现在阅读心态上，不体现在加载速度上。**
+
+---
+
+## 十四、内容与文案规范
+
+- **分类**：优先使用五个内置家族 + 中文对照名；新建分类需提供 `name / nameZh / slug`，slug 恒定，类目决定封面族色。
+- **标签**：是封面的「路由键」。优先用映射表中的词；避免同义堆叠（`tags[0]` 决定场景）；中英文标签均可命中。
+- **双语字段**：`title/titleZh`、`excerpt/excerptZh`、`html/htmlZh`、`headings/headingsZh` 成对维护，阅读端按语言取样、缺失自动回退；后台录入中文优先。
+- **时间与编号**：日期按语言本地化（`2026年9月1日` / `Sep 1, 2026`），列表用相对时间（60s 自刷新）；阅读时长手工维护（默认 `5 min`）；封面编号 `No.XXXX` 由 id／标题哈希稳定派生，不做人工干预。
+- **SEO 字段**：每篇可覆盖 `seoTitle / seoDescription / seoKeywords / canonicalUrl / ogImage`，并可一键 `noIndex`；站点级有名称/描述/关键词/Favicon/Logo/页脚文案/每页篇数。
+- **输出**：`/sitemap.xml` 只收桌面正文地址；`/rss.xml` 提供订阅；两者在前台保持「隐形」，不占视觉。
+- **标签聚合页**：`/tag/[tag]` 按标签聚合文章，CoverArt 卡墙排列，配全局搜索入口。
+
+---
+
+## 十五、术语表
+
+| 术语 | 含义 |
+|---|---|
+| **paper / ink / wash / accent** | 封面四色：底色 / 正文与线框 / 辅助填充与纹理 / 点缀圆点 |
+| **构图 L0–L7 · 签名章 Stamp** | 封面两轴：8 套密拼贴骨架（标题+id 派生）与 8 种标签符号章（含 GEN 回退） |
+| **微变 / 相位** | variant/variant4 驱动的章内变化；每篇封面 --cm-dur/--cm-delay 相位差防同步 |
+| **No.XXXX** | 封面编号，由 id／标题哈希稳定派生 |
+| **pageConfig** | 文章级页面配置：layout / theme / primaryColor / fontFamily / backgroundColor / maxWidth / showTOC |
+| **/m 树** | 移动端平行路由（首页/归档/文章/登录 + 轻后台），UA 改写、地址栏不变 |
+| **移动适配层** | 移动端独立的数据形态复刻层，桌面组件零复用 |
+| **颜色链** | 取色器 → 富文本 mark → 阅读器白名单渲染的完整通路 |
+| **BubbleMenu / FloatingMenu** | 编辑器的选中浮条与空行呼出条 |
+| **revalidate / SWR** | 页面增量再生与接口的 stale-while-revalidate 缓存策略 |
+
+---
+
+## 版权 · License
+
+**© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0**
+
+- 本项目（源码与设计文档，含《整站风格蓝图》《封面系统蓝图》）以 **[GNU GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html)** 许可开源；仓库根目录已附 LICENSE 全文。
+- 依 GPL-3.0：你可以自由地使用、学习、修改与再分发；任何基于本项目的衍生作品，须**同样以 GPL-3.0 发布**，并保留原版权与许可声明。
+- 设计文档等非代码内容如需独立引用，请注明出处：作者 **Yahajiang**，并附本文链接。
+- 联系：`yahajiang@gmail.com` · `github.com/yahajiang`。
+- 在线预览：[yahajiang.dpdns.org](https://yahajiang.dpdns.org/)
+- 项目源码：[GitHub · yahajiang/SLOWLOG-1](https://github.com/yahajiang/SLOWLOG-1)
+
+---
+
+*慢日志 · SlowLog —— 纸感排印的外衣，慢阅读的内胆，系统化的骨架。*
+*蓝图文档 · 配套交互稿：《整站风格蓝图》与《封面系统蓝图》。*
+
+
+---
+
+## 附、速查清单（2026-09-11）
+
+| 项 | 真值 |
+|----|------|
+| 应用 / 画廊 | v0.3.9 / 49 组件提示词 |
+| 动效 | 180/300/500ms · ease-out(0.22,1,0.36,1) · spring≤1.15 |
+| 正文 | 17px/1.9 · 默认 max-w-3xl(768) |
+| 纸感 | 四层：纤维 + 云纹 + 台灯 + 暖晕（暗色 screen） |
+| 安全 | origin 只信 env · 强制改密闭环 · 写 API 403 |
+| i18n | 前台 + 后台（含 /m/dashboard、编辑器） |
+| 文案 | 随机格言池 8×8 · siteSlogan 仅 Header |
+| TOC | 标题 id 去重 · 蓝轨插值 · 可折叠 |
+| 卡片 | 无作者头像 · 标签≤1 · Reveal 入场 |
