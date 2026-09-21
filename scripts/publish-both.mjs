@@ -34,8 +34,12 @@ const TMP = path.join(process.env.TEMP || process.env.TMP || ".", "slowlog1-clea
 const BLUEPRINT = "docs/design/design-blueprint.md";
 const PY = "C:/Users/Yahajiang/.workbuddy/binaries/python/envs/default/Scripts/python.exe";
 
-/** 用于 filter-repo 的剔除路径（与历史标准流程一致） */
-const FILTER_PATHS = ["cookies.txt", "cookies2.txt", "public/uploads", "backups", "content-export"];
+/**
+ * 用于 filter-repo 的剔除路径（与历史标准流程一致）。
+ * `mobile-preview` 是 2026-09-21 追加：13 张界面截图 / 5.5MB 二进制产出物，属**运行产物而非源码**，
+ * 公开仓只留源码 ⇒ 一并剔除（⚠️ 私有仓保留；副作用：`docs/compose/spec/` 里 3 处截图引用在公开仓成死链）。
+ */
+const FILTER_PATHS = ["cookies.txt", "cookies2.txt", "public/uploads", "backups", "content-export", "mobile-preview"];
 
 /**
  * 用于**终检**的禁用路径 —— 刻意比 FILTER_PATHS 更严（多出 env 文件）。
