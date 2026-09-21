@@ -46,6 +46,9 @@ content-export/
 # QA screenshot artifacts
 scripts/qa-screens/
 
+# smoke 冒烟备份（导出内容含生产库数据，绝不入库）
+scripts/smoke-backup-*.json
+
 # local server logs
 .dev-server*.log
 .dev-server*.err
