@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/api-utils"
-import { auth, passwordChangeRequired } from "@/lib/auth"
+import { passwordChangeRequired } from "@/lib/auth"
 import { requireSessionOrBearer } from "@/lib/app-auth"
 import { prisma } from "@/lib/prisma"
 import { compressAndUpload, deleteFromBlob, sanitizeFilename } from "@/lib/blob"
@@ -17,8 +17,10 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024
 const MAX_FILES_PER_REQUEST = 10
 
 export async function GET(req: NextRequest) {
-  const session = await auth()
-  if (!session) return apiError(401, "未登录")
+  // 与同文件 POST/DELETE 保持一致：App 持 Bearer 需能读媒体库列表
+  const gate = await requireSessionOrBearer(req)
+  if (!gate) return apiError(401, "未登录")
+  if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   // 分页：page 从 1 起（默认 1；每页 100）
   const pageParam = parseInt(new URL(req.url).searchParams.get("page") || "", 10)
   const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
