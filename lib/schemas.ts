@@ -155,6 +155,26 @@ export const tokenCreateSchema = z.object({
   name: z.string().trim().min(1, "名称必填").max(60, "名称最多 60 字"),
 });
 
+/**
+ * App 内「用管理员邮箱 + 密码换取 API Token」。
+ *
+ * 这是整个 App 里**唯一一条既不需要已有 Token、也不需要 Cookie 会话**的
+ * 写接口 —— 它就是首枚 Token 的入口（此前必须先在 Web 后台手动创建再粘进
+ * App）。因此校验刻意收紧，且凭据校验必须与 Web 登录**共用同一套**
+ * 渐进退避（见 lib/auth.ts 的 verifyCredentials），不能另起一套限流。
+ */
+export const appTokenExchangeSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(3)
+    .max(120)
+    .refine((v) => v.includes("@"), "请输入有效邮箱"),
+  password: z.string().min(1, "密码必填").max(200),
+  /** 设备标签，用于在「App 令牌」页区分来源；缺省为「App 自动登录」。 */
+  name: z.string().trim().max(60).optional(),
+});
+
 export const deviceUpsertSchema = z.object({
   fcmToken: z.string().trim().min(1, "fcmToken 必填").max(4096),
   platform: z.string().trim().max(32).optional(),

@@ -83,46 +83,86 @@ export function passwordChangeRequired(session: unknown): boolean {
   return !!(session as any)?.user?.needsPasswordChange
 }
 
+export type CredentialCheck =
+  | { ok: true; id: string; email: string; name?: string; needsPasswordChange: boolean }
+  | { ok: false; reason: "invalid" | "rate_limited" }
+
+/**
+ * 凭据校验 —— **Web 登录与 App「用邮箱+密码换 API Token」共享同一份实现**。
+ *
+ * ## 为什么抽出来而不是让新接口自己写一遍
+ * 这段逻辑里真正有价值的是**限流**：双维度计数（IP 为主闸、email 为辅）、
+ * 超阈值只做渐进延迟而不硬锁（避免限流器反过来成为锁死管理员的 DoS 工具）、
+ * 正确凭据永远可以登录。任何一次「照着写一遍」都会立刻退化成
+ * 「可被爆破」或「可被 DoS」，而且是静默的 —— 所以要复用的是它，不是密码比对。
+ *
+ * 返回值刻意不用 NextAuth 的 User 形状：Web 登录靠 `needsPasswordChange` 决定
+ * 是否强制改密，App 换取 Token 也用它拒掉「还在用默认密码」的账号。
+ *
+ * ⚠️ `prisma` 保持**动态 import**：静态 import 会让 middleware/edge 打包链
+ * 拉入 pg（见原 authorize 里的注释）。
+ */
+export async function verifyCredentials(
+  email: string,
+  password: string,
+  request?: Request,
+): Promise<CredentialCheck> {
+  // 惰性加载：避免 middleware/edge 打包链拉入 pg
+  const { prisma } = await import("./prisma")
+  const mail = (email || "").toLowerCase().trim()
+  if (!mail || !password) return { ok: false, reason: "invalid" }
+
+  const ipKey = `ip:${clientIp(request)}`
+  const emailKey = `email:${mail}`
+  const now = Date.now()
+
+  // 最终防线：同一来源短窗内异常高频失败
+  if (failCount(ipKey, now) >= IP_HARD_LIMIT) return { ok: false, reason: "rate_limited" }
+
+  await applyBackoff(ipKey, emailKey, now)
+
+  // case-insensitive: legacy rows may store mixed-case emails
+  const user = await prisma.user.findFirst({ where: { email: { equals: mail, mode: "insensitive" } } })
+  if (!user) {
+    recordFail(ipKey, now)
+    recordFail(emailKey, now)
+    return { ok: false, reason: "invalid" }
+  }
+  const ok = await bcrypt.compare(password, user.password)
+  if (!ok) {
+    recordFail(ipKey, now)
+    recordFail(emailKey, now)
+    return { ok: false, reason: "invalid" }
+  }
+  // 成功即同时复位该来源与账号的失败计数
+  failTable.delete(ipKey)
+  failTable.delete(emailKey)
+  // 检测是否为默认账户（首次登录未改密）
+  const isDefault = user.email.toLowerCase() === DEFAULT_EMAIL && password === DEFAULT_PASSWORD
+  return {
+    ok: true,
+    id: user.id,
+    email: user.email,
+    name: user.name ?? undefined,
+    needsPasswordChange: isDefault,
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
       async authorize(creds, request) {
-        // 惰性加载：避免 middleware/edge 打包链拉入 pg
-        const { prisma } = await import("./prisma")
-        const email = (creds?.email as string)?.toLowerCase().trim()
-        const password = creds?.password as string
-        if (!email || !password) return null
-
-        const ipKey = `ip:${clientIp(request)}`
-        const emailKey = `email:${email}`
-        const now = Date.now()
-
-        // 最终防线：同一来源短窗内异常高频失败
-        if (failCount(ipKey, now) >= IP_HARD_LIMIT) return null
-
-        await applyBackoff(ipKey, emailKey, now)
-
-        // case-insensitive: legacy rows may store mixed-case emails
-        const user = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } })
-        if (!user) {
-          recordFail(ipKey, now)
-          recordFail(emailKey, now)
-          return null
-        }
-        const ok = await bcrypt.compare(password, user.password)
-        if (!ok) {
-          recordFail(ipKey, now)
-          recordFail(emailKey, now)
-          return null
-        }
-        // 成功即同时复位该来源与账号的失败计数
-        failTable.delete(ipKey)
-        failTable.delete(emailKey)
-        // 检测是否为默认账户（首次登录未改密）
-        const isDefault = user.email.toLowerCase() === DEFAULT_EMAIL && password === DEFAULT_PASSWORD
-        return { id: user.id, email: user.email, name: user.name ?? undefined, needsPasswordChange: isDefault }
+        // 全部逻辑收在 verifyCredentials 里，与 App 换取 Token 共用。
+        // NextAuth 只关心「有没有这个人」，失败原因（凭据错 / 限流）在此不可区分。
+        const r = await verifyCredentials(
+          (creds?.email as string) ?? "",
+          (creds?.password as string) ?? "",
+          request,
+        )
+        if (!r.ok) return null
+        return { id: r.id, email: r.email, name: r.name, needsPasswordChange: r.needsPasswordChange }
       },
     }),
   ],
