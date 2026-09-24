@@ -8,5 +8,15 @@
         "AB:26:20:C8:CC:CA:87:91:C3:F5:68:4A:0E:17:4A:20:0B:E8:54:F9:B4:2C:FE:2D:3D:E5:E6:6D:A2:8F:91:EB"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.slowlog.app.admin",
+      "sha256_cert_fingerprints": [
+        "F7:8F:14:16:C2:58:F9:5E:4C:F3:85:B8:FE:36:8F:FB:8F:16:01:1E:4E:59:4F:24:4E:C7:1B:BA:2F:7D:BD:CA"
+      ]
+    }
   }
 ]
