@@ -14,6 +14,12 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30天
   },
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg', 'prisma', 'sharp', 'bcryptjs'],
+  // 位图封面的文字依赖随包 TTF（assets/cover-fonts + lib/cover-fonts.ts）。
+  // Next 的产物追踪只跟 import 图，二进制资源不会被自动带进 Vercel 函数包，
+  // 一旦漏掉，线上读不到字体、封面文字就退回豆腐块。
+  outputFileTracingIncludes: {
+    '/api/covers/**': ['./assets/cover-fonts/**'],
+  },
   // 启用压缩
   compress: true,
   // 生产环境优化

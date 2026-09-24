@@ -1,3 +1,6 @@
+// 必须排在 sharp 之前：fontconfig 只在进程内首次排版时读环境变量，
+// 晚设对本进程无效。该 import 的副作用就是把 FONTCONFIG_FILE 指到随包 TTF。
+import "@/lib/cover-fonts"
 import { NextRequest, NextResponse } from "next/server"
 import sharp from "sharp"
 import { prisma } from "@/lib/prisma"

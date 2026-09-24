@@ -70,4 +70,4 @@
 ## 10. 增量同步与封面
 
 - Sync 见 `GET /api/app/sync`；硬删 tombstone 保留窗口 **90 天**，since 超窗 → 400 全量重拉。
-- 封面 PNG：`GET /api/covers/[id]?w=800|1600&v=<updatedAt>`；派生规则见 `lib/cover-derive.ts`（FNV-1a 三轴 + 家族色），App 只缓存图片、不重绘。
+- 封面 PNG：`GET /api/covers/[id]?w=800|1600&v=<updatedAt>`；派生规则见 `lib/cover-derive.ts`（FNV-1a 三轴 + 家族色），App 只缓存图片、不重绘。**位图侧只渲染拉丁**（服务端随包字体没有中文字面）：中文标题首字回落为分类首字母、含非 ASCII 的标签段整段丢弃；Web 端 `CoverArt.tsx` 由浏览器排版，中文照常。
