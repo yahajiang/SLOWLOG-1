@@ -34,6 +34,8 @@ model ApiToken {
   id         String    @id @default(cuid())
   name       String
   tokenHash  String    @unique
+  scope      String    @default("sync")   // sync | admin（2026-09-21 用途分级）
+  expiresAt  DateTime?                    // null = 永不过期（仅历史令牌）
   createdAt  DateTime  @default(now())
   lastUsedAt DateTime?
   revokedAt  DateTime?
@@ -56,36 +58,80 @@ model DeletedPost {
 ```
 
 - 明文 Token 只在 POST 创建时返回一次；DB 只存 SHA-256 hex。
-- 撤销 = 置 `revokedAt`，不物理删。改密成功后全局撤销全部有效 Token（单管理员模型，无 `userId`）。
+- 撤销 = 置 `revokedAt`，不物理删。改密成功后全局撤销全部有效 Token（单管理员模型，无 `userId`）——
+  **两种用途一并作废**，改密后 App 需重新换取。
+- **`scope` 决定用途**（2026-09-21 新增）：`sync` 只能读同步内容（`/api/app/sync`、草稿封面、
+  设备注册），`admin` 才能走后台写接口。有效期随之不同：sync 90 天、admin 7 天。
+  ⚠️ 迁移语义：`scope` 有默认值 `sync` ⇒ 本改动上线后**所有历史令牌自动降级为只读同步**
+  （它们原本都是给同步用的），后台需重新验证一次；这是有意为之，不是遗漏。
 - Tombstone 保留 90 天语义与 sync 窗口对齐（读路径强制；写侧 GC 为观察项）。
 
 ### S2.2 鉴权：`lib/app-auth.ts`
 
-- `bearerToken(req)`：解析 `Authorization: Bearer <plain>` → `sha256(plain)` → 查 `ApiToken`（`revokedAt = null`）→ 命中则 fire-and-forget 更新 `lastUsedAt`，返回 `{ ok: true, tokenId }`；否则 `null`。
-- `requireSessionOrBearer(req)`：Cookie 会话优先 → `{ kind: "session", session }`；否则 Bearer → `{ kind: "bearer", tokenId }`；都无 → `null`。
+**用途分级（2026-09-21）**：令牌按 `scope` 分 `sync` / `admin` 两种，这是本节的核心约束 ——
+`sync` 令牌**不得**用于后台管理，服务端以 403 `token_scope` 拒绝。
+
+- `TOKEN_SCOPE_SYNC` / `TOKEN_SCOPE_ADMIN`、`SYNC_TOKEN_TTL_MS`（90 天）/ `ADMIN_TOKEN_TTL_MS`（7 天）：
+  用途与有效期的**唯一定义处**，路由不得自行比较字符串。
+- `lookupBearer(req)`：解析 `Authorization: Bearer <plain>` → `sha256(plain)` → 查 `ApiToken`
+  （`revokedAt = null` 且未过 `expiresAt`）→ 命中则 fire-and-forget 更新 `lastUsedAt`。
+  返回 `{ ok: true, tokenId, scope }`，失败返回 `{ ok: false, reason: "missing" | "invalid" | "expired" }`
+  —— **区分原因是必须的**：401 与 403 的语义不同，客户端据此决定"重登"还是"换凭据"。
+- `bearerToken(req)`：旧签名薄封装（失效一律 `null`），给 `/api/app/sync`、`/api/covers/[id]`
+  这类**只读**路径用 —— 它们不关心用途，只关心"能不能解锁完整内容"。
+- `requireSessionOrBearer(req)`：Cookie 会话优先 → `{ kind: "session", session }`；否则任意有效
+  Bearer → `{ kind: "bearer", tokenId }`；都无 → `null`。**同步侧**门禁。
+- `requireAdminAuth(req)`：Cookie 会话，或 `scope === "admin"` 的 Bearer。返回
+  `{ ok: true, kind }` 或 `{ ok: false, reason }`。**后台管理**门禁。
+- `adminAuthError(reason)`：把失败原因翻成 `401/403` + 中文 + 稳定 `code`
+  （`unauthenticated` / `token_expired` / `token_scope`）。
 - **强制改密门禁只作用于 `kind === "session"`**。
 - 不修改 `lib/auth.ts` 的 Credentials 限流逻辑。
 
-写接口统一改法：
+后台写接口统一改法：
 
 ```ts
-const gate = await requireSessionOrBearer(req)
-if (!gate) return apiError(401, "未登录")
+const gate = await requireAdminAuth(req)
+if (!gate.ok) return adminAuthError(gate.reason)
 if (gate.kind === "session" && passwordChangeRequired(gate.session))
   return apiError(403, "请先修改默认密码")
 ```
 
-**已接入 bearer 的写接口**：posts POST/PUT/DELETE、thoughts POST/PUT/DELETE、categories POST/PUT/DELETE、media POST/DELETE、settings PUT、auth change-password POST。`GET /api/app/tokens`、`GET /api/app/devices` 仍为 Cookie 会话 only。
+**已接入管理门禁的接口**（此前是 `requireSessionOrBearer`）：posts POST/PUT/DELETE、
+thoughts POST/PUT/DELETE、categories POST/PUT/DELETE、media GET/POST/DELETE、settings PUT、
+app/tokens GET/POST/DELETE、auth change-password POST。
+
+**仍为同步侧（任意有效 Bearer）**：`GET /api/app/sync`、`GET /api/covers/[id]`、
+`app/devices` GET/POST/DELETE（App 自身注册推送设备）。
+
+### S2.2b 凭据换令牌 `app/api/app/auth/token/route.ts`（2026-09-21）
+
+公开可达 —— 全项目**唯一不需要凭据就能调通的写接口**，也是两种令牌的唯一来源。
+
+`{ email, password, name?, scope? }` → `{ id, name, scope, expiresAt, createdAt, token }`
+
+| 入口 | scope | 得到什么 |
+|------|-------|----------|
+| App 读者设置页「自动获取令牌」 | `sync`（**服务端缺省值**） | 只读同步凭据，90 天 |
+| App 后台入口「管理员登录」 | `admin` | 后台管理凭据，7 天 |
+
+- 缺省给 `sync` 是刻意的：写权限必须显式索取，避免"不小心把管理权限发给同步入口"。
+- 校验与限流完全复用 `verifyCredentials`（双维度计数 + 渐进延迟 + IP 硬闸）；
+  默认密码 403 不签发；401 不区分「账号不存在」与「密码错误」。
+- **同名去重键是 `name` + `scope`**（⚠️ 早期只按 `name`）：App 两个入口用同一个设备标签，
+  只按 name 去重会导致「进一次后台就把同步令牌撤掉」。顺序仍是先建后撤。
+- 响应 `Cache-Control: no-store`；明文只此一次。
 
 ### S2.3 Token 管理 API `app/api/app/tokens/route.ts`
 
-门禁：Cookie `auth()` + `passwordChangeRequired`。
+门禁：**管理门禁**（`requireAdminAuth` + `passwordChangeRequired`）—— 令牌管理本身就是后台操作，
+同步令牌到这里会 403 `token_scope`，不会列出本站的令牌。
 
 | 方法 | 行为 |
 |------|------|
-| GET | `[{ id, name, createdAt, lastUsedAt, revokedAt }]`，永不返回 hash/明文 |
-| POST `{ name }` | 32 字节随机 hex；存 SHA-256；明文仅本次返回 |
-| DELETE `?id=` | `revokedAt = now()`；幂等 `{ ok: true }` |
+| GET | `[{ id, name, scope, expiresAt, createdAt, lastUsedAt, revokedAt }]`，永不返回 hash/明文 |
+| POST `{ name, scope? }` | 32 字节随机 hex；存 SHA-256；`scope` 缺省 `sync`（要管理用途必须显式选）；明文仅本次返回 |
+| DELETE `?id=` | `revokedAt = now()`；幂等 `{ ok: true }`；保留"不能撤销当前正在使用的令牌"自毁保护 |
 
 ### S2.4 设备 API `app/api/app/devices/route.ts`
 
@@ -103,8 +149,15 @@ if (gate.kind === "session" && passwordChangeRequired(gate.session))
 
 | 调用方 | posts | 内容字段 |
 |--------|-------|----------|
-| 无 Bearer | `publicPostWhere()` | `stripPostHeavy` |
-| 有 Bearer | 全部 status | 内联 DTO（**含 content**）；与 `mapPost` 的 headings/displayDate 差异可接受 |
+| 无 `Authorization` 头 | `publicPostWhere()` | `stripPostHeavy` |
+| 有效 Bearer | 全部 status | 内联 DTO（**含 content**）；与 `mapPost` 的 headings/displayDate 差异可接受 |
+
+⚠️ **「没带凭据」与「带了但不认」必须分开**：带 `Authorization` 却无效 / 过期 / 已撤销 → **401**
+（`unauthenticated` / `token_expired`），**不得降级成游客数据**。
+
+理由是客户端会照常落库：游客 payload 不含 `content`，而 Room `@Upsert` 是整行替换，
+一旦降级就会把本地已同步的正文覆盖成 NULL —— 症状是「设置里显示已配置、列表正常、正文全空」，
+且没有任何报错。**游客模式只服务「从未配置凭据」这一种情况。**
 
 **since 语义**
 
