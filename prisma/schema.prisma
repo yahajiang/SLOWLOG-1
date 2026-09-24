@@ -10,15 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 单用户
+/**
+ * 账号（2026-09-25 起分角色，注释里的旧前提「单用户」已不再成立）。
+ *
+ * `role` 只有两个值，判定唯一入口是 `lib/app-auth.ts`：
+ * - `admin`  —— 站点作者：可进 Web 后台、可换 `scope=admin` 令牌、同步时能拿到草稿；
+ * - `reader` —— App 自助注册的只读账号：**只能同步已发布内容**，进不了后台，
+ *   也换不到管理令牌。
+ *
+ * ⚠️ 缺省是 `admin` 而不是 `reader`：存量行全是作者，默认成 reader 会在
+ * `db push` 的那一刻把现有管理员锁在门外。新角色必须由代码显式写成 reader。
+ */
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
   name      String?
   image     String?
+  role      String   @default("admin")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tokens    ApiToken[]
 }
 
 model Category {
@@ -118,6 +130,15 @@ model ApiToken {
   // 用途分级（2026-09-21）：sync = 只读同步内容；admin = 后台管理。
   // 仓库里唯一的判定入口是 lib/app-auth.ts，路由不得自行比较字符串。
   scope      String    @default("sync")
+  // 归属账号（2026-09-25）。签发时写入，用途有二：
+  //   ① 后台「App 令牌」页能看出这枚令牌属于谁（此前表里根本没有账号信息）；
+  //   ② 按**账号角色**收窄数据可见性 —— reader 只能同步已发布内容。
+  // 可空只有一种合法来源：本次改动之前签发的历史令牌，它们一律视为作者本人
+  // （否则部署那一刻，用户手上那枚能进后台的令牌会突然失效）。
+  // onDelete: Cascade —— 删号即作废其令牌。用 SetNull 会留下「没有归属但仍有效」
+  // 的凭据，而权限判定恰恰依赖归属，那种令牌只能整体拒绝，等于埋一颗哑弹。
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   // 到期时间。null = 永不过期（历史的旧令牌即如此，它们同时会被
   // 默认成 scope="sync" ⇒ 旧令牌全部降级为同步用途，进不了后台）。
   expiresAt  DateTime?
@@ -126,6 +147,7 @@ model ApiToken {
   revokedAt  DateTime?
 
   @@index([tokenHash])
+  @@index([userId])
 }
 
 // Android App 配套：FCM 推送设备

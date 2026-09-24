@@ -182,6 +182,24 @@ export const appTokenExchangeSchema = z.object({
    * 让「不小心把管理权限发给同步入口」在代码层就不可能发生。
    */
   scope: z.enum(["sync", "admin"]).default("sync"),
+  /**
+   * 账号不存在时**自助注册一个只读账号**（2026-09-25）。
+   *
+   * 只有 `scope: "sync"` 的入口能用它：管理凭据必须来自一个已由作者建好的账号，
+   * 否则「公开接口 + 自动注册」就等于把后台门钥匙发给任意路人。
+   * 注册出的 role 恒为 `reader`，服务端不接受客户端指定角色。
+   */
+  register: z.boolean().default(false),
+}).superRefine((v, ctx) => {
+  if (!v.register) return
+  if (v.scope !== "sync")
+    ctx.addIssue({ code: "custom", path: ["register"], message: "只有同步入口可以自助注册账号" })
+  // 注册路径不接受「用户名」：verifyCredentials 会补 @slowlog.dev，
+  // 那等于允许任意人批量占下 `xxx@slowlog.dev` 这批内部命名空间。
+  if (!v.email.includes("@"))
+    ctx.addIssue({ code: "custom", path: ["email"], message: "注册账号必须使用邮箱" })
+  if (v.password.length < 8)
+    ctx.addIssue({ code: "custom", path: ["password"], message: "注册密码至少 8 位" })
 });
 
 export const deviceUpsertSchema = z.object({

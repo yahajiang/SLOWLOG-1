@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server"
 import sharp from "sharp"
 import { prisma } from "@/lib/prisma"
 import { apiError } from "@/lib/api-utils"
-import { bearerToken } from "@/lib/app-auth"
+import { canReadUnpublished, bearerToken } from "@/lib/app-auth"
 import { isPublicPost } from "@/lib/posts"
 import { deriveCover, renderCoverSvg } from "@/lib/cover-svg"
 
@@ -67,7 +67,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!post) return apiError(404, "内容不存在")
 
   const bearer = await bearerToken(req)
-  if (!bearer && !isPublicPost(post)) return apiError(404, "内容不存在")
+  // 未公开文章的封面按**角色**收窄（2026-09-25）：只有管理员身份（含本次改动之前
+  // 签发的历史令牌）能凭 id/slug 取到草稿封面；`reader` 与匿名访客一律 404。
+  // 与 /api/app/sync 用同一个 canReadUnpublished，两处判定不会漂。
+  if (!isPublicPost(post) && !(bearer && canReadUnpublished(bearer.role)))
+    return apiError(404, "内容不存在")
 
   const wRaw = parseInt(new URL(req.url).searchParams.get("w") || "", 10)
   const width = wRaw === 1600 ? 1600 : 800

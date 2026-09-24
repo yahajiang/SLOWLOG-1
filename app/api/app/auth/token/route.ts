@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { randomBytes } from "node:crypto"
+import bcrypt from "bcryptjs"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { appTokenExchangeSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
-import { sha256Hex, tokenExpiry } from "@/lib/app-auth"
-import { verifyCredentials } from "@/lib/auth"
+import { canReadUnpublished, ROLE_READER, sha256Hex, tokenExpiry, TOKEN_SCOPE_ADMIN } from "@/lib/app-auth"
+import { normalizeLoginEmail, verifyCredentials } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
 
@@ -46,6 +47,15 @@ export const dynamic = "force-dynamic"
  * 4. **明文只出现这一次**：与 `/api/app/tokens` POST 同规矩，库里只存
  *    SHA-256 hex，列表接口永不回显。
  * 5. `Cache-Control: no-store` —— 响应体里有明文凭据，不许任何层缓存。
+ * 6. **自动注册只能建只读账号**（2026-09-25，请求体 `register: true`）：
+ *    - 只有 `scope: "sync"` 能带 `register`（schema 层就拒 admin+register 的组合）；
+ *    - 建出的 `User.role` 恒为 `reader`，客户端无法指定角色；
+ *    - 只在「该邮箱确实没有账号」时建号 —— 已有账号的密码不可能被注册请求改写；
+ *    - `reader` 拿不到管理凭据（本文件），进不了后台（`requireAdminAuth`），
+ *      同步也只看到已发布内容（`/api/app/sync`）。
+ *    残留风险：注册没有独立限流（复用登录的 IP 硬闸只对**失败**计数，注册是成功路径）。
+ *    可接受的边界：注册成功也只是一个能读公开内容的账号 —— 与匿名访客打开网站、
+ *    订阅 RSS 能看到的同量，攻击收益是垃圾数据行，不是内容泄漏。
  *
  * ## 同名令牌只保留最新一枚（去重键是 `name` + `scope`）
  * 每次「自动获取」都会签发新 Token。若不管，反复换设备/重装会在令牌列表里
@@ -69,22 +79,55 @@ export async function POST(req: NextRequest) {
   const parsed = appTokenExchangeSchema.safeParse(body)
   if (!parsed.success) return apiZodError(parsed.error)
 
-  const check = await verifyCredentials(parsed.data.email, parsed.data.password, req)
-  if (!check.ok) {
-    return apiError(
-      401,
-      check.reason === "rate_limited" ? "尝试过于频繁，请稍后再试" : "邮箱或密码不正确",
-    )
-  }
-  if (check.needsPasswordChange) return apiError(403, "请先在 Web 端修改默认密码")
+  const { email, password, scope, register } = parsed.data
 
-  const scope = parsed.data.scope
+  // ── 身份：先走登录校验；登录不上且请求明确允许注册时，才建一个只读账号 ──
+  const check = await verifyCredentials(email, password, req)
+  const failure = check.ok ? null : check.reason
+  let principal: { id: string; role: string } | null = check.ok
+    ? { id: check.id, role: check.role }
+    : null
+  const needsPasswordChange = check.ok ? check.needsPasswordChange : false
+
+  if (!principal && register) {
+    // 注册**只发生在「这个邮箱确实没有账号」时**。verifyCredentials 刻意把
+    // 「账号不存在」与「密码错误」塌缩成同一个 invalid（防枚举），所以这里必须
+    // 自己查一次存在性 —— 已有账号绝不能被一个带 register 的请求改掉密码。
+    const mail = normalizeLoginEmail(email)
+    const exists = await prisma.user.findFirst({
+      where: { email: { equals: mail, mode: "insensitive" } },
+      select: { id: true },
+    })
+    if (!exists) {
+      try {
+        const u = await prisma.user.create({
+          data: { email: mail, password: await bcrypt.hash(password, 10), role: ROLE_READER },
+          select: { id: true, role: true },
+        })
+        principal = { id: u.id, role: u.role }
+      } catch (e) {
+        // 并发注册撞 email 唯一索引 ⇒ 语义上等同「已存在」，落到下面的 401。
+        if ((e as { code?: string }).code !== "P2002") throw e
+      }
+    }
+  }
+
+  if (!principal) {
+    return apiError(401, failure === "rate_limited" ? "尝试过于频繁，请稍后再试" : "邮箱或密码不正确")
+  }
+  if (needsPasswordChange) return apiError(403, "请先在 Web 端修改默认密码")
+  if (scope === TOKEN_SCOPE_ADMIN && !canReadUnpublished(principal.role)) {
+    // 只读账号即便显式索取管理凭据也拿不到。签发处拦一道，requireAdminAuth
+    // 使用时再拦一道 —— 权限判定只写一处、而那处漏了就没有第二道防线。
+    return apiError(403, "该账号是只读账号，不能获取后台管理凭据", "forbidden_role")
+  }
+
   const token = randomBytes(32).toString("hex")
   const label = (parsed.data.name?.trim() || DEFAULT_TOKEN_NAME).slice(0, 60)
   const expiresAt = tokenExpiry(scope)
 
   const created = await prisma.apiToken.create({
-    data: { name: label, tokenHash: sha256Hex(token), scope, expiresAt },
+    data: { name: label, tokenHash: sha256Hex(token), scope, expiresAt, userId: principal.id },
     select: { id: true, name: true, scope: true, expiresAt: true, createdAt: true },
   })
 

@@ -7,9 +7,15 @@ import { Input } from "@/components/ui/Input"
 type TokenRow = {
   id: string
   name: string
+  /** 用途：sync = 只读同步；admin = 后台管理。 */
+  scope: string
+  /** 到期时间；null = 本次改动之前签发的永不过期令牌。 */
+  expiresAt: string | null
   createdAt: string
   lastUsedAt: string | null
   revokedAt: string | null
+  /** 归属账号；null = 改动前签发的历史令牌，当时表里没有归属字段。 */
+  user: { email: string; name: string | null; role: string } | null
 }
 
 type DeviceRow = {
@@ -28,6 +34,17 @@ function fmt(d: string | null | undefined) {
 function shortToken(t: string) {
   return t.length > 16 ? `${t.slice(0, 8)}…${t.slice(-6)}` : t
 }
+
+/** 剩余天数（向上取整，与 App 侧同一口径）；0 = 已到期，null = 不设到期。 */
+function daysLeft(iso: string | null): number | null {
+  if (!iso) return null
+  const t = new Date(iso).getTime()
+  if (isNaN(t)) return null
+  const diff = t - Date.now()
+  return diff <= 0 ? 0 : Math.ceil(diff / 86_400_000)
+}
+
+const SCOPE_LABEL: Record<string, string> = { sync: "只读同步", admin: "后台管理" }
 
 export function TokenManager() {
   const [tokens, setTokens] = useState<TokenRow[]>([])
@@ -123,8 +140,11 @@ export function TokenManager() {
             <thead>
               <tr className="text-left text-xs text-[var(--yh-muted)] border-b border-[var(--yh-border)]">
                 <th className="py-2 pr-3">名称</th>
+                <th className="py-2 pr-3">归属账号</th>
+                <th className="py-2 pr-3">用途</th>
                 <th className="py-2 pr-3">创建时间</th>
                 <th className="py-2 pr-3">最近使用</th>
+                <th className="py-2 pr-3">到期</th>
                 <th className="py-2 pr-3">状态</th>
                 <th className="py-2">操作</th>
               </tr>
@@ -132,32 +152,62 @@ export function TokenManager() {
             <tbody>
               {tokens.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-4 text-[var(--yh-muted)]">
+                  <td colSpan={8} className="py-4 text-[var(--yh-muted)]">
                     暂无令牌
                   </td>
                 </tr>
               )}
-              {tokens.map((t) => (
-                <tr key={t.id} className="border-b border-[var(--yh-border)]">
-                  <td className="py-2 pr-3">{t.name}</td>
-                  <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.createdAt)}</td>
-                  <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.lastUsedAt)}</td>
-                  <td className="py-2 pr-3">
-                    {t.revokedAt ? (
-                      <span className="text-[var(--yh-muted)]">已撤销</span>
-                    ) : (
-                      <span className="text-[var(--yh-accent)]">有效</span>
-                    )}
-                  </td>
-                  <td className="py-2">
-                    {!t.revokedAt && (
-                      <Button variant="secondary" onClick={() => revokeToken(t.id)} disabled={busy}>
-                        撤销
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {tokens.map((t) => {
+                const left = daysLeft(t.expiresAt)
+                return (
+                  <tr key={t.id} className="border-b border-[var(--yh-border)]">
+                    <td className="py-2 pr-3">{t.name}</td>
+                    <td className="py-2 pr-3">
+                      {t.user ? (
+                        <>
+                          <span className="break-all">{t.user.email}</span>
+                          {/* 角色决定这枚令牌实际能看到多少内容 */}
+                          <span className="ml-2 text-xs text-[var(--yh-muted)]">
+                            {t.user.role === "reader" ? "只读账号" : "管理员"}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-[var(--yh-muted)]">历史令牌（无归属）</span>
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">{SCOPE_LABEL[t.scope] || t.scope}</td>
+                    <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.createdAt)}</td>
+                    <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.lastUsedAt)}</td>
+                    <td className="py-2 pr-3">
+                      {t.expiresAt ? (
+                        <span className={left === 0 ? "text-red-600" : "text-[var(--yh-muted)]"}>
+                          {fmt(t.expiresAt)}
+                          {left !== null && left > 0 && `（余 ${left} 天）`}
+                          {left === 0 && "（已到期）"}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[var(--yh-muted)]">不设到期</span>
+                      )}
+                    </td>
+                    <td className="py-2 pr-3">
+                      {t.revokedAt ? (
+                        <span className="text-[var(--yh-muted)]">已撤销</span>
+                      ) : left === 0 ? (
+                        <span className="text-[var(--yh-muted)]">已过期</span>
+                      ) : (
+                        <span className="text-[var(--yh-accent)]">有效</span>
+                      )}
+                    </td>
+                    <td className="py-2">
+                      {!t.revokedAt && (
+                        <Button variant="secondary" onClick={() => revokeToken(t.id)} disabled={busy}>
+                          撤销
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
