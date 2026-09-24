@@ -34,6 +34,42 @@ export function isTokenScope(v: unknown): v is TokenScope {
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
+// ── 账号角色（2026-09-25）───────────────────────────────────────
+//
+// 起因：App 的「邮箱 + 密码自动获取令牌」要能在没有账号时自助注册，
+// 但 `User` 表原本没有任何角色区分 —— 一条 User 记录就等于 Web 后台管理员。
+// 直接放开注册等于把整站写权限交给任意路人，所以先分角色，再谈注册。
+//
+// 判定只在本文件里做（与 scope 同一条规矩）：路由一律调用 requireAdminAuth /
+// canReadUnpublished，**不得自行比较 role 字符串**。
+//
+// ⚠️ 两条「历史凭据」规则，都是为了让部署那一刻不把作者锁在门外：
+//   - `ApiToken.userId == null` 的令牌 = 本次改动之前签发的 = 作者本人；
+//   - 会话里没有 `role`（JWT 是改动前签发的）= 同上。
+// 两者都按 admin 处理。新签发的令牌与新登录会话一定带值，reader 因此不可能获益。
+
+/** 站点作者：可进后台、可换管理令牌、同步时能拿到草稿。 */
+export const ROLE_ADMIN = "admin"
+
+/** App 自助注册的只读账号：只能同步已发布内容，进不了后台。 */
+export const ROLE_READER = "reader"
+
+export type UserRole = typeof ROLE_ADMIN | typeof ROLE_READER
+
+export function isUserRole(v: unknown): v is UserRole {
+  return v === ROLE_ADMIN || v === ROLE_READER
+}
+
+/**
+ * 这个身份能不能看到**未发布**内容（草稿 / 定时 / 已下架）。
+ *
+ * `role` 传 `null` 表示「历史凭据，归属未知」⇒ 按作者处理（见上文）。
+ * 只有明确是 reader 才收窄。
+ */
+export function canReadUnpublished(role: string | null | undefined): boolean {
+  return role !== ROLE_READER
+}
+
 /**
  * 同步令牌 90 天、管理令牌 7 天。
  *
@@ -63,11 +99,19 @@ export function tokenExpiry(scope: TokenScope, from: Date = new Date()): Date {
 export type BearerFailure = "missing" | "invalid" | "expired"
 
 export type BearerLookup =
-  | { ok: true; tokenId: string; scope: string }
+  | {
+      ok: true
+      tokenId: string
+      scope: string
+      /** 归属账号；null = 本次改动之前签发的历史令牌（按作者处理）。 */
+      userId: string | null
+      /** 归属账号的角色；null 同上。 */
+      role: string | null
+    }
   | { ok: false; reason: BearerFailure }
 
 /**
- * 解析 `Authorization: Bearer <plain>` → SHA-256 → 查 `ApiToken`。
+ * 解析 `Authorization: Bearer <plain>` → SHA-256 → 查 `ApiToken`（连带归属账号）。
  * 命中且未撤销、未过期时 fire-and-forget 更新 `lastUsedAt`。
  */
 export async function lookupBearer(req: Request): Promise<BearerLookup> {
@@ -78,7 +122,10 @@ export async function lookupBearer(req: Request): Promise<BearerLookup> {
   if (!plain || plain.length < 16 || plain.length > 256) return { ok: false, reason: "invalid" }
   const tokenHash = sha256Hex(plain)
   try {
-    const row = await prisma.apiToken.findUnique({ where: { tokenHash } })
+    const row = await prisma.apiToken.findUnique({
+      where: { tokenHash },
+      include: { user: { select: { role: true } } },
+    })
     if (!row || row.revokedAt) return { ok: false, reason: "invalid" }
     // 过期判定放在撤销之后：过期的令牌不再刷新 lastUsedAt，
     // 否则「最近使用」会显示出早已失效的凭据。
@@ -88,7 +135,13 @@ export async function lookupBearer(req: Request): Promise<BearerLookup> {
     void prisma.apiToken
       .update({ where: { id: row.id }, data: { lastUsedAt: new Date() } })
       .catch(() => {})
-    return { ok: true, tokenId: row.id, scope: row.scope }
+    return {
+      ok: true,
+      tokenId: row.id,
+      scope: row.scope,
+      userId: row.userId,
+      role: row.user?.role ?? null,
+    }
   } catch {
     return { ok: false, reason: "invalid" }
   }
@@ -97,11 +150,11 @@ export async function lookupBearer(req: Request): Promise<BearerLookup> {
 /**
  * 旧签名（有效即返回，失效一律 `null`）。
  * 供 `/api/app/sync`、`/api/covers/[id]` 这类**只读**路径使用 ——
- * 它们不关心用途，只关心「这枚凭据能不能解锁完整内容」。
+ * 它们不关心用途，只关心「这枚凭据是谁的、能看到多少内容」。
  */
 export async function bearerToken(
   req: Request,
-): Promise<{ ok: true; tokenId: string; scope: string } | null> {
+): Promise<Extract<BearerLookup, { ok: true }> | null> {
   const r = await lookupBearer(req)
   return r.ok ? r : null
 }
@@ -126,25 +179,41 @@ export async function requireSessionOrBearer(req: NextRequest | Request): Promis
 
 export type AdminAuth =
   | { ok: true; kind: "session"; session: Session }
-  | { ok: true; kind: "bearer"; tokenId: string }
-  | { ok: false; reason: BearerFailure | "scope" }
+  | {
+      ok: true
+      kind: "bearer"
+      tokenId: string
+      /** 这枚管理令牌的归属账号；null = 历史令牌（改动前签发，当时没有归属字段）。 */
+      userId: string | null
+    }
+  | { ok: false; reason: BearerFailure | "scope" | "role" }
+
+/** 会话里有没有后台管理权限。缺 role = 本次改动之前签发的 JWT ⇒ 按作者处理。 */
+export function sessionIsAdmin(session: Session | null | undefined): boolean {
+  return canReadUnpublished((session?.user as { role?: string } | undefined)?.role)
+}
 
 /**
- * **后台管理**门禁：Cookie 会话，或 `scope = admin` 的 Bearer。
+ * **后台管理**门禁：Cookie 会话（且账号是 admin），或 `scope = admin` 的 Bearer
+ * （且归属账号是 admin）。
  *
- * 它比 [requireSessionOrBearer] 严一档，正是本次改动的落点：
- * 邮箱密码自动获取的那枚（`sync`）到这里会被 403 挡住，
- * 而不是像以前那样畅通无阻。
- *
- * Web 网页端的 Cookie 会话不需要 scope —— 浏览器登录本就是管理入口。
+ * 它比 [requireSessionOrBearer] 严两档，分别对应两次改动：
+ * - **scope**（2026-09-21）：邮箱密码自动获取的那枚（`sync`）在这里被 403 挡住；
+ * - **role**（2026-09-25）：App 自助注册的 `reader` 账号，即使误拿到管理用途的
+ *   令牌也进不来。签发处已经拦了一道，这里是第二道 —— 权限判定宁可重复，
+ *   不可只有一处且那处漏了。
  */
 export async function requireAdminAuth(req: NextRequest | Request): Promise<AdminAuth> {
   const session = await auth()
-  if (session) return { ok: true, kind: "session", session: session as Session }
+  if (session) {
+    if (!sessionIsAdmin(session as Session)) return { ok: false, reason: "role" }
+    return { ok: true, kind: "session", session: session as Session }
+  }
   const bearer = await lookupBearer(req)
   if (!bearer.ok) return { ok: false, reason: bearer.reason }
   if (bearer.scope !== TOKEN_SCOPE_ADMIN) return { ok: false, reason: "scope" }
-  return { ok: true, kind: "bearer", tokenId: bearer.tokenId }
+  if (!canReadUnpublished(bearer.role)) return { ok: false, reason: "role" }
+  return { ok: true, kind: "bearer", tokenId: bearer.tokenId, userId: bearer.userId }
 }
 
 /**
@@ -154,15 +223,15 @@ export async function requireAdminAuth(req: NextRequest | Request): Promise<Admi
  * if (!gate.ok) return adminAuthError(gate.reason)
  * ```
  *
- * ## 为什么四种原因要分成 401 / 403 两种状态码
+ * ## 为什么这些原因要分成 401 / 403 两种状态码
  * - `missing` / `invalid` / `expired` → **401**：凭据本身有问题，重新验证能解决；
- * - `scope` → **403**：凭据完全有效，只是**用途**不对。客户端重试一万次
- *   也不会变成 200，必须换一枚管理凭据 —— 这一条正是本次分级改动的意义所在。
+ * - `scope` / `role` → **403**：凭据完全有效，只是**用途**或**账号权限**不对。
+ *   客户端重试一万次也不会变成 200，必须换凭据或换账号 —— 这一条正是分级改动的意义所在。
  *
  * 响应同时带 `code`（`token_expired` / `token_scope` / …）供客户端分支，
  * 带 `error` 中文供直接展示。二者不可互相替代：文案会改，code 是契约。
  */
-export function adminAuthError(reason: BearerFailure | "scope") {
+export function adminAuthError(reason: BearerFailure | "scope" | "role") {
   switch (reason) {
     case "missing":
       return apiError(401, "未登录", "unauthenticated")
@@ -170,6 +239,10 @@ export function adminAuthError(reason: BearerFailure | "scope") {
       return apiError(401, "管理凭据已过期，请重新验证", "token_expired")
     case "scope":
       return apiError(403, "该凭据只能用于内容同步，不能用于后台管理", "token_scope")
+    case "role":
+      // 与 scope 同为 403：凭据本身没毛病，是**这个账号**没有管理权限。
+      // 重试、换设备、重新登录都不会变，只有把账号提成 admin 才行。
+      return apiError(403, "该账号是只读账号，没有后台管理权限", "forbidden_role")
     default:
       return apiError(401, "登录状态已失效，请重新登录", "unauthenticated")
   }

@@ -84,7 +84,15 @@ export function passwordChangeRequired(session: unknown): boolean {
 }
 
 export type CredentialCheck =
-  | { ok: true; id: string; email: string; name?: string; needsPasswordChange: boolean }
+  | {
+      ok: true
+      id: string
+      email: string
+      name?: string
+      /** `admin` | `reader`（2026-09-25）。判定入口在 lib/app-auth.ts。 */
+      role: string
+      needsPasswordChange: boolean
+    }
   | { ok: false; reason: "invalid" | "rate_limited" }
 
 /**
@@ -102,6 +110,19 @@ export type CredentialCheck =
  * ⚠️ `prisma` 保持**动态 import**：静态 import 会让 middleware/edge 打包链
  * 拉入 pg（见原 authorize 里的注释）。
  */
+/**
+ * 登录账号归一化：小写 + 去空白；不含 `@` 的输入补全成 `用户名@slowlog.dev`
+ * （Web 登录表单与 App 换取 Token 共用这一条约定，2026-09-21）。
+ *
+ * 导出是为了让**注册**路径与登录路径用同一个键去查/写 `User.email` ——
+ * 两边各写一遍的话，迟早出现「注册进去的邮箱登录查不到」。
+ */
+export function normalizeLoginEmail(email: string): string {
+  const mail = (email || "").toLowerCase().trim()
+  if (!mail) return ""
+  return mail.includes("@") ? mail : `${mail}@slowlog.dev`
+}
+
 export async function verifyCredentials(
   email: string,
   password: string,
@@ -116,8 +137,7 @@ export async function verifyCredentials(
   // 就能直接收用户名 —— 两端行为一致，且对已传完整邮箱的调用零影响。
   // 必须在 emailKey 之前归一化，否则限流的「辅助维度」会把
   // `admin` 和 `admin@slowlog.dev` 记成两个账号（各算各的失败次数）。
-  let mail = (email || "").toLowerCase().trim()
-  if (mail && !mail.includes("@")) mail = `${mail}@slowlog.dev`
+  const mail = normalizeLoginEmail(email)
   if (!mail || !password) return { ok: false, reason: "invalid" }
 
   const ipKey = `ip:${clientIp(request)}`
@@ -136,7 +156,18 @@ export async function verifyCredentials(
     recordFail(emailKey, now)
     return { ok: false, reason: "invalid" }
   }
-  const ok = await bcrypt.compare(password, user.password)
+  // ⚠️ 不能直接 await bcrypt.compare：历史脏数据里存在 `password` 列不是合法
+  // bcrypt 哈希的行（早期脚本/迁移写入），bcryptjs 遇到这种值会**抛异常**而不是
+  // 返回 false —— 表现就是「输对这个账号的密码 → HTTP 500」。500 对用户毫无信息量
+  // （分不清是密码错还是数据坏），还把「这个邮箱确实有账号」用状态码泄漏给了枚举探测。
+  // 一律按密码错误处理，并留下可定位的日志（只出 id，不出邮箱）。
+  let ok: boolean
+  try {
+    ok = await bcrypt.compare(password, user.password)
+  } catch (e) {
+    console.error("[auth] 密码哈希无法比对，该行 password 不是合法 bcrypt 值", user.id, e)
+    ok = false
+  }
   if (!ok) {
     recordFail(ipKey, now)
     recordFail(emailKey, now)
@@ -152,6 +183,7 @@ export async function verifyCredentials(
     id: user.id,
     email: user.email,
     name: user.name ?? undefined,
+    role: user.role,
     needsPasswordChange: isDefault,
   }
 }
@@ -170,7 +202,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           request,
         )
         if (!r.ok) return null
-        return { id: r.id, email: r.email, name: r.name, needsPasswordChange: r.needsPasswordChange }
+        return {
+          id: r.id,
+          email: r.email,
+          name: r.name,
+          role: r.role,
+          needsPasswordChange: r.needsPasswordChange,
+        }
       },
     }),
   ],

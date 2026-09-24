@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { apiError } from "@/lib/api-utils"
-import { lookupBearer, syncAuthError } from "@/lib/app-auth"
+import { canReadUnpublished, lookupBearer, syncAuthError } from "@/lib/app-auth"
 import { publicPostWhere, stripPostHeavy } from "@/lib/posts"
 import { getSettings } from "@/lib/settings"
 
@@ -29,6 +29,10 @@ export async function GET(req: NextRequest) {
   const lookup = await lookupBearer(req)
   if (headerPresent && !lookup.ok) return syncAuthError(lookup.reason)
   const bearer = lookup.ok
+  // 未发布内容（草稿 / 定时 / 已下架）只对**管理员身份**开放（2026-09-25）。
+  // `reader` 是 App 自助注册的只读账号：它与匿名访客的差别只是「能离线读正文」，
+  // 不该看见还没公开的东西。`role === null` 是本次改动之前签发的历史令牌 ⇒ 按作者处理。
+  const fullAccess = lookup.ok && canReadUnpublished(lookup.role)
   const now = new Date()
 
   // 契约（S2.5）：since 缺失或非法 → 全量模式，**不 400**；
@@ -47,7 +51,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const postWhere: any = bearer
+    // 过滤条件按**权限**而不是「带没带凭据」：reader 带了有效凭据，但仍只该拿到公开内容。
+    const postWhere: any = fullAccess
       ? since
         ? { updatedAt: { gt: since } }
         : {}

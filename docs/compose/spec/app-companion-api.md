@@ -103,19 +103,30 @@ app/tokens GET/POST/DELETE、auth change-password POST。
 
 **仍为同步侧（任意有效 Bearer）**：`GET /api/app/sync`、`GET /api/covers/[id]`、
 `app/devices` GET/POST/DELETE（App 自身注册推送设备）。
+⚠️ 2026-09-25 起同步侧再按**账号角色**收窄一档：`reader` 只拿到已发布内容
+（草稿/定时/已下架一律不可见，草稿封面 404），`admin` 与历史无归属令牌照旧。
+判定唯一入口 `canReadUnpublished(role)`，`sync` 与 `covers` 两条路由共用。
 
 ### S2.2b 凭据换令牌 `app/api/app/auth/token/route.ts`（2026-09-21）
 
 公开可达 —— 全项目**唯一不需要凭据就能调通的写接口**，也是两种令牌的唯一来源。
 
-`{ email, password, name?, scope? }` → `{ id, name, scope, expiresAt, createdAt, token }`
+`{ email, password, name?, scope?, register? }` → `{ id, name, scope, expiresAt, createdAt, token }`
 
 | 入口 | scope | 得到什么 |
 |------|-------|----------|
 | App 读者设置页「自动获取令牌」 | `sync`（**服务端缺省值**） | 只读同步凭据，90 天 |
+| App 读者设置页「注册一个只读账号」 | `sync` + `register: true` | 账号不存在时先建 `role=reader`，再发同步凭据 |
 | App 后台入口「管理员登录」 | `admin` | 后台管理凭据，7 天 |
 
 - 缺省给 `sync` 是刻意的：写权限必须显式索取，避免"不小心把管理权限发给同步入口"。
+- **`register` 只能配 `sync`**（schema 层直接拒 `admin`+`register` 的组合），且建出的
+  角色恒为 `reader`，客户端无法指定；只在「该邮箱确实没有账号」时建号 ——
+  已有账号的密码不可能被一个注册请求改写。注册要求邮箱形状 + 密码 ≥8 位。
+- **令牌一律记归属**：`ApiToken.userId` 在签发时写入（会话手动创建则记会话账号）。
+  `userId = null` 只有一种合法来源 = 2026-09-25 之前签发的历史令牌，按作者本人处理。
+- `reader` 索取 `admin` 凭据 → **403 `forbidden_role`**（与 `token_scope` 并列，
+  都是"凭据没毛病、权限不对"，重试无用）。
 - 校验与限流完全复用 `verifyCredentials`（双维度计数 + 渐进延迟 + IP 硬闸）；
   默认密码 403 不签发；401 不区分「账号不存在」与「密码错误」。
 - **同名去重键是 `name` + `scope`**（⚠️ 早期只按 `name`）：App 两个入口用同一个设备标签，
@@ -208,6 +219,37 @@ Web 端 `CoverArt.tsx` 由浏览器排版，中文照常显示。
 ### S2.12 错误与安全红线
 
 见 S2.8；游客 sync 不得泄漏草稿 content（smoke 已断言）。
+
+### S2.13 账号角色与自助注册（2026-09-25）
+
+**起因**：App 登录要求「没有账号也能进」。但 `User` 表原本没有任何角色区分 ——
+一条 User 记录就等于 Web 后台管理员，而 `/api/app/auth/token` 是公开可达的写接口。
+直接放开注册 = 把整站写权限交给任意路人。所以顺序只能是**先分角色，再谈注册**。
+
+| 角色 | 能做什么 | 从哪来 |
+|------|----------|--------|
+| `admin` | Web 后台全部页面与写接口；可换 `scope=admin` 令牌；同步可见草稿 | 存量行 + 作者手工建号（`role` 缺省即 admin） |
+| `reader` | 只读同步**已发布**内容（含正文，供离线阅读）；推送设备 | App「注册一个只读账号」 |
+
+三道拦截，缺一不可：签发处（`reader` 拿不到 admin 令牌）、门禁处
+（`requireAdminAuth` 对 session 与 bearer 都查角色）、页面处（`/dashboard` layout +
+middleware 把 reader 弹回前台，移动端回 `/m`）。数据可见性另有一处
+`canReadUnpublished(role)`，`sync` 与 `covers` 共用。
+
+**两条"历史凭据按作者处理"的规则**（`role` 缺省 admin 是同一动机）：
+`ApiToken.userId == null` 的令牌、以及 2026-09-25 之前签发的 JWT（里面没有 `role`），
+都按 admin 处理。否则 `db push` + 部署的那一刻，作者自己手上那枚能进后台的令牌会
+突然失效 —— 而这是最难排查的一种"升级即锁门"。副作用：改某账号的角色**不会**让
+已签发的会话立刻变权限，要生效得让对方重新登录。
+
+**已知边界**：注册路径没有独立限流（`verifyCredentials` 的 IP 硬闸只对**失败**计数，
+注册是成功路径）。可接受的依据是：注册成功也只是多一个能读公开内容的账号，
+与匿名访客打开网站 / 订阅 RSS 看到的同量，攻击收益是垃圾数据行而非内容泄漏。
+
+**Schema**：`User.role String @default("admin")`、`ApiToken.userId String?` +
+`User.tokens` 关系，`onDelete: Cascade`（删号即作废其令牌；SetNull 会留下
+"没有归属但仍有效"的凭据，而权限判定恰恰依赖归属）。改完必须 `prisma generate`，
+线上走 `prisma db push`（非 migrate）。
 
 ## [S3] Out of Scope
 

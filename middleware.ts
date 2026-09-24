@@ -117,6 +117,16 @@ export default auth((req) => {
     return redirectFor(req, "/login")
   }
 
+  // 只读账号（App 自助注册的 reader）没有后台可看（2026-09-25）。
+  // ⚠️ 这里刻意**不**复用 lib/app-auth 的 canReadUnpublished：那个模块 import 了
+  // prisma/pg，拉进 edge 打包链会直接构建失败 —— 判定逻辑在此内联一份，
+  // 语义与它一致：只有明确是 reader 才拦，会话里没有 role（改动前签发的 JWT）
+  // 按作者处理，否则部署那一刻会把作者自己踢出后台。
+  if ((req.auth?.user as { role?: string } | undefined)?.role === "reader") {
+    if (pathname.startsWith("/m/dashboard")) return redirectFor(req, "/m")
+    if (pathname.startsWith("/dashboard")) return redirectFor(req, "/")
+  }
+
   const needsChange = (req.auth?.user as any)?.needsPasswordChange
   if (needsChange) {
     // N-7：移动端改密走移动版页面，不再把手机用户踢进桌面壳。
