@@ -79,6 +79,27 @@ export function deriveCover(input: {
   return { cat, pal, layout, variant, variant4, symbol, stampCode, abbr, noNum, initial, tag, meta }
 }
 
+/**
+ * 位图封面（PNG）的字体族。名称取自随包 TTF 的内部 Family，见
+ * assets/cover-fonts/ + lib/cover-fonts.ts；后面的 ui-monospace / Georgia 只是
+ * 本机没装上时的兜底。Web 端那套由浏览器排，走 components/CoverArt.tsx，不受影响。
+ */
+const MONO = "'JetBrains Mono', ui-monospace, monospace"
+const SERIF = "'Cormorant Garamond', Georgia, serif"
+/** 斜体字面只有 Light 一档（cormorant_light_italic.ttf），族名不同，需单独指定 */
+const SERIF_ITALIC = "'Cormorant Garamond Light', 'Cormorant Garamond', Georgia, serif"
+
+/**
+ * 随包字体只有拉丁字面（可打印 ASCII + 间隔号）。中文标题首字、中文标签在
+ * librsvg 下不会像浏览器那样回退，而是逐字画成方框 —— 正是线上「图案正常、
+ * 文字全豆腐块」的成因。故整段不可渲染就整段丢弃，避免留下悬空的 " · "。
+ * 只作用于位图侧；Web 封面照常显示中文。
+ */
+const RENDERABLE = /^[\x20-\x7e\u00b7]*$/
+function renderable(s: string): string {
+  return RENDERABLE.test(s) ? s : ""
+}
+
 function esc(s: string) {
   return s
     .replace(/&/g, "&amp;")
@@ -118,12 +139,15 @@ function stampSvg(symbol: TagSymbol | null, pal: CoverPal, variant4: number, x: 
   }
   return (
     mark +
-    `<text x="${x + 22}" y="${y + 58}" font-family="ui-monospace,monospace" font-size="10" fill="${ink}" opacity="0.45" text-anchor="middle">${esc(code)}</text>`
+    `<text x="${x + 22}" y="${y + 58}" font-family="${MONO}" font-size="10" fill="${ink}" opacity="0.45" text-anchor="middle">${esc(code)}</text>`
   )
 }
 
 export function renderCoverSvg(d: CoverDerive, width = 800, height = 450): string {
-  const { pal, layout, variant, variant4, initial, noNum, abbr, meta, symbol } = d
+  const { pal, layout, variant, variant4, noNum, abbr, symbol } = d
+  // 位图侧的可渲染版本：中文首字回落到分类首字母，中文标签整段丢弃
+  const initial = renderable(d.initial) || d.cat.charAt(0)
+  const meta = d.meta.split(" · ").filter(renderable).join(" · ")
   const { paper, ink, wash, accent } = pal
   const sx = (p: number) => (p / 100) * width
   const sy = (p: number) => (p / 100) * height
@@ -139,7 +163,7 @@ export function renderCoverSvg(d: CoverDerive, width = 800, height = 450): strin
             `<rect x="${sx(62 + (i % 2) * 8)}" y="${sy(20 + Math.floor(i / 2) * 8)}" width="${sx(6)}" height="${sy(10)}" fill="${i === variant % 4 ? accent : "none"}" stroke="${ink}" stroke-width="0.8"/>`
         )
         .join("")}</g>
-      <text x="${sx(10)}" y="${sy(16)}" font-family="ui-monospace,monospace" font-size="${height * 0.03}" fill="${ink}" opacity="0.32" letter-spacing="2">${esc(abbr)}</text>`
+      <text x="${sx(10)}" y="${sy(16)}" font-family="${MONO}" font-size="${height * 0.03}" fill="${ink}" opacity="0.32" letter-spacing="2">${esc(abbr)}</text>`
   } else if (layout === 1) {
     art = [0, 1, 2]
       .map(
@@ -153,12 +177,12 @@ export function renderCoverSvg(d: CoverDerive, width = 800, height = 450): strin
       <circle cx="${sx(70)}" cy="${sy(30)}" r="${height * 0.18}" fill="none" stroke="${ink}" stroke-width="1.3" opacity="0.28" stroke-dasharray="4 3"/>
       <circle cx="${sx(70)}" cy="${sy(30)}" r="${height * 0.1}" fill="none" stroke="${wash}" stroke-width="1.2" opacity="0.45"/>
       <circle cx="${sx(70)}" cy="${sy(30)}" r="6" fill="${accent}" opacity="0.9"/>
-      <text x="${sx(14)}" y="${sy(35)}" font-family="Georgia,serif" font-size="${height * 0.12}" font-style="italic" fill="${ink}" opacity="0.2">${esc(initial)}</text>`
+      <text x="${sx(14)}" y="${sy(35)}" font-family="${SERIF_ITALIC}" font-size="${height * 0.12}" font-style="italic" fill="${ink}" opacity="0.2">${esc(initial)}</text>`
   } else if (layout === 3) {
     art = `
       <line x1="0" y1="${sy(30)}" x2="${width}" y2="${sy(30)}" stroke="${wash}" stroke-width="1" opacity="0.35"/>
       <rect x="${sx(8)}" y="${sy(38)}" width="${sx(36)}" height="${sy(28)}" fill="none" stroke="${ink}" stroke-width="1" opacity="0.3"/>
-      <text x="${sx(8)}" y="${sy(14)}" font-family="ui-monospace,monospace" font-size="${height * 0.028}" fill="${ink}" opacity="0.35">${esc(noNum)}</text>`
+      <text x="${sx(8)}" y="${sy(14)}" font-family="${MONO}" font-size="${height * 0.028}" fill="${ink}" opacity="0.35">${esc(noNum)}</text>`
   } else if (layout === 4) {
     art = `
       <rect x="${sx(4)}" y="${sy(8)}" width="${sx(92)}" height="${sy(84)}" fill="none" stroke="${ink}" stroke-width="1" opacity="0.12"/>
@@ -169,12 +193,12 @@ export function renderCoverSvg(d: CoverDerive, width = 800, height = 450): strin
       <polyline points="${sx(8)},${sy(60)} ${sx(30)},${sy(40)} ${sx(50)},${sy(48)} ${sx(70)},${sy(30)} ${sx(90)},${sy(42)}" fill="none" stroke="${ink}" stroke-width="1.2" opacity="0.22"/>
       <polyline points="${sx(8)},${sy(70)} ${sx(40)},${sy(55)} ${sx(70)},${sy(62)} ${sx(90)},${sy(48)}" fill="none" stroke="${accent}" stroke-width="1.1" opacity="0.5"/>
       <circle cx="${sx(70)}" cy="${sy(30)}" r="5" fill="${accent}" opacity="0.9"/>
-      <text x="${sx(12)}" y="${sy(18)}" font-family="ui-monospace,monospace" font-size="${height * 0.028}" fill="${ink}" opacity="0.3" letter-spacing="2">PATH ${esc(noNum)}</text>`
+      <text x="${sx(12)}" y="${sy(18)}" font-family="${MONO}" font-size="${height * 0.028}" fill="${ink}" opacity="0.3" letter-spacing="2">PATH ${esc(noNum)}</text>`
   } else if (layout === 6) {
     art = `
       <line x1="${sx(12)}" y1="0" x2="${sx(12)}" y2="${height}" stroke="${wash}" stroke-width="1" opacity="0.4"/>
       <rect x="${sx(20)}" y="${sy(22)}" width="${sx(40)}" height="${sy(40)}" fill="none" stroke="${wash}" stroke-width="1.5" opacity="0.5"/>
-      <text x="${sx(28)}" y="${sy(48)}" font-family="Georgia,serif" font-size="${height * 0.12}" fill="${ink}" opacity="0.2">${esc(noNum.slice(-2))}</text>`
+      <text x="${sx(28)}" y="${sy(48)}" font-family="${SERIF}" font-size="${height * 0.12}" fill="${ink}" opacity="0.2">${esc(noNum.slice(-2))}</text>`
   } else {
     const dots: string[] = []
     for (let r = 0; r < 6; r++) {
@@ -196,6 +220,6 @@ export function renderCoverSvg(d: CoverDerive, width = 800, height = 450): strin
   ${art}
   ${stampSvg(symbol, pal, variant4, width - 120, height * 0.28)}
   <line x1="${sx(4)}" y1="${height - sy(8)}" x2="${sx(96)}" y2="${height - sy(8)}" stroke="${ink}" stroke-width="1" opacity="0.12"/>
-  <text x="${sx(4)}" y="${height - 10}" font-family="ui-monospace,monospace" font-size="${Math.max(10, height * 0.028)}" fill="${ink}" opacity="0.4" letter-spacing="1.2">${esc(meta)}</text>
+  <text x="${sx(4)}" y="${height - 10}" font-family="${MONO}" font-size="${Math.max(10, height * 0.028)}" fill="${ink}" opacity="0.4" letter-spacing="1.2">${esc(meta)}</text>
 </svg>`
 }

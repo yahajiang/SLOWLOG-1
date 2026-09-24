@@ -175,6 +175,14 @@ app/tokens GET/POST/DELETE、auth change-password POST。
 
 `lib/cover-derive.ts` 派生 + `lib/cover-svg.ts` 渲染入口。seed 标题源 **`post.title`**（与 `CoverArt.tsx` 一致）；分类 `name || nameZh`。`w=800|1600`，`sharp` 出 PNG。
 
+字体（2026-09-24 补）：sharp 走 librsvg → Pango → fontconfig，而 Vercel 函数运行时不带任何系统字体，
+位图封面的每个 `<text>` 因此退化成方框。修法是自带字体而非换渲染方案：`lib/cover-fonts.ts`
+（import 必须排在 sharp 之前）把 `FONTCONFIG_FILE` 指向 `assets/cover-fonts/fonts.conf`，
+随包 TTF 为 JetBrains Mono / Cormorant Garamond（OFL，与 App 内 `res/font` 同源）；
+`next.config.mjs` 的 `outputFileTracingIncludes` 负责把该目录打进函数包。
+副作用是**位图侧只渲染拉丁**：中文标题首字回落为分类首字母，含非 ASCII 的标签段整段丢弃；
+Web 端 `CoverArt.tsx` 由浏览器排版，中文照常显示。
+
 缓存：非公开 → `private, no-store`；公开+`v` → immutable 1y；公开无 `v` → `max-age=300`。可见性与 posts GET 一致（Bearer 可见草稿）。
 
 ### S2.8 FCM 与安全
