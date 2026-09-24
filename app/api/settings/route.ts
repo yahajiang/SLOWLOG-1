@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { settingsSchema } from "@/lib/schemas"
 import { passwordChangeRequired } from "@/lib/auth"
-import { requireSessionOrBearer } from "@/lib/app-auth"
+import { adminAuthError, requireAdminAuth } from "@/lib/app-auth"
 import { SETTINGS_DEFAULTS } from "@/lib/settings"
 
 // GET 为公开读接口：加 CDN 缓存，避免每次请求都打库
@@ -24,8 +24,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   try {
     // zod 白名单：未声明字段直接剥离（后端审查 P1-3）。白名单以 lib/schemas.ts 的

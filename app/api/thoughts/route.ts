@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { thoughtSchema } from "@/lib/schemas"
 import { passwordChangeRequired } from "@/lib/auth"
-import { requireSessionOrBearer } from "@/lib/app-auth"
+import { adminAuthError, requireAdminAuth } from "@/lib/app-auth"
 
 const getCachedThoughts = unstable_cache(
   async (page: number) => {
@@ -41,8 +41,8 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) {
     return apiError(403, "请先修改默认密码")
   }

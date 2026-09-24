@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { apiError } from "@/lib/api-utils"
 import { passwordChangeRequired } from "@/lib/auth"
-import { requireSessionOrBearer } from "@/lib/app-auth"
+import { adminAuthError, requireAdminAuth } from "@/lib/app-auth"
 import { prisma } from "@/lib/prisma"
 import { compressAndUpload, deleteFromBlob, sanitizeFilename } from "@/lib/blob"
 
@@ -17,9 +17,10 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024
 const MAX_FILES_PER_REQUEST = 10
 
 export async function GET(req: NextRequest) {
-  // 与同文件 POST/DELETE 保持一致：App 持 Bearer 需能读媒体库列表
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  // 媒体库是后台资产 ⇒ 三个方法统一要求管理凭据（scope=admin）。
+  // 读列表也算管理操作：它暴露全站未引用图片与文件名。
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   // 分页：page 从 1 起（默认 1；每页 100）
   const pageParam = parseInt(new URL(req.url).searchParams.get("page") || "", 10)
@@ -32,8 +33,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
 
   const form = await req.formData()
@@ -97,8 +98,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id")

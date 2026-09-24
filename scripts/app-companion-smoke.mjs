@@ -103,6 +103,13 @@ async function run(remember) {
   const guestWithContent = (sync.postsChanged || []).some((p) => p.content !== undefined)
   t("sync guest no content field", !guestWithContent)
 
+  // ⚠️ 带了 Authorization 却被拒必须 401，**不得**降级成游客数据：
+  // 游客 payload 无 content，客户端 @Upsert 整行替换会把本地正文覆盖成 NULL。
+  r = await fetch(`${BASE}/api/app/sync`, { headers: { Authorization: `Bearer ${"z".repeat(48)}` } })
+  t("sync invalid bearer 401", r.status === 401, String(r.status))
+  const syncRejected = await r.json().catch(() => ({}))
+  t("sync invalid bearer has code", !!syncRejected.code, JSON.stringify(syncRejected).slice(0, 80))
+
   r = await fetch(`${BASE}/api/app/sync?since=${new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString()}`)
   t("sync since>90d 400", r.status === 400, String(r.status))
 
@@ -226,6 +233,10 @@ async function run(remember) {
     body: JSON.stringify({ textZh: "should-fail" }),
   })
   t("write after revoke 401", r.status === 401, String(r.status))
+
+  // 撤销后的令牌调 sync 同样必须 401，而不是静默返回「无正文的公开列表」。
+  r = await fetch(`${BASE}/api/app/sync`, { headers: bearer })
+  t("sync after revoke 401", r.status === 401, String(r.status))
 
   console.log(`RESULT pass=${pass} fail=${fail}`)
   if (fails.length) console.log("FAILURES:\n" + fails.join("\n"))

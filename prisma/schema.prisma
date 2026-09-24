@@ -115,6 +115,12 @@ model ApiToken {
   id         String    @id @default(cuid())
   name       String
   tokenHash  String    @unique
+  // 用途分级（2026-09-21）：sync = 只读同步内容；admin = 后台管理。
+  // 仓库里唯一的判定入口是 lib/app-auth.ts，路由不得自行比较字符串。
+  scope      String    @default("sync")
+  // 到期时间。null = 永不过期（历史的旧令牌即如此，它们同时会被
+  // 默认成 scope="sync" ⇒ 旧令牌全部降级为同步用途，进不了后台）。
+  expiresAt  DateTime?
   createdAt  DateTime  @default(now())
   lastUsedAt DateTime?
   revokedAt  DateTime?

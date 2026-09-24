@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth, passwordChangeRequired } from "@/lib/auth"
 import { apiError, apiZodError } from "@/lib/api-utils"
-import { requireSessionOrBearer } from "@/lib/app-auth"
+import { adminAuthError, requireAdminAuth } from "@/lib/app-auth"
 import { postUpdateSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
 import { isPublicPost, revalidatePostPaths } from "@/lib/posts"
@@ -26,8 +26,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const gate = await requireSessionOrBearer(req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) {
     return apiError(403, "请先修改默认密码")
   }
@@ -91,8 +91,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const gate = await requireSessionOrBearer(_req)
-  if (!gate) return apiError(401, "未登录")
+  const gate = await requireAdminAuth(_req)
+  if (!gate.ok) return adminAuthError(gate.reason)
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) {
     return apiError(403, "请先修改默认密码")
   }

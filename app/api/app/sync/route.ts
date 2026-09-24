@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { apiError } from "@/lib/api-utils"
-import { bearerToken } from "@/lib/app-auth"
+import { lookupBearer, syncAuthError } from "@/lib/app-auth"
 import { publicPostWhere, stripPostHeavy } from "@/lib/posts"
 import { getSettings } from "@/lib/settings"
 
@@ -19,7 +19,16 @@ export async function GET(req: NextRequest) {
     ? Math.min(Math.max(pageSizeRaw, 1), PAGE_MAX)
     : 100
 
-  const bearer = await bearerToken(req)
+  // 凭据判定：**「没带」与「带了但不认」必须分开**
+  //   无 Authorization 头 → 游客模式：仅公开内容且不含 content（未配置凭据的读者走这条，正常）；
+  //   带了却无效/过期/已撤销 → 401，**不降级**。
+  // 若在此降级成游客，客户端只会拿到「无 content 的公开列表」并照常落库
+  // （Room @Upsert 是整行替换），把本地已同步的正文覆盖成 NULL ——
+  // 症状是「设置里显示已配置、列表正常、正文全空」，且没有任何报错。
+  const headerPresent = !!req.headers.get("authorization")
+  const lookup = await lookupBearer(req)
+  if (headerPresent && !lookup.ok) return syncAuthError(lookup.reason)
+  const bearer = lookup.ok
   const now = new Date()
 
   // 契约（S2.5）：since 缺失或非法 → 全量模式，**不 400**；
