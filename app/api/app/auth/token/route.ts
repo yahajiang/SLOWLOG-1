@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto"
 import { apiError, apiZodError } from "@/lib/api-utils"
 import { appTokenExchangeSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
-import { sha256Hex } from "@/lib/app-auth"
+import { sha256Hex, tokenExpiry } from "@/lib/app-auth"
 import { verifyCredentials } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
@@ -12,13 +12,29 @@ export const dynamic = "force-dynamic"
  * POST /api/app/auth/token —— 用管理员邮箱 + 密码换取一枚 App API Token。
  *
  * ## 为什么需要这条接口（此前是死锁）
- * `/api/app/tokens` 的 POST 虽然已放宽成 `requireSessionOrBearer`，但**首枚**
- * Token 仍然只能先在浏览器里登录 Web 后台手动创建、再把明文粘进 App ——
+ * `/api/app/tokens` 现在要求管理凭据，而**首枚**管理凭据不可能从那里拿到：
+ * 它只能先在浏览器里登录 Web 后台手动创建、再把明文粘进 App ——
  * 一个「要打开 App 才能配置的东西，得先在浏览器里配好」。对单管理员的
  * 个人站点，这条链路唯一的实际作用就是让用户多走一趟。
  *
  * 有了这条接口，App 里「输一次账号密码 → 自动拿到并保存 Token」，
  * 之后所有请求都走 Bearer，不再需要浏览器参与。
+ *
+ * ## 用途分级（2026-09-21）：`scope` 决定这枚令牌能做什么
+ * 这条接口同时服务两条**语义完全不同**的路径，靠请求体里的 `scope` 区分：
+ *
+ * | 入口 | scope | 能做什么 |
+ * |---|---|---|
+ * | 读者设置页「自动获取令牌」 | `sync`（**缺省值**） | 只读同步内容（含草稿/正文） |
+ * | 后台登录页「验证并进入」 | `admin` | 后台写接口（文章/分类/随想/设置/媒体/令牌） |
+ *
+ * 缺省给 `sync` 是刻意的：设置页那条路径**根本不需要**写权限，
+ * 它的令牌会长期躺在手机上，只该能读。写权限必须显式索取。
+ * 两者有效期也不同（同步 90 天 / 管理 7 天），见 `lib/app-auth.ts`。
+ *
+ * ⚠️ 顺带修掉的一个真实隐患：此前 App 里只有一枚令牌槽位，
+ * 「后台登录」会**覆盖**掉读者设置页刚存好的同步令牌。分开两枚后，
+ * 两个入口互不干扰，可以各自独立撤销。
  *
  * ## 安全设计（这条接口公开可达，必须逐条守住）
  * 1. **凭据校验与限流完全复用 Web 登录那一份**
@@ -31,10 +47,14 @@ export const dynamic = "force-dynamic"
  *    SHA-256 hex，列表接口永不回显。
  * 5. `Cache-Control: no-store` —— 响应体里有明文凭据，不许任何层缓存。
  *
- * ## 同名令牌只保留最新一枚
+ * ## 同名令牌只保留最新一枚（去重键是 `name` + `scope`）
  * 每次「自动获取」都会签发新 Token。若不管，反复换设备/重装会在令牌列表里
  * 堆一排同名的死记录。这里按 `name`（App 传设备标签）去重：**同名旧令牌
  * 置为已撤销**，只留刚签发的这枚。手动在 Web 创建的令牌不受影响。
+ *
+ * ⚠️ **去重必须带上 `scope`**：App 端两个入口传的标签是同一个
+ * （`App 自动登录 · <机型>`），若只按 `name` 去重，进一次后台就会把
+ * 同步令牌撤掉 —— 用户随后会发现「离线阅读突然要重新配置」。
  *
  * 顺序是**先建后撤**：撤销那步万一失败，用户手里仍有一枚可用 Token，
  * 最坏只多留一条记录；反过来先撤后建一旦失败，就把用户锁在门外了。
@@ -58,17 +78,20 @@ export async function POST(req: NextRequest) {
   }
   if (check.needsPasswordChange) return apiError(403, "请先在 Web 端修改默认密码")
 
+  const scope = parsed.data.scope
   const token = randomBytes(32).toString("hex")
   const label = (parsed.data.name?.trim() || DEFAULT_TOKEN_NAME).slice(0, 60)
+  const expiresAt = tokenExpiry(scope)
 
   const created = await prisma.apiToken.create({
-    data: { name: label, tokenHash: sha256Hex(token) },
-    select: { id: true, name: true, createdAt: true },
+    data: { name: label, tokenHash: sha256Hex(token), scope, expiresAt },
+    select: { id: true, name: true, scope: true, expiresAt: true, createdAt: true },
   })
 
   try {
     await prisma.apiToken.updateMany({
-      where: { name: label, revokedAt: null, id: { not: created.id } },
+      // scope 进 where：只撤同用途的同名旧令牌（见上文「去重键」）
+      where: { name: label, scope, revokedAt: null, id: { not: created.id } },
       data: { revokedAt: new Date() },
     })
   } catch (e) {
