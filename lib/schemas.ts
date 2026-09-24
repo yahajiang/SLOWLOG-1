@@ -153,6 +153,11 @@ export const changePasswordSchema = z
 // ── Android App 配套 ─────────────────────────────────────────────
 export const tokenCreateSchema = z.object({
   name: z.string().trim().min(1, "名称必填").max(60, "名称最多 60 字"),
+  /**
+   * 用途（2026-09-21）。手动在 Web 后台建的令牌**默认只给同步用途** ——
+   * 管理权限必须显式选，避免"随手建一枚"就到手全站写权限。
+   */
+  scope: z.enum(["sync", "admin"]).default("sync"),
 });
 
 /**
@@ -164,15 +169,19 @@ export const tokenCreateSchema = z.object({
  * 渐进退避（见 lib/auth.ts 的 verifyCredentials），不能另起一套限流。
  */
 export const appTokenExchangeSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(3)
-    .max(120)
-    .refine((v) => v.includes("@"), "请输入有效邮箱"),
+  // 允许「用户名」：与 Web 登录表单同一约定 —— 无 @ 的账号由
+  // verifyCredentials 归一化为 `用户名@slowlog.dev`（2026-09-21）。
+  // 此前这里 refine 必须含 @，导致 App 端只能输邮箱、输用户名直接 400。
+  email: z.string().trim().min(3).max(120),
   password: z.string().min(1, "密码必填").max(200),
   /** 设备标签，用于在「App 令牌」页区分来源；缺省为「App 自动登录」。 */
   name: z.string().trim().max(60).optional(),
+  /**
+   * 令牌用途（2026-09-21）。**缺省必须是 sync** —— 这条接口是「邮箱密码自动
+   * 获取令牌」的实现，那条路径只该拿到只读同步凭据；要管理凭据必须显式声明，
+   * 让「不小心把管理权限发给同步入口」在代码层就不可能发生。
+   */
+  scope: z.enum(["sync", "admin"]).default("sync"),
 });
 
 export const deviceUpsertSchema = z.object({

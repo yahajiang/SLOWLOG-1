@@ -109,7 +109,15 @@ export async function verifyCredentials(
 ): Promise<CredentialCheck> {
   // 惰性加载：避免 middleware/edge 打包链拉入 pg
   const { prisma } = await import("./prisma")
-  const mail = (email || "").toLowerCase().trim()
+
+  // ── 账号归一化（2026-09-21）：支持「用户名」登录 ──────────────────
+  // Web 登录表单本就把不带 @ 的输入补全成 `用户名@slowlog.dev` 再提交；
+  // 把同一约定下沉到这里，App 的换取 Token 接口（/api/app/auth/token）
+  // 就能直接收用户名 —— 两端行为一致，且对已传完整邮箱的调用零影响。
+  // 必须在 emailKey 之前归一化，否则限流的「辅助维度」会把
+  // `admin` 和 `admin@slowlog.dev` 记成两个账号（各算各的失败次数）。
+  let mail = (email || "").toLowerCase().trim()
+  if (mail && !mail.includes("@")) mail = `${mail}@slowlog.dev`
   if (!mail || !password) return { ok: false, reason: "invalid" }
 
   const ipKey = `ip:${clientIp(request)}`
