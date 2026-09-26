@@ -144,11 +144,18 @@ export async function GET(req: NextRequest) {
     })
 
     const noteWhere = since ? { updatedAt: { gt: since } } : {}
-    const notes = await prisma.note.findMany({
+    // ⚠️ 随想必须和文章共用同一条「游标 + 有界一页 + 报告是否截断」的规则。
+    // 此前是 `take: since ? 200 : 50`，而排序是 updatedAt **升序**：首次全量同步
+    // 取到的是「最旧的 50 条」，客户端随后把 since 推到 serverTime，于是第 51 条起
+    // （含刚发布的新随想）永远落不进任何一页 —— 症状正是「后台发布成功、
+    // 读者端再也不出现」，而且全程不报错。
+    const noteRows = await prisma.note.findMany({
       where: noteWhere,
       orderBy: { updatedAt: "asc" },
-      take: since ? 200 : 50,
+      take: pageSize + 1,
     })
+    const notesTruncated = noteRows.length > pageSize
+    const notes = notesTruncated ? noteRows.slice(0, pageSize) : noteRows
     const thoughtsChanged = notes.map((doc) => ({
       id: doc.id,
       text: doc.content || "",
@@ -169,6 +176,9 @@ export async function GET(req: NextRequest) {
         thoughtsChanged,
         settings,
         serverTime: now.toISOString(),
+        // 客户端据此判断「这一页不是全部」：继续按游标翻页，翻到底才把 since
+        // 推到 serverTime。缺了这个旗标，任何超过一页的站点都会被静默截断。
+        hasMore: truncated || notesTruncated,
       },
       { headers: { "Cache-Control": "private, no-store", Vary: "Cookie, Authorization" } }
     )

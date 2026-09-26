@@ -176,7 +176,20 @@ app/tokens GET/POST/DELETE、auth change-password POST。
 - 合法：`updatedAt > since`。
 - 早于 `now-90d`：`400 { error: "同步窗口过期，请全量重拉" }`。
 
-响应：`postsChanged` / `deletedIds` / `categories` / `thoughtsChanged` / `settings` / `serverTime`。缓存 `private, no-store`。`pageSize` 1–200 默认 100。
+响应：`postsChanged` / `deletedIds` / `categories` / `thoughtsChanged` / `settings` / `serverTime` / **`hasMore`**。缓存 `private, no-store`。`pageSize` 1–200 默认 100。
+
+**分页与 `hasMore`（2026-09-26，S2.5a）**
+
+- 服务端**每页多取一条**（`take + 1`）来判断有没有下一页，返回 `hasMore = 文章截断 || 随想截断`。
+  排序两路都是 `updatedAt` **升序**，所以「下一页游标」就是本页最大的 `updatedAt`。
+- **客户端必须翻页翻到 `hasMore == false` 才把本地 `since` 推到 `serverTime`**。
+  这是修一个静默丢数据的 bug：过去客户端只发一次请求就推进游标，
+  而随想在**首次全量同步**时的上限是最旧的 50 条（`take: since ? 200 : 50` + 升序）——
+  于是第 51 条起（含刚发布的）永久落在页外，读者端表现为「后台发布成功，App 里就是不出现」，
+  全程无报错。文章同理（>100 篇即截断）。
+- 游标推不动（下一页算出的 `updatedAt` 与本页相同）时客户端**必须停止翻页**，不得原地打转；
+  翻满上限（10 页）仍未到底时不推进 `since` 并明确报错，不能把剩下的当成不存在。
+- `hasMore` 缺失 = 老服务端，客户端按「没有下一页」处理（行为与升级前一致）。
 
 ### S2.6 删除墓碑
 
