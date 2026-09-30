@@ -39,7 +39,7 @@ export default function MobileCategoriesPage() {
   const [draft, setDraft] = useState<CatDraft | null>(null);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
   const zh = lang === "zh";
 
   const load = () =>
@@ -55,7 +55,7 @@ export default function MobileCategoriesPage() {
 
   async function create() {
     if (!name || !slug) {
-      toast(zh ? "名称和Slug必填" : "Name and Slug are required", "error");
+      toast(t.catNeedName, "error");
       return;
     }
     setCreating(true);
@@ -68,11 +68,11 @@ export default function MobileCategoriesPage() {
     setCreating(false);
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
-      toast(j.error || (zh ? "创建失败" : "Create failed"), "error");
+      toast(j.error || (t.catCreateFail), "error");
       return;
     }
     const created = await r.json().catch(() => null);
-    toast(zh ? "创建成功" : "Created", "success");
+    toast(t.catCreated, "success");
     setName("");
     setNameZh("");
     setSlug("");
@@ -102,7 +102,7 @@ export default function MobileCategoriesPage() {
   async function saveEdit() {
     if (!draft) return;
     if (!draft.name || !draft.slug) {
-      toast(zh ? "名称和Slug必填" : "Name and Slug are required", "error");
+      toast(t.catNeedName, "error");
       return;
     }
     setSaving(true);
@@ -124,11 +124,11 @@ export default function MobileCategoriesPage() {
     setSaving(false);
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
-      toast(j.error || (zh ? "保存失败" : "Save failed"), "error");
+      toast(j.error || (t.catSaveFail), "error");
       setCats(prev);
       return;
     }
-    toast(zh ? "已保存" : "Saved", "success");
+    toast(t.dashSaved, "success");
     cancelEdit();
   }
 
@@ -140,9 +140,9 @@ export default function MobileCategoriesPage() {
     const r = await fetch(`/api/categories/${delId}`, { method: "DELETE", cache: "no-store" });
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
-      toast(j.error || (zh ? "删除失败" : "Delete failed"), "error");
+      toast(j.error || (t.catDeleteFail), "error");
       if (removed) setCats((prev) => [...prev, removed]);
-    } else toast(zh ? "已删除" : "Deleted", "success");
+    } else toast(t.dashDeleted, "success");
   }
 
   const field =
@@ -155,36 +155,34 @@ export default function MobileCategoriesPage() {
   return (
     <div className="space-y-4 section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">
-        {zh ? "分类管理" : "Categories"}
+        {t.dashCatManage}
       </h1>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 space-y-3">
         {showForm ? (
           <>
             <div>
-              <label className={label}>{zh ? "名称" : "Name"}</label>
+              <label className={label}>{t.catName}</label>
               <input value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="Design" />
             </div>
             <div>
-              <label className={label}>{zh ? "中文" : "Chinese"}</label>
-              <input value={nameZh} onChange={(e) => setNameZh(e.target.value)} className={field} placeholder={zh ? "设计" : "设计"} />
+              <label className={label}>{t.catNameZh}</label>
+              <input value={nameZh} onChange={(e) => setNameZh(e.target.value)} className={field} placeholder={t.catNameZhDemo} />
             </div>
             <div>
               <label className={label}>Slug</label>
               <input value={slug} onChange={(e) => setSlug(e.target.value)} className={`${field} font-mono`} placeholder="design" />
               <p className="mt-1 text-[11px] leading-relaxed text-[var(--dash-muted)]">
-                {zh
-                  ? "小写、用连字符；建站后别再改——分类 slug 恒定，且决定封面的配色族。"
-                  : "Lowercase, hyphenated. Don't rename later — the slug is stable and drives the cover palette."}
+                {t.catSlugHint}
               </p>
             </div>
             <div>
-              <label className={label}>{zh ? "描述（英文，可选）" : "Description"}</label>
-              <input value={desc} onChange={(e) => setDesc(e.target.value)} className={field} placeholder={zh ? "可选" : "Optional"} />
+              <label className={label}>{t.catDescEn}</label>
+              <input value={desc} onChange={(e) => setDesc(e.target.value)} className={field} placeholder={t.catOptional} />
             </div>
             <div>
-              <label className={label}>{zh ? "中文描述（可选）" : "Chinese desc"}</label>
-              <input value={descZh} onChange={(e) => setDescZh(e.target.value)} className={field} placeholder={zh ? "可选" : "Optional"} />
+              <label className={label}>{t.catDescZhOpt}</label>
+              <input value={descZh} onChange={(e) => setDescZh(e.target.value)} className={field} placeholder={t.catOptional} />
             </div>
             <div className="flex gap-2">
               <button
@@ -192,13 +190,13 @@ export default function MobileCategoriesPage() {
                 disabled={creating || !name.trim() || !slug.trim()}
                 className="flex-1 py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px]"
               >
-                {creating ? (zh ? "创建中…" : "Creating…") : zh ? "新建" : "Create"}
+                {creating ? (t.catCreating) : t.catCreate}
               </button>
               <button
                 onClick={() => setShowForm(false)}
                 className="px-5 py-3 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px]"
               >
-                {zh ? "取消" : "Cancel"}
+                {t.editorCancel}
               </button>
             </div>
           </>
@@ -207,7 +205,7 @@ export default function MobileCategoriesPage() {
             onClick={() => setShowForm(true)}
             className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none font-medium min-h-[48px]"
           >
-            {zh ? "新建分类" : "New category"}
+            {t.catNew}
           </button>
         )}
       </div>
@@ -227,11 +225,11 @@ export default function MobileCategoriesPage() {
                 {editingId === c.id && draft ? (
                   <div className="space-y-2.5">
                     <div>
-                      <label className={label}>{zh ? "名称" : "Name"}</label>
+                      <label className={label}>{t.catName}</label>
                       <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={small} />
                     </div>
                     <div>
-                      <label className={label}>{zh ? "中文" : "Chinese"}</label>
+                      <label className={label}>{t.catNameZh}</label>
                       <input value={draft.nameZh} onChange={(e) => setDraft({ ...draft, nameZh: e.target.value })} className={small} />
                     </div>
                     <div>
@@ -239,11 +237,11 @@ export default function MobileCategoriesPage() {
                       <input value={draft.slug} onChange={(e) => setDraft({ ...draft, slug: e.target.value })} className={`${small} font-mono`} />
                     </div>
                     <div>
-                      <label className={label}>{zh ? "描述" : "Description"}</label>
+                      <label className={label}>{t.catDesc}</label>
                       <input value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} className={small} />
                     </div>
                     <div>
-                      <label className={label}>{zh ? "中文描述" : "Chinese desc"}</label>
+                      <label className={label}>{t.catDescZh}</label>
                       <input value={draft.descriptionZh} onChange={(e) => setDraft({ ...draft, descriptionZh: e.target.value })} className={small} />
                     </div>
                     <div className="flex gap-2">
@@ -252,13 +250,13 @@ export default function MobileCategoriesPage() {
                         disabled={saving}
                         className="flex-1 py-2.5 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 min-h-[48px]"
                       >
-                        {saving ? (zh ? "保存中…" : "Saving…") : zh ? "保存" : "Save"}
+                        {saving ? (t.catSaving) : t.catSave}
                       </button>
                       <button
                         onClick={cancelEdit}
                         className="px-5 py-2.5 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px]"
                       >
-                        {zh ? "取消" : "Cancel"}
+                        {t.editorCancel}
                       </button>
                     </div>
                   </div>
@@ -269,7 +267,7 @@ export default function MobileCategoriesPage() {
                         {c.name} {c.nameZh && <span className="text-[var(--dash-muted)]">/ {c.nameZh}</span>}
                       </p>
                       <p className="text-xs text-[var(--dash-muted)] mt-1 break-words">
-                        <span className="font-mono">{c.slug}</span> · {c._count?.posts ?? 0} {zh ? "篇" : "posts"}
+                        <span className="font-mono">{c.slug}</span> · {c._count?.posts ?? 0} {t.catPostsUnit}
                         {shown ? ` · ${shown}` : ""}
                       </p>
                       <div className="flex gap-2 mt-3">
@@ -277,13 +275,13 @@ export default function MobileCategoriesPage() {
                           onClick={() => startEdit(c)}
                           className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px]"
                         >
-                          {zh ? "编辑" : "Edit"}
+                          {t.dashEdit}
                         </button>
                         <button
                           onClick={() => setDelId(c.id)}
                           className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:text-[var(--dash-danger)] min-h-[48px]"
                         >
-                          {zh ? "删除" : "Delete"}
+                          {t.dashDelete}
                         </button>
                       </div>
                     </div>
@@ -293,7 +291,7 @@ export default function MobileCategoriesPage() {
             );
           })}
           {cats.length === 0 && (
-            <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{zh ? "暂无分类" : "No categories yet"}</p>
+            <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{t.catEmpty}</p>
           )}
         </div>
       )}
@@ -301,9 +299,9 @@ export default function MobileCategoriesPage() {
       <ConfirmDialog
         open={!!delId}
         onOpenChange={(v) => !v && setDelId(null)}
-        title={zh ? "删除分类？" : "Delete this category?"}
-        description={zh ? "若该分类下有文章将无法删除。" : "Cannot delete if this category has posts."}
-        confirmText={zh ? "删除" : "Delete"}
+        title={t.catDelTitle}
+        description={t.catDelDesc}
+        confirmText={t.dashDelete}
         variant="danger"
         onConfirm={confirmDel}
       />

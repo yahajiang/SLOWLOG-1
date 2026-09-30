@@ -224,6 +224,29 @@ export const dict = {
     dashCatManage: "分类管理",
     dashAppTokens: "App 令牌",
     dashDesktopOnlyFields: "媒体上传与文章编辑器仍需在桌面端完成。",
+    catNeedName: "名称和Slug必填",
+    catCreateFail: "创建失败",
+    catCreated: "创建成功",
+    catSaveFail: "保存失败",
+    catDeleteFail: "删除失败",
+    catName: "名称",
+    catNameZh: "中文",
+    catNameZhDemo: "设计",
+    catSlugHint: "小写、用连字符；建站后别再改——分类 slug 恒定，且决定封面的配色族。",
+    catDescEn: "描述（英文，可选）",
+    catOptional: "可选",
+    catDescZhOpt: "中文描述（可选）",
+    catCreating: "创建中…",
+    catCreate: "新建",
+    catNew: "新建分类",
+    catDesc: "描述",
+    catDescZh: "中文描述",
+    catSaving: "保存中…",
+    catSave: "保存",
+    catPostsUnit: "篇",
+    catEmpty: "暂无分类",
+    catDelTitle: "删除分类？",
+    catDelDesc: "若该分类下有文章将无法删除。",
     dashTokensHint: "为 Android App 生成长期 API Token，并查看推送设备。",
     dashTokensOnceWarn: "明文只显示一次，离开本页后无法再取回；撤销后该令牌的写操作立即失效。",
     dashEditOnDesktop: "完整编辑请使用桌面版",
@@ -547,6 +570,29 @@ export const dict = {
     dashCatManage: "Categories",
     dashAppTokens: "App tokens",
     dashDesktopOnlyFields: "Media upload and the post editor still require desktop.",
+    catNeedName: "Name and Slug are required",
+    catCreateFail: "Create failed",
+    catCreated: "Created",
+    catSaveFail: "Save failed",
+    catDeleteFail: "Delete failed",
+    catName: "Name",
+    catNameZh: "Chinese",
+    catNameZhDemo: "设计",
+    catSlugHint: "Lowercase, hyphenated. Don't rename later — the slug is stable and drives the cover palette.",
+    catDescEn: "Description",
+    catOptional: "Optional",
+    catDescZhOpt: "Chinese desc",
+    catCreating: "Creating…",
+    catCreate: "Create",
+    catNew: "New category",
+    catDesc: "Description",
+    catDescZh: "Chinese desc",
+    catSaving: "Saving…",
+    catSave: "Save",
+    catPostsUnit: "posts",
+    catEmpty: "No categories yet",
+    catDelTitle: "Delete this category?",
+    catDelDesc: "Cannot delete if this category has posts.",
     dashTokensHint: "Issue long-lived API tokens for the Android App and review push devices.",
     dashTokensOnceWarn:
       "The plaintext is shown only once and cannot be recovered after you leave this page; revoking a token invalidates its writes immediately.",
@@ -845,6 +891,29 @@ export type Dict = {
   dashCatManage: string;
   dashAppTokens: string;
   dashDesktopOnlyFields: string;
+  catNeedName: string;
+  catCreateFail: string;
+  catCreated: string;
+  catSaveFail: string;
+  catDeleteFail: string;
+  catName: string;
+  catNameZh: string;
+  catNameZhDemo: string;
+  catSlugHint: string;
+  catDescEn: string;
+  catOptional: string;
+  catDescZhOpt: string;
+  catCreating: string;
+  catCreate: string;
+  catNew: string;
+  catDesc: string;
+  catDescZh: string;
+  catSaving: string;
+  catSave: string;
+  catPostsUnit: string;
+  catEmpty: string;
+  catDelTitle: string;
+  catDelDesc: string;
   dashTokensHint: string;
   dashTokensOnceWarn: string;
   dashEditOnDesktop: string;

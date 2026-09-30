@@ -20,6 +20,9 @@ export default tseslint.config(
       "node_modules/**",
       "lib/generated/**", // Prisma 生成物
       "scripts/**", // 一次性运维脚本，暂不纳入门禁
+      // AI 工具的临时工作目录（.gitignore 已排除）：里面的草稿脚本不该进代码门禁
+      ".tool-state/**",
+      "spark-output/**", // 设计链路产物（报告/上下文 JSON/面板）
       // ⚠️ 必须忽略 worktrees：里面每个 worktree 都有自己的 .next/ 与 lib/generated/
       // 构建产物，不加这条会把 2.6 万条生成代码噪音扫进来（实测）。
       ".worktrees/**",
