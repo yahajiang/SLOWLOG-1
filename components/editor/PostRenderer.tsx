@@ -3,6 +3,7 @@ import React from "react"
 import type { PageConfig } from "@/lib/page-config"
 import { slugifyHeading, dedupeHeadingId } from "@/lib/headings"
 import { safeColor, safeHref, safeImgSrc } from "@/lib/page-config"
+import { useLang } from "@/lib/lang-context"
 
 function renderInline(node: any, idx: number): React.ReactNode {
   if (node.type === "text") {
@@ -57,11 +58,15 @@ function CopyBtn({ code }: { code: string }) {
       // 剪贴板不可用（非 HTTPS / 权限拒绝）时静默忽略
     }
   }
+  const { t } = useLang()
   return (
     <button
       onClick={onCopy}
-      className="px-3 py-1 rounded-none text-[11px] font-medium border bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700 hover:bg-[#3a3a3e] hover:text-white hover:border-zinc-600 transition-colors flex items-center gap-1"
-    >{copied ? "✓ 已复制" : "复制"}</button>
+      aria-label={copied ? t.codeCopied : t.codeCopy}
+      className="hit px-3 py-1 rounded-none text-[11px] font-medium border bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700 hover:bg-[#3a3a3e] hover:text-white hover:border-zinc-600 transition-colors flex items-center gap-1"
+    >
+      {copied ? `✓ ${t.codeCopied}` : t.codeCopy}
+    </button>
   )
 }
 
@@ -99,8 +104,8 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       // P3-24：id 优先取上方预生成的映射（按「递归 + 全局序号」构建，与
       // lib/posts.ts 的 extractHeadings 同序），因此嵌套标题同样能拿到与目录
       // 一致的唯一 id；仅当映射缺失时才就地兜底生成。
-      const id =
-        headingId || slugifyHeading(content.map((c: any) => c.text || "").join("").trim(), idx)
+      const headingText = content.map((c: any) => c.text || "").join("").trim()
+      const id = headingId || slugifyHeading(headingText, idx)
       const Tag = `h${level}` as any
       const cls =
         level === 1 ? "group text-3xl font-bold mt-[50px] mb-[18px] tracking-tight scroll-mt-[72px] flex items-center gap-2" :
@@ -111,7 +116,15 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const alignStyle = align && align !== "left" ? { textAlign: align as React.CSSProperties["textAlign"] } : undefined
       return (
         <Tag key={idx} id={id} className={cls} style={alignStyle}>
-          {id && <a href={`#${id}`} aria-label=".Anchor" className="opacity-40 md:opacity-0 md:group-hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]">#</a>}
+          {id && (
+            <a
+              href={`#${id}`}
+              aria-label={headingText || "¶"}
+              className="hit opacity-40 hover:opacity-100 -ml-5 pr-1 text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-opacity mono text-[13px]"
+            >
+              #
+            </a>
+          )}
           <span className="flex-1">{inline}</span>
         </Tag>
       )

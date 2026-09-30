@@ -74,6 +74,12 @@ export const dict = {
     onThisPage: "本页目录",
     previous: "上一篇",
     next: "下一篇",
+    heroPrev: "上一篇推荐",
+    heroNext: "下一篇推荐",
+    codeCopy: "复制",
+    codeCopied: "已复制",
+    themeToLight: "切换到日间",
+    themeToDark: "切换到夜间",
     noPrevious: "没有更早的文章了",
     noNext: "没有更新的文章了",
     minRead: "分钟阅读",
@@ -322,6 +328,7 @@ export const dict = {
     notFoundBack: "返回首页",
     nfHeadline: "这一页还没有被写下",
     nfHint: "您访问的页面不存在，或已被移动到别处。",
+    nfLookedFor: (p: string) => `你找的是 ${p}`,
     nfArchive: "去归档页",
     nfRandom: "随机一篇",
     // Thoughts
@@ -399,6 +406,12 @@ export const dict = {
     onThisPage: "On this page",
     previous: "Previous",
     next: "Next",
+    heroPrev: "Previous pick",
+    heroNext: "Next pick",
+    codeCopy: "Copy",
+    codeCopied: "Copied",
+    themeToLight: "Switch to light",
+    themeToDark: "Switch to dark",
     noPrevious: "No previous",
     noNext: "No next",
     minRead: "min read",
@@ -635,6 +648,7 @@ export const dict = {
     notFoundBack: "Back to home",
     nfHeadline: "This page hasn't been written yet",
     nfHint: "The page you're looking for doesn't exist, or has moved elsewhere.",
+    nfLookedFor: (p: string) => `You asked for ${p}`,
     nfArchive: "Browse the archive",
     nfRandom: "Read something random",
     addThought: "Add New Thought",
@@ -699,6 +713,12 @@ export type Dict = {
   onThisPage: string;
   previous: string;
   next: string;
+  heroPrev: string;
+  heroNext: string;
+  codeCopy: string;
+  codeCopied: string;
+  themeToLight: string;
+  themeToDark: string;
   noPrevious: string;
   noNext: string;
   minRead: string;
@@ -920,6 +940,7 @@ export type Dict = {
   notFoundBack: string;
   nfHeadline: string;
   nfHint: string;
+  nfLookedFor: (p: string) => string;
   nfArchive: string;
   nfRandom: string;
   addThought: string;

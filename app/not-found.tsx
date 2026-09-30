@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 import { pickTagline } from "@/lib/taglines";
@@ -10,6 +10,7 @@ import { pickTagline } from "@/lib/taglines";
 export default function NotFound() {
   const { t, lang } = useLang();
   const router = useRouter();
+  const path = usePathname();
   const [tagline, setTagline] = useState(t.footerTagline);
   const [busy, setBusy] = useState(false);
 
@@ -54,6 +55,17 @@ export default function NotFound() {
 
         <h1 className="serif text-[26px] font-semibold tracking-tight mt-6">{t.nfHeadline}</h1>
         <p className="text-sm text-[var(--yh-muted)] mt-3 leading-relaxed max-w-xs">{t.nfHint}</p>
+        {/* 回显访客要找的路径：此前 404 只说"不存在"，说不清是链接写错还是文章被撤。
+            usePathname 给的是编码形态，解码后再展示；畸形序列退回原串。 */}
+        {path && path !== "/" && (
+          <p className="mono text-[11px] text-[var(--yh-muted)]/80 mt-2 max-w-xs break-all">
+            {t.nfLookedFor(
+              (() => {
+                try { return decodeURIComponent(path); } catch { return path; }
+              })()
+            )}
+          </p>
+        )}
 
         <div className="flex items-center gap-3 flex-wrap justify-center mt-8">
           <Link

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getPostsPage, getRelatedTags, FRONT_PAGE_SIZE_MAX } from "@/lib/posts";
 import { getSettings } from "@/lib/settings";
 import { TagClient } from "./TagClient";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 // 标签聚合页（v0.3 P1-7）：/tag/[tag]——文章页底部标签可点击进入。
 // 服务端取数 + notFound；刊头/列表/相关标签交给 TagClient（客户端本地化）。
@@ -12,7 +13,12 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
   const { tag } = await params;
   const name = decodeURIComponent(tag);
-  return { title: `#${name}`, description: `标签「${name}」下的全部文章` };
+  return {
+    title: `#${name}`,
+    description: `标签「${name}」下的全部文章`,
+    // 固定成编码后的唯一形态：同一标签可能以「CSS 变量 / CSS%20变量 / css 变量」被爬到
+    alternates: { canonical: `${getSiteUrlSync()}/tag/${encodeURIComponent(name)}` },
+  };
 }
 
 export default async function TagPage({

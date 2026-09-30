@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { MPost } from "@/components/mobile/MPost";
-import { adaptLegacyPost, postOgMeta } from "@/lib/adapt";
+import { adaptLegacyPost, pickAdjacent, postOgMeta } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 import { getSettings } from "@/lib/settings";
@@ -42,16 +42,9 @@ export default async function MobilePostPage({
   if (!raw) notFound();
   const post = adaptLegacyPost(raw)!;
 
-  // 按发布时间排序，算出纵向上下篇（桌面是横向）
-  const allRaw = await getAllPosts();
-  const sorted = [...allRaw].sort((a, b) => {
-    const da = new Date(a.publishedAt || a.createdAt || 0).getTime();
-    const db = new Date(b.publishedAt || b.createdAt || 0).getTime();
-    return db - da;
-  });
-  const idx = sorted.findIndex((p) => p.id === post.id);
-  const prev = idx > 0 ? adaptLegacyPost(sorted[idx - 1]) : null;
-  const next = idx >= 0 && idx < sorted.length - 1 ? adaptLegacyPost(sorted[idx + 1]) : null;
+  // 上/下篇：与桌面、平板共用 lib/adapt 的同一实现，这一端排成纵向
+  const all = (await getAllPosts()).map(adaptLegacyPost);
+  const { prev, next } = pickAdjacent(all, post);
 
   return <MPost post={post} rawPost={raw} prev={prev} next={next} />;
 }

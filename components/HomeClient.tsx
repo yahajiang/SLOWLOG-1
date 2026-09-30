@@ -192,6 +192,21 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
     }, 5000)
     return () => clearInterval(id)
   }, [heroPool.length])
+  // 推荐位键盘控制：← / → 切换（与图片上那对 48×48 箭头同一动作）。
+  // 在输入框里打字、或搜索面板（role=dialog）打开时不劫持方向键。
+  useEffect(() => {
+    if (heroPool.length <= 1) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return
+      const el = document.activeElement as HTMLElement | null
+      if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return
+      if (el && el.closest('[role="dialog"]')) return
+      const dir = e.key === "ArrowLeft" ? -1 : 1
+      setHeroIndex((i) => (i + dir + heroPool.length) % heroPool.length)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [heroPool.length])
   // 切换分类 / 候选池变化时回到第一篇，避免沿用旧下标导致 hero 内容错位
   useEffect(() => { setHeroIndex(0) }, [activeCategory, heroPool.length])
   const showHero = searchQuery.trim() === "" && !!localizedFeatured
@@ -321,22 +336,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                       <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
                     )}
                     {heroPool.length > 1 && (
-                      <span className="flex items-center gap-1 text-[10px] text-[var(--yh-muted)]">
-                        <button
-                          onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)}
-                          className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
-                          aria-label="上一篇推荐"
-                        >
-                          ‹
-                        </button>
+                      /* 只有计数：切换交给图片上那对 48×48 箭头与左右方向键。
+                         原先这里的 ‹ › 实测 24×15px，与大箭头是同一动作的冗余小钮。 */
+                      <span className="text-[10px] text-[var(--yh-muted)] tabular-nums" aria-live="polite">
                         {heroIndex + 1} / {heroPool.length}
-                        <button
-                          onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)}
-                          className="px-1.5 py-1 hover:text-[var(--yh-accent)] transition-colors duration-[180ms] ease-[var(--ease-out)] min-h-[24px]"
-                          aria-label="下一篇推荐"
-                        >
-                          ›
-                        </button>
                       </span>
                     )}
                   </div>
@@ -374,15 +377,17 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           </div>
           {heroPool.length > 1 && (
             <>
-              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
+              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label={t.heroPrev}>
                 ‹
               </button>
-              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
+              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label={t.heroNext}>
                 ›
               </button>
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {/* 位置指示：纯装饰，不做可点控件——6px 圆点撑到 48px 会互相盖住，
+                  反而点不准；切换走上面的 48×48 箭头与左右方向键。 */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5" aria-hidden>
                 {heroPool.map((_, i) => (
-                  <button key={i} onClick={() => setHeroIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-colors duration-[180ms] ease-[var(--ease-out)] ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
+                  <span key={i} className={`w-1.5 h-1.5 rounded-full transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] ${i === heroIndex ? "bg-[var(--yh-text)]" : "bg-[var(--yh-border)]"}`} />
                 ))}
               </div>
             </>

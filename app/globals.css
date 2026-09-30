@@ -302,6 +302,23 @@ code, pre, .font-mono {
   to { transform: translateX(55%); opacity: 0; }
 }
 
+/* 触控命中区扩展：视觉尺寸不动，把可点方块补到 ≥48×48（与 Android 同一基线）。
+   给"小而必须可点"的控件用：标题锚点、代码块复制钮。
+   ⚠️ 不要用在并排紧凑的小圆点上——相邻 48px 方块会互相盖住，反而点不准。
+   元素自身需要有定位（这里顺手声明），且父容器不能 overflow-hidden 裁掉。 */
+.hit {
+  position: relative;
+}
+.hit::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 48px);
+  height: max(100%, 48px);
+  transform: translate(-50%, -50%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .section-in, .panel-in, .panel-out, .lightbox-in, .lightbox-out, .sheet-in, .sheet-out, .mask-in, .mask-out, .category-enter, .category-exit {
     animation: none !important;
@@ -1400,8 +1417,5 @@ body::after {
   }
 }
 
-/* 键盘可达：全局可见焦点圈（仅键盘 :focus-visible 时出现，不干扰鼠标交互） */
-:focus-visible {
-  outline: 2px solid var(--yh-accent);
-  outline-offset: 2px;
-}
+/* 键盘可达：全局可见焦点圈的同一条规则只在 @layer base 那处声明（见文件顶部），
+   这里曾有一份完全相同的顶层声明——已删，避免"改一处忘一处"。 */

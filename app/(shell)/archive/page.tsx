@@ -1,6 +1,7 @@
 import { getPostsPage, getArchiveStats, stripPostHeavy, FRONT_PAGE_SIZE_MAX } from "@/lib/posts"
 import { getSettings } from "@/lib/settings"
 import ArchiveClient from "./ArchiveClient"
+import { getSiteUrlSync } from "@/lib/site-url"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -8,6 +9,8 @@ export const revalidate = 0
 export const metadata = {
   title: "归档",
   description: "按年份浏览全部文章",
+  // self-canonical 固定到无参形态：?page= / ?q= 是同一份归档的不同视图，不该各收一条
+  alternates: { canonical: `${getSiteUrlSync()}/archive` },
 }
 
 /**

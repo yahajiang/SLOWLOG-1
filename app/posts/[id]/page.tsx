@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostById, getPostBySlug } from "@/lib/posts";
 import { PostClient } from "@/components/PostClient";
-import { adaptLegacyPost, pickRelated, postOgMeta, safeJsonLd } from "@/lib/adapt";
+import { adaptLegacyPost, pickAdjacent, pickRelated, postOgMeta, safeJsonLd } from "@/lib/adapt";
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 import { getSettings } from "@/lib/settings";
@@ -55,6 +55,8 @@ export default async function PostPage({
   const all = allRaw.map(adaptLegacyPost);
   // 相关文章：同分类∩同标签 > 同分类 > 同标签 > 最新；最多 3 篇
   const relatedPosts = pickRelated(all, post, 3);
+  // 上/下篇：与移动版同一实现（这一端排成横向两栏）
+  const { prev, next } = pickAdjacent(all, post);
 
   const siteUrl = await getSiteUrl();
   const jsonLd = {
@@ -79,7 +81,7 @@ export default async function PostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
-      <PostClient post={post} rawPost={raw} relatedPosts={relatedPosts} />
+      <PostClient post={post} rawPost={raw} relatedPosts={relatedPosts} prev={prev} next={next} />
     </>
   );
 }

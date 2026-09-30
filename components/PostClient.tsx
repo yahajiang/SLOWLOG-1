@@ -18,7 +18,7 @@ import { Lightbox } from "./Lightbox";
 import type { Post } from "@/lib/types";
 import { parsePageConfig, withSiteDefaults } from "@/lib/page-config";
 import { useSiteSettings } from "@/lib/settings-context";
-import { Clock, ExternalLink, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, ExternalLink, Search } from "lucide-react";
 
 const PostRenderer = dynamic(() => import("./editor/PostRenderer").then((m) => m.PostRenderer), {
   loading: () => <div className="animate-pulse h-96 bg-[var(--dash-card)]/30 rounded-none" />,
@@ -38,11 +38,15 @@ export function PostClient({
   post: rawPost,
   rawPost: prismaRaw,
   relatedPosts = [],
+  prev = null,
+  next = null,
   tocDrawer = false,
 }: {
   post: Post;
   rawPost?: any;
   relatedPosts?: Post[];
+  prev?: Post | null;
+  next?: Post | null;
   tocDrawer?: boolean;
 }) {
   const { t, lang } = useLang();
@@ -270,6 +274,43 @@ export function PostClient({
           )}
         </div>
       </section>
+
+      {/* 上/下篇（v0.5.1）：此前只有移动版 MPost 有，桌面与平板读完一篇没有下一步。
+          算法在 lib/adapt.pickAdjacent 一处实现，这里只是横向排布。 */}
+      {(prev || next) && (
+        <section className="w-full max-w-[min(92%,1180px)] 2xl:max-w-[min(70%,1600px)] mx-auto px-6 pb-14">
+          <div className="grid sm:grid-cols-2 gap-4">
+            {prev && (
+              <Link
+                href={`/posts/${prev.id}`}
+                className="group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300"
+              >
+                <ChevronLeft className="w-5 h-5 text-[var(--yh-muted)] group-hover:text-[var(--yh-accent)] shrink-0 transition-colors" aria-hidden />
+                <div className="min-w-0">
+                  <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.previous}</p>
+                  <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate group-hover:text-[var(--yh-accent)] transition-colors">
+                    {lang === "zh" ? prev.titleZh || prev.title : prev.title}
+                  </p>
+                </div>
+              </Link>
+            )}
+            {next && (
+              <Link
+                href={`/posts/${next.id}`}
+                className={`group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300 ${prev ? "sm:col-start-2 sm:flex-row-reverse sm:text-right" : "sm:col-start-1"}`}
+              >
+                <ChevronRight className="w-5 h-5 text-[var(--yh-muted)] group-hover:text-[var(--yh-accent)] shrink-0 transition-colors" aria-hidden />
+                <div className="min-w-0">
+                  <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.next}</p>
+                  <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate group-hover:text-[var(--yh-accent)] transition-colors">
+                    {lang === "zh" ? next.titleZh || next.title : next.title}
+                  </p>
+                </div>
+              </Link>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* 继续阅读（v0.3 P1-6）：同分类优先的相关文章，最多 3 篇 */}
       {relatedPosts.length > 0 && (

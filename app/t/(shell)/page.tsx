@@ -3,6 +3,7 @@ import { adaptLegacyPost } from "@/lib/adapt";
 import { prisma } from "@/lib/prisma";
 import HomeClient from "@/components/HomeClient";
 import { DesktopEscape } from "@/components/DesktopEscape";
+import { getSiteUrlSync } from "@/lib/site-url";
 
 export const revalidate = 60;
 
@@ -10,6 +11,9 @@ export const revalidate = 60;
 export const metadata = {
   description: "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
   robots: { index: false, follow: true },
+  // 蓝图 §八 写的是「/t 与 /m 同策略归一权重」，但 /m 靠 canonical、/t 此前只有 noindex。
+  // 补上 canonical，让"归一"这件事在两种机制下都成立。
+  alternates: { canonical: getSiteUrlSync() },
 };
 
 export default async function Page() {

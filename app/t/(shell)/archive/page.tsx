@@ -2,6 +2,7 @@ import { getPostsPage, getArchiveStats, stripPostHeavy, FRONT_PAGE_SIZE_MAX } fr
 import { getSettings } from "@/lib/settings"
 import ArchiveClient from "@/app/(shell)/archive/ArchiveClient"
 import { DesktopEscape } from "@/components/DesktopEscape"
+import { getSiteUrlSync } from "@/lib/site-url"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -11,6 +12,7 @@ export const metadata = {
   title: "归档",
   description: "按年份浏览全部文章",
   robots: { index: false, follow: true },
+  alternates: { canonical: `${getSiteUrlSync()}/archive` },
 }
 
 export default async function TabletArchivePage({

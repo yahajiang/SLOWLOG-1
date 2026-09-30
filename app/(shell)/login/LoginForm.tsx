@@ -85,7 +85,7 @@ export default function LoginForm() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
-                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
+                className="w-full min-h-[48px] px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
                 placeholder={zh ? "请输入用户名" : "Enter username"}
                 autoFocus
               />
@@ -100,7 +100,7 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
+                className="w-full min-h-[48px] px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
                 placeholder={zh ? "请输入密码" : "Enter password"}
               />
             </div>

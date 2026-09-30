@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/Sidebar"
 
 export const metadata: Metadata = {
-  title: "仪表盘 · 慢日志",
+  title: "仪表盘",
   robots: { index: false, follow: false },
 }
 

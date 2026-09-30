@@ -97,6 +97,26 @@ export function pickRelated(
     .map((s) => s.p);
 }
 
+/**
+ * 上/下篇：三端唯一实现（桌面与平板横向、移动纵向都调它）。
+ *
+ * 排序键与 pickRelated 不同——这里要的是"接着往下读"的时间序列，不是相似度。
+ * 方向沿用移动版既有口径：列表新→旧，所以 `prev` 是更新的（在上方）、
+ * `next` 是更早的（往下读）。⚠️ 这与部分博客"上一篇=更早"的习惯相反，
+ * 若要翻转只改这一处即可，别在某个端上单独改。
+ */
+export function pickAdjacent(
+  all: LegacyPost[],
+  current: { id: string }
+): { prev: LegacyPost | null; next: LegacyPost | null } {
+  const key = (p: LegacyPost) =>
+    +new Date((p.publishedAt as string | undefined) || p.createdAt || p.date || 0);
+  const sorted = [...all].sort((a, b) => key(b) - key(a));
+  const idx = sorted.findIndex((p) => p.id === current.id);
+  if (idx < 0) return { prev: null, next: null };
+  return { prev: sorted[idx - 1] ?? null, next: sorted[idx + 1] ?? null };
+}
+
 /** 文章 openGraph 元数据组装（桌面/移动/平板 SEO 共用）；siteName 由调用方从 Setting 传入 */
 export function postOgMeta(post: LegacyPost, siteUrl: string, siteName = "慢日志") {
   return {

@@ -15,7 +15,7 @@ interface ThemeToggleProps {
 // 初始 dark 态从 html.dark class 推断（内联脚本已设置）。
 export function ThemeToggle({ size = "md", variant = "icon" }: ThemeToggleProps) {
   const [dark, setDark] = useState(false);
-  const { lang } = useLang();
+  const { t, lang } = useLang();
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
@@ -65,8 +65,8 @@ export function ThemeToggle({ size = "md", variant = "icon" }: ThemeToggleProps)
     <button
       onClick={toggle}
       className={`${box} flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors`}
-      aria-label={dark ? "切换到日间" : "切换到夜间"}
-      title={dark ? "切换到日间" : "切换到夜间"}
+      aria-label={dark ? t.themeToLight : t.themeToDark}
+      title={dark ? t.themeToLight : t.themeToDark}
     >
       {Icon}
     </button>

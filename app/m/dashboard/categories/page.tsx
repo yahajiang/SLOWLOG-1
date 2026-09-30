@@ -172,6 +172,11 @@ export default function MobileCategoriesPage() {
             <div>
               <label className={label}>Slug</label>
               <input value={slug} onChange={(e) => setSlug(e.target.value)} className={`${field} font-mono`} placeholder="design" />
+              <p className="mt-1 text-[11px] leading-relaxed text-[var(--dash-muted)]">
+                {zh
+                  ? "小写、用连字符；建站后别再改——分类 slug 恒定，且决定封面的配色族。"
+                  : "Lowercase, hyphenated. Don't rename later — the slug is stable and drives the cover palette."}
+              </p>
             </div>
             <div>
               <label className={label}>{zh ? "描述（英文，可选）" : "Description"}</label>
