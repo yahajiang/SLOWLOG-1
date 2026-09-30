@@ -130,19 +130,19 @@ export function PostClient({
       {/* 继续阅读提示条：Portal 直挂 body——固定悬浮视口底部，滚动时始终可见，不受 transform 祖先劫持 */}
       {portalReady && resumePct !== null && createPortal(
         <div id="sl-resume-bar" className="fixed left-1/2 -translate-x-1/2 z-40 animate-[pageIn_0.35s_var(--ease-out)_both]" style={{ bottom: 24 }}>
-          <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-float)] px-4 py-2.5 rounded-none">
+          <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-float)] px-4 py-1 rounded-none">
             <span className="mono text-[11px] text-[var(--yh-muted)] whitespace-nowrap">
               {lang === "zh" ? `上次读到 ${resumePct}%` : `Left off at ${resumePct}%`}
             </span>
             <button
               onClick={jumpToResume}
-              className="mono text-[11px] tracking-[.1em] uppercase px-3 py-1 bg-[var(--yh-text)] text-[var(--yh-bg)] hover:bg-[var(--yh-accent)] transition-colors rounded-none whitespace-nowrap"
+              className="mono text-[11px] tracking-[.1em] uppercase inline-flex items-center min-h-[48px] px-3 bg-[var(--yh-text)] text-[var(--yh-bg)] hover:bg-[var(--yh-accent)] transition-colors rounded-none whitespace-nowrap"
             >
               {lang === "zh" ? "继续" : "Resume"}
             </button>
             <button
               onClick={() => setResumePct(null)}
-              className="mono text-[11px] text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors px-1"
+              className="mono text-[11px] min-h-[48px] min-w-[48px] inline-flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
               aria-label={lang === "zh" ? "关闭" : "Dismiss"}
             >
               ✕
@@ -248,7 +248,7 @@ export function PostClient({
               {/* 底部标签：可点击进入标签聚合页 */}
               <div className="flex flex-wrap gap-2 mt-12 pt-6 border-t border-[var(--yh-border)]">
                 {post.tags.map((tag) => (
-                  <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`} className={`text-xs px-3 py-1.5 rounded-none border transition-colors ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10 hover:bg-[var(--dash-card)]/15" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-white hover:text-[var(--yh-text)]"}`}>
+                  <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`} className={`text-xs inline-flex items-center min-h-[48px] px-3 rounded-none border transition-colors ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10 hover:bg-[var(--dash-card)]/15" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-white hover:text-[var(--yh-text)]"}`}>
                     #{tag}
                   </Link>
                 ))}

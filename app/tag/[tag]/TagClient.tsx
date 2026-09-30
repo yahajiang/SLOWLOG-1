@@ -95,13 +95,13 @@ export function TagClient({
         </div>
 
         {related.length > 0 && (
-          <div className="flex items-baseline flex-wrap gap-x-3 gap-y-1.5 mt-4 pt-3 border-t border-[var(--yh-border)]/60">
+          <div className="flex items-center flex-wrap gap-x-3 gap-y-0 mt-4 pt-3 border-t border-[var(--yh-border)]/60">
             <span className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">{zh ? "相关标签" : "Related"}</span>
             {related.map((tg) => (
               <Link
                 key={tg}
                 href={`/tag/${encodeURIComponent(tg)}`}
-                className="mono text-[11px] text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-colors"
+                className="mono text-[11px] min-h-[48px] min-w-[48px] px-1 inline-flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-accent)] transition-colors"
               >
                 #{tg}
               </Link>
