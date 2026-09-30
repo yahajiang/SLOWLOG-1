@@ -19,7 +19,7 @@
 - RSS 订阅（`/rss.xml`）与 Sitemap（`/sitemap.xml`），文章页 JSON-LD 结构化数据
 
 ### 国际化（中/英一键切换）
-- `lib/i18n.ts` 270 条 zh/en 1:1 字典（`Dict` 类型），`LangProvider` 全局语言上下文（localStorage 记忆）
+- `lib/i18n.ts` 290 条 zh/en 1:1 字典（`Dict` 类型），`LangProvider` 全局语言上下文（localStorage 记忆）
 - 前台文案、分类名、日期、相对时间（刚刚/x 分钟前 ↔ just now/x min ago）全部本地化
 - Logo `慢日志·SLOWLOG` 为统一品牌标识，不随语言切换；标签、标题摘要为作者原文（中英独立字段），不做机器翻译
 - 后台保持中文（面向站长）
@@ -28,7 +28,7 @@
 - 与桌面**同风格**（同一套 CSS 变量/字体/封面/文案），只改版式：单列全宽、紧凑顶栏、分类横滑、纵向上下篇、悬浮目录钮＋底部抽屉、44px+ 触摸目标
 - `middleware` 按手机 UA 自动改写（地址栏不变），`view=desktop` cookie 可切回桌面；平板默认进 `/t` 平板树
 - 移动页 `canonical` 全部指回桌面 URL，权重归一；Sitemap 只收录桌面地址
-- 轻量移动后台 `/m/dashboard`：数据概览、文章管理（搜索/上下架/删除/复制链接）、随想速记、分类与媒体查看；完整编辑请用桌面版
+- 轻量移动后台 `/m/dashboard`：数据概览、文章管理（搜索/上下架/删除/复制链接）、随想速记、媒体查看，「更多」里有分类管理（可新建/改名/删除）与 App 令牌两个入口；图片上传与文章编辑器仍在桌面版
 
 ### 平板端（`/t`）
 - 与桌面**同构**——直接复用 `HomeClient` / `PostClient`，不维护第二套版式；竖持（<1024）时目录改走抽屉
@@ -97,7 +97,7 @@ npm run dev
 **默认管理员**：`admin@slowlog.dev` / `admin123`（首次登录强制改密；生產环境请先改密或删除默认账户）
 
 ```bash
-npm run build    # prisma generate && next build（生产构建）
+npm run build    # next build（prisma generate 已由 postinstall 跑过）
 npm start        # 启动生产服务
 ANALYZE=true npm run build  # 包体积可视化分析
 ```
@@ -140,7 +140,7 @@ ANALYZE=true npm run build  # 包体积可视化分析
 │   └── ...                   # Header/Footer/HomeClient/PostClient/TableOfContents/Thinking/…
 ├── lib/
 │   ├── posts.ts              # 文章服务层（唯一可见性规则 + unstable_cache + 构建期降级）
-│   ├── i18n.ts               # 270 条中英字典 + Dict 类型
+│   ├── i18n.ts               # 290 条中英字典 + Dict 类型
 │   ├── adapt.ts              # 三端共享适配层（post 适配 / 相关文章打分 / OG 元数据 / safeJsonLd）
 │   ├── settings.ts           # 站点设置服务端唯一来源（getSettings + unstable_cache + 降级）
 │   ├── settings-shared.ts    # 设置类型与默认值（无 prisma，客户端可安全引用）
@@ -197,7 +197,7 @@ ANALYZE=true npm run build  # 包体积可视化分析
 ### Vercel（推荐，Git 推送自动部署）
 1. Fork 本仓库到 GitHub，在 Vercel 导入项目
 2. 配置上表全部环境变量
-3. `git push origin main` 即触发生产构建（`prisma generate && next build`，43 条路由 / 25 页静态化）
+3. `git push origin main` 即触发生产构建（`next build`，实测 **55 条路由**：11 静态 + 2 SSG + 42 动态；`prisma generate` 由 `postinstall` 代跑）
 
 ### Cloudflare Workers 代理（中国大陆访问）
 Vercel 默认域名在大陆可能无法访问，可用 Workers 代理：
