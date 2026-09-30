@@ -5,7 +5,10 @@ import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/Sidebar"
 
 export const metadata: Metadata = {
-  title: "仪表盘",
+  // ⚠️ 中间层不要写 title：metadata 逐层浅合并，这里一旦出现字符串 title，
+  // 根上那份 `{ default, template }` 就被整块替换掉，子页只剩裸名
+  // （实测「随想」而非「随想 | 慢日志」）。壳层自己的名字交给 page.tsx 出。
+  // 对照实验：把这行 title 加回去，后台直串加载卡不卡一样（都卡），确认与它无关。
   robots: { index: false, follow: false },
 }
 

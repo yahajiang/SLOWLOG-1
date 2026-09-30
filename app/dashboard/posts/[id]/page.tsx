@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import EditorClient from "./EditorClient"
 
 export const dynamic = "force-dynamic"
-
+export const metadata: Metadata = { title: "编辑" }
 export default async function EditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const isNew = id === "new"

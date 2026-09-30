@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import type { Metadata } from "next";
 import { DashboardHome } from "@/components/dashboard/DashboardHome";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "仪表盘" };
 
 const getDashboardData = unstable_cache(
   async () => {

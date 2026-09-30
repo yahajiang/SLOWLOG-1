@@ -6,7 +6,7 @@ import { MDashTopbar } from "@/components/mobile/MDashTopbar";
 import { MDashMain } from "@/components/mobile/MDashMain";
 
 export const metadata: Metadata = {
-  title: "后台",
+  // 同桌面 dashboard/layout：中间层不写 title，否则根上的 template 会被浅合并替换掉。
   robots: { index: false, follow: false },
 };
 

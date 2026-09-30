@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
+import type { Metadata } from "next";
 import { MDashHome } from "@/components/mobile/MDashHome";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "后台" };
 
 const getMobileDashData = unstable_cache(
   async () => {
