@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { submitCredentialLogin } from "@/lib/login-shared";
 import { useLang } from "@/lib/lang-context";
 
 export default function LoginForm() {
@@ -10,9 +11,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
   const zh = lang === "zh";
   const changed = searchParams.get("changed");
 
@@ -22,18 +22,14 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const email = (username.includes("@") ? username : `${username}@slowlog.dev`).toLowerCase().trim()
-      const { signIn } = await import("next-auth/react")
-      const res = await signIn("credentials", { email, password, redirect: false })
-      if (res?.error) {
-        setError(zh ? "登录失败，请检查邮箱/密码" : "Sign-in failed. Check your email / password.");
+      const out = await submitCredentialLogin(username, password, "/dashboard");
+      if (out !== "ok") {
+        setError(out === "invalid" ? t.loginFailed : t.loginNetworkError);
         setLoading(false);
-        return;
       }
-      router.push("/dashboard");
-      router.refresh();
+      // ok：submitCredentialLogin 已发起整页导航，保持按钮在「登录中…」直到页面换掉
     } catch {
-      setError(zh ? "网络错误，请重试" : "Network error. Please try again.");
+      setError(t.loginNetworkError);
       setLoading(false);
     }
   }

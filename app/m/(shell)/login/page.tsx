@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// 与桌面 /login 同一问题：预渲染 + `<Suspense>` 里用 useSearchParams ⇒ 首屏 HTML 无表单。
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function MobileLoginPage() {
   return (
     <Suspense>

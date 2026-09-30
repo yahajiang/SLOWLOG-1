@@ -1,38 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/lib/lang-context";
+import { submitCredentialLogin } from "@/lib/login-shared";
 
-/** 移动端登录：与桌面同流程（next-auth credentials → /dashboard），居中卡片 */
+/** 移动端登录：与桌面**共用 lib/login-shared 的同一提交流程**（此前两边各写一遍 signIn） */
 export function MLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
   const changed = searchParams.get("changed");
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      const email = (username.includes("@") ? username : `${username}@slowlog.dev`).toLowerCase().trim();
-      const { signIn } = await import("next-auth/react");
-      const res = await signIn("credentials", { email, password, redirect: false });
-      if (res?.error) {
-        setError(lang === "zh" ? "登录失败，请检查邮箱/密码" : "Sign in failed. Check your email/password.");
-        setLoading(false);
-        return;
-      }
-      router.push("/m/dashboard");
-      router.refresh();
-    } catch {
-      setError(lang === "zh" ? "网络错误" : "Network error");
+    const out = await submitCredentialLogin(username, password, "/m/dashboard");
+    if (out !== "ok") {
+      setError(out === "invalid" ? t.loginFailed : t.loginNetworkError);
       setLoading(false);
     }
   }

@@ -5,7 +5,8 @@ import { apiError, apiZodError } from "@/lib/api-utils"
 import { appTokenExchangeSchema } from "@/lib/schemas"
 import { prisma } from "@/lib/prisma"
 import { canReadUnpublished, ROLE_READER, sha256Hex, tokenExpiry, TOKEN_SCOPE_ADMIN } from "@/lib/app-auth"
-import { normalizeLoginEmail, verifyCredentials } from "@/lib/auth"
+import { verifyCredentials } from "@/lib/auth"
+import { normalizeLoginEmail } from "@/lib/login-shared"
 
 export const dynamic = "force-dynamic"
 

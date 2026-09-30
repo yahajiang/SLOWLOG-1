@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { authConfig } from "./auth-config"
+import { normalizeLoginEmail } from "./login-shared"
 
 const DEFAULT_EMAIL = "admin@slowlog.dev"
 const DEFAULT_PASSWORD = "admin123"
@@ -111,17 +112,10 @@ export type CredentialCheck =
  * 拉入 pg（见原 authorize 里的注释）。
  */
 /**
- * 登录账号归一化：小写 + 去空白；不含 `@` 的输入补全成 `用户名@slowlog.dev`
- * （Web 登录表单与 App 换取 Token 共用这一条约定，2026-09-21）。
- *
- * 导出是为了让**注册**路径与登录路径用同一个键去查/写 `User.email` ——
- * 两边各写一遍的话，迟早出现「注册进去的邮箱登录查不到」。
+ * 邮箱归一化的实现挪到了 `lib/login-shared.ts`（2026-09-30）：登录表单是客户端组件，
+ * 不能引本模块（这里有 NextAuth 服务端配置 + 动态 prisma），于是它自己又写了一遍
+ * 补全域名的规则。规则只能有一处 —— 挪到一个零依赖模块，三边共用。
  */
-export function normalizeLoginEmail(email: string): string {
-  const mail = (email || "").toLowerCase().trim()
-  if (!mail) return ""
-  return mail.includes("@") ? mail : `${mail}@slowlog.dev`
-}
 
 export async function verifyCredentials(
   email: string,
@@ -147,13 +141,17 @@ export async function verifyCredentials(
   // 最终防线：同一来源短窗内异常高频失败
   if (failCount(ipKey, now) >= IP_HARD_LIMIT) return { ok: false, reason: "rate_limited" }
 
-  await applyBackoff(ipKey, emailKey, now)
-
+  // 退避延时**不再放在查库之前**（2026-09-30）。原先的顺序是
+  // 「先 sleep 再校验」，于是作者本人输错 5 次后，第 6 次哪怕密码完全正确，
+  // 也要先睡最多 3s —— 叠上 Neon 冷连接（实测凭据那一枪 6.9s）就成了
+  // 「卡在登录中，要刷新重试几十秒」。现在只在**确认失败之后**才睡：
+  // 暴力破解者照样每次都付延时（且计的是本次的数），正确凭据不再被惩罚。
   // case-insensitive: legacy rows may store mixed-case emails
   const user = await prisma.user.findFirst({ where: { email: { equals: mail, mode: "insensitive" } } })
   if (!user) {
     recordFail(ipKey, now)
     recordFail(emailKey, now)
+    await applyBackoff(ipKey, emailKey, now)
     return { ok: false, reason: "invalid" }
   }
   // ⚠️ 不能直接 await bcrypt.compare：历史脏数据里存在 `password` 列不是合法
@@ -171,6 +169,7 @@ export async function verifyCredentials(
   if (!ok) {
     recordFail(ipKey, now)
     recordFail(emailKey, now)
+    await applyBackoff(ipKey, emailKey, now)
     return { ok: false, reason: "invalid" }
   }
   // 成功即同时复位该来源与账号的失败计数

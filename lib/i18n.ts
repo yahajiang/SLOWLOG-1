@@ -81,6 +81,8 @@ export const dict = {
     themeToLight: "切换到日间",
     themeToDark: "切换到夜间",
     resumeHint: "按本机记录的上次阅读位置提示；关闭后本篇不再出现",
+    loginFailed: "登录失败，请检查邮箱/密码",
+    loginNetworkError: "网络错误，请重试",
     noPrevious: "没有更早的文章了",
     noNext: "没有更新的文章了",
     minRead: "分钟阅读",
@@ -436,6 +438,8 @@ export const dict = {
     themeToLight: "Switch to light",
     themeToDark: "Switch to dark",
     resumeHint: "Based on where you left off on this device. Dismiss to hide it for this post.",
+    loginFailed: "Sign-in failed. Check your email / password.",
+    loginNetworkError: "Network error. Please try again.",
     noPrevious: "No previous",
     noNext: "No next",
     minRead: "min read",
@@ -766,6 +770,8 @@ export type Dict = {
   themeToLight: string;
   themeToDark: string;
   resumeHint: string;
+  loginFailed: string;
+  loginNetworkError: string;
   noPrevious: string;
   noNext: string;
   minRead: string;
