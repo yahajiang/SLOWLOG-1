@@ -36,10 +36,15 @@ export default async function TagPage({
   const settings = await getSettings();
   const pageSize = Math.min(settings.postsPerPage || FRONT_PAGE_SIZE_MAX, FRONT_PAGE_SIZE_MAX);
 
-  const [pageData, related] = await Promise.all([
+  const [first, related] = await Promise.all([
     getPostsPage({ tag: name, page: requested, pageSize }),
     getRelatedTags(name),
   ]);
+  // ?page= 指到范围外时不给空白卡：total>0 说明标签本身有文章，回落到最后一页
+  const pageData =
+    first.items.length === 0 && first.total > 0 && requested > 1
+      ? await getPostsPage({ tag: name, page: Math.max(1, Math.ceil(first.total / pageSize)), pageSize })
+      : first;
 
   if (pageData.total === 0) notFound();
 

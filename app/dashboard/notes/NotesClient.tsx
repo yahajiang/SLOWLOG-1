@@ -21,7 +21,7 @@ export default function NotesPage() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const [delId, setDelId] = useState<string | null>(null)
   const { toast } = useToast()
-  const { lang } = useLang()
+  const { t, lang } = useLang()
   const fetchNotes = async (p = page) => { const r = await loadList<any>(`/api/thoughts?page=${p}`); setNotes(r.data.map((d: any) => ({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt }))); setTotal(r.total); setLoadErr(r.error); setLoading(false) }
   useEffect(()=>{fetchNotes()},[page])
   const submit = async () => {
@@ -67,8 +67,8 @@ export default function NotesPage() {
         <div className="flex items-center justify-between pt-2">
           <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 条` : `Page ${page} / ${totalPages} · ${total} items`}</p>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "上一页" : "Prev"}</button>
-            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "下一页" : "Next"}</button>
+            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 min-h-[36px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pagePrev}</button>
+            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 min-h-[36px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pageNext}</button>
           </div>
         </div>
       )}

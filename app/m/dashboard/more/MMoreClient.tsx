@@ -8,6 +8,8 @@ import { LogOut, MonitorSmartphone, ChevronRight } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { ListError } from "@/components/ui/ListError";
+import { loadList } from "@/lib/admin-fetch";
 import { useLang } from "@/lib/lang-context";
 
 /** 移动端更多：分类查看＋媒体查看＋管理入口＋退出／桌面版切换 */
@@ -15,20 +17,19 @@ export default function MobileMorePage() {
   const [cats, setCats] = useState<any[]>([]);
   const [media, setMedia] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useLang();
 
+  const load = async () => {
+    const [c, m] = await Promise.all([loadList("/api/categories"), loadList("/api/media?page=1&pageSize=9")]);
+    setCats(c.data);
+    setMedia(m.data.slice(0, 9));
+    setLoadErr(c.error ?? m.error);
+    setLoading(false);
+  };
   useEffect(() => {
-    Promise.all([
-      fetch("/api/categories").then((r) => r.json()),
-      fetch("/api/media").then((r) => r.json()),
-    ])
-      .then(([c, m]) => {
-        setCats(Array.isArray(c) ? c : []);
-        setMedia(Array.isArray(m) ? m.slice(0, 9) : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    void load();
   }, []);
 
   const copyMedia = async (url: string) => {
@@ -43,6 +44,7 @@ export default function MobileMorePage() {
 
   return (
     <div className="space-y-5">
+      {loadErr && !loading && <ListError onRetry={() => void load()} />}
       <AdminTitle>{t.dashMore}</AdminTitle>
 
       <section className={PANEL_CLS}>

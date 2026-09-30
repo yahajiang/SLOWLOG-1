@@ -25,11 +25,14 @@ export default function MobileNotesPage() {
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [delId, setDelId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const PAGE_SIZE = 50;
   const { toast } = useToast();
   const { t, lang } = useLang();
 
   const fetchNotes = async () => {
-    const r = await loadList<any>("/api/thoughts");
+    const r = await loadList<any>(`/api/thoughts?page=${page}`);
     setNotes(
       r.data.map((d: any) => ({
         id: d.id,
@@ -38,13 +41,14 @@ export default function MobileNotesPage() {
         createdAt: d.createdAt,
       })),
     );
+    setTotal(r.total);
     setLoadErr(r.error);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    void fetchNotes();
+  }, [page]);
 
   const submit = async () => {
     if (!input.trim() || input.length > 500) {
@@ -52,6 +56,7 @@ export default function MobileNotesPage() {
       return;
     }
     setSending(true);
+    setPage(1);
     const text = input.trim();
     // 乐观插入，列表立即可见
     setNotes((prev) => [{ id: `local-${Date.now()}`, content: text, contentZh: text, createdAt: new Date().toISOString() }, ...prev]);
@@ -132,6 +137,27 @@ export default function MobileNotesPage() {
             (loadErr ? <ListError onRetry={() => void fetchNotes()} /> : (
               <p className="text-sm text-[var(--dash-muted)] text-center py-12">{t.noThoughts}</p>
             ))}
+        </div>
+      )}
+      {!loading && total > PAGE_SIZE && (
+        <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3 min-h-[48px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-40 active:opacity-60 transition-colors"
+          >
+            {t.pagePrev}
+          </button>
+          <span className="mono text-[11px] text-[var(--dash-muted)]">
+            {page} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(Math.max(1, Math.ceil(total / PAGE_SIZE)), p + 1))}
+            disabled={page >= Math.ceil(total / PAGE_SIZE)}
+            className="px-3 min-h-[48px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-40 active:opacity-60 transition-colors"
+          >
+            {t.pageNext}
+          </button>
         </div>
       )}
       <ConfirmDialog

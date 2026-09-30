@@ -25,7 +25,7 @@ export default function CategoriesPage(){
   const [draft,setDraft]=useState<CatDraft|null>(null)
   const [saving,setSaving]=useState(false)
   const { toast } = useToast()
-  const { lang } = useLang()
+  const { t, lang } = useLang()
   const load=async()=>{ const r=await loadList("/api/categories"); setCats(r.data); setLoadErr(r.error); setLoading(false) }
   useEffect(()=>{load()},[])
   const create=async()=>{
@@ -100,8 +100,8 @@ export default function CategoriesPage(){
                   <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={draft.descriptionZh} onChange={e=>setDraft({...draft,descriptionZh:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={saveEdit} disabled={saving} className="px-4 py-1.5 bg-[var(--dash-text)] text-white text-xs rounded-none disabled:opacity-50">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存" : "Save")}</button>
-                  <button onClick={cancelEdit} className="px-4 py-1.5 border border-[var(--dash-border)] text-xs rounded-none bg-[var(--dash-card)]">{lang === "zh" ? "取消" : "Cancel"}</button>
+                  <button onClick={saveEdit} disabled={saving} className="px-4 min-h-[36px] inline-flex items-center text-xs rounded-none bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity">{saving ? t.saving : t.save}</button>
+                  <button onClick={cancelEdit} className="px-4 min-h-[36px] inline-flex items-center text-xs rounded-none border border-[var(--dash-border)] bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-70 transition-colors">{t.cancel}</button>
                 </div>
               </div>
             ) : (

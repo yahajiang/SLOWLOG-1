@@ -203,6 +203,9 @@
 
 - **Toast**：底部居中浮出，成功/错误两种语气，承担「已保存、发布成功、已删除 N 篇」这类即席反馈。
 - **确认弹窗**：删除等危险操作先出红色确认框，文案复述对象名称；按钮 loading 防连点。
+- **根级错误边界（2026-10-01 补）**：此前只有 `app/error.tsx`（接根 layout **以内**的错）与 `app/dashboard/error.tsx`；layout 本体或文档结构崩了没有兜底，直接白屏。新增 `app/global-error.tsx` 自渲染 `<html>/<body>`，并且**不调 `useLang()`**——它位于所有 Provider 之外，Provider 本身可能就是崩掉的那一层，所以按 `navigator.language` 直接取 `getDict()`。
+- **翻页与「范围外」也是状态（2026-10-01）**：`/tag/[tag]?page=999` 原先落到 0 条却 `total>0`，画的是一张只有边框的空卡；现在越界即回落到最后一页（实测 `?page=999` 与 `?page=1` 同为 14 条链接）。移动后台「随想」原先只取第一页且没有任何翻页出口（>50 条永久看不见），现补 48px 上/下页与页码；桌面随想两个翻页钮与分类页行内「保存 / 取消」原先硬编码中英两份、且零反馈 26px 高，现接回字典 `pagePrev/pageNext/saving/save/cancel` 并抬到第二档 36px、补 hover/active。
+- **跟随类微动效不并档（刻意留）**：`TableOfContents` 250ms、`TocDrawer` 160ms linear、`ArchiveClient`/`MArchive` 120ms、`ColorPicker` `duration-100` —— 贴着指针与滚动走，套进 180/220/300 会明显延迟，属另一类时长，不动；界面级过渡才走 `--duration-*`。
 - **空态家族**：统一 `border-dashed` 直角卡 + 一句解释 + 一个出口——搜索无果给「清除筛选」；无文章给后台引导；只有 1 篇推荐时温和提示；归档/随想/分类/媒体库各有安静文案。
 - **骨架屏**：永远不让用户对着白屏。
 - **骨架不是异常状态的替身（2026-10-01）**：后台 9 个首屏加载此前各写一条 `fetch().then(r=>r.json())`——既不判 `r.ok` 也没有 `catch`，于是会话过期(401)、服务端 500、断网任何一种失败都不会把 `loading` 置回 false，用户看到的就是骨架屏转到天荒地老。现收口到唯一实现 `lib/admin-fetch.ts`（`loadList` / `loadObject`，永不 reject，返回 `{ data, total, error }`），失败一律渲染 `components/ui/ListError`（说明 + 重试按钮，走危险色 soft/border 档），与"空数据"的安静文案彻底分开；`TokenManager` 的令牌/设备读取也补齐（原来 `if (res.ok)` 直接把失败画成"暂无令牌")。后台树内 `then(r=>r.json())` 裸链残留 **0**。
