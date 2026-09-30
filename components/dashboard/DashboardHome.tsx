@@ -167,7 +167,7 @@ export function DashboardHome({ data }: { data: DashData }) {
         <div className="lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--dash-border)]">
             <h2 className="text-[13px] font-semibold text-[var(--dash-text)] tracking-tight">{t.dashRecentPosts}</h2>
-            <Link href="/dashboard/posts" className="text-[11px] text-[var(--dash-accent)] hover:underline">
+            <Link href="/dashboard/posts" className="inline-flex items-center min-h-[40px] px-1 text-[11px] text-[var(--dash-accent)] hover:underline">
               {t.dashViewAll}
             </Link>
           </div>
@@ -178,7 +178,7 @@ export function DashboardHome({ data }: { data: DashData }) {
                 <Link
                   key={p.id}
                   href={`/dashboard/posts/${p.id}`}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--dash-bg)] transition-colors"
+                  className="flex items-center gap-3 min-h-[40px] px-4 py-2 hover:bg-[var(--dash-bg)] transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -227,25 +227,25 @@ export function DashboardHome({ data }: { data: DashData }) {
             <div className="p-2.5 grid grid-cols-2 gap-2">
               <Link
                 href="/dashboard/posts/new"
-                className="py-2 bg-[var(--dash-text)] text-[var(--dash-bg)] text-[11px] text-center rounded-none hover:opacity-90 transition-opacity font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
+                className="min-h-[40px] inline-flex items-center justify-center bg-[var(--dash-text)] text-[var(--dash-bg)] text-[11px] text-center rounded-none hover:opacity-90 transition-opacity font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
               >
                 {t.dashNewPost}
               </Link>
               <Link
                 href="/dashboard/notes"
-                className="py-2 bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
+                className="min-h-[40px] inline-flex items-center justify-center bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
               >
                 {t.dashNewThought}
               </Link>
               <Link
                 href="/dashboard/media"
-                className="py-2 bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
+                className="min-h-[40px] inline-flex items-center justify-center bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
               >
                 {lang === "zh" ? "上传图片" : "Upload"}
               </Link>
               <Link
                 href="/dashboard/settings"
-                className="py-2 bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
+                className="min-h-[40px] inline-flex items-center justify-center bg-[var(--dash-card)] border border-[var(--dash-border)] text-[11px] text-center rounded-none hover:bg-[var(--dash-bg)] transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
               >
                 {lang === "zh" ? "站点设置" : "Settings"}
               </Link>
@@ -258,7 +258,7 @@ export function DashboardHome({ data }: { data: DashData }) {
               <h2 className="text-[13px] font-semibold text-[var(--dash-text)] tracking-tight">
                 {lang === "zh" ? "最近随想" : "Recent thoughts"}
               </h2>
-              <Link href="/dashboard/notes" className="text-[11px] text-[var(--dash-accent)] hover:underline">
+              <Link href="/dashboard/notes" className="inline-flex items-center min-h-[40px] px-1 text-[11px] text-[var(--dash-accent)] hover:underline">
                 {t.dashViewAll}
               </Link>
             </div>

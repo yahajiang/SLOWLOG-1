@@ -1,5 +1,40 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+
+/**
+ * 对话框焦点管理（两个框共用一处实现）：
+ * 打开时把焦点移进面板、Tab 在面板内循环、关闭时把焦点还给触发元素。
+ * 此前这层只有 Esc 与遮罩点击可退，读屏/键盘用户会被留在面板后面的页面上。
+ */
+function useDialogFocus<T extends HTMLElement>(open: boolean) {
+  const panelRef = useRef<T | null>(null)
+  useEffect(() => {
+    if (!open) return
+    const prev = document.activeElement as HTMLElement | null
+    const focusables = () =>
+      Array.from(
+        panelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])'
+        ) || []
+      ).filter(function (el) { return !el.hasAttribute("disabled") })
+    ;(focusables()[0] || panelRef.current)?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !panelRef.current) return
+      const els = focusables()
+      if (!els.length) return
+      const first = els[0]
+      const last = els[els.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      prev?.focus?.()
+    }
+  }, [open])
+  return panelRef
+}
 
 export function ConfirmDialog({
   open,
@@ -33,14 +68,17 @@ export function ConfirmDialog({
     window.addEventListener("keydown", onEsc)
     return () => window.removeEventListener("keydown", onEsc)
   }, [open, onOpenChange])
+  // 依赖 render 而非只看 open：面板是延一帧才挂上的（退场动画需要 render 状态），
+  // 早于它跑 effect 时 panelRef.current 还是 null ⇒ 焦点进不去（2026-09-30 实测）。
+  const panelRef = useDialogFocus<HTMLDivElement>(open && render)
   if (!render) return null
   const closing = !open
   return (
     // role/aria-modal/aria-labelledby：此前这是一层普通 div 覆层，读屏不知道弹了对话框、
-    // 也不会把语境报成 dialog。焦点锁定另说（见文件顶部注记）。
+    // 也不会把语境报成 dialog。焦点进出面板由 useDialogFocus 管。
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
       <div className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 animate-[maskIn_0.2s_var(--ease-out)] ${closing ? "opacity-0" : "opacity-100"}`} onClick={() => onOpenChange(false)} />
-      <div className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
+      <div ref={panelRef} tabIndex={-1} className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
         <h3 id="confirm-dialog-title" className="text-base font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
           {title}
         </h3>
@@ -88,6 +126,7 @@ export function PromptDialog({
     const t = setTimeout(() => setRender(false), 200)
     return () => clearTimeout(t)
   }, [open])
+  const panelRef = useDialogFocus<HTMLFormElement>(open && render)
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
@@ -101,7 +140,7 @@ export function PromptDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="prompt-dialog-title">
       <div className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 animate-[maskIn_0.2s_var(--ease-out)] ${closing ? "opacity-0" : "opacity-100"}`} onClick={() => onOpenChange(false)} />
-      <form onSubmit={handleSubmit} className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
+      <form ref={panelRef} tabIndex={-1} onSubmit={handleSubmit} className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
         <h3 id="prompt-dialog-title" className="text-base font-semibold tracking-tight mb-4" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
           {title}
         </h3>

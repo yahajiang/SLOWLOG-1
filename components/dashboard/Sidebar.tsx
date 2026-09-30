@@ -57,7 +57,9 @@ export function Sidebar() {
   ]
 
   // 行内控件通用类：收起时仅图标居中，展开时图标+文字
-  const rowBase = "flex items-center rounded-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
+  // min-h-[48px]：侧栏行是后台最常点的目标，触屏笔记本/外接平板上也要够大；
+  // 折叠态的 w-10 h-10=40 由这条 min-h 抬到 48（宽度仍随 w-full 撑满导轨）。
+  const rowBase = "flex items-center min-h-[48px] rounded-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]"
 
   return (
     <aside
@@ -78,7 +80,7 @@ export function Sidebar() {
             aria-label={collapsed ? t.dashExpand : t.dashCollapse}
             aria-expanded={!collapsed}
             title={collapsed ? t.dashExpand : t.dashCollapse}
-            className={`${collapsed ? "w-10 h-10" : "w-8 h-8"} flex items-center justify-center text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors`}
+            className="w-12 h-12 flex items-center justify-center text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)] rounded-none transition-colors"
           >
             {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
