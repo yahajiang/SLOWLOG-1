@@ -1,6 +1,7 @@
 "use client";
 
 import { TokenManager } from "@/components/dashboard/TokenManager";
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { useLang } from "@/lib/lang-context";
 
 /**
@@ -18,7 +19,7 @@ export default function MobileTokensPage() {
   return (
     <div className="space-y-4 section-in">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashAppTokens}</h1>
+        <AdminTitle>{t.dashAppTokens}</AdminTitle>
         <p className="mt-1 text-sm leading-relaxed text-[var(--dash-muted)]">{t.dashTokensHint}</p>
         <p className="mt-1 text-sm leading-relaxed text-[var(--dash-muted)]">{t.dashTokensOnceWarn}</p>
       </header>

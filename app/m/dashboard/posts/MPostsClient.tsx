@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { useToast } from "@/components/ui/Toast";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { DropdownSelect } from "@/components/ui/DropdownSelect";
@@ -145,7 +147,7 @@ export default function MobilePostsPage() {
 
   return (
     <div className="space-y-4 section-in">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashPosts}</h1>
+      <AdminTitle>{t.dashPosts}</AdminTitle>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 space-y-2.5">
         <input
           value={q}
@@ -243,7 +245,7 @@ export default function MobilePostsPage() {
         </div>
       </div>
 
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <div className={PANEL_CLS}>
         {loading ? (
           <div className="divide-y divide-[var(--dash-border)] stagger">
             {Array.from({ length: 5 }).map((_, i) => (

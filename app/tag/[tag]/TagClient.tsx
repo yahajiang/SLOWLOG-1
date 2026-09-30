@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BrandMark } from "@/components/ui/Panel"
 import { ChevronRight } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -48,7 +49,7 @@ export function TagClient({
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity">
-            <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+            <BrandMark />
             <span className="flex items-baseline gap-1">
               <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
               <span className="mono text-[12px] tracking-[0.14em] uppercase">· SLOWLOG</span>

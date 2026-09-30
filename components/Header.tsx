@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BrandMark } from "@/components/ui/Panel"
 import { useEffect, useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
@@ -51,7 +52,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
             {settings.logoUrl ? (
               <img src={settings.logoUrl} alt="" className="w-[26px] h-[26px] rounded-full object-cover shrink-0" />
             ) : (
-              <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
+              <BrandMark />
             )}
             <span className="flex items-baseline gap-1 whitespace-nowrap">
               <span className="font-semibold text-[15px] tracking-tight text-[var(--yh-text)] group-hover:opacity-60 transition-opacity">{siteName}</span>

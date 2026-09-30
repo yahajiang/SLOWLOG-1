@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 
@@ -142,12 +143,9 @@ export function DashboardHome({ data }: { data: DashData }) {
   return (
     <div className="space-y-6 section-in">
       <div>
-        <h1
-          className="text-xl font-semibold tracking-tight text-[var(--dash-text)]"
-          style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}
-        >
+        <AdminTitle>
           {t.dashOverview}
-        </h1>
+        </AdminTitle>
         <p className="text-sm text-[var(--dash-muted)] mt-1">{t.dashHomeSub}</p>
       </div>
 

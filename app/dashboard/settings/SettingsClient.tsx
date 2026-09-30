@@ -1,12 +1,13 @@
 "use client"
 import { useLang } from "@/lib/lang-context"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { SettingsForm } from "@/components/dashboard/SettingsForm"
 
 export default function SettingsPage(){
   const { t } = useLang()
   return (
     <div className="section-in">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)] mb-6" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashSettings}</h1>
+      <AdminTitle className="mb-6">{t.dashSettings}</AdminTitle>
       <SettingsForm />
     </div>
   )

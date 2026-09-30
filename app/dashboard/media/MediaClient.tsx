@@ -1,5 +1,7 @@
 "use client"
 import { useCallback, useEffect, useState } from "react"
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
@@ -95,7 +97,7 @@ export default function MediaPage(){
     loading ? <MediaPageSkeleton /> :
     <div className="space-y-6 section-in" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "媒体库" : "Media"}</h1>
+        <AdminTitle>{lang === "zh" ? "媒体库" : "Media"}</AdminTitle>
         <div className="flex items-center gap-3">
           <div className="flex border border-[var(--dash-border)] rounded-none overflow-hidden text-xs">
             <button onClick={() => setView("grid")} className={`px-3 py-1.5 ${view === "grid" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "网格" : "Grid"}</button>
@@ -122,7 +124,7 @@ export default function MediaPage(){
       {view === "grid" ? (
         <div className="grid grid-cols-4 gap-4 stagger">
           {items.map(m => (
-            <div key={m.id} className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow">
+            <div key={m.id} className={`${PANEL_CLS} shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow`}>
               <div className="aspect-[4/3] bg-[var(--dash-bg)] flex items-center justify-center overflow-hidden">
                 {m.mimeType?.includes("svg") || m.mimeType?.includes("gif")
                   ? <img src={m.url} alt={m.alt || m.filename} loading="lazy" decoding="async" className="max-h-full" />

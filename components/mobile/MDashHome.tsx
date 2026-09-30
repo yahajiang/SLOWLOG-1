@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { useToast } from "@/components/ui/Toast";
 import { useLang } from "@/lib/lang-context";
 
@@ -33,7 +34,7 @@ export function MDashHome({ data }: {
   return (
     <div className="space-y-5 section-in">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashOverview}</h1>
+        <AdminTitle>{t.dashOverview}</AdminTitle>
         <p className="text-sm text-[var(--dash-muted)] mt-1">{t.dashHomeSub}</p>
       </div>
       <div className="grid grid-cols-4 gap-2">

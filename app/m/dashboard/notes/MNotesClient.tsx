@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
@@ -79,7 +81,7 @@ export default function MobileNotesPage() {
 
   return (
     <div className="space-y-4 section-in">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashNotes}</h1>
+      <AdminTitle>{t.dashNotes}</AdminTitle>
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-3 space-y-2.5">
         <textarea
           value={input}
@@ -98,7 +100,7 @@ export default function MobileNotesPage() {
         </button>
       </div>
       {loading ? (
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden divide-y divide-[var(--dash-border)]">
+        <div className={`${PANEL_CLS} divide-y divide-[var(--dash-border)]`}>
           {Array.from({ length: 4 }).map((_, i) => (
             <ListItemSkeleton key={i} />
           ))}

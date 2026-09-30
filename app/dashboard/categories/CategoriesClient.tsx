@@ -1,5 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
@@ -72,7 +74,7 @@ export default function CategoriesPage(){
   if (loading) return <CategoriesPageSkeleton />
   return (
     <div className="space-y-6 section-in">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "分类" : "Categories"}</h1>
+      <AdminTitle>{lang === "zh" ? "分类" : "Categories"}</AdminTitle>
       {loadErr && <ListError onRetry={load} />}
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 flex flex-wrap gap-3 items-end shadow-[var(--shadow-card)]">
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "Design" : "Design"} /></div>
@@ -82,7 +84,7 @@ export default function CategoriesPage(){
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
         <button onClick={create} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "新建" : "New"}</button>
       </div>
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger">
+      <div className={`${PANEL_CLS} divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger`}>
         {cats.map(c=>{
           // 列表副行按界面语言显示描述（与前台 catDescription 同规则：当前语言缺失时回退另一侧）
           const shown = lang === "zh" ? (c.descriptionZh || c.description) : (c.description || c.descriptionZh)

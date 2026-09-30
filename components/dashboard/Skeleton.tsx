@@ -1,4 +1,5 @@
 // 骨架基元：底色块 + shimmer 扫光（与主站加载态同款动效，200ms 级联由各变体自行错峰）
+import { PANEL_CLS } from "@/components/ui/Panel"
 export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
@@ -31,7 +32,7 @@ export function ListItemSkeleton() {
 
 export function GridCardSkeleton() {
   return (
-    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+    <div className={PANEL_CLS}>
       <Skeleton className="aspect-[4/3] w-full" />
       <div className="p-3 space-y-2">
         <Skeleton className="h-3 w-3/4" />
@@ -59,7 +60,7 @@ export function PostsPageSkeleton() {
           <Skeleton className="h-9 w-24" />
         </div>
       </div>
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <div className={PANEL_CLS}>
         <div className="px-4 py-2 border-b border-[var(--dash-border)] bg-[var(--dash-bg)]">
           <Skeleton className="h-3 w-32" />
         </div>
@@ -80,7 +81,7 @@ export function CategoriesPageSkeleton() {
         <Skeleton className="h-9 flex-1" />
         <Skeleton className="h-9 w-20" />
       </div>
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <div className={PANEL_CLS}>
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex items-center justify-between p-4 border-b border-[var(--dash-border)] last:border-0">
             <div className="space-y-2 flex-1">
@@ -109,7 +110,7 @@ export function TokensPageSkeleton() {
       </div>
       <div className="space-y-2">
         <Skeleton className="h-4 w-24" />
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+        <div className={PANEL_CLS}>
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 p-4 border-b border-[var(--dash-border)] last:border-0">
               <Skeleton className="h-4 w-1/4" />

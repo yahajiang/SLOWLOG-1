@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import Link from "next/link";
 import { LogOut, MonitorSmartphone, ChevronRight } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -41,9 +43,9 @@ export default function MobileMorePage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]">{t.dashMore}</h1>
+      <AdminTitle>{t.dashMore}</AdminTitle>
 
-      <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <section className={PANEL_CLS}>
         <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashBrowseCats}</h2>
         {loading ? (
           <div className="divide-y divide-[var(--dash-border)]">
@@ -68,7 +70,7 @@ export default function MobileMorePage() {
         )}
       </section>
 
-      <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <section className={PANEL_CLS}>
         <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashBrowseMedia}</h2>
         {loading ? (
           <div className="grid grid-cols-3 gap-2 p-4">
@@ -96,7 +98,7 @@ export default function MobileMorePage() {
         <p className="px-4 pb-3 text-[11px] text-[var(--dash-muted)]">{t.dashMediaHint}</p>
       </section>
 
-      <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+      <section className={PANEL_CLS}>
         <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashManageGroup}</h2>
         <div className="divide-y divide-[var(--dash-border)]">
           <Link

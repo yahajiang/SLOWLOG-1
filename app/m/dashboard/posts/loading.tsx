@@ -1,4 +1,5 @@
 import { DashLoading } from "@/components/dashboard/DashLoading"
+import { PANEL_CLS } from "@/components/ui/Panel"
 import { ListItemSkeleton, Skeleton } from "@/components/dashboard/Skeleton"
 
 export default function Loading() {
@@ -9,7 +10,7 @@ export default function Loading() {
           <Skeleton className="h-9 flex-1" />
           <Skeleton className="h-9 w-20" />
         </div>
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+        <div className={PANEL_CLS}>
           {Array.from({ length: 6 }).map((_, i) => <ListItemSkeleton key={i} />)}
         </div>
       </div>

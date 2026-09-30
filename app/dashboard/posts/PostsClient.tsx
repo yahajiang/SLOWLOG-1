@@ -1,5 +1,7 @@
 "use client"
 import { useCallback, useEffect, useState } from "react"
+import { PANEL_CLS } from "@/components/ui/Panel"
+import { AdminTitle } from "@/components/ui/AdminTitle"
 import Link from "next/link"
 import { useToast } from "@/components/ui/Toast"
 import { ConfirmDialog } from "@/components/ui/Dialog"
@@ -199,7 +201,7 @@ export default function PostsPage() {
   return (
     <div className="space-y-4 section-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{t.dashPosts}</h1>
+        <AdminTitle>{t.dashPosts}</AdminTitle>
         <Link href="/dashboard/posts/new" className="px-5 py-2.5 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 transition-opacity font-medium">{t.dashNewPost}</Link>
       </div>
 
@@ -246,7 +248,7 @@ export default function PostsPage() {
           {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-[var(--dash-danger)] text-[var(--dash-danger-fg)] rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
-      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)]">
+      <div className={`${PANEL_CLS} shadow-[var(--shadow-card)]`}>
         <div className="px-4 py-2 border-b border-[var(--dash-border)] flex items-center gap-3 text-xs text-[var(--dash-muted)] bg-[var(--dash-bg)]">
           <label className="flex items-center gap-2"><input type="checkbox" checked={allPagedSelected} onChange={toggleAll} className="accent-[var(--dash-accent)]" /> {lang === "zh" ? "全选" : "All"}</label>
           <span className="ml-auto">{lang === "zh" ? "标题 / 分类 / 状态 · 操作" : "Title / Category / Status · Actions"}</span>
