@@ -95,6 +95,34 @@ export function CategoriesPageSkeleton() {
   )
 }
 
+export function TokensPageSkeleton() {
+  // 与 TokenManager 的实际结构同构：space-y-8 + 生成表单卡 + 两张表卡。
+  // 骨架的作用是让导航那一跳不出现"内容跳入"的位移，所以块高必须贴真值。
+  return (
+    <div className="space-y-8">
+      <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-5 space-y-4">
+        <Skeleton className="h-4 w-28" />
+        <div className="flex gap-2 items-end">
+          <Skeleton className="h-9 flex-1" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-24" />
+        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 border-b border-[var(--dash-border)] last:border-0">
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-7 w-16 ml-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function NotesPageSkeleton() {
   return (
     <div className="space-y-6 max-w-2xl">

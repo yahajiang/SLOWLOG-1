@@ -113,7 +113,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
                     <Link
                       key={p.id}
                       href={`/m/posts/${p.id}`}
-                      className="tl-item group relative flex items-center gap-3 py-2.5 pr-1 active:bg-[var(--yh-bg)]/60"
+                      className="tl-item group relative flex items-center gap-3 min-h-[48px] py-2.5 pr-1 active:bg-[var(--yh-bg)]/60"
                       style={{ transitionDelay: `${(i % 8) * 55}ms` }}
                     >
                       <span aria-hidden className="tl-dot absolute -left-6 top-1/2 -translate-y-1/2 w-[6px] h-[6px] rounded-full" />

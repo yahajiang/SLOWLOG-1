@@ -64,15 +64,35 @@ export async function generateMetadata(): Promise<Metadata> {
         },
     title: {
       default: s.siteName,
+      // ⚠️ 模板是唯一实现：各页 title 一律写**裸名**（「归档」不是「归档 · 慢日志」）。
+      // 页面里再硬编码一次站点名会拼出「慢日志 | 慢日志」这种重复品牌 —— 上一版有 8 处如此。
+      // default 不吃 template，所以首页/无 title 的页仍然只有站点名。
       template: `%s | ${s.siteName}`,
     },
     description: s.siteDescription,
     ...(keywords.length ? { keywords } : {}),
     authors: [{ name: "Yahajiang" }],
+    // RSS 自动发现声明放在下面 <head> 里，不在 metadata 里：
+    // ① 这版 Metadata 没有 links 键；② 文章页各自设了 alternates.canonical
+    // （app/posts/[id]/page.tsx:33），metadata 是浅合并，写在这里会被它们整体覆盖。
     openGraph: {
       title: s.siteName,
       description: s.siteDescription,
       type: "website",
+      url: getSiteUrlSync(),
+      siteName: s.siteName,
+      // 站点级分享卡：文章页有各自的 opengraph-image（lib/adapt.ts:101 postOgMeta），
+      // 但分享首页/归档时此前 og:image 为空、twitter:card 退成 summary，
+      // 于是「这是我的博客」这句话在群里显示成一块空白灰卡。
+      images: s.logoUrl
+        ? [{ url: s.logoUrl, width: 512, height: 512, alt: s.siteName }]
+        : [{ url: "/icon-512.png", width: 512, height: 512, alt: s.siteName }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: s.siteName,
+      description: s.siteDescription,
+      images: s.logoUrl ? [s.logoUrl] : ["/icon-512.png"],
     },
   };
 }
@@ -105,6 +125,18 @@ export default async function RootLayout({
             故当前无 HTML 注入风险；一旦有人往这些字面量里加入插值，
             就等于凭空开出一个注入点——改动前请先看这条注释。 */}
         <style dangerouslySetInnerHTML={{ __html: `:root{--yh-bg:#fefdfa;--yh-text:#1c1c1e;--yh-muted:#6e6e73;--yh-border:#e5e5e7;--yh-accent:#4a6fb5;--yh-accent:oklch(.55 .15 250);--dash-bg:var(--yh-bg);--dash-card:#fff;--dash-border:var(--yh-border);--dash-text:var(--yh-text);--dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent)}body{background:var(--yh-bg);color:var(--yh-text);font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}.welcome{position:fixed;inset:0;z-index:90;background:var(--yh-bg)}.html-returning .welcome{display:none}` }} />
+        {/* RSS 自动发现：/rss.xml 一直是 200，但全站没有一处 rel=alternate，
+            阅读器/聚合器只能靠猜路径。声明在 <head> 而不是 metadata 里有两个原因：
+            ① 这版 Metadata 类型没有 links 键；② 文章页各自设了 alternates.canonical
+            （app/posts/[id]/page.tsx:33），metadata 浅合并会把根上的 alternates 整体盖掉。
+            这是机器可读声明，不是页面上的可见订阅入口（design-blueprint.md:228
+            「前台保持隐形」的口径不变）。 */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${settings.siteName} · RSS`}
+          href="/rss.xml"
+        />
         {/* 外链 CSS 加载失败时自动重载一次（sessionStorage 防循环）：
             探针读 .css-probe 的自定义属性——它只存在于外链 globals.css 中 */}
         <script

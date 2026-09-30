@@ -9,7 +9,6 @@ import { getSiteUrlSync } from "@/lib/site-url";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "慢日志",
   description: "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
   alternates: { canonical: getSiteUrlSync() },
 };

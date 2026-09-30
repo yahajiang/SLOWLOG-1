@@ -8,7 +8,7 @@ export const revalidate = 0
 
 // 平板树归档：与 /archive 同构（ArchiveClient 复用），分页规则一致
 export const metadata = {
-  title: "归档 · 慢日志",
+  title: "归档",
   description: "按年份浏览全部文章",
   robots: { index: false, follow: true },
 }

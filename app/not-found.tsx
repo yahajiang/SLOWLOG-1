@@ -58,13 +58,13 @@ export default function NotFound() {
         <div className="flex items-center gap-3 flex-wrap justify-center mt-8">
           <Link
             href="/"
-            className="px-6 py-2.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.14em] uppercase hover:bg-[var(--yh-accent)] transition-colors min-h-[44px] flex items-center"
+            className="px-6 py-2.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.14em] uppercase hover:bg-[var(--yh-accent)] transition-colors min-h-[48px] flex items-center"
           >
             {t.notFoundBack}
           </Link>
           <Link
             href="/archive"
-            className="px-6 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors min-h-[44px] flex items-center"
+            className="px-6 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors min-h-[48px] flex items-center"
           >
             {t.nfArchive}
           </Link>

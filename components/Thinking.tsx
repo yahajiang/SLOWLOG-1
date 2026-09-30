@@ -101,7 +101,7 @@ export function Thinking() {
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="mono text-[11px] tracking-[0.14em] uppercase px-5 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none min-h-[44px]"
+              className="mono text-[11px] tracking-[0.14em] uppercase px-5 py-2.5 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none min-h-[48px]"
             >
               {expanded
                 ? (lang === "zh" ? "收起" : "Collapse")

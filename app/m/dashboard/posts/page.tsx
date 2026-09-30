@@ -168,7 +168,7 @@ export default function MobilePostsPage() {
               { value: "archived", label: lang === "zh" ? "归档" : "Archived" },
             ]}
             ariaLabel={t.dashAll}
-            triggerClassName="min-h-[44px]"
+            triggerClassName="min-h-[48px]"
           />
           <DropdownSelect
             value={catFilter}
@@ -181,7 +181,7 @@ export default function MobilePostsPage() {
               ...cats.map((c: any) => ({ value: c.slug, label: c.nameZh || c.name })),
             ]}
             ariaLabel={lang === "zh" ? "分类" : "Category"}
-            triggerClassName="min-h-[44px]"
+            triggerClassName="min-h-[48px]"
           />
           <DropdownSelect
             value={sort}
@@ -199,7 +199,7 @@ export default function MobilePostsPage() {
               { value: "featured-first", label: lang === "zh" ? "推荐优先" : "Featured first" },
             ]}
             ariaLabel={lang === "zh" ? "排序" : "Sort"}
-            triggerClassName="min-h-[44px]"
+            triggerClassName="min-h-[48px]"
           />
           <DropdownSelect
             value={String(pageSize)}
@@ -215,7 +215,7 @@ export default function MobilePostsPage() {
                 label: `${n} / ${lang === "zh" ? "页" : "page"}`,
               }))}
             ariaLabel={lang === "zh" ? "每页条数" : "Page size"}
-            triggerClassName="min-h-[44px]"
+            triggerClassName="min-h-[48px]"
           />
         </div>
         <div className="flex items-center justify-between text-xs text-[var(--dash-muted)] tabular-nums">
@@ -225,14 +225,14 @@ export default function MobilePostsPage() {
               <button
                 disabled={safePage <= 1}
                 onClick={() => setPage(safePage - 1)}
-                className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[44px]"
+                className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px]"
               >
                 {lang === "zh" ? "上一页" : "Prev"}
               </button>
               <button
                 disabled={safePage >= totalPages}
                 onClick={() => setPage(safePage + 1)}
-                className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[44px]"
+                className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px]"
               >
                 {lang === "zh" ? "下一页" : "Next"}
               </button>
@@ -254,7 +254,7 @@ export default function MobilePostsPage() {
           <div className="divide-y divide-[var(--dash-border)] stagger">
             {paged.map((p) => (
               <div key={p.id} className="p-4 space-y-2.5">
-                <button type="button" onClick={editNotice} className="w-full text-left min-h-[44px]">
+                <button type="button" onClick={editNotice} className="w-full text-left min-h-[48px]">
                   <span className="text-[15px] font-medium text-[var(--dash-text)] line-clamp-2">
                     {(lang === "zh" ? p.titleZh || p.title : p.title) || t.dashUntitled}
                     {p.featured && (
@@ -272,13 +272,13 @@ export default function MobilePostsPage() {
                 <div className="grid grid-cols-5 gap-1.5">
                   <button
                     onClick={() => togglePublish(p)}
-                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] font-medium min-h-[44px]"
+                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] font-medium min-h-[48px]"
                   >
                     {p.status === "published" ? t.dashUnpublish : t.dashPublishAction}
                   </button>
                   <button
                     onClick={() => toggleFeatured(p)}
-                    className={`text-xs px-1 py-2.5 border rounded-none font-medium min-h-[44px] ${
+                    className={`text-xs px-1 py-2.5 border rounded-none font-medium min-h-[48px] ${
                       p.featured
                         ? "bg-[var(--dash-accent)] text-white border-[var(--dash-accent)]"
                         : "bg-[var(--dash-card)] border-[var(--dash-border)]"
@@ -288,19 +288,19 @@ export default function MobilePostsPage() {
                   </button>
                   <button
                     onClick={() => copyLink(p.id)}
-                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[44px]"
+                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px]"
                   >
                     {t.dashLink}
                   </button>
                   <button
                     onClick={editNotice}
-                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[44px]"
+                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px]"
                   >
                     {t.dashEdit}
                   </button>
                   <button
                     onClick={() => setDelId(p.id)}
-                    className="text-xs px-1 py-2.5 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 min-h-[44px]"
+                    className="text-xs px-1 py-2.5 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 min-h-[48px]"
                   >
                     {t.dashDelete}
                   </button>
@@ -314,7 +314,7 @@ export default function MobilePostsPage() {
             <button
               disabled={safePage <= 1}
               onClick={() => setPage(safePage - 1)}
-              className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[44px]"
+              className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px]"
             >
               {lang === "zh" ? "上一页" : "Prev"}
             </button>
@@ -324,7 +324,7 @@ export default function MobilePostsPage() {
             <button
               disabled={safePage >= totalPages}
               onClick={() => setPage(safePage + 1)}
-              className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[44px]"
+              className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px]"
             >
               {lang === "zh" ? "下一页" : "Next"}
             </button>

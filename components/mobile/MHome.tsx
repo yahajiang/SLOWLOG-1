@@ -68,7 +68,7 @@ function MThoughts() {
       {hidden > 0 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-4 w-full mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[44px]"
+          className="mt-4 w-full mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[48px]"
         >
           {expanded
             ? (lang === "zh" ? "收起" : "Collapse")
@@ -117,7 +117,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           </div>
           <Link
             href="/m/archive"
-            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[44px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
+            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[48px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
           >
             {t.viewAll}
           </Link>
@@ -130,7 +130,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           {recent.map((p: any) => {
             const md = mdInSiteTz(p.publishedAt || p.createdAt || p.date);
             return (
-              <Link key={p.id} href={`/m/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[5px] active:bg-[var(--yh-bg)]/60">
+              <Link key={p.id} href={`/m/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[5px] min-h-[48px] active:bg-[var(--yh-bg)]/60">
                 <span className="absolute -left-[21px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-active:bg-[var(--yh-accent)] group-active:border-[var(--yh-accent)] transition-colors" />
                 <span className="mono text-[10px] text-[var(--yh-muted)] w-10 shrink-0">{md}</span>
                 {reading[p.id] != null && <span className="mono text-[9px] text-[var(--yh-accent)] shrink-0">{reading[p.id]}%</span>}
@@ -205,7 +205,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
         <div className="flex items-center">
           {/* 分类横滑区：flex-1 + min-w-0 保证自己能被压缩，不把归档入口顶出屏幕 */}
           <div className="relative flex-1 min-w-0">
-            <div ref={catBarRef} className="flex items-center gap-1 overflow-x-auto px-4 h-11" style={{ scrollbarWidth: "none" }}>
+            <div ref={catBarRef} className="flex items-center gap-1 overflow-x-auto px-4 h-12" style={{ scrollbarWidth: "none" }}>
               {allCats.map((cat) => {
                 const dbCat = dbCategories?.find((c: any) => c.name === cat);
                 const label = dbCat ? (lang === "zh" ? dbCat.nameZh || cat : cat) : mCatLabel(cat, t);
@@ -215,7 +215,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
                     type="button"
                     data-active={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-3 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors min-h-[44px] ${
+                    className={`px-3 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors min-h-[48px] ${
                       activeCategory === cat
                         ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
                         : "border-transparent text-[var(--yh-muted)] font-medium"
@@ -232,7 +232,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
           {/* 归档入口移出滚动区，常驻可见 */}
           <Link
             href="/m/archive"
-            className="shrink-0 mr-3 px-3 py-1.5 min-h-[44px] flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
+            className="shrink-0 mr-3 px-3 py-1.5 min-h-[48px] flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
           >
             {t.archiveTitle} →
           </Link>
@@ -265,7 +265,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </div>
             <Link
               href={`/m/posts/${featured.id}`}
-              className="flex items-center justify-center gap-1.5 w-full px-4 py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-widest uppercase"
+              className="flex items-center justify-center gap-1.5 w-full min-h-[48px] px-4 py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-widest uppercase"
             >
               {t.readArticle} <ChevronRight className="w-4 h-4" />
             </Link>
@@ -297,7 +297,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             <button
               type="button"
               onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}
-              className="mt-5 text-sm text-[var(--yh-muted)] underline underline-offset-4 min-h-[44px] px-4"
+              className="mt-5 text-sm text-[var(--yh-muted)] underline underline-offset-4 min-h-[48px] px-4"
             >
               {t.clearFilters}
             </button>

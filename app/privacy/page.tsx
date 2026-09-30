@@ -3,7 +3,7 @@ import Link from "next/link"
 import { getSettings } from "@/lib/settings"
 
 export const metadata: Metadata = {
-  title: "隐私政策 | 慢日志",
+  title: "隐私政策",
   description: "SlowLog 慢日志隐私政策：数据收集范围与用途说明。",
 }
 

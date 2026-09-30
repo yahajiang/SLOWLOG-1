@@ -40,7 +40,7 @@ export function Pagination({
   });
 
   const base =
-    "min-h-[44px] min-w-[40px] px-3 inline-flex items-center justify-center mono text-[12px] tracking-[0.14em] uppercase border rounded-none transition-colors";
+    "min-h-[48px] min-w-[40px] px-3 inline-flex items-center justify-center mono text-[12px] tracking-[0.14em] uppercase border rounded-none transition-colors";
   const idle = "border-[var(--yh-border)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]";
   const active = "border-[var(--yh-text)] bg-[var(--yh-text)] text-[var(--yh-bg)]";
   const disabled = "border-[var(--yh-border)] text-[var(--yh-border)] pointer-events-none";

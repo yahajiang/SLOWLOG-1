@@ -120,7 +120,7 @@ export default function MobileNotesPage() {
               </div>
               <button
                 onClick={() => setDelId(n.id)}
-                className="text-xs text-[var(--dash-muted)] px-3 min-h-[44px] self-start shrink-0"
+                className="text-xs text-[var(--dash-muted)] px-3 min-h-[48px] self-start shrink-0"
               >
                 {t.dashDelete}
               </button>

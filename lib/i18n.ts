@@ -214,6 +214,12 @@ export const dict = {
     dashPostsCount: (n: number) => `${n} 篇`,
     dashMediaHint: "点按图片复制链接 · 完整管理请使用桌面版",
     dashDesktopAdmin: "桌面版后台",
+    dashManageGroup: "管理",
+    dashCatManage: "分类管理",
+    dashAppTokens: "App 令牌",
+    dashDesktopOnlyFields: "媒体上传与文章编辑器仍需在桌面端完成。",
+    dashTokensHint: "为 Android App 生成长期 API Token，并查看推送设备。",
+    dashTokensOnceWarn: "明文只显示一次，离开本页后无法再取回；撤销后该令牌的写操作立即失效。",
     dashEditOnDesktop: "完整编辑请使用桌面版",
     dashNewOnDesktop: "新建文章请使用桌面版",
     dashSearchFull: "搜索标题、摘要、标签...",
@@ -525,6 +531,13 @@ export const dict = {
     dashPostsCount: (n: number) => `${n} posts`,
     dashMediaHint: "Tap image to copy link · Full media on desktop",
     dashDesktopAdmin: "Desktop admin",
+    dashManageGroup: "Manage",
+    dashCatManage: "Categories",
+    dashAppTokens: "App tokens",
+    dashDesktopOnlyFields: "Media upload and the post editor still require desktop.",
+    dashTokensHint: "Issue long-lived API tokens for the Android App and review push devices.",
+    dashTokensOnceWarn:
+      "The plaintext is shown only once and cannot be recovered after you leave this page; revoking a token invalidates its writes immediately.",
     dashEditOnDesktop: "Full editing on desktop",
     dashNewOnDesktop: "Create posts on desktop",
     dashSearchFull: "Search title, excerpt, tags...",
@@ -810,6 +823,12 @@ export type Dict = {
   dashPostsCount: (n: number) => string;
   dashMediaHint: string;
   dashDesktopAdmin: string;
+  dashManageGroup: string;
+  dashCatManage: string;
+  dashAppTokens: string;
+  dashDesktopOnlyFields: string;
+  dashTokensHint: string;
+  dashTokensOnceWarn: string;
   dashEditOnDesktop: string;
   dashNewOnDesktop: string;
   dashSearchFull: string;

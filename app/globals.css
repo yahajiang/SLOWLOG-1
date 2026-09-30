@@ -109,16 +109,27 @@ code, pre, .font-mono {
    避免：bounce、强 glow、复杂 3D、大幅缩放
    ============================================================ */
 :root {
-  /* 动效缓动：统一柔和 Ease；spring 过冲收在 1.15 以下 */
+  /* 动效缓动：统一柔和 Ease；spring 过冲收在 1.15 以下。
+     --ease-in-out 于 2026-09-28 与 Android `DsMotion.InOut` 对齐为 cubic-bezier(.4,0,.2,1)
+     （原 (.45,0,.55,1)）。改的是**值**不是名字，双端从此共用同一条标准曲线；
+     代价按 retro 记录：定时曲线被中途接管时速度归零，比弹簧多一次可感的「顿」。 */
   --ease-spring: cubic-bezier(0.34, 1.15, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
-  /* 时长对齐规范表：fast 即时反馈 / normal 内容与卡片 / slow 页面与 Hero */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 时长对齐规范表：fast 即时反馈 / normal 内容与卡片 / slow 页面与 Hero。
+     --duration-exit = 退场档（Android 侧同名档 PageExit 220ms）。⚠️ Web 借这一档的不只是退场：
+     分类切换下划线、目录进度轨、移动底栏配色过渡、以及 `maskIn`（遮罩**入场**）都用了 220ms。
+     名字取「退出档」是为了双端能一对一对照，不是在描述每一处的用途；480ms 那一档不在此列，
+     它已有名字 `--motion-grow`（下方），只作为与 JS `STAT_COUNT_MS` 配对的锚点存在。 */
   --duration-fast: 180ms;
+  --duration-exit: 220ms;
   --duration-normal: 300ms;
   --duration-slow: 500ms;
   --motion-breath: 8s;
   --motion-grow: 480ms;
+  /* 危险色：错误提示条的左侧竖线。此前同一条线在登录、移动登录、改密三处
+     各写一次裸 `#c44`；提到 token 只为有名字与可改，值与原样一致。 */
+  --dash-danger: #c44444;
 }
 
 @keyframes motionBreath {
@@ -147,7 +158,7 @@ code, pre, .font-mono {
   animation: categoryIn 300ms var(--ease-out) both;
 }
 .category-exit {
-  animation: categoryOut 220ms var(--ease-out) both;
+  animation: categoryOut var(--duration-exit) var(--ease-out) both;
   pointer-events: none;
 }
 
@@ -167,7 +178,12 @@ code, pre, .font-mono {
    「整块落定 → 条目依次浮出」的两层节奏。
    用法：给列表/网格容器加 .stagger，直接子元素自动获得递增延迟；
    第 11 个起统一封顶，避免长列表尾部等待。React 按 key 复用行 DOM，
-   筛选/翻页时只有新增行会播放——增量入场而非整列重播。 */
+   筛选/翻页时只有新增行会播放——增量入场而非整列重播。
+   ⚠️ 想让**退出**也有动画（删除时淡出再移除），光给行加 `opacity-0 transition` 是
+   无效的：下面的 `both` = fill-forwards，动画会持续把 opacity/transform 钉在末值上，
+   优先级高于行自己的 class。要么先对那一行 `animate-none` 再改 opacity（需要跨一帧提交，
+   同一次 commit 里两个变化不保证起播），要么把入场改成一次性后清除 animation。
+   —— 2026-09-28 UI 审查 P3-2 评估结论：代价大于收益，暂不做。 */
 .stagger > * {
   animation: sectionIn 360ms var(--ease-out) both;
 }
@@ -224,7 +240,7 @@ code, pre, .font-mono {
   to { opacity: 0; transform: translateY(16px); }
 }
 .mask-in {
-  animation: maskIn 220ms var(--ease-out) both;
+  animation: maskIn var(--duration-exit) var(--ease-out) both;
 }
 @keyframes maskIn {
   from { opacity: 0; }
@@ -247,12 +263,56 @@ code, pre, .font-mono {
   to { opacity: 0; transform: scale(0.98); }
 }
 
+/* 后台卡片 hover 流光：一次扫过，**只在 :hover 上触发**（工作台场景红线：
+   不许有无触发门控的循环）。扫的是卡在自身边框内的一层遮罩，
+   卡片本身不位移、不缩放 —— 与 React Bits 的 GlareHover 同一档克制。
+   原来那条 hover 阴影过渡（transition-shadow）照旧，两者不冲突。
+   ⚠️ 只给可点的卡：`DashboardHome.tsx` 仅在 href 存在时才挂这个类。 */
+.dash-glare {
+  position: relative;
+  overflow: hidden;
+  /* 强度做成"颜色"而不是"百分比"：color-mix 的百分比位置塞 var() 有风险
+     （浏览器按计算值时代入），换成整体颜色变量就只是普通自定义属性代入。 */
+  --glare-stop: color-mix(in srgb, var(--yh-accent) 14%, transparent);
+}
+/* 暗色下 --yh-accent 是更亮的 #8EA6E8，落在 #1c1915 卡面上比浅色更扎眼，
+   所以另一档读数 —— 明暗共用一个百分比就是"看着一样其实不等价"（QA qa-5）。 */
+.dark .dash-glare {
+  --glare-stop: color-mix(in srgb, var(--yh-accent) 9%, transparent);
+}
+.dash-glare::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    var(--glare-stop) 50%,
+    transparent 58%
+  );
+}
+.dash-glare:hover::after {
+  /* 走刻度，不留魔数：--duration-slow = 500ms（QA qa-3） */
+  animation: dashGlare var(--duration-slow) var(--ease-out) 1 both;
+}
+@keyframes dashGlare {
+  from { transform: translateX(-55%); opacity: 0.9; }
+  to { transform: translateX(55%); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .section-in, .panel-in, .panel-out, .lightbox-in, .lightbox-out, .sheet-in, .sheet-out, .mask-in, .mask-out, .category-enter, .category-exit {
     animation: none !important;
   }
   .stagger > * {
     animation: none !important;
+  }
+  /* 流光同样关掉：它是锦上添花，不是状态指示 */
+  .dash-glare::after, .dash-glare:hover::after {
+    animation: none !important;
+    opacity: 0 !important;
   }
   [data-reveal="1"] {
     animation: none !important;
@@ -1134,6 +1194,9 @@ body::after {
   --dash-accent: #8ea6e8;
   --dash-accent: oklch(0.78 0.13 250);
   --dash-accent-soft: rgba(160, 180, 255, 0.08);
+  /* 危险色跟着换档：浅色那条 #c44444 压在夜版卡面 #1c1915 上只有 3.6:1，
+     抬到 5.9:1。与 --dash-accent 同一口径——整组切，不留单处覆盖。 */
+  --dash-danger: #d97c72;
   color-scheme: dark;
 }
 

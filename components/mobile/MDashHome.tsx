@@ -57,7 +57,7 @@ export function MDashHome({ data }: {
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-[var(--dash-text)]">{t.dashRecentPosts}</h2>
-          <Link href="/m/dashboard/posts" className="text-xs text-[var(--dash-accent)] min-h-[44px] flex items-center px-2">
+          <Link href="/m/dashboard/posts" className="text-xs text-[var(--dash-accent)] min-h-[48px] flex items-center px-2">
             {t.dashViewAll}
           </Link>
         </div>

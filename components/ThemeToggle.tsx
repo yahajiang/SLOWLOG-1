@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 
 interface ThemeToggleProps {
-  /** sm=移动 44px 触控；md=桌面 30px 视觉（默认） */
+  /** 只影响图标字号（sm=18px / md=15px）；按钮盒恒为 w-12 h-12=48px 触控下限 */
   size?: "sm" | "md";
   /** icon=纯图标钮（默认）；row=侧边栏全宽行（图标+文字，与导航行同款） */
   variant?: "icon" | "row";
@@ -32,7 +32,7 @@ export function ThemeToggle({ size = "md", variant = "icon" }: ThemeToggleProps)
     setDark(next);
   }
 
-  const box = "w-11 h-11";
+  const box = "w-12 h-12";
   const icon = size === "sm" ? 18 : 15;
   const label = dark ? (lang === "zh" ? "日间模式" : "Light mode") : lang === "zh" ? "夜间模式" : "Dark mode";
   const Icon = dark ? (

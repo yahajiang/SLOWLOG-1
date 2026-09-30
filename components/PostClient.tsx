@@ -151,7 +151,7 @@ export function PostClient({
       {/* 顶部导航 */}
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="w-full max-w-[min(92%,1180px)] 2xl:max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-60 transition-opacity">
+          <Link href="/" className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity">
             <span className="w-[26px] h-[26px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[12px] shrink-0">S</span>
             <span className="flex items-baseline gap-1">
               <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
@@ -162,14 +162,14 @@ export function PostClient({
             <ThemeToggle />
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
-              className="w-11 h-11 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              className="w-12 h-12 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
               aria-label={lang === "zh" ? "全局搜索" : "Search"}
               title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
             >
               <Search className="w-3.5 h-3.5" />
             </button>
             <LanguageSwitcher />
-            <Link href="/" className="mono text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">
+            <Link href="/" className="mono inline-flex items-center min-h-[48px] text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">
               {t.backToPosts}
             </Link>
           </div>

@@ -82,7 +82,7 @@ export function MLogin() {
               />
             </div>
             {error && (
-              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[#c44] px-4 py-3 rounded-none">
+              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none">
                 {error}
               </div>
             )}

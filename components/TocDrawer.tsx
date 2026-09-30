@@ -99,7 +99,7 @@ export function TocDrawer({
               </p>
               <button
                 onClick={requestClose}
-                className="mono text-[11px] px-3 py-2 rounded-none border border-[var(--yh-border)] min-h-[44px]"
+                className="mono text-[11px] px-3 py-2 rounded-none border border-[var(--yh-border)] min-h-[48px]"
               >
                 Close
               </button>

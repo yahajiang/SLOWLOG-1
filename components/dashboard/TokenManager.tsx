@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
+import { ConfirmDialog } from "@/components/ui/Dialog"
 
 type TokenRow = {
   id: string
@@ -53,6 +54,8 @@ export function TokenManager() {
   const [plain, setPlain] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  /** 待撤销的令牌 id；null = 确认框关闭。撤销不可逆，按仓内规矩走 ConfirmDialog。 */
+  const [revokeId, setRevokeId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const [tRes, dRes] = await Promise.all([
@@ -200,7 +203,7 @@ export function TokenManager() {
                     </td>
                     <td className="py-2">
                       {!t.revokedAt && (
-                        <Button variant="secondary" onClick={() => revokeToken(t.id)} disabled={busy}>
+                        <Button variant="secondary" onClick={() => setRevokeId(t.id)} disabled={busy}>
                           撤销
                         </Button>
                       )}
@@ -243,6 +246,22 @@ export function TokenManager() {
           </table>
         </div>
       </section>
+
+      <ConfirmDialog
+        open={!!revokeId}
+        onOpenChange={(v) => !v && setRevokeId(null)}
+        title="撤销这个令牌？"
+        description={`撤销后使用该令牌的写操作立即失效，且不可恢复${
+          tokens.find((t) => t.id === revokeId)?.name ? `（令牌「${tokens.find((t) => t.id === revokeId)!.name}」）` : ""
+        }。`}
+        confirmText="撤销"
+        variant="danger"
+        onConfirm={async () => {
+          const id = revokeId
+          setRevokeId(null)
+          if (id) await revokeToken(id)
+        }}
+      />
     </div>
   )
 }

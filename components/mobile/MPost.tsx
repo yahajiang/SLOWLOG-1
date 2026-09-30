@@ -85,7 +85,7 @@ export function MPost({
         <div className="w-full mx-auto px-4 h-full flex items-center justify-between gap-2">
           <Link
             href="/m"
-            className="w-11 h-11 flex items-center justify-center text-[var(--yh-text)] -ml-2"
+            className="w-12 h-12 flex items-center justify-center text-[var(--yh-text)] -ml-2"
             aria-label="Back"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -120,7 +120,7 @@ export function MPost({
                 href={repoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)] min-h-[44px]"
+                className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)] min-h-[48px]"
               >
                 <ExternalLink className="w-3 h-3" />
                 {t.viewRepo || "Repository"}

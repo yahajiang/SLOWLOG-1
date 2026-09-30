@@ -33,14 +33,14 @@ export function MFooter({ desktopHref }: MFooterProps) {
         </div>
         <p className="mono text-[11px] text-[var(--yh-muted)]">— {tagline}</p>
         <div className="flex items-center gap-4 mono text-[11px] text-[var(--yh-muted)]">
-          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">yahajiang@gmail.com</a>
-          <a href="https://github.com/yahajiang" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">GitHub</a>
-          <a href="/design/gallery.html" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors min-h-[44px] flex items-center">组件画廊</a>
+          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors min-h-[48px] min-w-[48px] flex items-center">yahajiang@gmail.com</a>
+          <a href="https://github.com/yahajiang" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors min-h-[48px] min-w-[48px] flex items-center">GitHub</a>
+          <a href="/design/gallery.html" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors min-h-[48px] min-w-[48px] flex items-center">组件画廊</a>
         </div>
         <p className="mono text-[10px] text-[var(--yh-muted)]">© {new Date().getFullYear()} Yahajiang · {t.footerBuilt}</p>
         <button
           onClick={goDesktop}
-          className="mono text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors"
+          className="mono inline-flex items-center min-h-[48px] text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors"
         >
           桌面版
         </button>

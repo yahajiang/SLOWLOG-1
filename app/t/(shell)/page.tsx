@@ -8,7 +8,6 @@ export const revalidate = 60;
 
 // 平板树首页：与 / 同构（桌面编辑风 + 触控优化），由 middleware 按平板 UA / view=tablet 引导
 export const metadata = {
-  title: "慢日志",
   description: "慢下来，写点值得读的东西。关于设计、代码与思考的个人博客。",
   robots: { index: false, follow: true },
 };

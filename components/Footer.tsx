@@ -53,12 +53,12 @@ export function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
           <span>© {new Date().getFullYear()} Yahajiang</span>
           <span>·</span>
-          <a href="mailto:yahajiang@gmail.com" className="hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
+          <a href="mailto:yahajiang@gmail.com" className="inline-flex items-center min-h-[48px] min-w-[48px] hover:text-[var(--yh-text)] transition-colors">yahajiang@gmail.com</a>
           {socialLinks.map((s) => (
             <span key={s.url} className="flex items-center gap-[7px]">
               <span>·</span>
               {/* schema 层已限 http(s) 前缀，渲染前再守一道 */}
-              <a href={/^https?:\/\//i.test(s.url) ? s.url : "#"} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--yh-text)] transition-colors">{s.name}</a>
+              <a href={/^https?:\/\//i.test(s.url) ? s.url : "#"} target="_blank" rel="noopener noreferrer" className="inline-flex items-center min-h-[48px] min-w-[48px] hover:text-[var(--yh-text)] transition-colors">{s.name}</a>
             </span>
           ))}
           <span className="hidden md:inline">·</span>
@@ -68,7 +68,7 @@ export function Footer() {
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 w-11 h-11 rounded-none bg-[var(--yh-text)] text-[var(--dash-bg)] flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-[background-color] duration-300 z-40 animate-[fadeIn_0.3s_var(--ease-out)]"
+          className="fixed bottom-6 right-6 w-12 h-12 rounded-none bg-[var(--yh-text)] text-[var(--dash-bg)] flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-[background-color] duration-300 z-40 animate-[fadeIn_0.3s_var(--ease-out)]"
           aria-label="Back to top"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

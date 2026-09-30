@@ -257,7 +257,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                   type="button"
                   data-cat={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3 md:px-4 py-3 mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-[220ms] ease-[var(--ease-out)] ${
+                  className={`px-3 md:px-4 py-3 min-h-[48px] inline-flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap border-b-2 transition-colors duration-[var(--duration-exit)] ease-[var(--ease-out)] ${
                     activeCategory === cat
                       ? "border-[var(--yh-accent)] text-[var(--yh-accent)] font-semibold"
                       : "border-transparent text-[var(--yh-muted)] hover:text-[var(--yh-text)] font-medium"
@@ -374,10 +374,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           </div>
           {heroPool.length > 1 && (
             <>
-              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
+              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="prev">
                 ‹
               </button>
-              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
+              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label="next">
                 ›
               </button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -417,7 +417,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         <div
           ref={listWrapRef}
           style={listMinH !== undefined ? { minHeight: listMinH } : undefined}
-          className={`transition-opacity duration-[220ms] ease-[var(--ease-out)] ${listFadingOut ? "opacity-0" : "opacity-100"}`}
+          className={`transition-opacity duration-[var(--duration-exit)] ease-[var(--ease-out)] ${listFadingOut ? "opacity-0" : "opacity-100"}`}
         >
         <div key={shownListKey} className={!listFadingOut ? "category-enter" : undefined}>
         {gridPosts.length === 0 ? (

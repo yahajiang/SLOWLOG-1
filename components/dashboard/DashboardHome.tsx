@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/lang-context";
 
 type DashData = {
@@ -17,11 +18,96 @@ type DashData = {
   recentNotes?: any[];
 };
 
+/**
+ * 数字滚动的一次性时长。与 `app/globals.css` 的 `--motion-grow` 同值（480ms）——
+ * JS 侧读不到 CSS 变量，所以这是一个**需要成对修改**的数：改这里要同时改那边。
+ */
+const STAT_COUNT_MS = 480;
+
+/** 同上，与 CSS 的 `--ease-out: cubic-bezier(.22, 1, .36, 1)` 四个数成对修改。 */
+const EASE_OUT: readonly [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/**
+ * CSS `cubic-bezier(x1,y1,x2,y2)` 的等价求值。
+ *
+ * 为什么要在 JS 里重写一条曲线：数字滚动只能逐帧给值，随手写个
+ * `1 - (1-p)^3` 之类的近似，就会和全站 CSS 用的那条曲线**方向像、落定节奏不同** ——
+ * 这正是"曲线只有一条"要防的分叉。x 轴用二分反解 t（8 次 ⇒ 误差 < 0.4% 的 p），
+ * 对 480ms 的读数足够，且不引依赖。
+ */
+function easeOut(p: number): number {
+  const [x1, y1, x2, y2] = EASE_OUT;
+  const axis = (t: number, a: number, b: number) =>
+    3 * t * (1 - t) * (1 - t) * a + 3 * t * t * (1 - t) * b + t * t * t;
+  let lo = 0;
+  let hi = 1;
+  let t = p;
+  for (let i = 0; i < 8; i++) {
+    t = (lo + hi) / 2;
+    if (axis(t, x1, x2) < p) lo = t;
+    else hi = t;
+  }
+  return axis(t, y1, y2);
+}
+
+/**
+ * SSR 阶段 `useLayoutEffect` 会告警（它在服务端什么都不做），
+ * 所以只在客户端参与布局阶段；服务端那条路径退回 `useEffect`（不会被调用）。
+ *
+ * 为什么不用普通 `useEffect`：它在**绘制之后**才跑，首帧会先画出终值、
+ * 下一帧才跳到 0 再往上数 —— 数字闪一下比不滚更糟。
+ */
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+/**
+ * 概览统计数字：从 0 数到真值，**落定即停**（工作台场景禁无触发的循环动效）。
+ *
+ * - SSR 出来的 HTML 直接是真值，首屏不缺字；客户端挂载后才补这一次滚动。
+ * - 系统「减少动态效果」下什么都不做 —— 显示的就是终值。
+ * - 只滚数字；字符串（已格式化的值）原样透出，不猜它的格式。
+ * - **滚动只在首次挂载播一次；但值之后变了必须立刻跟上**（0.7.x QA qa-1：
+ *   早退如果连真值一起挡掉，`router.refresh()` 之后概览会一直显示过期数字）。
+ */
+function useCountUp(value: number | string): number | string {
+  const [shown, setShown] = useState(value);
+  const startedRef = useRef(false);
+  useIsoLayoutEffect(() => {
+    if (typeof value !== "number") return;
+    if (startedRef.current) {
+      // 已经播过：不再演动画，但要把数字跟上新数据
+      setShown(value);
+      return;
+    }
+    startedRef.current = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const from = 0;
+    const t0 = performance.now();
+    let raf = 0;
+    setShown(from);
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / STAT_COUNT_MS);
+      setShown(Math.round(from + (value - from) * easeOut(p)));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return shown;
+}
+
+/**
+ * 概览统计卡。
+ *
+ * ⚠️ `dash-glare`（hover 流光）**只给可点的那几张**：仓库约定 hover 反馈 = 可点，
+ * 阴影过渡本来就挂在 `<Link>` 上；给不可点的卡片加流光就是假可点暗示（QA qa-2）。
+ */
 function StatCard({ label, value, href }: { label: string; value: number | string; href?: string }) {
+  const shown = useCountUp(value);
   const body = (
-    <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none px-3 py-3 shadow-[var(--shadow-card)] h-full">
+    <div className={`${href ? "dash-glare " : ""}bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none px-3 py-3 shadow-[var(--shadow-card)] h-full`}>
       <p className="text-[10px] tracking-widest uppercase text-[var(--dash-muted)] font-medium mb-1 truncate">{label}</p>
-      <p className="text-xl font-bold tracking-tight text-[var(--dash-text)] tabular-nums">{value}</p>
+      <p className="text-xl font-bold tracking-tight text-[var(--dash-text)] tabular-nums">{shown}</p>
     </div>
   );
   if (!href) return body;

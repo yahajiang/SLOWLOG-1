@@ -84,7 +84,8 @@ export default function LoginForm() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none"
+                disabled={loading}
+                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
                 placeholder={zh ? "请输入用户名" : "Enter username"}
                 autoFocus
               />
@@ -98,13 +99,14 @@ export default function LoginForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none"
+                disabled={loading}
+                className="w-full px-4 py-3 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none disabled:opacity-60"
                 placeholder={zh ? "请输入密码" : "Enter password"}
               />
             </div>
 
             {error && (
-              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[#c44] px-4 py-3 rounded-none">
+              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none">
                 {error}
               </div>
             )}
@@ -112,7 +114,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="w-full py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.18em] uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[44px]"
+              className="w-full py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.18em] uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
             >
               {loading ? (zh ? "登录中..." : "Logging in...") : (zh ? "登录" : "Login")}
             </button>

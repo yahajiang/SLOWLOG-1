@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "归档 · 慢日志",
+  title: "归档",
   description: "按年份浏览全部文章",
   alternates: { canonical: `${getSiteUrlSync()}/archive` },
 };

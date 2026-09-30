@@ -47,7 +47,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
     >
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full">
-          <Link href="/" className="flex items-center gap-3 group shrink-0">
+          <Link href="/" className="flex items-center gap-3 group shrink-0 min-h-[48px]">
             {settings.logoUrl ? (
               <img src={settings.logoUrl} alt="" className="w-[26px] h-[26px] rounded-full object-cover shrink-0" />
             ) : (
@@ -66,13 +66,13 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
             <nav className="hidden md:flex items-center gap-4 2xl:gap-7 mono text-[12px] tracking-[0.14em] uppercase">
               <Link
                 href="/"
-                className="whitespace-nowrap py-1.5 text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
+                className="whitespace-nowrap py-1.5 min-h-[48px] inline-flex items-center text-[var(--yh-text)] font-medium hover:opacity-60 transition-opacity"
               >
                 {t.navHome}
               </Link>
               <Link
                 href="/archive"
-                className="whitespace-nowrap py-1.5 text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+                className="whitespace-nowrap py-1.5 min-h-[48px] inline-flex items-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
               >
                 {t.archiveTitle}
               </Link>
@@ -80,7 +80,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
                 href="/design/gallery.html"
                 target="_blank"
                 rel="noopener"
-                className="whitespace-nowrap py-1.5 text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
+                className="whitespace-nowrap py-1.5 min-h-[48px] inline-flex items-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors"
                 title={lang === "zh" ? "UI 组件画廊（新窗口）" : "UI component gallery (new tab)"}
               >
                 {lang === "zh" ? "画廊" : "GALLERY"}
@@ -92,7 +92,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
 
             <Link
               href="/dashboard"
-              className="w-9 h-9 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-border)]/80 transition-colors rounded-none"
+              className="w-12 h-12 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-border)]/80 transition-colors rounded-none"
               title={t.navAdmin}
             >
               <Settings className="w-[18px] h-[18px]" />
@@ -112,7 +112,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
-              className="xl:hidden w-11 h-11 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
+              className="xl:hidden w-12 h-12 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
               aria-label={lang === "zh" ? "全局搜索" : "Search"}
               title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
             >

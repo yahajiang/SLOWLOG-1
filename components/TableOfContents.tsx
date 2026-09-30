@@ -71,7 +71,7 @@ export function TableOfContents({
             <span
               aria-hidden
               className="absolute left-0 top-1 bottom-0 w-px bg-[var(--yh-accent)] origin-top"
-              style={{ transform: `scaleY(${railProgress})`, transition: "transform 220ms var(--ease-out)" }}
+              style={{ transform: `scaleY(${railProgress})`, transition: "transform var(--duration-exit) var(--ease-out)" }}
             />
             <ul className="space-y-0.5" role="list">
               {headings.map((h, idx) => {

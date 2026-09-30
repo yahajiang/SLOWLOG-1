@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LogOut, MonitorSmartphone } from "lucide-react";
+import Link from "next/link";
+import { LogOut, MonitorSmartphone, ChevronRight } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
 import { useLang } from "@/lib/lang-context";
 
-/** 移动端更多：分类查看＋媒体查看＋退出＋桌面版切换 */
+/** 移动端更多：分类查看＋媒体查看＋管理入口＋退出／桌面版切换 */
 export default function MobileMorePage() {
   const [cats, setCats] = useState<any[]>([]);
   const [media, setMedia] = useState<any[]>([]);
@@ -93,6 +94,29 @@ export default function MobileMorePage() {
           </div>
         )}
         <p className="px-4 pb-3 text-[11px] text-[var(--dash-muted)]">{t.dashMediaHint}</p>
+      </section>
+
+      <section className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden">
+        <h2 className="text-sm font-semibold text-[var(--dash-text)] px-4 pt-4 pb-2">{t.dashManageGroup}</h2>
+        <div className="divide-y divide-[var(--dash-border)]">
+          <Link
+            href="/m/dashboard/categories"
+            className="flex items-center justify-between px-4 py-3 min-h-[56px] active:opacity-70"
+          >
+            <span className="text-sm text-[var(--dash-text)]">{t.dashCatManage}</span>
+            <ChevronRight className="w-4 h-4 text-[var(--dash-muted)]" aria-hidden />
+          </Link>
+          <Link
+            href="/m/dashboard/tokens"
+            className="flex items-center justify-between px-4 py-3 min-h-[56px] active:opacity-70"
+          >
+            <span className="text-sm text-[var(--dash-text)]">{t.dashAppTokens}</span>
+            <ChevronRight className="w-4 h-4 text-[var(--dash-muted)]" aria-hidden />
+          </Link>
+        </div>
+        <p className="px-4 pb-3 text-[11px] leading-relaxed text-[var(--dash-muted)]">
+          {t.dashDesktopOnlyFields}
+        </p>
       </section>
 
       <section className="space-y-2.5">
