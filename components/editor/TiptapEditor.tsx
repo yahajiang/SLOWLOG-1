@@ -35,6 +35,9 @@ import {
   Table as TableIcon, Paintbrush, Eraser, ChevronDown, Type
 } from "lucide-react"
 
+// 工具栏图标钮一档实现（7 处此前逐字相同；尺寸/悬停/过渡任何一次调整都要扫 7 行）
+const ICON_BTN = "p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]";
+
 const lowlight = createLowlight(common)
 
 const ResizableImage = Image.extend({
@@ -234,9 +237,9 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
           {/* 链接/图片 */}
           <button title="链接" onMouseDown={(e) => e.preventDefault()} onClick={() => setLinkOpen(true)}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]"><LinkIcon className="w-4 h-4" /></button>
+            className={ICON_BTN}><LinkIcon className="w-4 h-4" /></button>
           <button title="图片" onMouseDown={(e) => e.preventDefault()} onClick={() => fileRef.current?.click()} disabled={uploading}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)] disabled:opacity-50"><Upload className="w-4 h-4" /></button>
+            className={`${ICON_BTN} disabled:opacity-50`}><Upload className="w-4 h-4" /></button>
 
           <div className="w-px h-4 bg-[var(--yh-border)] mx-0.5" />
 
@@ -269,7 +272,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 文字颜色 */}
           <div className="relative">
             <button title="文字颜色" onMouseDown={(e) => e.preventDefault()} onClick={() => { setTextColorOpen(!textColorOpen); setTitleOpen(false); setListOpen(false); setAlignOpen(false); setHighlightColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]">
+              className={ICON_BTN}>
               <Paintbrush className="w-4 h-4" />
             </button>
             {textColorOpen && (
@@ -287,7 +290,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 背景高亮颜色 */}
           <div className="relative">
             <button title="背景高亮" onMouseDown={(e) => e.preventDefault()} onClick={() => { setHighlightColorOpen(!highlightColorOpen); setTitleOpen(false); setListOpen(false); setAlignOpen(false); setTextColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]">
+              className={ICON_BTN}>
               <Highlighter className="w-4 h-4" />
             </button>
             {highlightColorOpen && (
@@ -307,7 +310,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           {/* 对齐方式下拉 */}
           <div className="relative">
             <button title="对齐方式" onMouseDown={(e) => e.preventDefault()} onClick={() => { setAlignOpen(!alignOpen); setTitleOpen(false); setListOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
-              className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]">
+              className={ICON_BTN}>
               <AlignLeft className="w-4 h-4" />
             </button>
             {alignOpen && (
@@ -330,22 +333,22 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
 
           {/* 表格/引用/代码/分割线/清除/撤销/重做 */}
           <button title="插入表格" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]"><TableIcon className="w-4 h-4" /></button>
+            className={ICON_BTN}><TableIcon className="w-4 h-4" /></button>
           <button title="引用" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBlockquote().run()}
             className={`p-1.5 rounded-none transition-all duration-[var(--duration-fast)] ${editor.isActive("blockquote") ? "bg-[var(--dash-info-soft)] text-[var(--dash-info)]" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)]"}`}><Quote className="w-4 h-4" /></button>
           <button title="代码块" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             className={`p-1.5 rounded-none transition-all duration-[var(--duration-fast)] ${editor.isActive("codeBlock") ? "bg-[var(--dash-info-soft)] text-[var(--dash-info)]" : "text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)]"}`}><Code2 className="w-4 h-4" /></button>
           <button title="分割线" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().setHorizontalRule().run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]"><Minus className="w-4 h-4" /></button>
+            className={ICON_BTN}><Minus className="w-4 h-4" /></button>
           <button title="清除格式" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)]"><Eraser className="w-4 h-4" /></button>
+            className={ICON_BTN}><Eraser className="w-4 h-4" /></button>
 
           <div className="w-px h-4 bg-[var(--yh-border)] mx-0.5" />
 
           <button title="撤销" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)] disabled:opacity-30 disabled:cursor-not-allowed"><Undo2 className="w-4 h-4" /></button>
+            className={`${ICON_BTN} disabled:opacity-30 disabled:cursor-not-allowed`}><Undo2 className="w-4 h-4" /></button>
           <button title="重做" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}
-            className="p-1.5 rounded-none text-[var(--yh-muted)] hover:bg-[var(--yh-border)] hover:text-[var(--dash-text)] transition-all duration-[var(--duration-fast)] disabled:opacity-30 disabled:cursor-not-allowed"><Redo2 className="w-4 h-4" /></button>
+            className={`${ICON_BTN} disabled:opacity-30 disabled:cursor-not-allowed`}><Redo2 className="w-4 h-4" /></button>
       </div>
 
       {/* 编辑器内容 */}
