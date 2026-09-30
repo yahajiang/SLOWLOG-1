@@ -117,7 +117,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           </div>
           <Link
             href="/m/archive"
-            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[48px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
+            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[48px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0 active:opacity-60"
           >
             {t.viewAll}
           </Link>
@@ -232,7 +232,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
           {/* 归档入口移出滚动区，常驻可见 */}
           <Link
             href="/m/archive"
-            className="shrink-0 mr-3 px-3 py-1.5 min-h-[48px] flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)]"
+            className="shrink-0 mr-3 px-3 py-1.5 min-h-[48px] flex items-center mono text-[11px] tracking-[0.14em] uppercase whitespace-nowrap rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:opacity-60"
           >
             {t.archiveTitle} →
           </Link>
@@ -252,9 +252,10 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
                 <span className="text-[10px] tracking-widest uppercase text-[var(--yh-muted)]">{t.featured}</span>
               )}
             </div>
-            <h2 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2 break-words">
+            {/* 首页主标题：与桌面同层级用 h1（此前移动是 h2，整页没有 h1，文档大纲与读屏落点缺失） */}
+            <h1 className="serif text-[22px] font-semibold leading-tight tracking-[-0.02em] text-[var(--yh-text)] mb-2 break-words">
               {heroTitle}
-            </h2>
+            </h1>
             <p className="text-sm text-[var(--yh-muted)] leading-relaxed mb-4 line-clamp-2">{heroExcerpt}</p>
             <div className="flex items-center gap-2 mb-4">
               <AuthorAvatar initial={featured.authorInitial} />
@@ -265,7 +266,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             </div>
             <Link
               href={`/m/posts/${featured.id}`}
-              className="flex items-center justify-center gap-1.5 w-full min-h-[48px] px-4 py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-widest uppercase"
+              className="flex items-center justify-center gap-1.5 w-full min-h-[48px] px-4 py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-widest uppercase active:opacity-60"
             >
               {t.readArticle} <ChevronRight className="w-4 h-4" />
             </Link>
@@ -297,7 +298,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
             <button
               type="button"
               onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}
-              className="mt-5 text-sm text-[var(--yh-muted)] underline underline-offset-4 min-h-[48px] px-4"
+              className="mt-5 text-sm text-[var(--yh-muted)] underline underline-offset-4 min-h-[48px] px-4 active:opacity-60"
             >
               {t.clearFilters}
             </button>

@@ -349,6 +349,11 @@ export const dict = {
     // Error / Not Found
     errorTitle: "出错了",
     errorRetry: "重试",
+    errorLoad: "加载失败，请检查网络或稍后重试",
+    homeSoloTitle: "仅 1 篇推荐文章已在上方展示",
+    homeSoloHint: "再发布一篇将在此显示",
+    contentMissing: "内容暂缺，请稍后再试。",
+    componentGallery: "组件画廊",
     notFoundTitle: "页面未找到",
     notFoundBack: "返回首页",
     nfHeadline: "这一页还没有被写下",
@@ -694,6 +699,11 @@ export const dict = {
     apply: "Apply",
     errorTitle: "Something went wrong",
     errorRetry: "Retry",
+    errorLoad: "Couldn’t load. Check your connection or try again.",
+    homeSoloTitle: "One featured post only — it is shown above",
+    homeSoloHint: "Publish another one to fill this grid",
+    contentMissing: "Content unavailable right now — check back soon.",
+    componentGallery: "Component gallery",
     notFoundTitle: "Page not found",
     notFoundBack: "Back to home",
     nfHeadline: "This page hasn't been written yet",
@@ -1017,6 +1027,11 @@ export type Dict = {
   apply: string;
   errorTitle: string;
   errorRetry: string;
+  errorLoad: string;
+  homeSoloTitle: string;
+  homeSoloHint: string;
+  contentMissing: string;
+  componentGallery: string;
   notFoundTitle: string;
   notFoundBack: string;
   nfHeadline: string;

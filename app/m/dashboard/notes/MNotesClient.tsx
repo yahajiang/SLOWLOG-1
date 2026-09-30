@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { ListError } from "@/components/ui/ListError";
+import { loadList } from "@/lib/admin-fetch";
 import { useLang } from "@/lib/lang-context";
 
 interface Note {
@@ -18,27 +20,25 @@ export default function MobileNotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [delId, setDelId] = useState<string | null>(null);
   const { toast } = useToast();
   const { t, lang } = useLang();
 
-  const fetchNotes = () =>
-    fetch("/api/thoughts", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => {
-        setNotes(
-          Array.isArray(data)
-            ? data.map((d: any) => ({
-                id: d.id,
-                content: d.content || d.text || "",
-                contentZh: d.contentZh || d.textZh || d.content || d.text || "",
-                createdAt: d.createdAt,
-              }))
-            : []
-        );
-        setLoading(false);
-      });
+  const fetchNotes = async () => {
+    const r = await loadList<any>("/api/thoughts");
+    setNotes(
+      r.data.map((d: any) => ({
+        id: d.id,
+        content: d.content || d.text || "",
+        contentZh: d.contentZh || d.textZh || d.content || d.text || "",
+        createdAt: d.createdAt,
+      })),
+    );
+    setLoadErr(r.error);
+    setLoading(false);
+  };
 
   useEffect(() => {
     fetchNotes();
@@ -92,7 +92,7 @@ export default function MobileNotesPage() {
         <button
           onClick={submit}
           disabled={sending || !input.trim()}
-          className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px]"
+          className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px] active:opacity-60"
         >
           {t.dashPublishAction}
         </button>
@@ -120,15 +120,16 @@ export default function MobileNotesPage() {
               </div>
               <button
                 onClick={() => setDelId(n.id)}
-                className="text-xs text-[var(--dash-muted)] px-3 min-h-[48px] self-start shrink-0"
+                className="text-xs text-[var(--dash-muted)] px-3 min-h-[48px] self-start shrink-0 active:opacity-60"
               >
                 {t.dashDelete}
               </button>
             </div>
           ))}
-          {notes.length === 0 && (
-            <p className="text-sm text-[var(--dash-muted)] text-center py-12">{t.noThoughts}</p>
-          )}
+          {notes.length === 0 &&
+            (loadErr ? <ListError onRetry={() => void fetchNotes()} /> : (
+              <p className="text-sm text-[var(--dash-muted)] text-center py-12">{t.noThoughts}</p>
+            ))}
         </div>
       )}
       <ConfirmDialog

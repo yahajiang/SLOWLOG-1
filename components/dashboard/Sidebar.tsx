@@ -63,7 +63,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`${collapsed ? "w-[68px]" : "w-[240px]"} shrink-0 bg-[var(--dash-card)] border-r border-[var(--dash-border)] flex flex-col h-screen sticky top-0 transition-[width] duration-300 ease-[var(--ease-out)] overflow-hidden`}
+      className={`${collapsed ? "w-[68px]" : "w-[240px]"} shrink-0 bg-[var(--dash-card)] border-r border-[var(--dash-border)] flex flex-col h-screen sticky top-0 transition-[width] duration-[var(--duration-normal)] ease-[var(--ease-out)] overflow-hidden`}
     >
       {/* 品牌行 + 收起/展开开关 */}
       <div className={`px-3 py-5 border-b border-[var(--dash-border)] flex flex-col ${collapsed ? "items-center gap-3" : "gap-3"}`}>
@@ -86,7 +86,7 @@ export function Sidebar() {
           </button>
         </div>
         {!collapsed && (
-          <p className="px-3 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden transition-opacity duration-200">
+          <p className="px-3 text-[11px] tracking-wide text-[var(--dash-muted)] whitespace-nowrap overflow-hidden transition-opacity duration-[var(--duration-exit)]">
             {t.dashTagline}
           </p>
         )}
@@ -105,7 +105,7 @@ export function Sidebar() {
               title={item.label}
               className={`${rowBase} ${collapsed ? "justify-center w-full h-10" : "gap-3 px-3 py-2.5 text-sm border-l-[3px]"} ${active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] font-medium border-[var(--dash-accent)]" : "text-[var(--dash-muted)] border-transparent hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]"} focus-visible:outline-[var(--dash-accent)]`}
             >
-              <Icon className="w-4 h-4 shrink-0" /> {!collapsed && <span className="whitespace-nowrap overflow-hidden transition-opacity duration-200">{item.label}</span>}
+              <Icon className="w-4 h-4 shrink-0" /> {!collapsed && <span className="whitespace-nowrap overflow-hidden transition-opacity duration-[var(--duration-exit)]">{item.label}</span>}
             </Link>
           )
         })}

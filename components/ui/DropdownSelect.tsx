@@ -78,7 +78,7 @@ export function DropdownSelect({
       >
         <span className="truncate">{selected?.label ?? ""}</span>
         <svg
-          className={`w-3 h-3 shrink-0 text-[var(--dash-muted)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-3 h-3 shrink-0 text-[var(--dash-muted)] transition-transform duration-[var(--duration-exit)] ${open ? "rotate-180" : ""}`}
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden

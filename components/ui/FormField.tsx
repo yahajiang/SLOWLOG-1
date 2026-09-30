@@ -27,7 +27,7 @@ export function FormField({
       ) : hint ? (
         <p className="h-3 text-[10px] text-[var(--dash-muted)]/60 leading-3 animate-[ffIn_0.2s_ease-out]">{hint}</p>
       ) : null}
-      <style>{`@keyframes ffIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
+
     </div>
   )
 }

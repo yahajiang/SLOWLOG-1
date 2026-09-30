@@ -53,7 +53,7 @@ function PreviewPanel({ content, post, pageConfig, categories }: { content: any;
         <h1 className={`text-3xl font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: pageConfig.primaryColor && pageConfig.theme !== "dark" ? pageConfig.primaryColor : undefined }}>{(tlang === "zh" ? post.titleZh || post.title : post.title) || tt.dashUntitled}</h1>
         <p className="text-[15px] leading-relaxed text-[var(--yh-muted)] mb-6">{(tlang === "zh" ? post.excerptZh || post.excerpt : post.excerpt) || tt.dashExcerpt}</p>
         <div className="flex items-center gap-3 pb-6 border-b border-[var(--yh-border)]">
-          <div className="w-10 h-10 rounded-none bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
+          <div className="w-10 h-10 rounded-none bg-[var(--dash-warn-soft)] text-[var(--dash-warn)] border border-[var(--dash-warn-border)] flex items-center justify-center text-sm font-medium">{post.authorInitial || "Y"}</div>
           <div>
             <p className="text-sm font-semibold text-[var(--yh-text)]">{post.author || "Yahajiang"}</p>
             <p className="text-xs text-[var(--yh-muted)]">{new Date().toLocaleDateString()} · {categories.find((c: any) => c.id === post.categoryId)?.name || "Design"}</p>
@@ -358,7 +358,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
         <Link href="/dashboard/posts" className="text-sm text-[var(--dash-muted)] hover:text-[var(--dash-text)] shrink-0">{t.editorBack}</Link>
         <div className="w-px h-4 bg-[var(--dash-border)]" />
         <Input value={post.title || ""} onChange={(e) => handleTitleChange(e.target.value)} placeholder={t.dashTitlePh} className="flex-1 max-w-[644px] min-w-[320px] text-sm font-semibold" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }} />
-        <Badge tone={scheduledFuture ? "sky" : post.status === "published" ? "emerald" : "amber"}>
+        <Badge tone={scheduledFuture ? "info" : post.status === "published" ? "ok" : "warn"}>
           {scheduledFuture ? `${t.dashScheduledPrefix} ${new Date(post.publishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}` : post.status === "published" ? t.editorPublished : t.editorDraftBadge}
         </Badge>
         <Toggle checked={!!post.featured} onChange={(e) => setPost({ ...post, featured: e.target.checked })} label={t.dashRecommend} className="shrink-0" />

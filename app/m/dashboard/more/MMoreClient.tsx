@@ -123,14 +123,14 @@ export default function MobileMorePage() {
         <button
           type="button"
           onClick={goDesktop}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm rounded-none min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm rounded-none min-h-[48px] active:opacity-60"
         >
           <MonitorSmartphone className="w-4 h-4" /> {t.dashDesktopAdmin}
         </button>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/m/login" })}
-          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[var(--dash-danger)] bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[var(--dash-danger)] bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none min-h-[48px] active:opacity-60"
         >
           <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>

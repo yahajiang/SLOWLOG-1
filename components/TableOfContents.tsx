@@ -118,7 +118,7 @@ export function TableOfContents({
           <div className="h-[4px] rounded-none bg-[var(--yh-border)]/80 overflow-hidden">
             <div
               data-side-progress
-              className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/90 transition-transform duration-150 will-change-transform"
+              className="h-full w-full origin-left rounded-none bg-[var(--yh-accent)]/90 transition-transform duration-[var(--duration-fast)] will-change-transform"
               style={{ transform: `scaleX(${progress})` }}
             />
           </div>

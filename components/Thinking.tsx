@@ -35,7 +35,7 @@ function ThoughtItem({ thought, lang, index }: { thought: ThoughtData; lang: "zh
         </p>
         <div className="flex items-center gap-2 mt-[11px]">
           <div className="w-1 h-1 rounded-full bg-[var(--yh-accent)]/40" />
-          <time className="text-[11px] text-[var(--yh-muted)] tracking-wide opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+          <time className="text-[11px] text-[var(--yh-muted)] tracking-wide opacity-60 group-hover:opacity-100 transition-opacity duration-[var(--duration-normal)]">
             {relative}
           </time>
         </div>

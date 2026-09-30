@@ -7,12 +7,16 @@ import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { useLang } from "@/lib/lang-context"
 import { useSiteSettings } from "@/lib/settings-context"
 import { PostsPageSkeleton } from "@/components/dashboard/Skeleton"
+import { ListError } from "@/components/ui/ListError"
+import { loadList } from "@/lib/admin-fetch"
+
 
 // 行内小钮共用一档：桌面后台密集控件走第二档（短边 ≥36），前台与移动后台仍是 48
 const actBase = "text-xs px-2.5 min-h-[36px] inline-flex items-center justify-center rounded-none"
 
 export default function PostsPage() {
   const [posts, setPosts] = useState<any[]>([])
+  const [loadErr, setLoadErr] = useState<string | null>(null)
   const [cats, setCats] = useState<any[]>([])
   const [q, setQ] = useState("")
   const [status, setStatus] = useState("all")
@@ -34,9 +38,9 @@ export default function PostsPage() {
     const params = new URLSearchParams()
     if (q) params.set("q", q)
     if (status !== "all") params.set("status", status)
-    const res = await fetch(`/api/posts?${params}`, { cache: "no-store" })
-    const data = await res.json()
-    setPosts(Array.isArray(data) ? data : [])
+    const r = await loadList(`/api/posts?${params}`)
+    setPosts(r.data)
+    setLoadErr(r.error)
     setLoading(false)
     setBooted(true)
   }, [q, status])
@@ -48,7 +52,7 @@ export default function PostsPage() {
   }, [load])
 
   useEffect(() => {
-    fetch("/api/categories", { cache: "no-store" }).then(r => r.json()).then(d => setCats(Array.isArray(d) ? d : []))
+    void loadList("/api/categories").then(r => setCats(r.data))
   }, [])
 
   const filtered = (() => {
@@ -256,7 +260,7 @@ export default function PostsPage() {
                   <Link href={`/dashboard/posts/${p.id}`} className="text-sm font-medium text-[var(--dash-text)] hover:text-[var(--dash-accent)] line-clamp-1">{p.titleZh || p.title || t.dashUntitled}</Link>
                   {p.featured && <span className="text-[10px] px-1.5 py-0.5 bg-[var(--dash-accent-soft)] text-[var(--dash-accent)] rounded-none border border-[var(--dash-accent)]/20">{lang === "zh" ? "推荐" : "★"}</span>}
                 </div>
-                <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || t.dashUncategorized} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-emerald-50 text-emerald-700 border-emerald-200") : p.status === "draft" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `${t.dashScheduledPrefix} ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
+                <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || t.dashUncategorized} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-[var(--dash-info-soft)] text-[var(--dash-info)] border-[var(--dash-info-border)]" : "bg-[var(--dash-ok-soft)] text-[var(--dash-ok)] border-[var(--dash-ok-border)]") : p.status === "draft" ? "bg-[var(--dash-warn-soft)] text-[var(--dash-warn)] border-[var(--dash-warn-border)]" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `${t.dashScheduledPrefix} ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
               </div>
               <div className="flex items-center gap-1 ml-2 flex-wrap justify-end">
                 <button onClick={()=>toggleFeatured(p)} className={`${actBase} border font-medium ${p.featured?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] hover:opacity-90":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{p.featured?(lang === "zh" ? "取消推荐" : "Unfeature"):(lang === "zh" ? "推荐" : "Feature")}</button>
@@ -269,7 +273,7 @@ export default function PostsPage() {
               </div>
             </div>
           ))}
-          {paged.length === 0 && <div className="p-12 text-center text-sm text-[var(--dash-muted)]">{loading ? (lang === "zh" ? "加载中…" : "Loading…") : t.dashEmptyFiltered}</div>}
+          {paged.length === 0 && (loadErr ? <ListError onRetry={load} /> : <div className="p-12 text-center text-sm text-[var(--dash-muted)]">{loading ? (lang === "zh" ? "加载中…" : "Loading…") : t.dashEmptyFiltered}</div>)}
         </div>
         {totalPages>1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--dash-border)] bg-[var(--dash-bg)] text-xs">

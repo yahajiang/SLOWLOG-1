@@ -4,11 +4,14 @@ import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
 import { CategoriesPageSkeleton } from "@/components/dashboard/Skeleton"
+import { ListError } from "@/components/ui/ListError"
+import { loadList } from "@/lib/admin-fetch"
 
 type CatDraft = { id: string; name: string; nameZh: string; slug: string; description: string; descriptionZh: string }
 
 export default function CategoriesPage(){
   const [cats,setCats]=useState<any[]>([])
+  const [loadErr,setLoadErr]=useState<string|null>(null)
   const [name,setName]=useState("")
   const [nameZh,setNameZh]=useState("")
   const [slug,setSlug]=useState("")
@@ -21,7 +24,7 @@ export default function CategoriesPage(){
   const [saving,setSaving]=useState(false)
   const { toast } = useToast()
   const { lang } = useLang()
-  const load=()=>fetch("/api/categories",{cache:"no-store"}).then(r=>r.json()).then(d=>{setCats(Array.isArray(d)?d:[]); setLoading(false)})
+  const load=async()=>{ const r=await loadList("/api/categories"); setCats(r.data); setLoadErr(r.error); setLoading(false) }
   useEffect(()=>{load()},[])
   const create=async()=>{
     if(!name||!slug) { toast(lang === "zh" ? "名称和Slug必填" : "Name and Slug are required","error"); return }
@@ -70,6 +73,7 @@ export default function CategoriesPage(){
   return (
     <div className="space-y-6 section-in">
       <h1 className="text-xl font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>{lang === "zh" ? "分类" : "Categories"}</h1>
+      {loadErr && <ListError onRetry={load} />}
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 flex flex-wrap gap-3 items-end shadow-[var(--shadow-card)]">
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "Design" : "Design"} /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={nameZh} onChange={e=>setNameZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "设计" : "设计"} /></div>

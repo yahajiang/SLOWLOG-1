@@ -4,6 +4,9 @@ import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
 import { MediaPageSkeleton } from "@/components/dashboard/Skeleton"
+import { ListError } from "@/components/ui/ListError"
+import { loadList } from "@/lib/admin-fetch"
+
 
 interface UploadProgress { name: string; loaded: number; total: number }
 
@@ -26,6 +29,7 @@ function uploadWithProgress(url: string, form: FormData, onProgress: (loaded: nu
 
 export default function MediaPage(){
   const [items,setItems]=useState<any[]>([])
+  const [loadErr,setLoadErr]=useState<string|null>(null)
   const [view,setView]=useState<"grid"|"list">("grid")
   const [page,setPage]=useState(1)
   const [total,setTotal]=useState(0)
@@ -35,7 +39,7 @@ export default function MediaPage(){
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const { t, lang } = useLang()
-  const load = useCallback((p = page) => fetch(`/api/media?page=${p}`, { cache: "no-store" }).then(r => { setTotal(parseInt(r.headers.get("X-Total-Count") || "0", 10)); return r.json() }).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }), [page])
+  const load = useCallback(async (p = page) => { const r = await loadList(`/api/media?page=${p}`); setItems(r.data); setTotal(r.total); setLoadErr(r.error); setLoading(false) }, [page])
   useEffect(() => { load() }, [load])
 
   const upload = useCallback(async (files: FileList | null) => {
@@ -111,7 +115,7 @@ export default function MediaPage(){
             <span className="tabular-nums text-[var(--dash-muted)]">{Math.round((progress.loaded / progress.total) * 100)}%</span>
           </div>
           <div className="h-1.5 bg-[var(--dash-bg)] overflow-hidden">
-            <div className="h-full bg-[var(--dash-accent)] transition-all duration-150" style={{ width: `${(progress.loaded / progress.total) * 100}%` }} />
+            <div className="h-full bg-[var(--dash-accent)] transition-all duration-[var(--duration-fast)]" style={{ width: `${(progress.loaded / progress.total) * 100}%` }} />
           </div>
         </div>
       )}
@@ -150,7 +154,7 @@ export default function MediaPage(){
           ))}
         </div>
       )}
-      {items.length === 0 && <p className="text-center text-sm text-[var(--dash-muted)] py-12">{lang === "zh" ? "暂无图片，拖拽或粘贴上传" : "No images yet — drag, drop or paste to upload"}</p>}
+      {items.length === 0 && (loadErr ? <ListError onRetry={() => load()} /> : <p className="text-center text-sm text-[var(--dash-muted)] py-12">{lang === "zh" ? "暂无图片，拖拽或粘贴上传" : "No images yet — drag, drop or paste to upload"}</p>)}
       {total > 100 && (
         <div className="flex items-center justify-between pt-2">
           <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 张` : `Page ${page} / ${totalPages} · ${total} items`}</p>

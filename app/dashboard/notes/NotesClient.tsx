@@ -4,11 +4,14 @@ import { ConfirmDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
 import { useLang } from "@/lib/lang-context"
 import { NotesPageSkeleton } from "@/components/dashboard/Skeleton"
+import { ListError } from "@/components/ui/ListError"
+import { loadList } from "@/lib/admin-fetch"
 
 interface Note { id: string; content: string; contentZh: string | null; createdAt: string }
 
 export default function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([])
+  const [loadErr, setLoadErr] = useState<string | null>(null)
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -18,7 +21,7 @@ export default function NotesPage() {
   const [delId, setDelId] = useState<string | null>(null)
   const { toast } = useToast()
   const { lang } = useLang()
-  const fetchNotes = (p = page) => fetch(`/api/thoughts?page=${p}`, { cache: "no-store" }).then(r=>{ setTotal(parseInt(r.headers.get("X-Total-Count") || "0", 10)); return r.json() }).then(data=> { setNotes(Array.isArray(data)? data.map((d:any)=>({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt })) : []); setLoading(false) })
+  const fetchNotes = async (p = page) => { const r = await loadList<any>(`/api/thoughts?page=${p}`); setNotes(r.data.map((d: any) => ({ id: d.id, content: d.content || d.text || "", contentZh: d.contentZh || d.textZh || d.content || d.text || "", createdAt: d.createdAt }))); setTotal(r.total); setLoadErr(r.error); setLoading(false) }
   useEffect(()=>{fetchNotes()},[page])
   const submit = async () => {
     if (!input.trim() || input.length>500) { toast(lang === "zh" ? "内容需 1-500 字" : "Content must be 1-500 characters","error"); return }
@@ -57,7 +60,7 @@ export default function NotesPage() {
             <button onClick={()=>del(n.id)} className="text-xs px-2 py-1.5 rounded-none border border-transparent hover:border-[var(--dash-danger-border)] hover:text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] shrink-0 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-danger)]">{lang === "zh" ? "删除" : "Delete"}</button>
           </div>
         ))}
-        {notes.length===0 && <p className="text-sm text-[var(--dash-muted)] text-center py-12">{lang === "zh" ? "暂无随想" : "No thoughts yet"}</p>}
+        {notes.length===0 && (loadErr ? <ListError onRetry={() => fetchNotes()} /> : <p className="text-sm text-[var(--dash-muted)] text-center py-12">{lang === "zh" ? "暂无随想" : "No thoughts yet"}</p>)}
       </div>
       {total > 50 && (
         <div className="flex items-center justify-between pt-2">

@@ -129,7 +129,7 @@ export function TagClient({
                     <CategoryBadge category={p.category} />
                   </span>
                   <span className="mono text-[10px] text-[var(--yh-muted)] hidden sm:block">{p.readTime || ""}</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-[var(--yh-border)] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-[var(--yh-accent)] transition-all duration-200 shrink-0" />
+                  <ChevronRight className="w-3.5 h-3.5 text-[var(--yh-border)] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-[var(--yh-accent)] transition-all duration-[var(--duration-exit)] shrink-0" />
                 </Link>
               );
             })}

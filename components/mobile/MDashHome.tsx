@@ -57,7 +57,7 @@ export function MDashHome({ data }: {
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-[var(--dash-text)]">{t.dashRecentPosts}</h2>
-          <Link href="/m/dashboard/posts" className="text-xs text-[var(--dash-accent)] min-h-[48px] flex items-center px-2">
+          <Link href="/m/dashboard/posts" className="text-xs text-[var(--dash-accent)] min-h-[48px] flex items-center px-2 active:opacity-60">
             {t.dashViewAll}
           </Link>
         </div>
@@ -94,13 +94,13 @@ export function MDashHome({ data }: {
           <button
             type="button"
             onClick={() => toast(t.dashNewOnDesktop, "success")}
-            className="block w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm text-center rounded-none font-medium min-h-[48px]"
+            className="block w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm text-center rounded-none font-medium min-h-[48px] active:opacity-60"
           >
             {t.dashNewPost}
           </button>
           <Link
             href="/m/dashboard/notes"
-            className="flex items-center justify-center w-full py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm text-center rounded-none min-h-[48px]"
+            className="flex items-center justify-center w-full py-3 bg-[var(--dash-card)] border border-[var(--dash-border)] text-sm text-center rounded-none min-h-[48px] active:opacity-60"
           >
             {t.dashNewThought}
           </Link>

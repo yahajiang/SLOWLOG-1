@@ -120,7 +120,7 @@ export function MPost({
                 href={repoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)] min-h-[48px]"
+                className="flex items-center gap-1 text-[11px] text-[var(--yh-muted)] min-h-[48px] active:opacity-60"
               >
                 <ExternalLink className="w-3 h-3" />
                 {t.viewRepo || "Repository"}
@@ -160,7 +160,7 @@ export function MPost({
             {content ? (
               <PostRenderer content={content} pageConfig={pageConfig} />
             ) : (
-              <p className="text-[15px] text-[var(--yh-muted)] py-6 text-center">内容暂缺，请稍后再试。</p>
+              <p className="text-[15px] text-[var(--yh-muted)] py-6 text-center">{t.contentMissing}</p>
             )}
             <div className="mt-8 p-4 rounded-none text-[13px] leading-relaxed border bg-[var(--dash-card)] border-[var(--yh-border)] text-[var(--yh-muted)]">
               <p>

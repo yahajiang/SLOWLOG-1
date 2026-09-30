@@ -428,8 +428,8 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         {gridPosts.length === 0 ? (
           showHero && posts.length === 1 ? (
             <div className="py-12 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
-              <p className="text-sm text-[var(--yh-muted)]">仅 1 篇推荐文章已在上方展示</p>
-              <p className="text-xs text-[var(--yh-muted)] mt-1">再发布一篇将在此显示</p>
+              <p className="text-sm text-[var(--yh-muted)]">{t.homeSoloTitle}</p>
+              <p className="text-xs text-[var(--yh-muted)] mt-1">{t.homeSoloHint}</p>
             </div>
           ) : (
             <div className="py-20 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
@@ -534,7 +534,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
                           const md = mdInSiteTz((p as any).publishedAt || (p as any).createdAt || (p as any).date)
                           return (
                             <Link key={p.id} href={`/posts/${p.id}`} className="group relative flex items-center gap-2 text-[13px] py-[3px]">
-                              <span className="absolute -left-[26px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:bg-[var(--yh-accent)] group-hover:border-[var(--yh-accent)] group-hover:scale-110 transition-all duration-200" />
+                              <span className="absolute -left-[26px] top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border border-[var(--yh-border)] bg-[var(--yh-bg)] group-hover:bg-[var(--yh-accent)] group-hover:border-[var(--yh-accent)] group-hover:scale-110 transition-all duration-[var(--duration-exit)]" />
                               <span className="mono text-[10px] text-[var(--yh-muted)] w-10 shrink-0">{md}</span>
                               {readMarks[p.id] && <span className="mono text-[9px] text-[var(--yh-accent)] shrink-0">{readMarks[p.id]}%</span>}
                               <span className="truncate group-hover:text-[var(--yh-accent)] group-hover:underline underline-offset-4 decoration-[var(--yh-accent)]/40">{lang==="zh" ? (p.titleZh||p.title) : p.title}</span>

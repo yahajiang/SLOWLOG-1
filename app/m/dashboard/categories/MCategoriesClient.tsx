@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import { useToast } from "@/components/ui/Toast";
 import { ListItemSkeleton } from "@/components/dashboard/Skeleton";
+import { ListError } from "@/components/ui/ListError";
+import { loadList } from "@/lib/admin-fetch";
 import { useLang } from "@/lib/lang-context";
 
 type CatDraft = {
@@ -25,6 +27,7 @@ type CatDraft = {
 export default function MobileCategoriesPage() {
   const [cats, setCats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   // 新建表单默认收起：手机上五个字段常驻会把列表推到屏幕外，
   // 而"看现有分类"才是这一页的高频动作。
@@ -42,13 +45,12 @@ export default function MobileCategoriesPage() {
   const { t, lang } = useLang();
   const zh = lang === "zh";
 
-  const load = () =>
-    fetch("/api/categories", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => {
-        setCats(Array.isArray(d) ? d : []);
-        setLoading(false);
-      });
+  const load = async () => {
+    const r = await loadList("/api/categories");
+    setCats(r.data);
+    setLoadErr(r.error);
+    setLoading(false);
+  };
   useEffect(() => {
     void load();
   }, []);
@@ -188,13 +190,13 @@ export default function MobileCategoriesPage() {
               <button
                 onClick={create}
                 disabled={creating || !name.trim() || !slug.trim()}
-                className="flex-1 py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px]"
+                className="flex-1 py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 font-medium min-h-[48px] active:opacity-60"
               >
                 {creating ? (t.catCreating) : t.catCreate}
               </button>
               <button
                 onClick={() => setShowForm(false)}
-                className="px-5 py-3 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px]"
+                className="px-5 py-3 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px] active:opacity-60"
               >
                 {t.editorCancel}
               </button>
@@ -203,7 +205,7 @@ export default function MobileCategoriesPage() {
         ) : (
           <button
             onClick={() => setShowForm(true)}
-            className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none font-medium min-h-[48px]"
+            className="w-full py-3 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none font-medium min-h-[48px] active:opacity-60"
           >
             {t.catNew}
           </button>
@@ -248,13 +250,13 @@ export default function MobileCategoriesPage() {
                       <button
                         onClick={saveEdit}
                         disabled={saving}
-                        className="flex-1 py-2.5 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 min-h-[48px]"
+                        className="flex-1 py-2.5 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 min-h-[48px] active:opacity-60"
                       >
                         {saving ? (t.catSaving) : t.catSave}
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="px-5 py-2.5 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px]"
+                        className="px-5 py-2.5 border border-[var(--dash-border)] text-sm rounded-none bg-[var(--dash-card)] min-h-[48px] active:opacity-60"
                       >
                         {t.editorCancel}
                       </button>
@@ -273,13 +275,13 @@ export default function MobileCategoriesPage() {
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => startEdit(c)}
-                          className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px]"
+                          className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] min-h-[48px] active:opacity-60"
                         >
                           {t.dashEdit}
                         </button>
                         <button
                           onClick={() => setDelId(c.id)}
-                          className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:text-[var(--dash-danger)] min-h-[48px]"
+                          className="text-xs px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:text-[var(--dash-danger)] min-h-[48px] active:opacity-60"
                         >
                           {t.dashDelete}
                         </button>
@@ -290,9 +292,10 @@ export default function MobileCategoriesPage() {
               </div>
             );
           })}
-          {cats.length === 0 && (
-            <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{t.catEmpty}</p>
-          )}
+          {cats.length === 0 &&
+            (loadErr ? <ListError onRetry={() => void load()} /> : (
+              <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{t.catEmpty}</p>
+            ))}
         </div>
       )}
 

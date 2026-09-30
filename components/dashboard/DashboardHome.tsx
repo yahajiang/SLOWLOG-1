@@ -164,7 +164,7 @@ export function DashboardHome({ data }: { data: DashData }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
         {/* 最近更新 */}
-        <div className="lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none shadow-[var(--shadow-card)]">
+        <div className="col-span-1 lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--dash-border)]">
             <h2 className="text-[13px] font-semibold text-[var(--dash-text)] tracking-tight">{t.dashRecentPosts}</h2>
             <Link href="/dashboard/posts" className="inline-flex items-center min-h-[40px] px-1 text-[11px] text-[var(--dash-accent)] hover:underline">
@@ -194,7 +194,7 @@ export function DashboardHome({ data }: { data: DashData }) {
                         <span
                           className={`shrink-0 text-[10px] px-1.5 py-px leading-none border ${
                             p.status === "draft"
-                              ? "border-amber-200 text-amber-700 bg-amber-50"
+                              ? "border-[var(--dash-warn-border)] text-[var(--dash-warn)] bg-[var(--dash-warn-soft)]"
                               : "border-[var(--dash-border)] text-[var(--dash-muted)]"
                           }`}
                         >

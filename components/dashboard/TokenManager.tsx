@@ -59,11 +59,15 @@ export function TokenManager() {
 
   const load = useCallback(async () => {
     const [tRes, dRes] = await Promise.all([
-      fetch("/api/app/tokens"),
-      fetch("/api/app/devices"),
+      fetch("/api/app/tokens", { cache: "no-store" }),
+      fetch("/api/app/devices", { cache: "no-store" }),
     ])
-    if (tRes.ok) setTokens(await tRes.json())
-    if (dRes.ok) setDevices(await dRes.json())
+    if (!tRes.ok || !dRes.ok) {
+      setError(tRes.ok ? `设备读取失败（HTTP ${dRes.status}）` : `令牌读取失败（HTTP ${tRes.status}）`)
+      return
+    }
+    setTokens(await tRes.json())
+    setDevices(await dRes.json())
   }, [])
 
   useEffect(() => {

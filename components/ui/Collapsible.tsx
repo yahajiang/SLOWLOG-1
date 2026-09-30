@@ -20,7 +20,7 @@ export function Collapsible({
         aria-expanded={open}
         className="flex items-center gap-1.5 text-xs font-medium text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors py-0.5 cursor-pointer"
       >
-        <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
+        <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-[var(--duration-exit)] ${open ? "rotate-90" : ""}`} />
         {title}
       </button>
       <div className={`grid transition-[grid-template-rows] duration-[250ms] ease-[var(--ease-out)] ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>

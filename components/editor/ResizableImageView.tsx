@@ -63,7 +63,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
     <NodeViewWrapper className="my-6" data-drag-handle="false">
       <div
         ref={containerRef}
-        className={`group relative rounded-none border-2 transition-all ${selected ? "border-blue-400" : "border-transparent hover:border-[var(--yh-border)]"}`}
+        className={`group relative rounded-none border-2 transition-all ${selected ? "border-[var(--dash-info)]" : "border-transparent hover:border-[var(--yh-border)]"}`}
         style={{ width: width || "100%", maxWidth: "100%", userSelect: "none" }}
       >
         {/* 图片顶部工具条 */}
@@ -107,14 +107,14 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
         {/* 右下角拖拽手柄 */}
         <div
           onPointerDown={(e) => { e.stopPropagation(); handleResize(e) }}
-          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-[var(--dash-card)] border-2 border-blue-400 rounded-none shadow-md cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-[var(--dash-card)] border-2 border-[var(--dash-info)] rounded-none shadow-md cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
         >
-          <div className="w-3 h-3 border-r-2 border-b-2 border-blue-400 rounded-br-sm" />
+          <div className="w-3 h-3 border-r-2 border-b-2 border-[var(--dash-info)] rounded-br-sm" />
         </div>
 
         {/* 拖拽中指示 */}
         {resizing && (
-          <div className="absolute inset-0 rounded-none pointer-events-none" style={{ border: "2px dashed #3b82f6" }} />
+          <div className="absolute inset-0 rounded-none pointer-events-none" style={{ border: "2px dashed var(--dash-info)" }} />
         )}
       </div>
     </NodeViewWrapper>

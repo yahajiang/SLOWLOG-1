@@ -135,9 +135,21 @@ code, pre, .font-mono {
      色值全部从 #c44444 同族派生，不引入新色相。暗色档在 .dark 里整组跟上。 */
   --dash-danger: #c44444;
   --dash-danger-strong: #a83a3a;
-  --dash-danger-soft: #fbf1ef;
+  --dash-danger-soft: #fdf6f5;
   --dash-danger-border: #ecc9c6;
   --dash-danger-fg: #ffffff;
+  /* 语义三色（成功 / 警示 / 提示）与危险色同构：文字、浅底、边线三档 + 暗色整组换档。
+     此前 Badge / Toast / 概览定时徽标 / 编辑器下拉选中态各写各的 emerald-50·amber-100·sky-200，
+     夜版就是一块块贴上去的白天。色相取前台同族（绿 #2f7d52 / 琥珀 #9a6a12 / 蓝 #3c6fb0）。 */
+  --dash-ok: #2f7d52;
+  --dash-ok-soft: #eef6f0;
+  --dash-ok-border: #cfe3d5;
+  --dash-warn: #9a6a12;
+  --dash-warn-soft: #fff9f1;
+  --dash-warn-border: #ecd9b4;
+  --dash-info: #3c6fb0;
+  --dash-info-soft: #eef3fa;
+  --dash-info-border: #cfdcef;
 }
 
 @keyframes motionBreath {
@@ -364,6 +376,20 @@ code, pre, .font-mono {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* 以下三条原先各自写在组件的 <style> 里（每次挂载重复注入）——收进全局，一处定义。 */
+@keyframes ffIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(10px); }
 }
 
 /* 设计推荐轮播：翻页感交叠（全站唯一明显内容转场）
@@ -1226,6 +1252,16 @@ body::after {
   --dash-danger-soft: rgba(217, 124, 114, 0.13);
   --dash-danger-border: rgba(217, 124, 114, 0.38);
   --dash-danger-fg: #231210;
+  /* 语义三色整组跟着换档（与危险色同一口径：不留单处覆盖） */
+  --dash-ok: #6fce96;
+  --dash-ok-soft: rgba(111, 206, 150, 0.13);
+  --dash-ok-border: rgba(111, 206, 150, 0.38);
+  --dash-warn: #d9b26a;
+  --dash-warn-soft: rgba(217, 178, 106, 0.13);
+  --dash-warn-border: rgba(217, 178, 106, 0.38);
+  --dash-info: #8fb2d9;
+  --dash-info-soft: rgba(143, 178, 217, 0.13);
+  --dash-info-border: rgba(143, 178, 217, 0.38);
   color-scheme: dark;
 }
 

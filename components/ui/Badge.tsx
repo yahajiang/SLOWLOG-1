@@ -1,13 +1,13 @@
 import type { ReactNode } from "react"
 
 const tones = {
-  emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  amber: "bg-amber-50 text-amber-700 border-amber-200",
-  sky: "bg-sky-50 text-sky-700 border-sky-200",
+  ok: "bg-[var(--dash-ok-soft)] text-[var(--dash-ok)] border-[var(--dash-ok-border)]",
+  warn: "bg-[var(--dash-warn-soft)] text-[var(--dash-warn)] border-[var(--dash-warn-border)]",
+  info: "bg-[var(--dash-info-soft)] text-[var(--dash-info)] border-[var(--dash-info-border)]",
 } as const
 
 export function Badge({
-  tone = "emerald",
+  tone = "ok",
   children,
 }: {
   tone?: keyof typeof tones

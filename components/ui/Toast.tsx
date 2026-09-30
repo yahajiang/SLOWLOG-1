@@ -27,8 +27,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto min-w-[240px] max-w-[360px] px-4 py-3 rounded-none shadow-[var(--shadow-pop)] border text-sm backdrop-blur flex items-center gap-2 ${
-              t.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : t.type === "error" ? "bg-[var(--dash-danger-soft)] border-[var(--dash-danger-border)] text-[var(--dash-danger-strong)]" : "bg-[var(--dash-card)] border-[var(--dash-border)] text-[var(--dash-text)]"
+            className={`pointer-events-auto min-w-[min(240px,calc(100vw-2rem))] max-w-[min(360px,calc(100vw-2rem))] px-4 py-3 rounded-none shadow-[var(--shadow-pop)] border text-sm backdrop-blur flex items-center gap-2 ${
+              t.type === "success" ? "bg-[var(--dash-ok-soft)] border-[var(--dash-ok-border)] text-[var(--dash-ok)]" : t.type === "error" ? "bg-[var(--dash-danger-soft)] border-[var(--dash-danger-border)] text-[var(--dash-danger-strong)]" : "bg-[var(--dash-card)] border-[var(--dash-border)] text-[var(--dash-text)]"
             }`}
             style={{
               // 用 style 而非动态 animate-[]，确保 Tailwind 扫描不到模板串时动效仍生效
@@ -41,8 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           </div>
         ))}
       </div>
-      <style>{`@keyframes slideInRight { from { opacity:0; transform: translateX(10px)} to {opacity:1; transform: translateX(0)} }
-@keyframes slideOutRight { from { opacity:1; transform: translateX(0)} to {opacity:0; transform: translateX(10px)} }`}</style>
+
     </Ctx.Provider>
   )
 }

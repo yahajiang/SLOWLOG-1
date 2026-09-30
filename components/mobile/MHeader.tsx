@@ -46,7 +46,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
   return (
     <header className="sticky top-0 z-40 bg-[var(--yh-bg)]/90 backdrop-blur-xl border-b border-[var(--yh-border)]">
       <div className="w-full mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/m" className="flex items-center gap-2 min-w-0 min-h-[48px]">
+        <Link href="/m" className="flex items-center gap-2 min-w-0 min-h-[48px] active:opacity-60">
           <span className="w-6 h-6 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px] shrink-0">S</span>
           <span className="flex items-baseline gap-1 min-w-0">
             <span className="font-semibold text-[14px] tracking-tight text-[var(--yh-text)] truncate">慢日志</span>

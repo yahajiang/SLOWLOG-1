@@ -79,7 +79,7 @@ export function MLogin() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="w-full py-3.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-sm tracking-widest uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
+              className="w-full py-3.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-sm tracking-widest uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px] active:opacity-60"
             >
               {loading ? (lang === "zh" ? "登录中..." : "Logging in...") : lang === "zh" ? "登录" : "Login"}
             </button>

@@ -242,7 +242,7 @@ export function PostClient({
               {content ? (
                 <PostRenderer content={content} pageConfig={pageConfig} isDark={isDark || pageConfig?.theme === "dark"} />
               ) : (
-                <p className="text-[15px] text-[var(--yh-muted)] py-8">内容暂缺，请稍后再试。</p>
+                <p className="text-[15px] text-[var(--yh-muted)] py-8">{t.contentMissing}</p>
               )}
 
               {/* 底部标签：可点击进入标签聚合页 */}
@@ -283,7 +283,7 @@ export function PostClient({
             {prev && (
               <Link
                 href={`/posts/${prev.id}`}
-                className="group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300"
+                className="group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-[var(--duration-normal)]"
               >
                 <ChevronLeft className="w-5 h-5 text-[var(--yh-muted)] group-hover:text-[var(--yh-accent)] shrink-0 transition-colors" aria-hidden />
                 <div className="min-w-0">
@@ -297,7 +297,7 @@ export function PostClient({
             {next && (
               <Link
                 href={`/posts/${next.id}`}
-                className={`group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300 ${prev ? "sm:col-start-2 sm:flex-row-reverse sm:text-right" : "sm:col-start-1"}`}
+                className={`group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 rounded-none min-h-[64px] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-[var(--duration-normal)] ${prev ? "sm:col-start-2 sm:flex-row-reverse sm:text-right" : "sm:col-start-1"}`}
               >
                 <ChevronRight className="w-5 h-5 text-[var(--yh-muted)] group-hover:text-[var(--yh-accent)] shrink-0 transition-colors" aria-hidden />
                 <div className="min-w-0">
@@ -327,7 +327,7 @@ export function PostClient({
               <Link
                 key={rp.id}
                 href={`/posts/${rp.id}`}
-                className="group border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-300 animate-[fadeInUp_0.5s_var(--ease-out)_both]"
+                className="group border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-[var(--duration-normal)] animate-[fadeInUp_0.5s_var(--ease-out)_both]"
                 style={{ animationDelay: `${idx * 70}ms` }}
               >
                 <div className="flex items-center gap-2 mb-2">

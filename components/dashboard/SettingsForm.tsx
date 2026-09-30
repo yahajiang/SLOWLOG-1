@@ -4,6 +4,9 @@ import { useToast } from "@/components/ui/Toast"
 import { DropdownSelect } from "@/components/ui/DropdownSelect"
 import { useLang } from "@/lib/lang-context"
 import { SettingsPageSkeleton } from "@/components/dashboard/Skeleton"
+import { ListError } from "@/components/ui/ListError"
+import { loadObject } from "@/lib/admin-fetch"
+
 import { AccountCard } from "@/components/dashboard/AccountCard"
 
 // 与 AccountCard 共用的控件风格（避免逐字段内联长 class 漂移）
@@ -43,9 +46,11 @@ type SocialLink = { name: string; url: string }
 export function SettingsForm() {
   const [form,setForm]=useState<any>(null)
   const [saving,setSaving]=useState(false)
+  const [loadErr,setLoadErr]=useState<string|null>(null)
   const { toast } = useToast()
   const { lang } = useLang()
-  useEffect(()=>{fetch("/api/settings",{cache:"no-store"}).then(r=>r.json()).then(setForm)},[])
+  const load = async () => { const r = await loadObject("/api/settings"); setForm(r.data); setLoadErr(r.error) }
+  useEffect(()=>{ void load() },[])
 
   // 社交链接编辑（保存时随 form 一起 PUT；schema 限 10 条、http(s) 前缀）
   const links: SocialLink[] = Array.isArray(form?.socialLinks) ? form.socialLinks : []
@@ -65,6 +70,7 @@ export function SettingsForm() {
       toast(j.error || (lang === "zh" ? "保存失败" : "Save failed"),"error")
     }
   }
+  if (loadErr) return <ListError onRetry={() => void load()} />
   if(!form) return <SettingsPageSkeleton />
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
@@ -172,7 +178,7 @@ export function SettingsForm() {
       </Section>
 
       {/* 账号管理：独立凭证域，跨两列 */}
-      <div className="md:col-span-2">
+      <div className="col-span-1 md:col-span-2">
         <AccountCard />
       </div>
     </div>
