@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ZoomIn, ZoomOut, RotateCw, Download } from "lucide-react";
 
+// 灯箱控制钮一档实现（6 处此前逐字相同）
+const ICON = "p-1.5 text-white/70 hover:text-white rounded transition-colors";
+
 export function Lightbox() {
   const [src, setSrc] = useState<string | null>(null);
   const [alt, setAlt] = useState("");
@@ -77,23 +80,23 @@ export function Lightbox() {
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
         />
         <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 rounded-none px-2 py-1.5 backdrop-blur-sm">
-          <button onClick={() => setScale((s) => Math.min(s + 0.25, 3))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Zoom in (+)">
+          <button onClick={() => setScale((s) => Math.min(s + 0.25, 3))} className={ICON} title="Zoom in (+)">
             <ZoomIn className="w-4 h-4" />
           </button>
-          <button onClick={() => setScale((s) => Math.max(s - 0.25, 0.5))} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Zoom out (-)">
+          <button onClick={() => setScale((s) => Math.max(s - 0.25, 0.5))} className={ICON} title="Zoom out (-)">
             <ZoomOut className="w-4 h-4" />
           </button>
-          <button onClick={() => setRotation((r) => r + 90)} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Rotate (R)">
+          <button onClick={() => setRotation((r) => r + 90)} className={ICON} title="Rotate (R)">
             <RotateCw className="w-4 h-4" />
           </button>
-          <button onClick={() => { setScale(1); setRotation(0); }} className="p-1.5 text-white/70 hover:text-white rounded transition-colors text-[11px] font-mono" title="Reset (0)">
+          <button onClick={() => { setScale(1); setRotation(0); }} className={`${ICON} text-[11px] font-mono`} title="Reset (0)">
             1:1
           </button>
           <div className="w-px h-4 bg-[var(--dash-card)]/20" />
-          <a href={src} download className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Download">
+          <a href={src} download className={ICON} title="Download">
             <Download className="w-4 h-4" />
           </a>
-          <button onClick={close} className="p-1.5 text-white/70 hover:text-white rounded transition-colors" title="Close (Esc)">
+          <button onClick={close} className={ICON} title="Close (Esc)">
             <X className="w-4 h-4" />
           </button>
         </div>
