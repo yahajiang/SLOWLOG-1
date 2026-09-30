@@ -28,7 +28,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={t.id}
             className={`pointer-events-auto min-w-[240px] max-w-[360px] px-4 py-3 rounded-none shadow-[var(--shadow-pop)] border text-sm backdrop-blur flex items-center gap-2 ${
-              t.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : t.type === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-[var(--dash-card)] border-[var(--dash-border)] text-[var(--dash-text)]"
+              t.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : t.type === "error" ? "bg-[var(--dash-danger-soft)] border-[var(--dash-danger-border)] text-[var(--dash-danger-strong)]" : "bg-[var(--dash-card)] border-[var(--dash-border)] text-[var(--dash-text)]"
             }`}
             style={{
               // 用 style 而非动态 animate-[]，确保 Tailwind 扫描不到模板串时动效仍生效

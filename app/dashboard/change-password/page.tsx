@@ -141,7 +141,7 @@ export default function ChangePasswordPage() {
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-none">
+              <div className="text-sm text-[var(--dash-danger)] bg-[var(--dash-danger-soft)] border border-[var(--dash-danger-border)] px-4 py-3 rounded-none">
                 {error}
               </div>
             )}

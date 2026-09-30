@@ -127,9 +127,15 @@ code, pre, .font-mono {
   --duration-slow: 500ms;
   --motion-breath: 8s;
   --motion-grow: 480ms;
-  /* 危险色：错误提示条的左侧竖线。此前同一条线在登录、移动登录、改密三处
-     各写一次裸 `#c44`；提到 token 只为有名字与可改，值与原样一致。 */
+  /* 危险色四档。起点是登录/改密三处各写一次的裸 #c44（提到 token 只为有名字可改）；
+     2026-09-30 扩成完整一档，因为后台散落 46 处 Tailwind 裸红（red-50/200/400/500/600/700），
+     与第二支柱「后台零独立色板」冲突。按用途命名：
+     danger=文字与实心钮底 / strong=hover 加深 / soft=浅底 / border=警示边线；
+     色值全部从 #c44444 同族派生，不引入新色相。暗色档在 .dark 里整组跟上。 */
   --dash-danger: #c44444;
+  --dash-danger-strong: #a83a3a;
+  --dash-danger-soft: #fbf1ef;
+  --dash-danger-border: #ecc9c6;
 }
 
 @keyframes motionBreath {
@@ -1214,6 +1220,9 @@ body::after {
   /* 危险色跟着换档：浅色那条 #c44444 压在夜版卡面 #1c1915 上只有 3.6:1，
      抬到 5.9:1。与 --dash-accent 同一口径——整组切，不留单处覆盖。 */
   --dash-danger: #d97c72;
+  --dash-danger-strong: #e6968c;
+  --dash-danger-soft: rgba(217, 124, 114, 0.13);
+  --dash-danger-border: rgba(217, 124, 114, 0.38);
   color-scheme: dark;
 }
 

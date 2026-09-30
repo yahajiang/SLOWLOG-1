@@ -236,7 +236,7 @@ export default function PostsPage() {
           />
           <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{lang === "zh" ? `${total} 篇 · 第 ${safePage}/${totalPages} 页` : `${total} posts · Page ${safePage}/${totalPages}`}</span>
         </div>
-          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-red-600 text-white rounded-none text-xs border border-red-600 hover:bg-red-700 font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
+          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-[var(--dash-danger)] text-white rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)]">
@@ -262,7 +262,7 @@ export default function PostsPage() {
                 <button onClick={()=>duplicate(p)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Duplicate"}</button>
                 <button onClick={()=>copyLink(p.id)} className="text-xs px-2.5 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "链接" : "Link"}</button>
                 <Link href={`/posts/${p.id}`} target="_blank" className="text-xs px-2.5 py-1 bg-[var(--dash-text)] text-white border border-[var(--dash-text)] rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "查看" : "View"}</Link>
-                <button onClick={()=>delOne(p.id)} className="text-xs px-2.5 py-1 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 hover:bg-red-50 font-medium">{t.dashDelete}</button>
+                <button onClick={()=>delOne(p.id)} className="text-xs px-2.5 py-1 border border-[var(--dash-danger-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] font-medium">{t.dashDelete}</button>
               </div>
             </div>
           ))}

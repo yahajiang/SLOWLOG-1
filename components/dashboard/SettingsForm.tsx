@@ -114,7 +114,7 @@ export function SettingsForm() {
               <div key={i} className="flex gap-2 items-center">
                 <input value={l.name} onChange={e=>setLink(i,{name:e.target.value})} className={`${rowInput} w-32 shrink-0`} placeholder={lang === "zh" ? "名称" : "Name"} />
                 <input value={l.url} onChange={e=>setLink(i,{url:e.target.value})} className={`${rowInput} flex-1 min-w-0`} placeholder="https://…" />
-                <button onClick={()=>delLink(i)} title={lang === "zh" ? "删除" : "Remove"} className="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50 border border-[var(--dash-border)] rounded-none transition-colors" aria-label={lang === "zh" ? "删除社交链接" : "Remove social link"}>×</button>
+                <button onClick={()=>delLink(i)} title={lang === "zh" ? "删除" : "Remove"} className="shrink-0 w-8 h-8 flex items-center justify-center text-[var(--dash-muted)] hover:text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] border border-[var(--dash-border)] rounded-none transition-colors" aria-label={lang === "zh" ? "删除社交链接" : "Remove social link"}>×</button>
               </div>
             ))}
             {links.length < 10 && (

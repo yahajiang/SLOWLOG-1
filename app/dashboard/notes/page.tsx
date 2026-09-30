@@ -54,7 +54,7 @@ export default function NotesPage() {
               <p className="text-sm text-[var(--dash-text)] leading-relaxed whitespace-pre-wrap break-words">{n.contentZh || n.content || (lang === "zh" ? "（空）" : "(empty)")}</p>
               <p className="text-xs text-[var(--dash-muted)] mt-2">{new Date(n.createdAt).toLocaleString()}</p>
             </div>
-            <button onClick={()=>del(n.id)} className="text-xs px-2 py-1.5 rounded-none border border-transparent hover:border-red-200 hover:text-red-600 hover:bg-red-50 shrink-0 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-400">{lang === "zh" ? "删除" : "Delete"}</button>
+            <button onClick={()=>del(n.id)} className="text-xs px-2 py-1.5 rounded-none border border-transparent hover:border-[var(--dash-danger-border)] hover:text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] shrink-0 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-danger)]">{lang === "zh" ? "删除" : "Delete"}</button>
           </div>
         ))}
         {notes.length===0 && <p className="text-sm text-[var(--dash-muted)] text-center py-12">{lang === "zh" ? "暂无随想" : "No thoughts yet"}</p>}

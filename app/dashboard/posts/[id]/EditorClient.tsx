@@ -488,7 +488,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
             <Input value={post.author || ""} onChange={(e) => { const v = e.target.value; setPost({ ...post, author: v, authorInitial: v.trim() ? v.trim().charAt(0).toUpperCase() : "Y" }) }} placeholder="Yahajiang" className="h-9 text-[11px] px-1" />
           </FormField>
         </div>
-        {errorMsg && <p className="text-xs text-red-500 mt-1">{errorMsg}</p>}
+        {errorMsg && <p className="text-xs text-[var(--dash-danger)] mt-1">{errorMsg}</p>}
       </div>
 
       {/* ===== Main content ===== */}
@@ -530,7 +530,7 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
       {/* ===== Bottom status ===== */}
       <div className="h-6 border-t border-[var(--dash-border)] bg-[var(--dash-card)] px-4 flex items-center justify-between text-[11px] text-[var(--dash-muted)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
         <span>{t.editorWords(wordCount)} · {post.status === "published" ? t.editorPublished : t.editorDraftBadge} {lastSaved && `· ${t.editorLastSaved} ${lastSaved.toLocaleTimeString()}`}</span>
-        <span className={saveState === "error" ? "text-red-600 font-medium" : undefined}>
+        <span className={saveState === "error" ? "text-[var(--dash-danger)] font-medium" : undefined}>
           {saveState === "error"
             ? `${t.editorAutosaveFailed}：${autosaveError}`
             : saveState === "saving"

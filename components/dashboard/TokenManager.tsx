@@ -115,7 +115,7 @@ export function TokenManager() {
             生成 Token
           </Button>
         </div>
-        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-3 text-sm text-[var(--dash-danger)]">{error}</p>}
         {plain && (
           <div className="mt-4 border border-[var(--yh-border)] p-3 bg-[var(--yh-bg)]">
             <p className="text-xs text-[var(--yh-muted)] mb-2">
@@ -183,7 +183,7 @@ export function TokenManager() {
                     <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.lastUsedAt)}</td>
                     <td className="py-2 pr-3">
                       {t.expiresAt ? (
-                        <span className={left === 0 ? "text-red-600" : "text-[var(--yh-muted)]"}>
+                        <span className={left === 0 ? "text-[var(--dash-danger)]" : "text-[var(--yh-muted)]"}>
                           {fmt(t.expiresAt)}
                           {left !== null && left > 0 && `（余 ${left} 天）`}
                           {left === 0 && "（已到期）"}

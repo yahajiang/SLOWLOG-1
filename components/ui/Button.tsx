@@ -4,7 +4,7 @@ const variants = {
   primary: "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-transparent",
   secondary: "bg-[var(--dash-card)] border border-[var(--dash-border)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)]",
   ghost: "bg-transparent border border-transparent text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-bg)]",
-  danger: "bg-[var(--dash-card)] border border-transparent text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200",
+  danger: "bg-[var(--dash-card)] border border-transparent text-[var(--dash-danger)] hover:text-[var(--dash-danger-strong)] hover:bg-[var(--dash-danger-soft)] hover:border-[var(--dash-danger-border)]",
 } as const
 
 export function Button({

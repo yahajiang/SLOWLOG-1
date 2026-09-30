@@ -52,7 +52,7 @@ export function ConfirmDialog({
               onConfirm()
               onOpenChange(false)
             }}
-            className={`px-4 py-2 text-sm rounded-none transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${variant === "danger" ? "bg-red-600 text-white hover:bg-red-700 border border-red-600 focus-visible:outline-red-400" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)] focus-visible:outline-[var(--dash-accent)]"}`}
+            className={`px-4 py-2 text-sm rounded-none transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${variant === "danger" ? "bg-[var(--dash-danger)] text-white hover:bg-[var(--dash-danger-strong)] border border-[var(--dash-danger)] focus-visible:outline-[var(--dash-danger)]" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)] focus-visible:outline-[var(--dash-accent)]"}`}
           >
             {confirmText}
           </button>

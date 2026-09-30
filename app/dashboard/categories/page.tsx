@@ -106,7 +106,7 @@ export default function CategoriesPage(){
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={()=>startEdit(c)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">{lang === "zh" ? "编辑" : "Edit"}</button>
-                  <button onClick={()=>del(c.id)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-red-50 hover:text-red-600 hover:border-red-200 min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-400">{lang === "zh" ? "删除" : "Delete"}</button>
+                  <button onClick={()=>del(c.id)} className="text-xs px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-danger-soft)] hover:text-[var(--dash-danger)] hover:border-[var(--dash-danger-border)] min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-danger)]">{lang === "zh" ? "删除" : "Delete"}</button>
                 </div>
               </div>
             )}

@@ -122,7 +122,7 @@ export function Sidebar() {
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           title={t.dashLogout}
-          className={`${rowBase} ${collapsed ? "justify-center w-full h-10" : "w-full gap-3 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-red-600 hover:bg-red-50"}`}
+          className={`${rowBase} ${collapsed ? "justify-center w-full h-10" : "w-full gap-3 px-3 py-2 text-sm text-[var(--dash-muted)] hover:text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)]"}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           {!collapsed && <span className="whitespace-nowrap">{t.dashLogout}</span>}
