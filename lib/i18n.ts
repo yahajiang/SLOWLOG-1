@@ -80,6 +80,7 @@ export const dict = {
     codeCopied: "已复制",
     themeToLight: "切换到日间",
     themeToDark: "切换到夜间",
+    resumeHint: "按本机记录的上次阅读位置提示；关闭后本篇不再出现",
     noPrevious: "没有更早的文章了",
     noNext: "没有更新的文章了",
     minRead: "分钟阅读",
@@ -434,6 +435,7 @@ export const dict = {
     codeCopied: "Copied",
     themeToLight: "Switch to light",
     themeToDark: "Switch to dark",
+    resumeHint: "Based on where you left off on this device. Dismiss to hide it for this post.",
     noPrevious: "No previous",
     noNext: "No next",
     minRead: "min read",
@@ -763,6 +765,7 @@ export type Dict = {
   codeCopied: string;
   themeToLight: string;
   themeToDark: string;
+  resumeHint: string;
   noPrevious: string;
   noNext: string;
   minRead: string;

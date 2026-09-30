@@ -129,7 +129,7 @@ export function PostClient({
 
       {/* 继续阅读提示条：Portal 直挂 body——固定悬浮视口底部，滚动时始终可见，不受 transform 祖先劫持 */}
       {portalReady && resumePct !== null && createPortal(
-        <div id="sl-resume-bar" className="fixed left-1/2 -translate-x-1/2 z-40 animate-[pageIn_0.35s_var(--ease-out)_both]" style={{ bottom: 24 }}>
+        <div id="sl-resume-bar" role="region" aria-label={t.resumeHint} title={t.resumeHint} className="fixed left-1/2 -translate-x-1/2 z-40 animate-[pageIn_0.35s_var(--ease-out)_both]" style={{ bottom: 24 }}>
           <div className="flex items-center gap-3 bg-[var(--dash-card)] border border-[var(--yh-border)] shadow-[var(--shadow-float)] px-4 py-1 rounded-none">
             <span className="mono text-[11px] text-[var(--yh-muted)] whitespace-nowrap">
               {lang === "zh" ? `上次读到 ${resumePct}%` : `Left off at ${resumePct}%`}

@@ -53,3 +53,7 @@ scripts/smoke-backup-*.json
 .dev-server*.log
 .dev-server*.err
 .dev-server.log.err
+
+# 设计链路产物（走查报告 / 上下文 JSON / 链路面板）：含站点路径与缺陷清单，
+# 不该进公开镜像；已在 eslint 里同样忽略
+spark-output/
