@@ -236,7 +236,7 @@ export default function PostsPage() {
           />
           <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{lang === "zh" ? `${total} 篇 · 第 ${safePage}/${totalPages} 页` : `${total} posts · Page ${safePage}/${totalPages}`}</span>
         </div>
-          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-[var(--dash-danger)] text-white rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
+          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-[var(--dash-danger)] text-[var(--dash-danger-fg)] rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none overflow-hidden shadow-[var(--shadow-card)]">

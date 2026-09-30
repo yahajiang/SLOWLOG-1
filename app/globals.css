@@ -131,11 +131,13 @@ code, pre, .font-mono {
      2026-09-30 扩成完整一档，因为后台散落 46 处 Tailwind 裸红（red-50/200/400/500/600/700），
      与第二支柱「后台零独立色板」冲突。按用途命名：
      danger=文字与实心钮底 / strong=hover 加深 / soft=浅底 / border=警示边线；
+     danger-fg=压在 danger 实心底上的字色（暗色档 #d97c72 偏浅，白字只有 2.97:1，必须跟着换档）；
      色值全部从 #c44444 同族派生，不引入新色相。暗色档在 .dark 里整组跟上。 */
   --dash-danger: #c44444;
   --dash-danger-strong: #a83a3a;
   --dash-danger-soft: #fbf1ef;
   --dash-danger-border: #ecc9c6;
+  --dash-danger-fg: #ffffff;
 }
 
 @keyframes motionBreath {
@@ -1223,6 +1225,7 @@ body::after {
   --dash-danger-strong: #e6968c;
   --dash-danger-soft: rgba(217, 124, 114, 0.13);
   --dash-danger-border: rgba(217, 124, 114, 0.38);
+  --dash-danger-fg: #231210;
   color-scheme: dark;
 }
 
