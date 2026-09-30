@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from "react";
 import type { Lang } from "./i18n";
 import { getDict, type Dict } from "./i18n";
 
@@ -30,17 +30,21 @@ export function LangProvider({ children }: { children: ReactNode }) {
     applyDocumentLang(l);
   }, []);
 
-  function setLang(l: Lang) {
+  // ⚠️ value 必须 memo：原先写成内联对象字面量，每次 Provider 渲染都产生新引用，
+  // 于是所有 useLang() 消费者跟着重渲染。平时看不出来，但 Tiptap v3 的 `useEditor`
+  // 会在选项引用变化时销毁重建实例 —— 编辑器停在「加载编辑器…」永不挂载
+  //（2026-09-30 实测：给 TiptapEditor 加 useLang 后必现，去掉即恢复）。
+  const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    localStorage.setItem("yh-lang", l);
-    applyDocumentLang(l);
-  }
+    try {
+      localStorage.setItem("yh-lang", l);
+      document.documentElement.lang = l === "en" ? "en" : "zh-CN";
+    } catch {}
+  }, []);
 
-  return (
-    <LangContext.Provider value={{ lang, setLang, t: getDict(lang) }}>
-      {children}
-    </LangContext.Provider>
-  );
+  const value = useMemo<LangCtx>(() => ({ lang, setLang, t: getDict(lang) }), [lang, setLang]);
+
+  return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }
 
 export function useLang() {

@@ -36,15 +36,17 @@ export function ConfirmDialog({
   if (!render) return null
   const closing = !open
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    // role/aria-modal/aria-labelledby：此前这是一层普通 div 覆层，读屏不知道弹了对话框、
+    // 也不会把语境报成 dialog。焦点锁定另说（见文件顶部注记）。
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
       <div className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 animate-[maskIn_0.2s_var(--ease-out)] ${closing ? "opacity-0" : "opacity-100"}`} onClick={() => onOpenChange(false)} />
       <div className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
-        <h3 className="text-base font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
+        <h3 id="confirm-dialog-title" className="text-base font-semibold tracking-tight text-[var(--dash-text)]" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
           {title}
         </h3>
         {description && <p className="text-sm text-[var(--dash-muted)] mt-2 leading-relaxed">{description}</p>}
         <div className="flex justify-end gap-3 mt-6">
-          <button onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] transition-colors bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">
+          <button onClick={() => onOpenChange(false)} className="px-4 min-h-[48px] text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] transition-colors bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">
             {cancelText}
           </button>
           <button
@@ -52,7 +54,7 @@ export function ConfirmDialog({
               onConfirm()
               onOpenChange(false)
             }}
-            className={`px-4 py-2 text-sm rounded-none transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${variant === "danger" ? "bg-[var(--dash-danger)] text-white hover:bg-[var(--dash-danger-strong)] border border-[var(--dash-danger)] focus-visible:outline-[var(--dash-danger)]" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)] focus-visible:outline-[var(--dash-accent)]"}`}
+            className={`px-4 min-h-[48px] text-sm rounded-none transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${variant === "danger" ? "bg-[var(--dash-danger)] text-white hover:bg-[var(--dash-danger-strong)] border border-[var(--dash-danger)] focus-visible:outline-[var(--dash-danger)]" : "bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 border border-[var(--dash-text)] focus-visible:outline-[var(--dash-accent)]"}`}
           >
             {confirmText}
           </button>
@@ -97,16 +99,16 @@ export function PromptDialog({
   if (!render) return null
   const closing = !open
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="prompt-dialog-title">
       <div className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200 animate-[maskIn_0.2s_var(--ease-out)] ${closing ? "opacity-0" : "opacity-100"}`} onClick={() => onOpenChange(false)} />
       <form onSubmit={handleSubmit} className={`relative bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-pop)] border border-[var(--dash-border)] w-full max-w-md p-6 ${closing ? "opacity-0 scale-[0.96] transition-all duration-200" : "animate-[scaleIn_0.2s_var(--ease-out)]"}`}>
-        <h3 className="text-base font-semibold tracking-tight mb-4" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
+        <h3 id="prompt-dialog-title" className="text-base font-semibold tracking-tight mb-4" style={{ fontFamily: "Plus Jakarta Sans, system-ui, sans-serif" }}>
           {title}
         </h3>
         <input name="value" defaultValue={defaultValue} placeholder={placeholder} autoFocus className="w-full px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none focus:outline-none focus:border-[var(--dash-accent)] focus:ring-1 focus:ring-[var(--dash-accent)]/20 bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] transition-colors" />
         <div className="flex justify-end gap-3 mt-6">
-          <button type="button" onClick={() => onOpenChange(false)} className="px-4 py-2 text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">取消</button>
-          <button type="submit" className="px-4 py-2 text-sm bg-[var(--dash-text)] text-[var(--dash-bg)] rounded-none hover:opacity-90 font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">确认</button>
+          <button type="button" onClick={() => onOpenChange(false)} className="px-4 min-h-[48px] text-sm border border-[var(--dash-border)] rounded-none hover:bg-[var(--dash-bg)] bg-[var(--dash-card)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">取消</button>
+          <button type="submit" className="px-4 min-h-[48px] text-sm bg-[var(--dash-text)] text-[var(--dash-bg)] rounded-none hover:opacity-90 font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--dash-accent)]">确认</button>
         </div>
       </form>
     </div>
