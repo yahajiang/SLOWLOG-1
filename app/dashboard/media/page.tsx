@@ -34,7 +34,7 @@ export default function MediaPage(){
   const [progress, setProgress] = useState<UploadProgress | null>(null)
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-  const { lang } = useLang()
+  const { t, lang } = useLang()
   const load = useCallback((p = page) => fetch(`/api/media?page=${p}`, { cache: "no-store" }).then(r => { setTotal(parseInt(r.headers.get("X-Total-Count") || "0", 10)); return r.json() }).then(d => { setItems(Array.isArray(d) ? d : []); setLoading(false) }), [page])
   useEffect(() => { load() }, [load])
 
@@ -53,7 +53,7 @@ export default function MediaPage(){
     }
     setProgress(null)
     if (successCount) toast(lang === "zh" ? `已上传 ${successCount} 张${failCount ? `, ${failCount} 失败` : ""}` : `${successCount} uploaded${failCount ? `, ${failCount} failed` : ""}`, failCount ? "error" : "success")
-    else if (failCount) toast(lang === "zh" ? "上传失败" : "Upload failed", "error")
+    else if (failCount) toast(t.toastUploadFail, "error")
     load()
   }, [load, toast])
 

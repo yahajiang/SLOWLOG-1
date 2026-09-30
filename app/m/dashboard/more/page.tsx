@@ -130,7 +130,7 @@ export default function MobileMorePage() {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/m/login" })}
-          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-red-600 bg-[var(--dash-card)] border border-red-200 rounded-none min-h-[48px]"
+          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-[var(--dash-danger)] bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none min-h-[48px]"
         >
           <LogOut className="w-4 h-4" /> {t.dashLogout}
         </button>

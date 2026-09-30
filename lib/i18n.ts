@@ -273,7 +273,6 @@ export const dict = {
     editorAutosaveSaving: "保存中…",
     editorAutosaveHint: "已开启自动保存 · 拖拽分隔条调整列宽",
     editorLeaveConfirm: "有未保存的内容，离开将丢失，确定继续？",
-    editorScheduledOk: "已定时发布",
     toastPublished: "发布成功",
     toastUnpublished: "已下架为草稿",
     toastPublishFail: "发布失败",
@@ -598,7 +597,6 @@ export const dict = {
     editorAutosaveSaving: "Saving…",
     editorAutosaveHint: "Autosave on · drag the divider to resize",
     editorLeaveConfirm: "You have unsaved changes. Leave anyway?",
-    editorScheduledOk: "Scheduled",
     toastPublished: "Published",
     toastUnpublished: "Unpublished to draft",
     toastPublishFail: "Publish failed",
@@ -794,17 +792,17 @@ export type Dict = {
   dashCategories: string;
   dashMedia: string;
   dashSettings: string;
-    dashCollapse: string;
-    dashExpand: string;
-    acctTitle: string;
-    acctDesc: string;
-    acctCurrent: string;
-    acctEmail: string;
-    acctNewPass: string;
-    acctConfirm: string;
-    acctName: string;
-    acctSave: string;
-    acctSaved: string;
+  dashCollapse: string;
+  dashExpand: string;
+  acctTitle: string;
+  acctDesc: string;
+  acctCurrent: string;
+  acctEmail: string;
+  acctNewPass: string;
+  acctConfirm: string;
+  acctName: string;
+  acctSave: string;
+  acctSaved: string;
   dashFront: string;
   dashLogout: string;
   dashTagline: string;
@@ -883,6 +881,8 @@ export type Dict = {
   editorWords: (n: number) => string;
   editorLastSaved: string;
   editorVersions: string;
+  editorNoVersions: string;
+  editorVersionsHint: string;
   editorClose: string;
   editorRollbackDone: string;
   editorDraftRestored: string;
@@ -897,6 +897,9 @@ export type Dict = {
   toastPublishFail: string;
   toastScheduleFail: string;
   toastDeleted: string;
+  toastLimit5mb: string;
+  toastImageInserted: string;
+  toastUploadFail: string;
   toastPublished: string;
   toastUnpublished: string;
   toastCopiedDraft: string;

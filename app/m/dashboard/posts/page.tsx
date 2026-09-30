@@ -300,7 +300,7 @@ export default function MobilePostsPage() {
                   </button>
                   <button
                     onClick={() => setDelId(p.id)}
-                    className="text-xs px-1 py-2.5 border border-red-200 rounded-none bg-[var(--dash-card)] text-red-600 min-h-[48px]"
+                    className="text-xs px-1 py-2.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-danger)] min-h-[48px]"
                   >
                     {t.dashDelete}
                   </button>

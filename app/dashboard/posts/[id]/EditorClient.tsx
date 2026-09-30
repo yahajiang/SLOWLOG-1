@@ -391,7 +391,9 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           </div>
           {versions.length === 0 ? (
             <div className="p-6 text-center text-xs text-[var(--dash-muted)]">
-              {lang === "zh" ? <>暂无历史版本。<br />编辑停止 3 秒后自动保存，<br />每 5 分钟记一版（保留最近 10 版）。</> : <>No versions yet.<br />Autosaves 3s after you stop typing; one snapshot every 5 min (last 10 kept).</>}
+              {t.editorNoVersions}
+              <br />
+              {t.editorVersionsHint}
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto">

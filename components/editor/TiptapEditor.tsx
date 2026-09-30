@@ -21,6 +21,7 @@ import { common, createLowlight } from "lowlight"
 import { useEffect, useRef, useState } from "react"
 import { PromptDialog } from "@/components/ui/Dialog"
 import { useToast } from "@/components/ui/Toast"
+import { useLang } from "@/lib/lang-context"
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus"
 import { ReactNodeViewRenderer } from "@tiptap/react"
 import { ResizableImageView } from "./ResizableImageView"
@@ -80,6 +81,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
   const [textColorOpen, setTextColorOpen] = useState(false)
   const [highlightColorOpen, setHighlightColorOpen] = useState(false)
   const { toast } = useToast()
+  const { t } = useLang()
 
   const editor = useEditor({
     extensions: [
@@ -124,12 +126,12 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
     if (!list.length) return
     setUploading(true)
     for (const file of list) {
-      if (file.size > 5 * 1024 * 1024) { toast("单张上限 5MB", "error"); continue }
+      if (file.size > 5 * 1024 * 1024) { toast(t.toastLimit5mb, "error"); continue }
       try {
         const url = await uploadImageFile(file)
         editor.chain().focus().setImage({ src: url, alt: file.name }).run()
-        toast("图片已插入", "success")
-      } catch (e: any) { toast(e.message || "上传失败", "error") }
+        toast(t.toastImageInserted, "success")
+      } catch (e: any) { toast(e.message || t.toastUploadFail, "error") }
     }
     setUploading(false)
   }
