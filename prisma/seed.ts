@@ -5,6 +5,15 @@ import bcrypt from "bcryptjs"
 const prisma = new PrismaClient()
 
 async function main() {
+  // 先守卫再动手：缺初始口令时，连类目都不该写进库
+  const seedPassword = process.env.AUTH_DEFAULT_PASSWORD || ""
+  if (!seedPassword) {
+    console.error("✗ 播种中止：未设置 AUTH_DEFAULT_PASSWORD。")
+    console.error("  本地：在 .env 里加一行 AUTH_DEFAULT_PASSWORD=<你想要的初始口令>（.env.example 有说明）")
+    console.error("  线上：配好环境变量后重跑 npm run db:seed；已有账户的库无需再播种。")
+    process.exit(1)
+  }
+
   // Categories（2026-09 重构：5 大类目）
   const cats = [
     { name: "Design", nameZh: "设计", slug: "design", description: "Posters, typography, visual communication, UI", descriptionZh: "海报、排版、字体、视觉传达、UI" },
@@ -18,15 +27,15 @@ async function main() {
   }
   console.log("Categories seeded")
 
-  // Default user
-  const email = "admin@slowlog.dev"
-  const hash = await bcrypt.hash("admin123", 10)
+  // Default user —— 初始口令只从 env 读（守卫已在开头），源码里不再有兜底明文
+  const email = process.env.AUTH_DEFAULT_EMAIL || "admin@slowlog.dev"
+  const hash = await bcrypt.hash(seedPassword, 10)
   await prisma.user.upsert({
     where: { email },
     update: {},
     create: { email, password: hash, name: "Yahajiang" },
   })
-  console.log("User seeded: admin@slowlog.dev / admin123 (please change on first login)")
+  console.log(`User seeded: ${email}（口令来自 AUTH_DEFAULT_PASSWORD，未打印；首次登录会被强制改密）`)
 
   // Setting singleton
   await prisma.setting.upsert({

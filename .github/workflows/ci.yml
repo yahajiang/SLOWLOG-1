@@ -59,6 +59,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://ci:ci@localhost:5432/slowlog
       AUTH_SECRET: ci-test-secret
+      # 种子脚本必需（源码里已无明文兜底）；CI 用固定假值即可，测试夹具会另建账户
+      AUTH_DEFAULT_PASSWORD: ci-only-seed-password
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

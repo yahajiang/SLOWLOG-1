@@ -4,8 +4,10 @@ import bcrypt from "bcryptjs"
 import { authConfig } from "./auth-config"
 import { normalizeLoginEmail } from "./login-shared"
 
-const DEFAULT_EMAIL = "admin@slowlog.dev"
-const DEFAULT_PASSWORD = "admin123"
+// 默认账户判定：邮箱可以公开（README 里就写着），但**初始口令不再有明文兜底**——
+// 只有部署方在 env 里显式给了 AUTH_DEFAULT_PASSWORD，才可能命中判定。
+const DEFAULT_EMAIL = process.env.AUTH_DEFAULT_EMAIL || "admin@slowlog.dev"
+const DEFAULT_PASSWORD = process.env.AUTH_DEFAULT_PASSWORD || ""
 
 // ── 登录防护（P1-2 重做）─────────────────────────────────────────
 // 旧实现：按 email 硬锁 5 次 / 15 分钟。两个问题：
@@ -175,8 +177,17 @@ export async function verifyCredentials(
   // 成功即同时复位该来源与账号的失败计数
   failTable.delete(ipKey)
   failTable.delete(emailKey)
-  // 检测是否为默认账户（首次登录未改密）
-  const isDefault = user.email.toLowerCase() === DEFAULT_EMAIL && password === DEFAULT_PASSWORD
+  // 检测是否为默认账户（首次登录未改密）：拿 env 给的初始口令与库中哈希比对，
+  // 改过密后不再命中 ⇒ 不需要额外字段，也不再需要把明文写进代码。
+  let isDefault = false
+  if (DEFAULT_PASSWORD && user.email.toLowerCase() === DEFAULT_EMAIL) {
+    try {
+      isDefault = await bcrypt.compare(DEFAULT_PASSWORD, user.password)
+    } catch (e) {
+      // 脏行（非 bcrypt 值）只影响"是否强制改密"，不影响登录本身
+      console.warn("[auth] 默认账户判定失败，按不需要改密处理:", user.id, e instanceof Error ? e.message : e)
+    }
+  }
   return {
     ok: true,
     id: user.id,

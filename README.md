@@ -94,7 +94,7 @@ npm run dev
 # → http://localhost:3000
 ```
 
-**默认管理员**：`admin@slowlog.dev` / `admin123`（首次登录强制改密；生產环境请先改密或删除默认账户）
+**默认管理员**：邮箱 `admin@slowlog.dev`（可用 `AUTH_DEFAULT_EMAIL` 覆盖），**初始口令不写在仓库里** —— 播种必须显式提供 `AUTH_DEFAULT_PASSWORD`，否则 `npm run db:seed` 直接中止；首次登录会被强制改密。线上部署请在改密后删掉这个环境变量。
 
 ```bash
 npm run build    # next build（prisma generate 已由 postinstall 跑过）

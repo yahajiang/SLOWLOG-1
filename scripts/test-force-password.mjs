@@ -1,6 +1,6 @@
 // Functional test: default-password session force-change + write API 403
 //
-// P3-7：不再内置默认账户的明文凭据。此前 `admin@slowlog.dev / admin123` 直接写死在
+// P3-7：不再内置默认账户的明文凭据。此前默认邮箱与初始口令一起写死在
 // 源码里——既会随默认密码变更而静默失效，也让仓库长期带着一份可被误用的凭据。
 // 现改为从环境变量读取：
 //   TEST_BASE_URL（可选，默认 http://localhost:3000）
