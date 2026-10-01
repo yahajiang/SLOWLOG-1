@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { useLang } from "@/lib/lang-context"
+import { inputCls } from "@/components/ui/Input"
 
 export default function ChangePasswordPage() {
   const { lang } = useLang()
@@ -82,7 +83,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className={inputCls("lg", "admin")}
                 placeholder={lang === "zh" ? "验证身份用" : "Verify your identity"}
               />
             </div>
@@ -95,7 +96,7 @@ export default function ChangePasswordPage() {
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className={inputCls("lg", "admin")}
                 placeholder="your@email.com"
                 autoFocus
               />
@@ -109,7 +110,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className={inputCls("lg", "admin")}
                 placeholder={(lang === "zh" ? "至少 8 位" : "At least 8 characters")}
               />
             </div>
@@ -122,7 +123,7 @@ export default function ChangePasswordPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className={inputCls("lg", "admin")}
                 placeholder={(lang === "zh" ? "再次输入密码" : "Re-enter password")}
               />
             </div>
@@ -135,7 +136,7 @@ export default function ChangePasswordPage() {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-[var(--dash-border)] bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none transition-colors rounded-none"
+                className={inputCls("lg", "admin")}
                 placeholder={lang === "zh" ? "您的名称" : "Your name"}
               />
             </div>

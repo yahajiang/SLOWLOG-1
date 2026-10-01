@@ -8,6 +8,7 @@ import { useLang } from "@/lib/lang-context"
 import { CategoriesPageSkeleton } from "@/components/dashboard/Skeleton"
 import { ListError } from "@/components/ui/ListError"
 import { loadList } from "@/lib/admin-fetch"
+import { inputCls } from "@/components/ui/Input"
 
 type CatDraft = { id: string; name: string; nameZh: string; slug: string; description: string; descriptionZh: string }
 
@@ -77,11 +78,11 @@ export default function CategoriesPage(){
       <AdminTitle>{lang === "zh" ? "分类" : "Categories"}</AdminTitle>
       {loadErr && <ListError onRetry={load} />}
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6 flex flex-wrap gap-3 items-end shadow-[var(--shadow-card)]">
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "Design" : "Design"} /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={nameZh} onChange={e=>setNameZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "设计" : "设计"} /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">Slug</label><input value={slug} onChange={e=>setSlug(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder="design" /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={desc} onChange={e=>setDesc(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "英文描述，可选" : "Optional"} /></div>
-        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className="block mt-1 px-3 py-2 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:bg-[var(--dash-card)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={name} onChange={e=>setName(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "Design" : "Design"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={nameZh} onChange={e=>setNameZh(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "设计" : "设计"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">Slug</label><input value={slug} onChange={e=>setSlug(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder="design" /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={desc} onChange={e=>setDesc(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "英文描述，可选" : "Optional"} /></div>
+        <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
         <button onClick={create} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "新建" : "New"}</button>
       </div>
       <div className={`${PANEL_CLS} divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger`}>
@@ -93,11 +94,11 @@ export default function CategoriesPage(){
             {editingId===c.id && draft ? (
               <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={draft.nameZh} onChange={e=>setDraft({...draft,nameZh:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "名称" : "Name"}</label><input value={draft.name} onChange={e=>setDraft({...draft,name:e.target.value})} className={inputCls("sm", "admin", "block mt-0.5")} /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文" : "Chinese"}</label><input value={draft.nameZh} onChange={e=>setDraft({...draft,nameZh:e.target.value})} className={inputCls("sm", "admin", "block mt-0.5")} /></div>
                   <div><label className="text-[11px] text-[var(--dash-muted)]">Slug</label><input value={draft.slug} onChange={e=>setDraft({...draft,slug:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm font-mono border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
-                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" placeholder={lang === "zh" ? "英文描述" : "English"} /></div>
-                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={draft.descriptionZh} onChange={e=>setDraft({...draft,descriptionZh:e.target.value})} className="block w-full mt-0.5 px-2.5 py-1.5 text-sm border border-[var(--dash-border)] rounded-none bg-[var(--dash-bg)] focus:border-[var(--dash-accent)] focus:outline-none" /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={draft.description} onChange={e=>setDraft({...draft,description:e.target.value})} className={inputCls("sm", "admin", "block mt-0.5")} placeholder={lang === "zh" ? "英文描述" : "English"} /></div>
+                  <div><label className="text-[11px] text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={draft.descriptionZh} onChange={e=>setDraft({...draft,descriptionZh:e.target.value})} className={inputCls("sm", "admin", "block mt-0.5")} /></div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={saveEdit} disabled={saving} className="px-4 min-h-[36px] inline-flex items-center text-xs rounded-none bg-[var(--dash-text)] text-[var(--dash-bg)] hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity">{saving ? t.saving : t.save}</button>
