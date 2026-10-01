@@ -47,7 +47,7 @@ export function Footer() {
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-[22px] h-[22px] rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px]">S</span>
           <span className="font-medium">{siteName} · {siteNameEn}</span>
-          <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.5.0"}</span>
+          <span className="mono text-[11px] px-1.5 py-0.5 rounded-none bg-[var(--dash-bg)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.5.5"}</span>
           <span className="hidden sm:inline mono text-[var(--yh-muted)]">— {motto}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-[7px] mono text-[11px] text-[var(--yh-muted)]">
@@ -68,7 +68,7 @@ export function Footer() {
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 w-12 h-12 rounded-none bg-[var(--yh-text)] text-[var(--dash-bg)] flex items-center justify-center shadow-lg hover:bg-[var(--yh-accent)] transition-[background-color] duration-[var(--duration-normal)] z-40 animate-[fadeIn_0.3s_var(--ease-out)]"
+          className="fixed bottom-6 right-6 w-12 h-12 rounded-none bg-[var(--yh-text)] text-[var(--dash-bg)] flex items-center justify-center shadow-[var(--shadow-float)] hover:bg-[var(--yh-accent)] transition-[background-color] duration-[var(--duration-normal)] z-40 animate-[fadeIn_0.3s_var(--ease-out)]"
           aria-label="Back to top"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react"
 
 type Toast = { id: number; msg: string; type?: "success" | "error" | "info"; leaving?: boolean }
 
@@ -13,20 +13,23 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const timersRef = useRef<number[]>([])
+  useEffect(() => () => { timersRef.current.forEach((t) => window.clearTimeout(t)) }, [])
   const toast = useCallback((msg: string, type: Toast["type"] = "info") => {
     const id = Date.now() + Math.random()
-    setToasts((t) => [...t, { id, msg, type }])
+    setToasts((t) => [...t.slice(-3), { id, msg, type }])
     // 退场两段式：2500ms 先标记 leaving 播滑出，300ms 后真正卸载
-    setTimeout(() => setToasts((t) => t.map((x) => (x.id === id ? { ...x, leaving: true } : x))), 2500)
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2830)
+    timersRef.current.push(window.setTimeout(() => setToasts((t) => t.map((x) => (x.id === id ? { ...x, leaving: true } : x))), 2500))
+    timersRef.current.push(window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2830))
   }, [])
   return (
     <Ctx.Provider value={{ toast }}>
       {children}
-      <div className="fixed top-4 right-4 z-[100] space-y-2 pointer-events-none">
+      <div role="status" aria-live="polite" className="fixed top-4 right-4 z-[100] space-y-2 pointer-events-none">
         {toasts.map((t) => (
           <div
             key={t.id}
+            role={t.type === "error" ? "alert" : undefined}
             className={`pointer-events-auto min-w-[min(240px,calc(100vw-2rem))] max-w-[min(360px,calc(100vw-2rem))] px-4 py-3 rounded-none shadow-[var(--shadow-pop)] border text-sm backdrop-blur flex items-center gap-2 ${
               t.type === "success" ? "bg-[var(--dash-ok-soft)] border-[var(--dash-ok-border)] text-[var(--dash-ok)]" : t.type === "error" ? "bg-[var(--dash-danger-soft)] border-[var(--dash-danger-border)] text-[var(--dash-danger-strong)]" : "bg-[var(--dash-card)] border-[var(--dash-border)] text-[var(--dash-text)]"
             }`}

@@ -35,7 +35,7 @@ export default function Error({
         </div>
 
         <span
-          className="w-14 h-14 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[20px] shadow-[0_10px_24px_rgba(0,0,0,0.16)] rotate-[-5deg]"
+          className="w-14 h-14 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[20px] shadow-[var(--shadow-float)] rotate-[-5deg]"
           aria-hidden
         >
           S

@@ -163,7 +163,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
   return (
     <div className="tiptap-editor">
       {/* BubbleMenu 选中文字浮出 */}
-      <BubbleMenu editor={editor} shouldShow={({ state }) => !state.selection.empty} className="flex items-center gap-0.5 p-1 bg-zinc-900 text-white rounded-none shadow-xl border border-zinc-700">
+      <BubbleMenu editor={editor} shouldShow={({ state }) => !state.selection.empty} className="flex items-center gap-0.5 p-1 bg-[var(--dash-text)] text-[var(--dash-bg)] rounded-none shadow-[var(--shadow-float)] border border-[var(--dash-border)]">
         {[
           { icon: <Bold className="w-3.5 h-3.5" />, label: "粗体", action: () => editor.chain().focus().toggleBold().run(), active: editor.isActive("bold") },
           { icon: <Italic className="w-3.5 h-3.5" />, label: "斜体", action: () => editor.chain().focus().toggleItalic().run(), active: editor.isActive("italic") },
@@ -171,25 +171,25 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
           { icon: <Highlighter className="w-3.5 h-3.5" />, label: "高亮", action: () => editor.chain().focus().toggleHighlight().run(), active: editor.isActive("highlight") },
         ].map((item) => (
           <button key={item.label} title={item.label} onMouseDown={(e) => e.preventDefault()} onClick={item.action}
-            className={`p-1.5 rounded-none transition-colors ${item.active ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}>{item.icon}</button>
+            className={`p-1.5 rounded-none transition-colors ${item.active ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)]" : "hover:bg-[var(--dash-bg)]"}`}>{item.icon}</button>
         ))}
-        <div className="w-px h-4 bg-zinc-600 mx-0.5" />
+        <div className="w-px h-4 bg-[var(--dash-border)] mx-0.5" />
         <button title="行内代码" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleCode().run()}
-          className={`p-1.5 rounded-none transition-colors ${editor.isActive("code") ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}><Code2 className="w-3.5 h-3.5" /></button>
+          className={`p-1.5 rounded-none transition-colors ${editor.isActive("code") ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)]" : "hover:bg-[var(--dash-bg)]"}`}><Code2 className="w-3.5 h-3.5" /></button>
         <button title="链接" onMouseDown={(e) => e.preventDefault()} onClick={() => setLinkOpen(true)}
-          className={`p-1.5 rounded-none transition-colors ${editor.isActive("link") ? "bg-[var(--dash-card)] text-[var(--yh-text)]" : "hover:bg-zinc-700"}`}><LinkIcon className="w-3.5 h-3.5" /></button>
+          className={`p-1.5 rounded-none transition-colors ${editor.isActive("link") ? "bg-[var(--dash-accent-soft)] text-[var(--dash-accent)]" : "hover:bg-[var(--dash-bg)]"}`}><LinkIcon className="w-3.5 h-3.5" /></button>
       </BubbleMenu>
 
       {/* FloatingMenu 空行 */}
-      <FloatingMenu editor={editor} className="flex items-center gap-0.5 p-1 bg-[var(--yh-bg)] border border-[var(--yh-border)] rounded-none shadow-sm">
-        <button title="H2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className="p-1.5 rounded hover:bg-[var(--dash-card)]"><Heading2 className="w-3.5 h-3.5" /></button>
-        <button title="列表" onClick={() => editor.chain().focus().toggleBulletList().run()} className="p-1.5 rounded hover:bg-[var(--dash-card)]"><List className="w-3.5 h-3.5" /></button>
-        <button title="图片" onClick={() => fileRef.current?.click()} className="p-1.5 rounded hover:bg-[var(--dash-card)]"><ImageIcon className="w-3.5 h-3.5" /></button>
-        <button title="代码块" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className="p-1.5 rounded hover:bg-[var(--dash-card)]"><Code2 className="w-3.5 h-3.5" /></button>
+      <FloatingMenu editor={editor} className="flex items-center gap-0.5 p-1 bg-[var(--yh-bg)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)]">
+        <button title="H2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className="p-1.5 rounded-none hover:bg-[var(--dash-card)]"><Heading2 className="w-3.5 h-3.5" /></button>
+        <button title="列表" onClick={() => editor.chain().focus().toggleBulletList().run()} className="p-1.5 rounded-none hover:bg-[var(--dash-card)]"><List className="w-3.5 h-3.5" /></button>
+        <button title="图片" onClick={() => fileRef.current?.click()} className="p-1.5 rounded-none hover:bg-[var(--dash-card)]"><ImageIcon className="w-3.5 h-3.5" /></button>
+        <button title="代码块" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className="p-1.5 rounded-none hover:bg-[var(--dash-card)]"><Code2 className="w-3.5 h-3.5" /></button>
       </FloatingMenu>
 
       {/* 工具栏 - 固定在顶部 */}
-      <div className="bg-[var(--dash-card)] border-b border-[var(--yh-border)] px-4 py-1.5 flex flex-wrap items-center gap-0.5 sticky top-0 z-10 shadow-sm">
+      <div className="bg-[var(--dash-card)] border-b border-[var(--yh-border)] px-4 py-1.5 flex flex-wrap items-center gap-0.5 sticky top-0 z-10 shadow-[var(--shadow-card)]">
           {/* 标题下拉 */}
           <div className="relative">
             <button title="标题" onMouseDown={(e) => e.preventDefault()} onClick={() => { setTitleOpen(!titleOpen); setListOpen(false); setAlignOpen(false); setTextColorOpen(false); setHighlightColorOpen(false); }}
@@ -199,7 +199,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
               <ChevronDown className="w-3 h-3" />
             </button>
             {titleOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-lg py-1 z-50 min-w-[120px]">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)] py-1 z-50 min-w-[120px]">
                 {[
                   { level: 1 as const, label: "标题 1", icon: <Heading1 className="w-4 h-4" /> },
                   { level: 2 as const, label: "标题 2", icon: <Heading2 className="w-4 h-4" /> },
@@ -252,7 +252,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
               <ChevronDown className="w-3 h-3" />
             </button>
             {listOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-lg py-1 z-50 min-w-[120px]">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)] py-1 z-50 min-w-[120px]">
                 {[
                   { action: () => editor.chain().focus().toggleBulletList().run(), active: editor.isActive("bulletList"), label: "无序列表", icon: <List className="w-4 h-4" /> },
                   { action: () => editor.chain().focus().toggleOrderedList().run(), active: editor.isActive("orderedList"), label: "有序列表", icon: <ListOrdered className="w-4 h-4" /> },
@@ -276,7 +276,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
               <Paintbrush className="w-4 h-4" />
             </button>
             {textColorOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-xl z-50 w-[280px]">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)] z-50 w-[280px]">
                 <ColorPicker
                   value={editor.getAttributes("textStyle").color}
                   onChange={(color) => editor.chain().focus().setColor(color).run()}
@@ -294,7 +294,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
               <Highlighter className="w-4 h-4" />
             </button>
             {highlightColorOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-xl z-50 w-[280px]">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)] z-50 w-[280px]">
                 <ColorPicker
                   value={editor.isActive("highlight") ? editor.getAttributes("highlight").color : undefined}
                   onChange={(color) => editor.chain().focus().toggleHighlight({ color }).run()}
@@ -314,7 +314,7 @@ export function TiptapEditor({ content, onUpdate, editable = true }: { content: 
               <AlignLeft className="w-4 h-4" />
             </button>
             {alignOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-lg py-1 z-50 min-w-[100px]">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none shadow-[var(--shadow-pop)] py-1 z-50 min-w-[100px]">
                 {[
                   { action: () => editor.chain().focus().setTextAlign("left").run(), active: editor.isActive({ textAlign: "left" }), label: "左", icon: <AlignLeft className="w-4 h-4" /> },
                   { action: () => editor.chain().focus().setTextAlign("center").run(), active: editor.isActive({ textAlign: "center" }), label: "中", icon: <AlignCenter className="w-4 h-4" /> },

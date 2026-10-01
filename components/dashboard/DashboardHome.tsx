@@ -149,8 +149,8 @@ export function DashboardHome({ data }: { data: DashData }) {
         <p className="text-sm text-[var(--dash-muted)] mt-1">{t.dashHomeSub}</p>
       </div>
 
-      {/* 指标一行：7 项等分 */}
-      <div className="grid grid-cols-4 md:grid-cols-7 gap-3 stagger">
+      {/* 指标一行：移动 2 列 / 平板 4 列 / 桌面 7 列等分 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3 stagger">
         <StatCard label={t.dashTotalPosts} value={total} href="/dashboard/posts" />
         <StatCard label={t.dashPublished} value={published} href="/dashboard/posts" />
         <StatCard label={t.dashDraft} value={draft} href="/dashboard/posts" />
@@ -162,7 +162,7 @@ export function DashboardHome({ data }: { data: DashData }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
         {/* 最近更新 */}
-        <div className="col-span-1 lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none shadow-[var(--shadow-card)]">
+        <div className="lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--dash-border)]">
             <h2 className="text-[13px] font-semibold text-[var(--dash-text)] tracking-tight">{t.dashRecentPosts}</h2>
             <Link href="/dashboard/posts" className="inline-flex items-center min-h-[40px] px-1 text-[11px] text-[var(--dash-accent)] hover:underline">

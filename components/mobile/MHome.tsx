@@ -55,7 +55,7 @@ function MThoughts() {
       </div>
       <div className="space-y-3">
         {shown.map((th, i) => (
-          <div key={th.id} className={`bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none px-4 py-3 ${expanded && i >= 4 ? "section-in" : ""}`}>
+          <div key={th.id} className={`bg-[var(--dash-card)] border border-[var(--yh-border)] rounded-none px-4 py-3 shadow-[var(--shadow-card)] ${expanded && i >= 4 ? "section-in" : ""}`}>
             <p className="text-[14px] text-[var(--yh-text)] leading-[1.8]">
               {lang === "zh" ? th.contentZh || th.content : th.content}
             </p>
@@ -68,7 +68,7 @@ function MThoughts() {
       {hidden > 0 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-4 w-full mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[48px]"
+          className="mt-4 w-full mono text-[11px] tracking-[0.14em] uppercase px-5 py-3 border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] active:text-[var(--yh-text)] transition-colors rounded-none min-h-[48px]"
         >
           {expanded
             ? (lang === "zh" ? "收起" : "Collapse")
@@ -109,7 +109,7 @@ function MTimeline({ posts }: { posts: any[] }) {
   ).getFullYear();
   return (
     <section className="w-full mx-auto px-4 pb-8">
-      <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-4">
+      <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 shadow-[var(--shadow-card)] rounded-none">
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-sm font-medium text-[var(--yh-text)]">{t.browseTimeline}</p>
@@ -117,7 +117,7 @@ function MTimeline({ posts }: { posts: any[] }) {
           </div>
           <Link
             href="/m/archive"
-            className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-3 py-2 min-h-[48px] flex items-center hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0 active:opacity-60"
+            className="mono text-xs tracking-widest uppercase border border-[var(--yh-border)] px-3 py-2 min-h-[48px] flex items-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors shrink-0 active:opacity-60 rounded-none"
           >
             {t.viewAll}
           </Link>
@@ -282,7 +282,7 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
               ? dbCategories?.find((c: any) => c.name === activeCategory)?.nameZh || mCatLabel(activeCategory, t)
               : mCatLabel(activeCategory, t)}
           </p>
-          <span className="text-[11px] text-[var(--yh-muted)]">· {filtered.length}</span>
+          <span className="mono text-[11px] tabular-nums text-[var(--yh-muted)]">· {filtered.length}</span>
         </div>
         {/* 选中具体分类时显示该分类描述（本地化规则在 lib/adapt.ts，与桌面同源） */}
         {(() => {
@@ -292,9 +292,12 @@ export function MHome({ posts, categories: dbCategories }: { posts: any[]; categ
         })()}
 
         {filtered.length === 0 ? (
-          <div className="py-16 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]">
-            <p className="text-base text-[var(--yh-muted)] mb-2">{t.noArticles}</p>
-            <p className="text-sm text-[var(--yh-muted)]">{t.noArticlesHint}</p>
+          <div className="py-16 text-center border border-dashed border-[var(--yh-border)] bg-[var(--dash-card)]/60 rounded-none">
+            <div className="w-10 h-10 mx-auto mb-3 border border-[var(--yh-border)] bg-[var(--dash-card)] flex items-center justify-center serif italic text-[15px] text-[var(--yh-muted)] rotate-[-4deg]" aria-hidden>
+              ∅
+            </div>
+            <p className="text-sm font-medium text-[var(--yh-text)] mb-1.5">{t.noArticles}</p>
+            <p className="text-xs text-[var(--yh-muted)]">{t.noArticlesHint}</p>
             <button
               type="button"
               onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}

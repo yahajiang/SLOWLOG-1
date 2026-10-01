@@ -101,12 +101,12 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
                     <Link
                       key={p.id}
                       href={`/m/posts/${p.id}`}
-                      className="tl-item group relative flex items-center gap-3 min-h-[48px] py-2.5 pr-1 active:bg-[var(--yh-bg)]/60"
+                      className="tl-item group relative flex items-center gap-3 min-h-[48px] py-2.5 pr-1 transition-colors hover:bg-[var(--yh-bg)]/50 active:bg-[var(--yh-bg)]/60"
                       style={{ transitionDelay: `${(i % 8) * 55}ms` }}
                     >
                       <span aria-hidden className="tl-dot absolute -left-6 top-1/2 -translate-y-1/2 w-[6px] h-[6px] rounded-full" />
-                      <span className="mono text-[11px] text-[var(--yh-muted)] w-11 shrink-0">{md}</span>
-                      <span className="text-sm truncate flex-1">{title}</span>
+                      <span className="mono text-[11px] tabular-nums text-[var(--yh-muted)] w-11 shrink-0">{md}</span>
+                      <span className="text-sm truncate flex-1 group-hover:text-[var(--yh-accent)] group-active:text-[var(--yh-accent)] transition-colors">{title}</span>
                       <span className="mono text-[10px] px-2 py-0.5 border border-[var(--yh-border)] bg-[var(--dash-card)] shrink-0">
                         {mCatLabel(p.category, t)}
                       </span>
@@ -117,20 +117,22 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
             </section>
           ))}
           {filteredYears.length === 0 && (
-            <EmptyState
-              title={t.emptyFiltered}
-              hint={t.emptyFilteredHint}
-              action={
-                q ? (
-                  <button
-                    onClick={() => setQ("")}
-                    className="min-h-[48px] px-4 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] active:opacity-70 transition-colors"
-                  >
-                    {t.clearFilters}
-                  </button>
-                ) : undefined
-              }
-            />
+            <div className="py-4">
+              <EmptyState
+                title={t.emptyFiltered}
+                hint={t.emptyFilteredHint}
+                action={
+                  q ? (
+                    <button
+                      onClick={() => setQ("")}
+                      className="min-h-[48px] px-4 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] active:opacity-70 transition-colors rounded-none"
+                    >
+                      {t.clearFilters}
+                    </button>
+                  ) : undefined
+                }
+              />
+            </div>
           )}
         </div>
       </div>

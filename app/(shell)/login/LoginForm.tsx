@@ -46,7 +46,7 @@ export default function LoginForm() {
       <div className="relative w-full max-w-sm animate-[fadeInUp_0.5s_var(--ease-out)_both]">
         {/* 品牌行 */}
         <div className="flex flex-col items-center gap-4 mb-8 text-center">
-          <span className="w-12 h-12 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[18px] shadow-[0_10px_24px_rgba(0,0,0,0.16)] rotate-[-4deg]">
+          <span className="w-12 h-12 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[18px] shadow-[var(--shadow-float)] rotate-[-4deg]">
             S
           </span>
           <div>
@@ -58,7 +58,7 @@ export default function LoginForm() {
         </div>
 
         {changed && (
-          <div className="mb-4 text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--yh-accent)] px-4 py-3 rounded-none">
+          <div role="status" className="mb-4 text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--yh-accent)] px-4 py-3 rounded-none shadow-[var(--shadow-card)]">
             {zh ? "账户已更新，请使用新凭据登录。" : "Account updated. Please sign in with your new credentials."}
           </div>
         )}
@@ -108,7 +108,7 @@ export default function LoginForm() {
             </div>
 
             {error && (
-              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none">
+              <div role="alert" className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none animate-[ffIn_0.2s_ease-out]">
                 {error}
               </div>
             )}
@@ -116,7 +116,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="w-full py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.18em] uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
+              className="w-full py-3 bg-[var(--yh-text)] text-[var(--yh-bg)] text-[12px] tracking-[0.18em] uppercase hover:bg-[var(--yh-accent)] active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
             >
               {loading ? (zh ? "登录中..." : "Logging in...") : (zh ? "登录" : "Login")}
             </button>

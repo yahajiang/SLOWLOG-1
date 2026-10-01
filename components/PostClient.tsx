@@ -214,7 +214,7 @@ export function PostClient({
           {post.tags?.length > 0 && (
             <div className="flex flex-wrap gap-x-2 gap-y-1 mb-4">
               {post.tags.slice(0, 3).map((tag) => (
-                <span key={tag} className={`text-[11px] ${isDark ? "text-zinc-400" : "text-[var(--yh-muted)]/75"}`}>#{tag}</span>
+                <span key={tag} className="text-[11px] text-[var(--yh-muted)]/75">#{tag}</span>
               ))}
             </div>
           )}
@@ -239,14 +239,14 @@ export function PostClient({
               {/* 底部标签：可点击进入标签聚合页 */}
               <div className="flex flex-wrap gap-2 mt-12 pt-6 border-t border-[var(--yh-border)]">
                 {post.tags.map((tag) => (
-                  <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`} className={`text-xs inline-flex items-center min-h-[48px] px-3 rounded-none border transition-colors ${isDark ? "text-zinc-300 bg-[var(--dash-card)]/5 border-white/10 hover:bg-[var(--dash-card)]/15" : "text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-white hover:text-[var(--yh-text)]"}`}>
+                  <Link key={tag} href={`/tag/${encodeURIComponent(tag)}`} className="text-xs inline-flex items-center min-h-[48px] px-3 rounded-none border transition-colors text-[var(--yh-muted)] bg-[var(--dash-card)] border-[var(--yh-border)] hover:bg-[var(--yh-bg)] hover:text-[var(--yh-text)]">
                     #{tag}
                   </Link>
                 ))}
               </div>
 
               {/* 版权声明 */}
-              <div className={`mt-8 p-4 rounded-none text-[13px] leading-relaxed border ${isDark ? "bg-[var(--dash-card)]/[0.04] border-white/10 text-[var(--yh-muted)]" : "bg-[var(--dash-card)] border-[var(--yh-border)] text-[var(--yh-muted)]"}`}>
+              <div className="mt-8 p-4 rounded-none text-[13px] leading-relaxed border bg-[var(--dash-card)] border-[var(--yh-border)] text-[var(--yh-muted)]">
                 <p>
                   {lang === "zh"
                     ? t.copyright(post.author, new Date().getFullYear())
@@ -277,17 +277,16 @@ export function PostClient({
             </h2>
             <div className="flex-1 h-px bg-gradient-to-r from-[var(--yh-border)] to-transparent" />
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {relatedPosts.map((rp, idx) => (
+          <div className="grid sm:grid-cols-3 gap-4 stagger">
+            {relatedPosts.map((rp) => (
               <Link
                 key={rp.id}
                 href={`/posts/${rp.id}`}
-                className="group border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-card)] transition-all duration-[var(--duration-normal)] animate-[fadeInUp_0.5s_var(--ease-out)_both]"
-                style={{ animationDelay: `${idx * 70}ms` }}
+                className="group border border-[var(--yh-border)] bg-[var(--dash-card)] p-4 rounded-none shadow-[var(--shadow-card)] hover:border-[var(--yh-muted)] hover:shadow-[var(--shadow-float)] hover:-translate-y-[2px] transition-[transform,border-color,box-shadow] duration-[var(--duration-normal)] ease-[var(--ease-out)]"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="mono text-[9px] tracking-[.14em] uppercase text-[var(--yh-muted)] border border-[var(--yh-border)] px-1.5 py-px">{rp.category}</span>
-                  <span className="mono text-[10px] text-[var(--yh-muted)]">{formatDisplayDate(rp.date, lang)}</span>
+                  <span className="mono text-[9px] tracking-[.14em] uppercase text-[var(--yh-muted)] tabular-nums border border-[var(--yh-border)] px-1.5 py-px">{rp.category}</span>
+                  <span className="mono text-[10px] tabular-nums text-[var(--yh-muted)]">{formatDisplayDate(rp.date, lang)}</span>
                 </div>
                 <p className="text-[13px] font-medium leading-snug text-[var(--yh-text)] group-hover:text-[var(--yh-accent)] transition-colors line-clamp-2">
                   {lang === "zh" ? rp.titleZh || rp.title : rp.title}

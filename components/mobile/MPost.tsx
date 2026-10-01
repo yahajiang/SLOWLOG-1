@@ -85,8 +85,8 @@ export function MPost({
         <div className="w-full mx-auto px-4 h-full flex items-center justify-between gap-2">
           <Link
             href="/m"
-            className="w-12 h-12 flex items-center justify-center text-[var(--yh-text)] -ml-2"
-            aria-label="Back"
+            className="w-12 h-12 flex items-center justify-center text-[var(--yh-text)] -ml-2 rounded-none active:bg-[var(--yh-border)]/60 transition-colors"
+            aria-label={t.backToHome}
           >
             <ChevronLeft className="w-6 h-6" />
           </Link>
@@ -147,7 +147,7 @@ export function MPost({
           {post.tags?.length > 0 && (
             <div className="flex gap-x-2 gap-y-1 flex-wrap mt-2 mb-1">
               {post.tags.slice(0, 3).map((tag: string) => (
-                <span key={tag} className="text-[11px] text-[var(--yh-muted)]/75">#{tag}</span>
+                <span key={tag} className="mono text-[11px] tracking-[0.08em] text-[var(--yh-muted)]/75">#{tag}</span>
               ))}
             </div>
           )}
@@ -175,14 +175,15 @@ export function MPost({
       </section>
 
       {(prev || next) && (
-        <section className="px-4 pb-8">
+        <nav aria-label={lang === "zh" ? "上下篇" : "More posts"} className="px-4 pb-8">
           <div className="grid grid-cols-1 gap-3">
             {prev && (
               <Link
                 href={`/m/posts/${prev.id}`}
-                className="flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] active:bg-[var(--yh-border)]/40"
+                rel="prev"
+                className="group flex items-center gap-3 border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] rounded-none shadow-[var(--shadow-card)] active:bg-[var(--yh-border)]/40 transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-[var(--yh-muted)] shrink-0" />
+                <ChevronLeft className="w-5 h-5 text-[var(--yh-muted)] group-active:text-[var(--yh-accent)] shrink-0 transition-colors" />
                 <div className="min-w-0">
                   <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.previous}</p>
                   <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate">{lang === "zh" ? prev.titleZh || prev.title : prev.title}</p>
@@ -192,17 +193,18 @@ export function MPost({
             {next && (
               <Link
                 href={`/m/posts/${next.id}`}
-                className="flex items-center gap-3 justify-end text-right border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] active:bg-[var(--yh-border)]/40"
+                rel="next"
+                className="group flex items-center gap-3 justify-end text-right border border-[var(--yh-border)] bg-[var(--dash-card)] px-4 py-4 min-h-[64px] rounded-none shadow-[var(--shadow-card)] active:bg-[var(--yh-border)]/40 transition-colors"
               >
                 <div className="min-w-0">
                   <p className="mono text-[10px] tracking-[0.14em] uppercase text-[var(--yh-muted)] mb-0.5">{t.next}</p>
                   <p className="text-[14px] text-[var(--yh-text)] leading-snug truncate">{lang === "zh" ? next.titleZh || next.title : next.title}</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[var(--yh-muted)] shrink-0" />
+                <ChevronRight className="w-5 h-5 text-[var(--yh-muted)] group-active:text-[var(--yh-accent)] shrink-0 transition-colors" />
               </Link>
             )}
           </div>
-        </section>
+        </nav>
       )}
 
       </main>

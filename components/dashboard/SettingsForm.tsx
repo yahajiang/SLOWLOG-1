@@ -73,7 +73,7 @@ export function SettingsForm() {
   if (loadErr) return <ListError onRetry={() => void load()} />
   if(!form) return <SettingsPageSkeleton />
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
       <Section
         title={lang === "zh" ? "站点信息" : "Site Info"}
         applies={lang === "zh" ? "作用于：浏览器标题 · 顶部导航 · 搜索引擎摘要 · RSS" : "Applies to: browser title · header · SEO snippets · RSS"}
@@ -173,12 +173,12 @@ export function SettingsForm() {
         </div>
         {/* 等高行内沉底：与左侧「页脚」板块底缘对齐 */}
         <div className="mt-auto pt-5 flex justify-end">
-          <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 hover:opacity-90 font-medium">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存设置" : "Save settings")}</button>
+          <button onClick={save} disabled={saving} className="px-6 py-2 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 font-medium transition-opacity">{saving ? (lang === "zh" ? "保存中…" : "Saving…") : (lang === "zh" ? "保存设置" : "Save settings")}</button>
         </div>
       </Section>
 
       {/* 账号管理：独立凭证域，跨两列 */}
-      <div className="col-span-1 md:col-span-2">
+      <div className="col-span-1 lg:col-span-2">
         <AccountCard />
       </div>
     </div>

@@ -107,25 +107,25 @@ export function TokenManager() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="border border-[var(--yh-border)] bg-[var(--yh-bg)] p-5">
-        <h2 className="text-sm font-medium tracking-wide mb-4">App API 令牌</h2>
+    <div className="space-y-8 section-in">
+      <section className="border border-[var(--dash-border)] bg-[var(--dash-card)] p-5 rounded-none shadow-[var(--shadow-card)]">
+        <h2 className="text-sm font-medium tracking-wide mb-4 text-[var(--dash-text)]">App API 令牌</h2>
         <div className="flex flex-wrap gap-2 items-end">
           <div className="min-w-[220px] flex-1">
-            <label className="block text-xs text-[var(--yh-muted)] mb-1">名称（如 Pixel 8）</label>
+            <label className="block text-xs text-[var(--dash-muted)] mb-1">名称（如 Pixel 8）</label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="设备或用途名称" />
           </div>
           <Button onClick={createToken} disabled={busy || !name.trim()}>
             生成 Token
           </Button>
         </div>
-        {error && <p className="mt-3 text-sm text-[var(--dash-danger)]">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-sm text-[var(--dash-danger)] bg-[var(--dash-danger-soft)] border border-[var(--dash-danger-border)] px-4 py-3 rounded-none animate-[ffIn_0.2s_ease-out]">{error}</p>}
         {plain && (
-          <div className="mt-4 border border-[var(--yh-border)] p-3 bg-[var(--yh-bg)]">
-            <p className="text-xs text-[var(--yh-muted)] mb-2">
+          <div className="mt-4 border border-[var(--dash-accent)]/30 p-3 bg-[var(--dash-accent-soft)]">
+            <p className="text-xs text-[var(--dash-text)] mb-2">
               明文 Token <strong>仅显示一次</strong>，请立即复制并妥善保存：
             </p>
-            <code className="block break-all text-sm font-mono">{plain}</code>
+            <code className="block break-all text-sm font-mono text-[var(--dash-text)]">{plain}</code>
             <div className="mt-2 flex gap-2">
               <Button
                 variant="secondary"
@@ -142,8 +142,8 @@ export function TokenManager() {
           </div>
         )}
 
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="mt-6 overflow-x-auto -mx-5 px-5">
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="text-left text-xs text-[var(--yh-muted)] border-b border-[var(--yh-border)]">
                 <th className="py-2 pr-3">名称</th>
@@ -168,7 +168,7 @@ export function TokenManager() {
                 const left = daysLeft(t.expiresAt)
                 return (
                   <tr key={t.id} className="border-b border-[var(--yh-border)]">
-                    <td className="py-2 pr-3">{t.name}</td>
+                    <td className="py-2 pr-3 text-[var(--dash-text)]">{t.name}</td>
                     <td className="py-2 pr-3">
                       {t.user ? (
                         <>
@@ -182,10 +182,10 @@ export function TokenManager() {
                         <span className="text-xs text-[var(--yh-muted)]">历史令牌（无归属）</span>
                       )}
                     </td>
-                    <td className="py-2 pr-3">{SCOPE_LABEL[t.scope] || t.scope}</td>
-                    <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.createdAt)}</td>
-                    <td className="py-2 pr-3 text-[var(--yh-muted)]">{fmt(t.lastUsedAt)}</td>
-                    <td className="py-2 pr-3">
+                    <td className="py-2 pr-3 text-[var(--dash-text)]">{SCOPE_LABEL[t.scope] || t.scope}</td>
+                    <td className="py-2 pr-3 text-[var(--dash-muted)] tabular-nums">{fmt(t.createdAt)}</td>
+                    <td className="py-2 pr-3 text-[var(--dash-muted)] tabular-nums">{fmt(t.lastUsedAt)}</td>
+                    <td className="py-2 pr-3 tabular-nums">
                       {t.expiresAt ? (
                         <span className={left === 0 ? "text-[var(--dash-danger)]" : "text-[var(--yh-muted)]"}>
                           {fmt(t.expiresAt)}
@@ -220,12 +220,12 @@ export function TokenManager() {
         </div>
       </section>
 
-      <section className="border border-[var(--yh-border)] bg-[var(--yh-bg)] p-5">
-        <h2 className="text-sm font-medium tracking-wide mb-4">推送设备（FCM）</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <section className="border border-[var(--dash-border)] bg-[var(--dash-card)] p-5 rounded-none shadow-[var(--shadow-card)]">
+        <h2 className="text-sm font-medium tracking-wide mb-4 text-[var(--dash-text)]">推送设备（FCM）</h2>
+        <div className="overflow-x-auto -mx-5 px-5">
+          <table className="w-full text-sm min-w-[520px]">
             <thead>
-              <tr className="text-left text-xs text-[var(--yh-muted)] border-b border-[var(--yh-border)]">
+              <tr className="text-left text-xs text-[var(--dash-muted)] border-b border-[var(--dash-border)]">
                 <th className="py-2 pr-3">Token</th>
                 <th className="py-2 pr-3">平台</th>
                 <th className="py-2">最近活跃</th>
@@ -234,16 +234,16 @@ export function TokenManager() {
             <tbody>
               {devices.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="py-4 text-[var(--yh-muted)]">
+                  <td colSpan={3} className="py-4 text-[var(--dash-muted)]">
                     暂无设备
                   </td>
                 </tr>
               )}
               {devices.map((d) => (
-                <tr key={d.id} className="border-b border-[var(--yh-border)]">
-                  <td className="py-2 pr-3 font-mono text-xs">{shortToken(d.fcmToken)}</td>
-                  <td className="py-2 pr-3">{d.platform}</td>
-                  <td className="py-2 text-[var(--yh-muted)]">{fmt(d.lastActive)}</td>
+                <tr key={d.id} className="border-b border-[var(--dash-border)] last:border-0">
+                  <td className="py-2 pr-3 font-mono text-xs text-[var(--dash-text)]">{shortToken(d.fcmToken)}</td>
+                  <td className="py-2 pr-3 text-[var(--dash-text)]">{d.platform}</td>
+                  <td className="py-2 text-[var(--dash-muted)] tabular-nums">{fmt(d.lastActive)}</td>
                 </tr>
               ))}
             </tbody>

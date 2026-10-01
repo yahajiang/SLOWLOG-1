@@ -48,7 +48,7 @@ export default function NotFound() {
           <p className="serif text-[112px] sm:text-[128px] leading-none font-semibold tracking-[0.08em] text-[var(--yh-muted)]/40">
             404
           </p>
-          <span className="absolute -top-2 right-1 sm:right-4 w-12 h-12 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[17px] shadow-[0_10px_24px_rgba(0,0,0,0.16)] rotate-[-6deg]">
+          <span className="absolute -top-2 right-1 sm:right-4 w-12 h-12 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[17px] shadow-[var(--shadow-float)] rotate-[-6deg]">
             S
           </span>
         </div>

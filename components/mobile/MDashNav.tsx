@@ -17,7 +17,7 @@ export function MDashNav() {
     { href: "/m/dashboard/settings", label: t.dashSettings, icon: Settings },
   ];
   return (
-    <nav className="sticky bottom-0 z-40 bg-[var(--dash-card)] border-t border-[var(--dash-border)] pb-[env(safe-area-inset-bottom)]">
+    <nav aria-label={t.dashOverview} className="sticky bottom-0 z-40 bg-[var(--dash-card)] border-t border-[var(--dash-border)] pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5">
         {tabs.map((item) => {
           const active =
@@ -28,8 +28,9 @@ export function MDashNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 py-2.5 text-[11px] rounded-none min-h-[56px] justify-center transition-[color,background-color] duration-[var(--duration-exit)] ease-[var(--ease-out)] ${
-                active ? "text-[var(--dash-accent)] font-medium bg-[var(--dash-accent-soft)]" : "text-[var(--dash-muted)]"
+              aria-current={active ? "page" : undefined}
+              className={`flex flex-col items-center gap-1 py-2.5 text-[11px] rounded-none min-h-[56px] justify-center transition-[color,background-color] duration-[var(--duration-exit)] ease-[var(--ease-out)] active:opacity-70 ${
+                active ? "text-[var(--dash-accent)] font-medium bg-[var(--dash-accent-soft)]" : "text-[var(--dash-muted)] active:bg-[var(--dash-bg)]"
               }`}
             >
               <Icon className="w-5 h-5" />

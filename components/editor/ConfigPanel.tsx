@@ -11,7 +11,7 @@ export function ConfigPanel({ value, onChange }: { value: PageConfig; onChange: 
         <p className="text-xs font-medium text-[var(--dash-text)] mb-2">布局模板</p>
         <div className="grid grid-cols-3 gap-2">
           {(["standard","magazine","fullscreen"] as const).map(k=>(
-            <button key={k} onClick={()=>set({layout:k})} className={`px-3 py-2 text-xs border rounded-none font-medium transition-colors ${value.layout===k?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`} >{k}</button>
+            <button key={k} onClick={()=>set({layout:k})} className={`px-3 py-2 text-xs border rounded-none font-medium transition-colors min-h-[36px] inline-flex items-center justify-center ${value.layout===k?"bg-[var(--dash-accent)] text-[var(--dash-bg)] border-[var(--dash-accent)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`} >{k}</button>
           ))}
         </div>
       </div>
@@ -20,7 +20,7 @@ export function ConfigPanel({ value, onChange }: { value: PageConfig; onChange: 
         <p className="text-xs font-medium text-[var(--dash-text)] mb-2">主题</p>
         <div className="flex gap-2">
           {([["system","跟随系统"],["light","浅色"],["dark","深色"]] as const).map(([k,label]) => (
-            <button key={k} onClick={()=>set({theme:k})} className={`flex-1 py-2 text-xs border rounded-none font-medium transition-colors ${(value.theme||"system")===k?"bg-[var(--dash-text)] text-white border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{label}</button>
+            <button key={k} onClick={()=>set({theme:k})} className={`flex-1 py-2 text-xs border rounded-none font-medium transition-colors min-h-[36px] inline-flex items-center justify-center ${(value.theme||"system")===k?"bg-[var(--dash-text)] text-[var(--dash-bg)] border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{label}</button>
           ))}
         </div>
       </div>
@@ -33,8 +33,8 @@ export function ConfigPanel({ value, onChange }: { value: PageConfig; onChange: 
       <div>
         <p className="text-xs font-medium text-[var(--dash-text)] mb-2">字体</p>
         <div className="flex gap-2">
-          <button onClick={()=>set({fontFamily:"sans"})} className={`flex-1 py-2 text-xs border rounded-none font-medium ${value.fontFamily==="sans"?"bg-[var(--dash-text)] text-white border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>无衬线</button>
-          <button onClick={()=>set({fontFamily:"serif"})} className={`flex-1 py-2 text-xs border rounded-none font-medium ${value.fontFamily==="serif"?"bg-[var(--dash-text)] text-white border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>衬线</button>
+          <button onClick={()=>set({fontFamily:"sans"})} className={`flex-1 py-2 text-xs border rounded-none font-medium min-h-[36px] inline-flex items-center justify-center ${value.fontFamily==="sans"?"bg-[var(--dash-text)] text-[var(--dash-bg)] border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>无衬线</button>
+          <button onClick={()=>set({fontFamily:"serif"})} className={`flex-1 py-2 text-xs border rounded-none font-medium min-h-[36px] inline-flex items-center justify-center ${value.fontFamily==="serif"?"bg-[var(--dash-text)] text-[var(--dash-bg)] border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>衬线</button>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export function ConfigPanel({ value, onChange }: { value: PageConfig; onChange: 
         <p className="text-xs font-medium text-[var(--dash-text)] mb-2">内容宽度</p>
         <div className="flex gap-2">
           {(["narrow","medium","wide"] as const).map(k=>(
-            <button key={k} onClick={()=>set({maxWidth:k})} className={`flex-1 py-2 text-xs border rounded-none font-medium ${value.maxWidth===k?"bg-[var(--dash-text)] text-white border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{k}</button>
+            <button key={k} onClick={()=>set({maxWidth:k})} className={`flex-1 py-2 text-xs border rounded-none font-medium min-h-[36px] inline-flex items-center justify-center ${value.maxWidth===k?"bg-[var(--dash-text)] text-[var(--dash-bg)] border-[var(--dash-text)]":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{k}</button>
           ))}
         </div>
       </div>

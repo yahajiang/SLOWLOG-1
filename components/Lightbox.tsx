@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { X, ZoomIn, ZoomOut, RotateCw, Download } from "lucide-react";
 
 // 灯箱控制钮一档实现（6 处此前逐字相同）
-const ICON = "p-1.5 text-white/70 hover:text-white rounded transition-colors";
+const ICON = "p-1.5 text-[var(--dash-muted)] hover:text-[var(--dash-bg)] rounded-none transition-colors min-h-[36px] min-w-[36px] inline-flex items-center justify-center";
 
 export function Lightbox() {
   const [src, setSrc] = useState<string | null>(null);
@@ -76,10 +76,10 @@ export function Lightbox() {
         <img
           src={src}
           alt={alt}
-          className="max-w-full max-h-[85vh] object-contain rounded-none shadow-2xl transition-transform duration-[300ms] ease-[var(--ease-out)]"
+          className="max-w-full max-h-[85vh] object-contain rounded-none shadow-[var(--shadow-float)] transition-transform duration-[300ms] ease-[var(--ease-out)]"
           style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
         />
-        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 rounded-none px-2 py-1.5 backdrop-blur-sm">
+        <div className="absolute top-3 right-3 flex items-center gap-1 bg-[var(--dash-text)] rounded-none px-2 py-1.5 shadow-[var(--shadow-float)] border border-[var(--dash-border)]">
           <button onClick={() => setScale((s) => Math.min(s + 0.25, 3))} className={ICON} title="Zoom in (+)">
             <ZoomIn className="w-4 h-4" />
           </button>
@@ -92,7 +92,7 @@ export function Lightbox() {
           <button onClick={() => { setScale(1); setRotation(0); }} className={`${ICON} text-[11px] font-mono`} title="Reset (0)">
             1:1
           </button>
-          <div className="w-px h-4 bg-[var(--dash-card)]/20" />
+          <div className="w-px h-4 bg-[var(--dash-border)]" />
           <a href={src} download className={ICON} title="Download">
             <Download className="w-4 h-4" />
           </a>
@@ -100,7 +100,7 @@ export function Lightbox() {
             <X className="w-4 h-4" />
           </button>
         </div>
-        {alt && <p className="text-center text-white/50 text-sm mt-3 italic">{alt}</p>}
+        {alt && <p className="text-center text-[var(--dash-muted)] text-sm mt-3 italic">{alt}</p>}
       </div>
     </div>,
     document.body

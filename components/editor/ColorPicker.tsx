@@ -53,8 +53,8 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
                 key={color}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => onChange(color)}
-                className={`relative w-6 h-6 rounded-none border transition-all duration-100 hover:scale-110 hover:shadow-md ${
-                  value === color ? "border-zinc-800 ring-2 ring-zinc-300 scale-110" : "border-[var(--yh-border)]"
+                className={`relative w-6 h-6 rounded-none border transition-all duration-100 hover:scale-110 hover:shadow-[var(--shadow-float)] ${
+                  value === color ? "border-[var(--dash-text)] ring-2 ring-[var(--dash-accent)]/40 scale-110" : "border-[var(--yh-border)]"
                 }`}
                 style={{ backgroundColor: color }}
               >
@@ -77,12 +77,12 @@ export function ColorPicker({ value, onChange, onReset, label }: ColorPickerProp
           value={custom}
           onChange={(e) => { const v = e.target.value; setCustom(v); if (/^#[0-9a-fA-F]{6}$/.test(v)) onChange(v); }}
           placeholder="#000000"
-          className="flex-1 px-2 py-1 text-[11px] font-mono border border-[var(--yh-border)] rounded-none focus:outline-none focus:border-zinc-400"
+          className="flex-1 px-2 py-1 text-[11px] font-mono border border-[var(--yh-border)] rounded-none focus:outline-none focus:border-[var(--dash-accent)] focus:ring-1 focus:ring-[var(--dash-accent)]/20"
         />
       </div>
       {onReset && (
         <button onMouseDown={(e) => e.preventDefault()} onClick={onReset}
-          className="w-full mt-2 text-[11px] text-[var(--yh-muted)] hover:text-zinc-700 py-1 rounded hover:bg-[var(--dash-card)] transition-colors">
+          className="w-full mt-2 text-[11px] text-[var(--yh-muted)] hover:text-[var(--dash-text)] py-1 rounded hover:bg-[var(--dash-bg)] transition-colors">
           重置
         </button>
       )}

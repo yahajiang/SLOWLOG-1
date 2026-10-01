@@ -377,10 +377,10 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
           </div>
           {heroPool.length > 1 && (
             <>
-              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label={t.heroPrev}>
+              <button onClick={() => setHeroIndex((i) => (i - 1 + heroPool.length) % heroPool.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-[var(--shadow-card)]" aria-label={t.heroPrev}>
                 ‹
               </button>
-              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-sm" aria-label={t.heroNext}>
+              <button onClick={() => setHeroIndex((i) => (i + 1) % heroPool.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[var(--dash-card)]/90 backdrop-blur border border-[var(--yh-border)] rounded-none flex items-center justify-center hover:bg-[var(--yh-border)] shadow-[var(--shadow-card)]" aria-label={t.heroNext}>
                 ›
               </button>
               {/* 位置指示：纯装饰，不做可点控件——6px 圆点撑到 48px 会互相盖住，
@@ -493,7 +493,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
         ) : (
           <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {gridPosts.map((post, idx) => (
-              <ArticleCard key={post.id} post={post} index={idx} />
+              <ArticleCard key={post.id} post={post} index={Math.min(idx, 8)} />
             ))}
           </div>
         )}
@@ -505,7 +505,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
 
       {showHomeExtras && (
         <section className="w-full max-w-[min(63%,1440px)] mx-auto px-6 pb-7">
-          <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-5 shadow-sm">
+          <div className="border border-[var(--yh-border)] bg-[var(--dash-card)] p-5 shadow-[var(--shadow-card)] rounded-none">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-sm font-medium text-[var(--yh-text)]">
@@ -518,7 +518,7 @@ export default function HomeClient({ posts, categories: dbCategories }: { posts:
               {/* legacy zinc（历史还原豁免，勿模仿）：待令牌化 border/hover:bg-[--yh-text]，登记于 慢日志UI一致性基线.md */}
               <Link
                 href="/archive"
-                className="text-xs tracking-widest uppercase border border-[var(--yh-text)] px-4 py-2 hover:bg-[var(--yh-text)] hover:text-[var(--yh-bg)] transition-colors shrink-0"
+                className="mono text-xs tracking-widest uppercase border border-[var(--yh-border)] px-4 py-2 min-h-[48px] inline-flex items-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors shrink-0 rounded-none"
               >
                 {t.viewAll}
               </Link>

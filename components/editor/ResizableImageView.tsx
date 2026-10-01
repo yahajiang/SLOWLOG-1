@@ -67,13 +67,13 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
         style={{ width: width || "100%", maxWidth: "100%", userSelect: "none" }}
       >
         {/* 图片顶部工具条 */}
-        <div className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-center gap-1 p-1.5 transition-opacity rounded-t-xl ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)" }}>
+        <div className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-center gap-1 p-1.5 transition-opacity rounded-none ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)" }}>
           {["25%", "50%", "75%", "100%"].map((w) => (
             <button
               key={w}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => { e.stopPropagation(); updateAttributes({ width: w }) }}
-              className={`px-2.5 py-0.5 text-[11px] rounded-none border transition-colors font-medium ${width === w ? "bg-[var(--dash-card)] text-zinc-900 border-white" : "bg-[var(--dash-card)]/80 border-white/50 text-zinc-700 hover:bg-[var(--dash-card)]"}`}
+              className={`px-2.5 py-0.5 text-[11px] rounded-none border transition-colors font-medium min-h-[36px] inline-flex items-center ${width === w ? "bg-[var(--dash-text)] text-[var(--dash-bg)] border-[var(--dash-text)]" : "bg-[var(--dash-card)]/80 border-[var(--dash-border)] text-[var(--dash-text)] hover:bg-[var(--dash-card)]"}`}
             >
               {w}
             </button>
@@ -81,7 +81,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
           <button
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => { e.stopPropagation(); updateAttributes({ width: null }) }}
-            className="px-2 py-0.5 text-[11px] rounded-none border bg-[var(--dash-card)]/80 border-white/50 text-zinc-700 hover:bg-[var(--dash-card)]"
+            className="px-2 py-0.5 text-[11px] rounded-none border bg-[var(--dash-card)]/80 border-[var(--dash-border)] text-[var(--dash-text)] hover:bg-[var(--dash-card)] min-h-[36px] inline-flex items-center"
           >
             自适应
           </button>
@@ -100,16 +100,16 @@ export function ResizableImageView({ node, updateAttributes, selected }: any) {
         />
 
         {/* 宽度标签 */}
-        <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/60 text-white text-[10px] rounded-none whitespace-nowrap transition-opacity ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+        <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[var(--dash-text)] text-[var(--dash-bg)] text-[10px] rounded-none whitespace-nowrap transition-opacity ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
           {width || "自适应"}
         </div>
 
         {/* 右下角拖拽手柄 */}
         <div
           onPointerDown={(e) => { e.stopPropagation(); handleResize(e) }}
-          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-[var(--dash-card)] border-2 border-[var(--dash-info)] rounded-none shadow-md cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          className={`absolute -right-2 -bottom-2 w-8 h-8 bg-[var(--dash-card)] border-2 border-[var(--dash-info)] rounded-none shadow-[var(--shadow-card)] cursor-nwse-resize flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-30 ${selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
         >
-          <div className="w-3 h-3 border-r-2 border-b-2 border-[var(--dash-info)] rounded-br-sm" />
+          <div className="w-3 h-3 border-r-2 border-b-2 border-[var(--dash-info)]" />
         </div>
 
         {/* 拖拽中指示 */}

@@ -62,7 +62,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
             <Link
               href="/m/dashboard"
               aria-label={t.navAdmin}
-              className="w-12 h-12 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
+              className="w-12 h-12 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)]/60 active:text-[var(--yh-text)] transition-colors rounded-none"
             >
               <Settings className="w-5 h-5" />
             </Link>
@@ -70,8 +70,9 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
           {searchable && (
             <button
               onClick={toggleSearch}
-              className="w-12 h-12 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)] transition-colors rounded-none"
-              aria-label="Search"
+              className="w-12 h-12 flex items-center justify-center text-[var(--yh-muted)] hover:text-[var(--yh-text)] active:bg-[var(--yh-border)]/60 active:text-[var(--yh-text)] transition-colors rounded-none"
+              aria-label={t.searchGlobalAria}
+              aria-expanded={open}
             >
               {open ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
             </button>
@@ -81,14 +82,15 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
       {(searchable && (open || closing)) && (
         <div className={`px-4 pb-3 ${closing ? "panel-out" : "panel-in"}`}>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" aria-hidden />
             <input
               type="search"
               autoFocus
               value={searchQuery}
               onChange={(e) => onSearchChange!(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full pl-10 pr-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none rounded-none placeholder:text-[var(--yh-muted)]"
+              aria-label={t.searchGlobalAria}
+              className="w-full pl-10 pr-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none placeholder:text-[var(--yh-muted)]"
             />
           </div>
         </div>

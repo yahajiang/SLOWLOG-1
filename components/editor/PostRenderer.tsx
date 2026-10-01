@@ -63,7 +63,7 @@ function CopyBtn({ code }: { code: string }) {
     <button
       onClick={onCopy}
       aria-label={copied ? t.codeCopied : t.codeCopy}
-      className="hit px-3 py-1 rounded-none text-[11px] font-medium border bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700 hover:bg-[#3a3a3e] hover:text-white hover:border-zinc-600 transition-colors flex items-center gap-1"
+      className="hit px-3 py-1 rounded-none text-[11px] font-medium border bg-[var(--dash-text)] text-[var(--dash-muted)] border-[var(--dash-border)] hover:bg-[var(--dash-muted)] hover:text-[var(--dash-bg)] hover:border-[var(--dash-muted)] transition-colors flex items-center gap-1"
     >
       {copied ? `✓ ${t.codeCopied}` : t.codeCopy}
     </button>
@@ -72,17 +72,19 @@ function CopyBtn({ code }: { code: string }) {
 
 function LangBadge({ lang }: { lang: string }) {
   const l = (lang || "text").toLowerCase()
+  const tinted = "bg-[var(--dash-text)] text-[var(--yh-muted)] border-[var(--dash-border)]"
+  const plain = "bg-[var(--dash-text)] text-[var(--yh-muted)] border-[var(--dash-border)]"
   const map: Record<string, string> = {
-    python: "bg-[#1e3a5f] text-[#7eb8f7] border-[#2a5a8a]",
-    py: "bg-[#1e3a5f] text-[#7eb8f7] border-[#2a5a8a]",
-    javascript: "bg-[#3a2e1a] text-[#f7c948] border-[#5a4a20]",
-    typescript: "bg-[#1a3a4a] text-[#7eb8f7] border-[#2a5a7a]",
-    shell: "bg-[#1a3a2e] text-[#7ec99a] border-[#2a5a3a]",
-    bash: "bg-[#1a3a2e] text-[#7ec99a] border-[#2a5a3a]",
-    text: "bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700",
-    txt: "bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700",
+    python: tinted,
+    py: tinted,
+    javascript: tinted,
+    typescript: tinted,
+    shell: tinted,
+    bash: tinted,
+    text: plain,
+    txt: plain,
   }
-  const cls = map[l] || "bg-[#2a2a2e] text-[var(--yh-muted)] border-zinc-700"
+  const cls = map[l] || plain
   return <span className={`px-2.5 py-1 rounded-none text-[10px] font-semibold tracking-wider uppercase border ${cls}`}>{lang || "TEXT"}</span>
 }
 
@@ -133,7 +135,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       // 对齐由编辑器写入 attrs.textAlign，这里必须落地——否则工具栏的对齐按钮存了也白存
       const pAlign = node.attrs?.textAlign
       const pStyle = pAlign && pAlign !== "left" ? { textAlign: pAlign as React.CSSProperties["textAlign"] } : undefined
-      if (inTable) return <p key={idx} style={pStyle} className="text-[13px] leading-[1.5] text-zinc-600 m-0">{inline.length ? inline : <br />}</p>
+      if (inTable) return <p key={idx} style={pStyle} className="text-[13px] leading-[1.5] text-[var(--dash-muted)] m-0">{inline.length ? inline : <br />}</p>
       return <p key={idx} data-paragraph style={pStyle} className={`text-[17px] leading-[1.9] text-[var(--yh-text)]/85 mb-[22px] font-light transition-colors ${isFirstPara ? "first-letter:float-left first-letter:text-[3.2em] first-letter:font-serif first-letter:font-semibold first-letter:leading-[0.8] first-letter:mr-2 first-letter:mt-1.5" : ""}`}>{inline.length ? inline : <br />}</p>
     }
     case "blockquote":
@@ -144,22 +146,22 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const lines = code.replace(/\n$/, "").split("\n")
       // 截图样式：深色 macOS 窗口 - 始终深色，保证可读性
       return (
-        <div key={idx} className="my-[29px] rounded-none overflow-hidden border border-[#2a2a2e] shadow-[0_8px_30px_rgba(0,0,0,0.25)] bg-[#1E1E1E]">
-          <div className="flex items-center justify-between px-4 py-[9px] bg-[#2d2d30] border-b border-[#3a3a3e]">
+        <div key={idx} className="my-[29px] rounded-none overflow-hidden border border-[var(--dash-border)] shadow-[var(--shadow-card)] bg-[var(--dash-text)]">
+          <div className="flex items-center justify-between px-4 py-[9px] bg-[var(--dash-text)] border-b border-[var(--dash-border)]">
             <div className="flex items-center gap-3">
               <span className="flex gap-1.5">
-                <span className="w-3 h-3 rounded-none bg-[#ff5f56] border border-[#e0443e]"></span>
-                <span className="w-3 h-3 rounded-none bg-[#ffbd2e] border border-[#dea123]"></span>
-                <span className="w-3 h-3 rounded-none bg-[#27ca3f] border border-[#1aab29]"></span>
+                <span className="w-3 h-3 rounded-none bg-[var(--dash-danger)] border border-[var(--dash-danger-strong)] opacity-80"></span>
+                <span className="w-3 h-3 rounded-none bg-[var(--dash-warn)] border border-[var(--dash-warn)] opacity-80"></span>
+                <span className="w-3 h-3 rounded-none bg-[var(--dash-ok)] border border-[var(--dash-ok)] opacity-80"></span>
               </span>
               <LangBadge lang={lang} />
             </div>
             <CopyBtn code={code} />
           </div>
-          <div className="overflow-x-auto bg-[#1E1E1E]">
-            <pre data-language={lang} className="bg-[#1E1E1E] text-[#d4d4d4] p-[18px] m-0 border-0 min-w-max">
-              <code className="text-[13.5px] leading-[1.7] font-mono !bg-transparent !border-0 !p-0 !rounded-none !text-[#d4d4d4] grid grid-cols-[auto_1fr] gap-x-4" style={{ background: 'transparent', color: '#d4d4d4' }}>
-                <span className="select-none text-right text-[#6e6e73]/70 tabular-nums" aria-hidden>
+          <div className="overflow-x-auto bg-[var(--dash-text)]">
+            <pre data-language={lang} className="bg-[var(--dash-text)] text-[var(--dash-bg)] p-[18px] m-0 border-0 min-w-max">
+              <code className="text-[13.5px] leading-[1.7] font-mono !bg-transparent !border-0 !p-0 !rounded-none !text-[var(--dash-bg)] grid grid-cols-[auto_1fr] gap-x-4" style={{ background: 'transparent', color: 'var(--dash-bg)' }}>
+                <span className="select-none text-right text-[var(--yh-muted)]/70 tabular-nums" aria-hidden>
                   {lines.map((_: string, i: number) => `${i + 1}`).join("\n")}
                 </span>
                 <span>{code}</span>
@@ -181,7 +183,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       return <ul key={idx} data-type="taskList" className="list-none pl-0 my-[18px] space-y-[5px]">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</ul>
     case "taskItem": {
       const checked = node.attrs?.checked || false
-      return <li key={idx} data-checked={checked} className="flex gap-2"><label className="mt-1"><input type="checkbox" checked={checked} readOnly className="w-[18px] h-[18px] rounded border-zinc-300" /></label> <div className="flex-1">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</div></li>
+      return <li key={idx} data-checked={checked} className="flex gap-2"><label className="mt-1"><input type="checkbox" checked={checked} readOnly className="w-[18px] h-[18px] rounded border-[var(--dash-border)]" /></label> <div className="flex-1">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</div></li>
     }
     case "image": {
       const src = safeImgSrc(node.attrs?.src) || ""
@@ -189,7 +191,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
       const title = node.attrs?.title || ""
       const width = node.attrs?.width || null
       if (!src) return null
-      return <figure key={idx} className="my-[32px] group/fig"><img src={src} alt={alt} title={title} loading="lazy" className="rounded-none border border-[var(--yh-border)] shadow-md block mx-auto max-w-full h-auto cursor-zoom-in group-hover/fig:shadow-lg group-hover/fig:scale-[1.01] transition-[box-shadow,transform] duration-[300ms] ease-[var(--ease-out)]" style={{ margin: "0", ...(width ? { width } : {}) }} onClick={() => (window as any).__openLightbox?.(src)} />{alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{alt}</figcaption>}{title && !alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{title}</figcaption>}</figure>
+      return <figure key={idx} className="my-[32px] group/fig"><img src={src} alt={alt} title={title} loading="lazy" className="rounded-none border border-[var(--yh-border)] shadow-[var(--shadow-card)] block mx-auto max-w-full h-auto cursor-zoom-in group-hover/fig:shadow-[var(--shadow-float)] group-hover/fig:scale-[1.01] transition-[box-shadow,transform] duration-[300ms] ease-[var(--ease-out)]" style={{ margin: "0", ...(width ? { width } : {}) }} onClick={() => (window as any).__openLightbox?.(src)} />{alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{alt}</figcaption>}{title && !alt && <figcaption className="text-center text-[13px] text-[var(--yh-muted)] mt-3 italic px-6">{title}</figcaption>}</figure>
     }
     case "horizontalRule":
       return <div key={idx} className="my-[43px] flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent" /><span className="w-1 h-1 rounded-none bg-[var(--yh-muted)]/40" /><span className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--yh-border)] to-transparent" /></div>
@@ -204,7 +206,7 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
         }
       }
       return (
-        <div key={idx} className="overflow-x-auto my-[29px] rounded-none border border-[var(--yh-border)] shadow-sm">
+        <div key={idx} className="overflow-x-auto my-[29px] rounded-none border border-[var(--yh-border)] shadow-[var(--shadow-card)]">
           <table className="w-full border-collapse text-[14px]">
             {headerRows.length > 0 && <thead>{headerRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</thead>}
             <tbody>{bodyRows.map((r, i) => renderNode(r, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</tbody>
@@ -215,9 +217,9 @@ function renderNode(node: any, idx: number, primaryColor?: string, inTable?: boo
     case "tableRow":
       return <tr key={idx} className="border-b border-[var(--yh-border)] last:border-0">{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</tr>
     case "tableHeader":
-      return <th key={idx} className={`border px-4 py-[9px] text-left font-semibold text-[13px] ${isDarkMode ? "border-[#2c2a26] bg-[#1c1915] text-[#d4c8b8]" : "border-[var(--yh-border)] bg-[var(--dash-card)] text-zinc-700"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</th>
+      return <th key={idx} className={`border px-4 py-[9px] text-left font-semibold text-[13px] ${isDarkMode ? "border-[#2c2a26] bg-[#1c1915] text-[#d4c8b8]" : "border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--dash-text)]"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</th>
     case "tableCell":
-      return <td key={idx} className={`border px-4 py-[9px] align-top ${isDarkMode ? "border-[#2c2a26] text-[#c9c0b4]" : "border-[var(--yh-border)] text-zinc-600"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</td>
+      return <td key={idx} className={`border px-4 py-[9px] align-top ${isDarkMode ? "border-[#2c2a26] text-[#c9c0b4]" : "border-[var(--yh-border)] text-[var(--dash-muted)]"}`}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, true, false, isDarkMode, undefined, depth + 1))}</td>
     default:
       // fallback: try render content
       if (content.length) return <div key={idx}>{content.map((c: any, i: number) => renderNode(c, i, primaryColor, false, false, isDarkMode, undefined, depth + 1))}</div>
@@ -269,7 +271,7 @@ export function PostRenderer({ content, pageConfig }: { content: unknown; pageCo
 
   return (
     <div
-      className={`max-w-none ${maxW} ${font} ${isDark(pc) ? "text-zinc-100" : "text-zinc-900"}`}
+      className={`max-w-none ${maxW} ${font} ${isDark(pc) ? "text-[var(--dash-bg)]" : "text-[var(--dash-text)]"}`}
       style={{ backgroundColor: bg, ...(pc?.primaryColor ? { ["--yh-accent" as any]: pc.primaryColor } : {}) }}
     >
       {nodes.map((n, i) => renderNode(n, i, pc?.primaryColor, false, i === firstParaIdx && pc?.fontFamily === "serif", isDark(pc), headingIds.get(n)))}

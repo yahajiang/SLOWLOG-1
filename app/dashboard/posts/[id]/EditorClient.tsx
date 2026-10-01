@@ -47,7 +47,7 @@ function PreviewPanel({ content, post, pageConfig, categories }: { content: any;
         <Breadcrumb items={[{ label: categories.find((c: any) => c.id === post.categoryId)?.nameZh || tt.siteName }, { label: (post.titleZh || post.title) || tt.dashUntitled }]} />
         <div className="flex items-center gap-3 mb-4 mt-3">
           <span className="inline-block px-2.5 py-0.5 text-[10px] font-semibold tracking-widest uppercase rounded-none border" style={{ backgroundColor: pageConfig.primaryColor || undefined, borderColor: pageConfig.primaryColor || undefined, color: "#fff" }}>{categories.find((c: any) => c.id === post.categoryId)?.nameZh || categories.find((c: any) => c.id === post.categoryId)?.name || tt.dashUncategorized}</span>
-          <span className="text-zinc-200">/</span>
+          <span className="text-[var(--yh-muted)]">/</span>
           <span className="text-[11px] text-[var(--yh-muted)]">{post.readTime || "5 min"}</span>
         </div>
         <h1 className={`text-3xl font-semibold leading-[1.2] tracking-tight mb-4 ${pageConfig.fontFamily === "serif" ? "font-serif" : ""}`} style={{ color: pageConfig.primaryColor && pageConfig.theme !== "dark" ? pageConfig.primaryColor : undefined }}>{(tlang === "zh" ? post.titleZh || post.title : post.title) || tt.dashUntitled}</h1>

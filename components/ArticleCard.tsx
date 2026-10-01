@@ -31,7 +31,7 @@ export function ArticleCard({
     <Reveal delay={Math.min(index, 8) * 45} className="h-full">
       <Link
         href={`/posts/${post.id}`}
-        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:border-[var(--yh-muted)] hover:-translate-y-[2px] flex flex-col overflow-hidden rounded-none transition-[transform,border-color] duration-[250ms] [transition-timing-function:var(--ease-out)] transform-gpu [backface-visibility:hidden]`}
+        className={`group text-left w-full h-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:border-[var(--yh-muted)] hover:-translate-y-[2px] flex flex-col overflow-hidden rounded-none shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-[transform,border-color,box-shadow] duration-[var(--duration-normal)] [transition-timing-function:var(--ease-out)] transform-gpu [backface-visibility:hidden]`}
       >
       <div className="relative overflow-hidden aspect-[16/9]">
         <ArticleArt post={post} />

@@ -282,10 +282,10 @@ export default function MobilePostsPage() {
                   </button>
                   <button
                     onClick={() => toggleFeatured(p)}
-                    className={`text-xs px-1 py-2.5 border rounded-none font-medium min-h-[48px] ${
+                    className={`text-xs px-1 py-2.5 border rounded-none font-medium min-h-[48px] transition-colors active:opacity-60 ${
                       p.featured
-                        ? "bg-[var(--dash-accent)] text-white border-[var(--dash-accent)]"
-                        : "bg-[var(--dash-card)] border-[var(--dash-border)]"
+                        ? "bg-[var(--dash-accent)] text-[var(--dash-bg)] border-[var(--dash-accent)]"
+                        : "bg-[var(--dash-card)] text-[var(--dash-text)] border-[var(--dash-border)]"
                     }`}
                   >
                     {p.featured ? (lang === "zh" ? "取消荐" : "Unfeat") : (lang === "zh" ? "推荐" : "Feature")}

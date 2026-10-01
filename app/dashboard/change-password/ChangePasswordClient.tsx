@@ -73,7 +73,7 @@ export default function ChangePasswordPage() {
           </p>
         </div>
 
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-8 rounded-none">
+        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] p-8 rounded-none shadow-[var(--shadow-card)] section-in">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="text-[11px] tracking-widest uppercase text-[var(--dash-muted)] font-medium block mb-2">
@@ -142,7 +142,7 @@ export default function ChangePasswordPage() {
             </div>
 
             {error && (
-              <div className="text-sm text-[var(--dash-danger)] bg-[var(--dash-danger-soft)] border border-[var(--dash-danger-border)] px-4 py-3 rounded-none">
+              <div role="alert" className="text-sm text-[var(--dash-danger)] bg-[var(--dash-danger-soft)] border border-[var(--dash-danger-border)] px-4 py-3 rounded-none animate-[ffIn_0.2s_ease-out]">
                 {error}
               </div>
             )}
@@ -152,7 +152,7 @@ export default function ChangePasswordPage() {
             <button
               type="submit"
               disabled={loading || !currentPassword || !newEmail.trim() || !newPassword.trim() || !confirmPassword || !newName.trim()}
-              className="w-full py-3 bg-[var(--dash-text)] text-white text-sm tracking-widest uppercase hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-none font-medium"
+              className="w-full py-3 min-h-[48px] bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm tracking-widest uppercase hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity rounded-none font-medium"
             >
               {loading ? (lang === "zh" ? "保存中..." : "Saving...") : (lang === "zh" ? "确认修改" : "Confirm")}
             </button>

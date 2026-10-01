@@ -17,7 +17,7 @@ export function MArticleCard({ post }: { post: any }) {
   return (
     <Link
       href={`/m/posts/${post.id}`}
-      className="group text-left w-full border border-[var(--yh-border)] bg-[var(--dash-card)] active:bg-[var(--yh-border)] flex flex-col overflow-hidden rounded-none"
+      className="group text-left w-full border border-[var(--yh-border)] bg-[var(--dash-card)] hover:border-[var(--yh-muted)] active:bg-[var(--yh-border)]/40 flex flex-col overflow-hidden rounded-none shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-[border-color,box-shadow,background-color]"
     >
       <div className="relative overflow-hidden aspect-[16/9]">
         <ArticleArt post={post} noBorder />

@@ -93,7 +93,7 @@ h1, h2, h3 {
 }
 
 /* Monospace fallback - use system monospace for code */
-code, pre, .font-mono {
+code, pre, .font-mono, .mono {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -512,7 +512,7 @@ body::after {
 }
 
 .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
-  color: #999;
+  color: var(--yh-muted);
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -521,14 +521,17 @@ body::after {
 
 .tiptap-editor .ProseMirror img {
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: 0;
   margin: 1.5em 0;
   display: block;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--yh-border);
 }
 
+/* Tiptap 编辑器图片选中态：品牌色描边 */
 .tiptap-editor .ProseMirror img.ProseMirror-selectednode {
   outline: 2px solid var(--dash-accent);
+  outline-offset: 2px;
 }
 
 .tiptap-editor .ProseMirror ::selection {
@@ -543,18 +546,18 @@ body::after {
 
 .tiptap-editor .ProseMirror table td,
 .tiptap-editor .ProseMirror table th {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--yh-border);
   padding: 8px 12px;
   text-align: left;
 }
 
 .tiptap-editor .ProseMirror table th {
-  background: #f9fafb;
+  background: var(--dash-bg);
   font-weight: 600;
 }
 
 .tiptap-editor .ProseMirror table .selectedCell {
-  background: #dbeafe;
+  background: var(--dash-accent-soft);
 }
 
 .tiptap-editor {
@@ -613,18 +616,19 @@ body::after {
 
 /* Blockquote */
 .tiptap-editor blockquote {
-  border-left: 3px solid var(--yh-border);
+  border-left: 3px solid var(--yh-accent);
   padding-left: 1em;
   margin: 1em 0;
-  color: #555;
+  color: var(--yh-muted);
   font-style: italic;
 }
 
 /* Code Block */
 .tiptap-editor pre {
-  background: #1e1e1e;
-  color: #d4d4d4;
-  border-radius: 6px;
+  background: var(--dash-text);
+  color: var(--dash-bg);
+  border-radius: 0;
+  border: 1px solid var(--dash-border);
   padding: 1em;
   overflow-x: auto;
   font-size: 13px;
@@ -642,10 +646,11 @@ body::after {
 }
 
 .tiptap-editor code {
-  background: #f1f1f1;
-  color: #c7254e;
+  background: var(--dash-bg);
+  color: var(--dash-text);
+  border: 1px solid var(--dash-border);
   padding: 0.15em 0.4em;
-  border-radius: 3px;
+  border-radius: 0;
   font-size: 0.9em;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
@@ -712,7 +717,7 @@ body::after {
 }
 
 .tiptap-editor th {
-  background: #f9fafb;
+  background: var(--dash-bg);
   font-weight: 600;
   font-size: 0.9em;
 }
@@ -726,7 +731,7 @@ body::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(200, 200, 255, 0.3);
+  background: var(--dash-accent-soft);
   pointer-events: none;
 }
 
@@ -746,7 +751,8 @@ body::after {
 .tiptap-editor img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: 0;
+  border: 1px solid var(--yh-border);
   margin: 1em 0;
 }
 
@@ -769,9 +775,9 @@ body::after {
 
 /* Highlight */
 .tiptap-editor mark {
-  background: #fef08a;
+  background: color-mix(in oklab, var(--yh-accent) 22%, transparent);
   padding: 0.1em 0.2em;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 /* Typography extension */
@@ -811,7 +817,7 @@ body::after {
 }
 
 .prose thead {
-  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+  background: var(--dash-bg);
 }
 
 .prose th {
@@ -819,7 +825,7 @@ body::after {
 }
 
 .prose tbody tr:hover {
-  background-color: rgba(249, 250, 251, 0.5);
+  background-color: var(--dash-bg);
 }
 
 .prose tbody tr:last-child td {
@@ -841,8 +847,8 @@ body::after {
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #71717a;
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--yh-muted);
+  background: transparent;
   border-radius: 0;
 }
 
@@ -1308,6 +1314,12 @@ body::after {
 .dark [class~="border-zinc-700"] { border-color: #3a352d }
 .dark [class~="border-zinc-800"] { border-color: #2c2a26 }
 .dark [class~="border-zinc-900"] { border-color: #e8e4dc }
+/* 圆角残留：全站直角身份，历史遗留的 rounded 统一压平（生命感圆标 rounded-full 豁免） */
+.dark [class~="rounded-xl"], [class~="rounded-xl"],
+.dark [class~="rounded-t-xl"], [class~="rounded-t-xl"],
+.dark [class~="rounded-br-sm"], [class~="rounded-br-sm"],
+.dark [class~="rounded-lg"], [class~="rounded-lg"],
+.dark [class~="rounded-md"], [class~="rounded-md"] { border-radius: 0 }
 
 /* ============================================================
    封面家族色 · 日/夜双令牌（2026-09 五类目重构：Design/Build/Lab/Found/Log）

@@ -75,7 +75,7 @@ export function TocDrawer({
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`${hideOnLg ? "lg:hidden " : ""}fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[0_8px_30px_-8px_rgba(0,0,0,0.3)] flex items-center justify-center active:opacity-90`}
+        className={`${hideOnLg ? "lg:hidden " : ""}fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 w-12 h-12 bg-[var(--yh-text)] text-[var(--yh-bg)] rounded-none shadow-[var(--shadow-float)] flex items-center justify-center active:opacity-90`}
         aria-label="TOC"
         hidden={open}
       >
@@ -87,7 +87,7 @@ export function TocDrawer({
       {open && (
         <div className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm ${closing ? "mask-out" : "mask-in"}`} onClick={requestClose}>
           <div
-            className={`absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-2xl border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)] ${closing ? "sheet-out" : "sheet-in"}`}
+            className={`absolute bottom-0 inset-x-0 bg-[var(--dash-card)] rounded-none shadow-[var(--shadow-float)] border-t border-[var(--yh-border)] max-h-[75vh] flex flex-col pb-[env(safe-area-inset-bottom)] ${closing ? "sheet-out" : "sheet-in"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-2">
@@ -99,9 +99,9 @@ export function TocDrawer({
               </p>
               <button
                 onClick={requestClose}
-                className="mono text-[11px] px-3 py-2 rounded-none border border-[var(--yh-border)] min-h-[48px]"
+                className="mono text-[11px] px-3 py-2 rounded-none border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors min-h-[48px]"
               >
-                Close
+                {t.collapseThoughts}
               </button>
             </div>
 
@@ -136,10 +136,10 @@ export function TocDrawer({
                       // 等抽屉退场动画结束后再滚动
                       setTimeout(() => scrollToHeading(h.id), 220);
                     }}
-                    className={`flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none min-h-[48px] active:bg-[var(--yh-border)] ${
+                    className={`flex items-center gap-2 text-[15px] leading-snug py-3 px-3 rounded-none min-h-[48px] transition-colors active:bg-[var(--yh-border)] ${
                       isActive
                         ? "text-[var(--yh-accent)] bg-[var(--yh-accent)]/[0.07] font-medium"
-                        : "text-[var(--yh-muted)]"
+                        : "text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:bg-[var(--yh-bg)]/60"
                     }`}
                   >
                     <span

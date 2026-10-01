@@ -33,7 +33,7 @@ export default function LoadingShell() {
       <div className="w-full max-w-[min(70%,1600px)] mx-auto flex flex-col items-center gap-10 relative">
         {/* 品牌行 */}
         <div className="flex flex-col items-center gap-5 animate-[fadeIn_0.5s_var(--ease-out)_both]">
-          <span className="w-11 h-11 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[16px] shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
+          <span className="w-11 h-11 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[16px] shadow-[var(--shadow-float)]">
             S
           </span>
           <span className="mono text-[13px] tracking-[0.16em] uppercase text-[var(--yh-muted)]">

@@ -149,15 +149,15 @@ export function NotesPageSkeleton() {
 export function MediaPageSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Skeleton className="h-7 w-24" />
         <div className="flex items-center gap-3">
           <Skeleton className="h-7 w-24" />
           <Skeleton className="h-9 w-20" />
         </div>
       </div>
-      <Skeleton className="h-3 w-96" />
-      <div className="grid grid-cols-4 gap-4">
+      <Skeleton className="h-3 w-full max-w-96" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => <GridCardSkeleton key={i} />)}
       </div>
     </div>
@@ -206,11 +206,11 @@ export function DashboardPageSkeleton() {
         <Skeleton className="h-7 w-24" />
         <Skeleton className="h-4 w-32 mt-2" />
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
       </div>
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-6">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-3 w-16" />

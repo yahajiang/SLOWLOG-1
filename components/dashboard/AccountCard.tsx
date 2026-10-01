@@ -96,7 +96,7 @@ export function AccountCard() {
           <button
             type="submit"
             disabled={saving || !currentPassword || !email || !password || !confirmPassword || !name}
-            className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 font-medium"
+            className="px-6 py-2 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 font-medium transition-opacity"
           >
             {saving ? (lang === "zh" ? "保存中..." : "Saving...") : t.acctSave}
           </button>

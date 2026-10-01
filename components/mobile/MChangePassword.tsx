@@ -73,7 +73,7 @@ export function MChangePassword() {
   }
 
   const inputCls =
-    "w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-muted)] focus:outline-none transition-colors rounded-none min-h-[48px]";
+    "w-full px-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--yh-accent)]/20 transition-colors rounded-none min-h-[48px]";
   const labelCls = "text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2";
 
   return (
@@ -91,13 +91,13 @@ export function MChangePassword() {
           </p>
         </div>
 
-        <div className="mb-4 text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--yh-accent)] px-4 py-3 rounded-none">
+        <div className="mb-4 text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--yh-accent)] px-4 py-3 rounded-none shadow-[var(--shadow-card)]">
           {lang === "zh"
             ? "检测到您使用的是默认账户，请修改邮箱、密码和名称后继续使用。"
             : "You are using the default account. Please update your email, password and name to continue."}
         </div>
 
-        <div className="bg-[var(--dash-card)] border border-[var(--yh-border)] p-6 rounded-none">
+        <div className="bg-[var(--dash-card)] border border-[var(--yh-border)] p-6 rounded-none shadow-[var(--shadow-card)] section-in">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className={labelCls}>{lang === "zh" ? "当前密码" : "Current Password"}</label>
@@ -159,7 +159,7 @@ export function MChangePassword() {
             </div>
 
             {error && (
-              <div className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none">
+              <div role="alert" className="text-sm text-[var(--yh-text)] bg-[var(--dash-card)] border border-[var(--yh-border)] border-l-4 border-l-[var(--dash-danger)] px-4 py-3 rounded-none animate-[ffIn_0.2s_ease-out]">
                 {error}
               </div>
             )}
@@ -174,7 +174,7 @@ export function MChangePassword() {
                 !confirmPassword ||
                 !newName.trim()
               }
-              className="w-full py-3.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-sm tracking-widest uppercase hover:bg-[var(--yh-accent)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
+              className="w-full py-3.5 bg-[var(--yh-text)] text-[var(--yh-bg)] text-sm tracking-widest uppercase hover:bg-[var(--yh-accent)] active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-none min-h-[48px]"
             >
               {loading ? (lang === "zh" ? "保存中..." : "Saving...") : lang === "zh" ? "确认修改" : "Confirm"}
             </button>

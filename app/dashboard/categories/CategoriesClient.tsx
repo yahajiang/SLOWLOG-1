@@ -83,14 +83,14 @@ export default function CategoriesPage(){
         <div><label className="text-xs text-[var(--dash-muted)]">Slug</label><input value={slug} onChange={e=>setSlug(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder="design" /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "描述" : "Description"}</label><input value={desc} onChange={e=>setDesc(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "英文描述，可选" : "Optional"} /></div>
         <div><label className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? "中文描述" : "Chinese desc"}</label><input value={descZh} onChange={e=>setDescZh(e.target.value)} className={inputCls("md", "admin", "block mt-1")} placeholder={lang === "zh" ? "可选" : "Optional"} /></div>
-        <button onClick={create} className="px-6 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 font-medium">{lang === "zh" ? "新建" : "New"}</button>
+        <button onClick={create} className="px-6 py-2 min-h-[36px] inline-flex items-center bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none hover:opacity-90 active:opacity-80 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed">{lang === "zh" ? "新建" : "New"}</button>
       </div>
       <div className={`${PANEL_CLS} divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger`}>
         {cats.map(c=>{
           // 列表副行按界面语言显示描述（与前台 catDescription 同规则：当前语言缺失时回退另一侧）
           const shown = lang === "zh" ? (c.descriptionZh || c.description) : (c.description || c.descriptionZh)
           return (
-          <div key={c.id} className="p-4 hover:bg-[var(--dash-bg)]">
+          <div key={c.id} className="p-4 hover:bg-[var(--dash-bg)] active:bg-[var(--dash-bg)] transition-colors">
             {editingId===c.id && draft ? (
               <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -120,7 +120,7 @@ export default function CategoriesPage(){
           </div>
           )
         })}
-        {cats.length===0 && <p className="p-12 text-center text-sm text-[var(--dash-muted)]">{lang === "zh" ? "暂无分类" : "No categories yet"}</p>}
+        {cats.length===0 && <div className="p-12 text-center"><p className="text-sm font-medium text-[var(--dash-text)]">{t.catEmpty}</p><p className="text-xs text-[var(--dash-muted)] mt-1.5">{t.catSlugHint}</p></div>}
       </div>
       <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title={lang === "zh" ? "删除分类？" : "Delete this category?"} description={lang === "zh" ? "若该分类下有文章将无法删除。" : "Cannot delete if this category has posts."} confirmText={lang === "zh" ? "删除" : "Delete"} variant="danger" onConfirm={confirmDel} />
     </div>

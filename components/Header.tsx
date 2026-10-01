@@ -43,7 +43,7 @@ export function Header({ searchQuery, onSearchChange }: HeaderProps) {
   return (
     <header
       className={`sticky top-0 z-40 h-[62px] border-b transition-all duration-[180ms] ease-[var(--ease-out)] bg-[var(--yh-bg)]/90 backdrop-blur-xl ${
-        scrolled ? "border-[var(--yh-border)] shadow-sm" : "border-[var(--yh-border)]"
+        scrolled ? "border-[var(--yh-border)] shadow-[var(--shadow-card)]" : "border-[var(--yh-border)]"
       }`}
     >
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full">

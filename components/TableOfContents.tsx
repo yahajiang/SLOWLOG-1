@@ -37,7 +37,7 @@ export function TableOfContents({
 
   return (
     <aside className="hidden lg:block w-[308px] shrink-0 -ml-8">
-      <div className="sticky top-[88px] border border-[var(--yh-border)] bg-[var(--dash-card)]/95 backdrop-blur-sm shadow-[0_1px_2px_rgba(0,0,0,0.03)] p-5">
+      <div className="sticky top-[88px] border border-[var(--yh-border)] bg-[var(--dash-card)]/95 backdrop-blur-sm shadow-[var(--shadow-card)] p-5">
         {/* 标题行 + 折叠开关 */}
         <div className="flex items-baseline justify-between mb-4 pb-3 border-b border-[var(--yh-border)]/70">
           <button

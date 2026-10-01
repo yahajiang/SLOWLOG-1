@@ -200,9 +200,9 @@ export default function PostsPage() {
 
   return (
     <div className="space-y-4 section-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <AdminTitle>{t.dashPosts}</AdminTitle>
-        <Link href="/dashboard/posts/new" className="px-5 py-2.5 bg-[var(--dash-text)] text-white text-sm rounded-none hover:opacity-90 transition-opacity font-medium">{t.dashNewPost}</Link>
+        <Link href="/dashboard/posts/new" className="px-5 py-2.5 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none hover:opacity-90 active:opacity-80 transition-opacity font-medium min-h-[36px] inline-flex items-center">{t.dashNewPost}</Link>
       </div>
 
       <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none p-4 space-y-3 shadow-[var(--shadow-card)]">
@@ -245,17 +245,18 @@ export default function PostsPage() {
           />
           <span className="text-xs text-[var(--dash-muted)] ml-auto tabular-nums">{lang === "zh" ? `${total} 篇 · 第 ${safePage}/${totalPages} 页` : `${total} posts · Page ${safePage}/${totalPages}`}</span>
         </div>
-          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)]">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 bg-[var(--dash-danger)] text-[var(--dash-danger-fg)] rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
+          {selected.size>0 && <div className="flex items-center gap-2 text-xs"><span className="text-[var(--dash-muted)] tabular-nums">{lang === "zh" ? `已选 ${selected.size} 篇` : `${selected.size} selected`}</span><button onClick={bulkDel} className="px-3 py-1.5 min-h-[36px] inline-flex items-center bg-[var(--dash-danger)] text-[var(--dash-danger-fg)] rounded-none text-xs border border-[var(--dash-danger)] hover:bg-[var(--dash-danger-strong)] active:opacity-80 transition-colors font-medium">{lang === "zh" ? "批量删除" : "Delete selected"}</button><button onClick={()=>setSelected(new Set())} className="px-3 py-1.5 min-h-[36px] inline-flex items-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors text-xs">{lang === "zh" ? "清空" : "Clear"}</button></div>}
       </div>
 
-      <div className={`${PANEL_CLS} shadow-[var(--shadow-card)]`}>
+      <div className={`${PANEL_CLS} shadow-[var(--shadow-card)] overflow-x-auto`}>
+        <div className="min-w-[720px]">
         <div className="px-4 py-2 border-b border-[var(--dash-border)] flex items-center gap-3 text-xs text-[var(--dash-muted)] bg-[var(--dash-bg)]">
           <label className="flex items-center gap-2"><input type="checkbox" checked={allPagedSelected} onChange={toggleAll} className="accent-[var(--dash-accent)]" /> {lang === "zh" ? "全选" : "All"}</label>
           <span className="ml-auto">{lang === "zh" ? "标题 / 分类 / 状态 · 操作" : "Title / Category / Status · Actions"}</span>
         </div>
         <div className="divide-y divide-[var(--dash-border)] stagger">
           {paged.map((p) => (
-            <div key={p.id} className="flex items-center gap-3 p-4 hover:bg-[var(--dash-bg)] group">
+            <div key={p.id} className="flex items-center gap-3 p-4 hover:bg-[var(--dash-bg)] active:bg-[var(--dash-bg)] transition-colors group">
               <input type="checkbox" checked={selected.has(p.id)} onChange={()=>toggleSelect(p.id)} className="accent-[var(--dash-accent)]" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
@@ -265,25 +266,26 @@ export default function PostsPage() {
                 <p className="text-xs text-[var(--dash-muted)] mt-1 truncate">{p.category?.nameZh || p.category?.name || t.dashUncategorized} · <span className={`px-1.5 py-0.5 rounded-none text-[10px] border ${p.status === "published" ? (p.publishedAt && new Date(p.publishedAt) > new Date() ? "bg-[var(--dash-info-soft)] text-[var(--dash-info)] border-[var(--dash-info-border)]" : "bg-[var(--dash-ok-soft)] text-[var(--dash-ok)] border-[var(--dash-ok-border)]") : p.status === "draft" ? "bg-[var(--dash-warn-soft)] text-[var(--dash-warn)] border-[var(--dash-warn-border)]" : "bg-[var(--dash-bg)] text-[var(--dash-muted)] border-[var(--dash-border)]"}`}>{p.status === "published" && p.publishedAt && new Date(p.publishedAt) > new Date() ? `${t.dashScheduledPrefix} ${new Date(p.publishedAt).toLocaleDateString()}` : p.status}</span> · {new Date(p.createdAt).toLocaleDateString()} · {p.tags?.slice(0,2).join(", ")}</p>
               </div>
               <div className="flex items-center gap-1 ml-2 flex-wrap justify-end">
-                <button onClick={()=>toggleFeatured(p)} className={`${actBase} border font-medium ${p.featured?"bg-[var(--dash-accent)] text-white border-[var(--dash-accent)] hover:opacity-90":"bg-[var(--dash-card)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)]"}`}>{p.featured?(lang === "zh" ? "取消推荐" : "Unfeature"):(lang === "zh" ? "推荐" : "Feature")}</button>
-                <button onClick={()=>togglePublish(p)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium`}>{p.status==="published"?(lang === "zh" ? "下架" : "Unpublish"):(lang === "zh" ? "发布" : "Publish")}</button>
-                <Link href={`/dashboard/posts/${p.id}`} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] hover:bg-[var(--dash-bg)] font-medium`}>{lang === "zh" ? "编辑" : "Edit"}</Link>
-                <button onClick={()=>duplicate(p)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]`}>{lang === "zh" ? "复制" : "Duplicate"}</button>
-                <button onClick={()=>copyLink(p.id)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]`}>{lang === "zh" ? "链接" : "Link"}</button>
-                <Link href={`/posts/${p.id}`} target="_blank" className={`${actBase} bg-[var(--dash-text)] text-white border border-[var(--dash-text)] hover:opacity-90 font-medium`}>{lang === "zh" ? "查看" : "View"}</Link>
-                <button onClick={()=>delOne(p.id)} className={`${actBase} border border-[var(--dash-danger-border)] bg-[var(--dash-card)] text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] font-medium`}>{t.dashDelete}</button>
+                <button onClick={()=>toggleFeatured(p)} className={`${actBase} border font-medium transition-colors ${p.featured?"bg-[var(--dash-accent)] text-[var(--dash-bg)] border-[var(--dash-accent)] hover:opacity-90 active:opacity-80":"bg-[var(--dash-card)] text-[var(--dash-text)] border-[var(--dash-border)] hover:bg-[var(--dash-bg)] active:opacity-80"}`}>{p.featured?(lang === "zh" ? "取消推荐" : "Unfeature"):(lang === "zh" ? "推荐" : "Feature")}</button>
+                <button onClick={()=>togglePublish(p)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors font-medium`}>{p.status==="published"?(lang === "zh" ? "下架" : "Unpublish"):(lang === "zh" ? "发布" : "Publish")}</button>
+                <Link href={`/dashboard/posts/${p.id}`} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors font-medium`}>{lang === "zh" ? "编辑" : "Edit"}</Link>
+                <button onClick={()=>duplicate(p)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors`}>{lang === "zh" ? "复制" : "Duplicate"}</button>
+                <button onClick={()=>copyLink(p.id)} className={`${actBase} border border-[var(--dash-border)] bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors`}>{lang === "zh" ? "链接" : "Link"}</button>
+                <Link href={`/posts/${p.id}`} target="_blank" className={`${actBase} bg-[var(--dash-text)] text-[var(--dash-bg)] border border-[var(--dash-text)] hover:opacity-90 active:opacity-80 transition-opacity font-medium`}>{lang === "zh" ? "查看" : "View"}</Link>
+                <button onClick={()=>delOne(p.id)} className={`${actBase} border border-[var(--dash-danger-border)] bg-[var(--dash-card)] text-[var(--dash-danger)] hover:bg-[var(--dash-danger-soft)] active:opacity-80 transition-colors font-medium`}>{t.dashDelete}</button>
               </div>
             </div>
           ))}
-          {paged.length === 0 && (loadErr ? <ListError onRetry={load} /> : <div className="p-12 text-center text-sm text-[var(--dash-muted)]">{loading ? (lang === "zh" ? "加载中…" : "Loading…") : t.dashEmptyFiltered}</div>)}
+          {paged.length === 0 && (loadErr ? <ListError onRetry={load} /> : <div className="p-12 text-center"><p className="text-sm font-medium text-[var(--dash-text)]">{loading ? (lang === "zh" ? "加载中…" : "Loading…") : t.dashEmptyFiltered}</p>{!loading && <p className="text-xs text-[var(--dash-muted)] mt-1.5">{lang === "zh" ? "换个关键词试试，或清除筛选查看全部" : "Try another keyword, or clear filters"}</p>}</div>)}
         </div>
         {totalPages>1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--dash-border)] bg-[var(--dash-bg)] text-xs">
-            <button disabled={safePage<=1} onClick={()=>setPage(safePage-1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{t.pagePrev}</button>
-            <span className="tabular-nums">{lang === "zh" ? `第 ${safePage} / ${totalPages} 页 · 共 ${total} 篇` : `Page ${safePage}/${totalPages} · ${total} posts`}</span>
-            <button disabled={safePage>=totalPages} onClick={()=>setPage(safePage+1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{t.pageNext}</button>
+            <button disabled={safePage<=1} onClick={()=>setPage(safePage-1)} className="px-3 py-1 min-h-[36px] inline-flex items-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pagePrev}</button>
+            <span className="tabular-nums text-[var(--dash-muted)]">{lang === "zh" ? `第 ${safePage} / ${totalPages} 页 · 共 ${total} 篇` : `Page ${safePage}/${totalPages} · ${total} posts`}</span>
+            <button disabled={safePage>=totalPages} onClick={()=>setPage(safePage+1)} className="px-3 py-1 min-h-[36px] inline-flex items-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pageNext}</button>
           </div>
         )}
+        </div>
       </div>
       <ConfirmDialog open={!!delId} onOpenChange={(v)=>!v&&setDelId(null)} title={lang === "zh" ? "确定删除？" : "Delete this post?"} description={lang === "zh" ? "将物理删除，不可恢复。" : "This will be permanently deleted."} confirmText={t.dashDelete} variant="danger" onConfirm={confirmDel} />
       <ConfirmDialog open={bulkConfirm} onOpenChange={setBulkConfirm} title={lang === "zh" ? `批量删除 ${selected.size} 篇？` : `Delete ${selected.size} selected?`} description={lang === "zh" ? "将物理删除选中的所有文章，不可恢复。" : "Selected posts will be permanently deleted."} confirmText={t.dashDelete} variant="danger" onConfirm={confirmBulkDel} />

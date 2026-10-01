@@ -96,14 +96,14 @@ export default function MediaPage(){
   return (
     loading ? <MediaPageSkeleton /> :
     <div className="space-y-6 section-in" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <AdminTitle>{lang === "zh" ? "媒体库" : "Media"}</AdminTitle>
         <div className="flex items-center gap-3">
           <div className="flex border border-[var(--dash-border)] rounded-none overflow-hidden text-xs">
-            <button onClick={() => setView("grid")} className={`px-3 py-1.5 ${view === "grid" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "网格" : "Grid"}</button>
-            <button onClick={() => setView("list")} className={`px-3 py-1.5 ${view === "list" ? "bg-[var(--dash-text)] text-white" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "列表" : "List"}</button>
+            <button onClick={() => setView("grid")} className={`px-3 py-1.5 min-h-[36px] inline-flex items-center transition-colors ${view === "grid" ? "bg-[var(--dash-text)] text-[var(--dash-bg)]" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "网格" : "Grid"}</button>
+            <button onClick={() => setView("list")} className={`px-3 py-1.5 min-h-[36px] inline-flex items-center transition-colors ${view === "list" ? "bg-[var(--dash-text)] text-[var(--dash-bg)]" : "bg-[var(--dash-card)] text-[var(--dash-muted)] hover:text-[var(--dash-text)]"}`}>{lang === "zh" ? "列表" : "List"}</button>
           </div>
-          <label className="px-4 py-2 bg-[var(--dash-text)] text-white text-sm rounded-none cursor-pointer hover:opacity-90 font-medium disabled:opacity-50">
+          <label className="px-4 py-2 bg-[var(--dash-text)] text-[var(--dash-bg)] text-sm rounded-none cursor-pointer hover:opacity-90 active:opacity-80 transition-opacity font-medium disabled:opacity-50 min-h-[36px] inline-flex items-center">
             {progress ? (lang === "zh" ? "上传中..." : "Uploading...") : (lang === "zh" ? "上传" : "Upload")}
             <input type="file" multiple accept="image/*" className="hidden" onChange={onUploadChange} disabled={!!progress} />
           </label>
@@ -122,9 +122,9 @@ export default function MediaPage(){
         </div>
       )}
       {view === "grid" ? (
-        <div className="grid grid-cols-4 gap-4 stagger">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
           {items.map(m => (
-            <div key={m.id} className={`${PANEL_CLS} shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] transition-shadow`}>
+            <div key={m.id} className={`${PANEL_CLS} shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-float)] hover:border-[var(--dash-muted)]/40 transition-[box-shadow,border-color] duration-[var(--duration-normal)]`}>
               <div className="aspect-[4/3] bg-[var(--dash-bg)] flex items-center justify-center overflow-hidden">
                 {m.mimeType?.includes("svg") || m.mimeType?.includes("gif")
                   ? <img src={m.url} alt={m.alt || m.filename} loading="lazy" decoding="async" className="max-h-full" />
@@ -132,37 +132,39 @@ export default function MediaPage(){
               </div>
               <div className="p-3">
                 <p className="text-xs font-medium truncate text-[var(--dash-text)]">{m.filename}</p>
-                <p className="text-[11px] text-[var(--dash-muted)]">{(m.size / 1024).toFixed(1)}KB · {m.width || "-"}×{m.height || "-"}</p>
+                <p className="text-[11px] text-[var(--dash-muted)] tabular-nums">{(m.size / 1024).toFixed(1)}KB · {m.width || "-"}×{m.height || "-"}</p>
                 <div className="flex gap-1 mt-2">
-                  <button onClick={() => copy(m.url)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Copy"}</button>
-                  <button onClick={() => del(m.id)} className="flex-1 text-xs py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-danger-soft)] hover:text-[var(--dash-danger)] hover:border-[var(--dash-danger-border)]">{lang === "zh" ? "删除" : "Delete"}</button>
+                  <button onClick={() => copy(m.url)} className="flex-1 text-xs py-1 min-h-[36px] inline-flex items-center justify-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{lang === "zh" ? "复制" : "Copy"}</button>
+                  <button onClick={() => del(m.id)} className="flex-1 text-xs py-1 min-h-[36px] inline-flex items-center justify-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-danger-soft)] hover:text-[var(--dash-danger)] hover:border-[var(--dash-danger-border)] active:opacity-80 transition-colors">{lang === "zh" ? "删除" : "Delete"}</button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger">
+        <div className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-none divide-y divide-[var(--dash-border)] shadow-[var(--shadow-card)] stagger overflow-x-auto">
+          <div className="min-w-[560px] divide-y divide-[var(--dash-border)]">
           {items.map(m => (
-            <div key={m.id} className="flex items-center gap-4 p-3 hover:bg-[var(--dash-bg)]">
+            <div key={m.id} className="flex items-center gap-4 p-3 hover:bg-[var(--dash-bg)] active:bg-[var(--dash-bg)] transition-colors">
               <img src={m.url} alt="" loading="lazy" decoding="async" className="w-12 h-12 object-cover rounded-none border border-[var(--dash-border)]" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm truncate text-[var(--dash-text)]">{m.filename}</p>
-                <p className="text-xs text-[var(--dash-muted)]">{m.mimeType} · {(m.size / 1024).toFixed(1)}KB</p>
+                <p className="text-xs text-[var(--dash-muted)] tabular-nums">{m.mimeType} · {(m.size / 1024).toFixed(1)}KB</p>
               </div>
-              <button onClick={() => copy(m.url)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-bg)]">{lang === "zh" ? "复制" : "Copy"}</button>
-              <button onClick={() => del(m.id)} className="text-xs px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] hover:bg-[var(--dash-danger-soft)] hover:text-[var(--dash-danger)]">{lang === "zh" ? "删除" : "Delete"}</button>
+              <button onClick={() => copy(m.url)} className="text-xs px-3 py-1 min-h-[36px] inline-flex items-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors shrink-0">{lang === "zh" ? "复制" : "Copy"}</button>
+              <button onClick={() => del(m.id)} className="text-xs px-3 py-1 min-h-[36px] inline-flex items-center border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] hover:bg-[var(--dash-danger-soft)] hover:text-[var(--dash-danger)] hover:border-[var(--dash-danger-border)] active:opacity-80 transition-colors shrink-0">{lang === "zh" ? "删除" : "Delete"}</button>
             </div>
           ))}
+          </div>
         </div>
       )}
-      {items.length === 0 && (loadErr ? <ListError onRetry={() => load()} /> : <p className="text-center text-sm text-[var(--dash-muted)] py-12">{lang === "zh" ? "暂无图片，拖拽或粘贴上传" : "No images yet — drag, drop or paste to upload"}</p>)}
+      {items.length === 0 && (loadErr ? <ListError onRetry={() => load()} /> : <div className="text-center py-12"><p className="text-sm font-medium text-[var(--dash-text)]">{lang === "zh" ? "暂无图片" : "No images yet"}</p><p className="text-xs text-[var(--dash-muted)] mt-1.5">{lang === "zh" ? "拖拽或粘贴上传" : "Drag, drop or paste to upload"}</p></div>)}
       {total > 100 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-[var(--dash-muted)]">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 张` : `Page ${page} / ${totalPages} · ${total} items`}</p>
+          <p className="text-xs text-[var(--dash-muted)] tabular-nums">{lang === "zh" ? `第 ${page} / ${totalPages} 页 · 共 ${total} 张` : `Page ${page} / ${totalPages} · ${total} items`}</p>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{t.pagePrev}</button>
-            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 py-1.5 text-xs border border-[var(--dash-border)] rounded-none disabled:opacity-40 hover:bg-[var(--dash-bg)]">{t.pageNext}</button>
+            <button onClick={() => { setPage(p => Math.max(1, p - 1)); }} disabled={page <= 1} className="px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pagePrev}</button>
+            <button onClick={() => { setPage(p => Math.min(totalPages, p + 1)); }} disabled={page >= totalPages} className="px-3 py-1.5 min-h-[36px] inline-flex items-center text-xs border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] text-[var(--dash-text)] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--dash-bg)] active:opacity-80 transition-colors">{t.pageNext}</button>
           </div>
         </div>
       )}
