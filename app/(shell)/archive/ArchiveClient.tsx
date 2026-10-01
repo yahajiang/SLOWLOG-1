@@ -40,7 +40,7 @@ export default function ArchiveClient({
   initialQ?: string;
   category?: string;
 }) {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const router = useRouter();
   const [q, setQ] = useState(initialQ);
   const [armed, setArmed] = useState(false);
@@ -112,8 +112,8 @@ export default function ArchiveClient({
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}
               className="w-12 h-12 flex items-center justify-center border border-[var(--yh-border)] bg-[var(--dash-card)] text-[var(--yh-muted)] hover:text-[var(--yh-text)] hover:border-[var(--yh-muted)] transition-colors rounded-none"
-              aria-label={lang === "zh" ? "全局搜索" : "Search"}
-              title={lang === "zh" ? "全局搜索（/）" : "Search (/)"}
+              aria-label={t.searchGlobalAria}
+              title={t.searchGlobalTitle}
             >
               <Search className="w-3.5 h-3.5" />
             </button>
@@ -125,7 +125,7 @@ export default function ArchiveClient({
       </div>
       <main className="flex-1 flex flex-col">
       <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 py-6">
-        <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {lang === "zh" ? "全部日志" : "Archive"}</p>
+        <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {t.archiveKicker}</p>
         <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
           {t.archiveDesc(total, stats.yearCount)}
@@ -168,7 +168,7 @@ export default function ArchiveClient({
             type="text"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={lang === "zh" ? "搜索标题或分类…" : "Search titles or categories…"}
+            placeholder={t.archiveSearchPh}
             className={inputCls("lg", "front", "pl-10")}
           />
         </div>

@@ -202,7 +202,7 @@
 - **加载边界不能盖住会 404 的段（刻意不补，别当漏项）**：`loading.tsx` 边界在流式渲染时会先冲刷 200 状态头，把真 404 吞成 soft-404。所以 `/tag/[tag]`、`/m/posts/[id]`、`/t/posts/[id]` 三处**故意没有**各自的 loading 壳（它们都会 `notFound()`），组级壳也只包列表页、不扩到阅读页。判据出处是 `components/LoadingShell.tsx` 与 `app/m/(shell)/loading.tsx` 的头注，不是遗漏。
 - **三处逐字重复收口（2026-10-01）**：① 后台卡片外壳 `bg-[var(--dash-card)] border … overflow-hidden` 原在 **18 处**逐字相同（含带后缀的变体）→ 收成 `components/ui/Panel.tsx` 的 `PANEL_CLS` 常量；用常量而不是包组件，是因为骨架屏里有嵌套 div，重排 18 处 JSX 的风险大于收益，而字符串常量同样只有一处实现、且零结构改动。② 后台页主标题 `text-xl font-semibold tracking-tight …` + 同一句 Jakarta 字体栈内联样式，原 **12 处**各写各的（还漂出 `text-lg` / `text-2xl` / 无色版）→ 收成 `components/ui/AdminTitle.tsx`。③ 品牌圆标（26px 墨圈 + 衬线斜体 S）4 处逐字相同 → `BrandMark`。编辑器的 `text-3xl` 大标题不并入：它渲染的是**文章自己的标题**并跟随页面配置的字体族，不是界面标题。
 - **归档三树同口径（2026-10-01）**：桌面归档缺「筛选 N」而移动版早有（同一件事两张脸），空态卡内也一直没有出口（「清除筛选」只在页头统计行，读者面对空卡要往上滚）；现桌面/平板（`ArchiveClient`）与移动（`MArchive`）都在空态卡内嵌 48px「清除筛选」按钮（桌面 `router.replace` 保住 category 只清 q），桌面补 `t.filteredCount`，两版搜索框统一 `inputCls("lg","front","pl-10")`。**没动**：桌面已有的防抖→服务端重取、self-canonical、时间线 scaleY 生长与年份节点节奏。
-- **画廊是规范的镜像，不是快照（2026-10-01）**：`public/design/gallery.html` 的 `:root`/`.dark` 曾落后产品端三轮（缺 dash 别名、危险五档含 `--dash-danger-fg`、语义三色 9 值、`--duration-exit`/`--motion-grow`），状态徽标表与 toast / 表单错误 / 删除确认预览还在用裸 hex。现补齐并把语义色改指 `var()`；条目 58 → **64**，新增 6 条把这一轮的收口写成可复用规范：`admin-input`（sm/md 36px 两档 + lg 48px，tone=admin/front）、`admin-shell`（`PANEL_CLS` / `AdminTitle` / `BrandMark`）、`list-error`（骨架屏 ≠ 错误态）、`semantic-palette`（ok/warn/info 的底-字-边三件套与夜版 rgba 配法）、`touch-two-tier`（48 前台整页 / 36 后台行内）、`motion-tiers`（180/220/300 + 退出统一 `--duration-exit`）。**画廊里剩下的字面 hex 是插画内容**（Paper/Ink 色板、三主题封面卡、代码编辑器主题、404 菱形母题），走令牌反而失真——判据是「它表达的是某个具体设计，还是界面的语义」。
+- **画廊是规范的镜像，不是快照（2026-10-01）**：`public/design/gallery.html` 的 `:root`/`.dark` 曾落后产品端三轮（缺 dash 别名、危险五档含 `--dash-danger-fg`、语义三色 9 值、`--duration-exit`/`--motion-grow`），状态徽标表与 toast / 表单错误 / 删除确认预览还在用裸 hex。现补齐并把语义色改指 `var()`；条目 58 → **65**，新增 7 条把这一轮的收口写成可复用规范：`admin-input`（sm/md 36px 两档 + lg 48px，tone=admin/front）、`admin-shell`（`PANEL_CLS` / `AdminTitle` / `BrandMark`）、`list-error`（骨架屏 ≠ 错误态）、`semantic-palette`（ok/warn/info 的底-字-边三件套与夜版 rgba 配法）、`touch-two-tier`（48 前台整页 / 36 后台行内）、`motion-tiers`（180/220/300 + 退出统一 `--duration-exit`）、`i18n-source`（文案只从字典取，无障碍名也算文案；建新键前先按值 grep）。**画廊里剩下的字面 hex 是插画内容**（Paper/Ink 色板、三主题封面卡、代码编辑器主题、404 菱形母题），走令牌反而失真——判据是「它表达的是某个具体设计，还是界面的语义」。
 
 ---
 
@@ -248,6 +248,7 @@
 - **标签**：是封面的「路由键」。优先用映射表中的词；避免同义堆叠（`tags[0]` 决定场景）；中英文标签均可命中。
 - **双语字段**：`title/titleZh`、`excerpt/excerptZh`、`html/htmlZh`、`headings/headingsZh` 成对维护，阅读端按语言取样、缺失自动回退；后台录入中文优先。
 - **文案单一来源**：Toast / 空态 / 按钮一律取 `lib/i18n.ts` 的 `t.*`，组件里不许再抄一份同文。2026-09-30 两轮收口：① 5 个键声明了却没人用、同一句话在组件里硬编码（`editorNoVersions`、`editorVersionsHint`、`toastLimit5mb`、`toastImageInserted`、`toastUploadFail`），已接上并补进 `Dict`（补键后 tsc 立刻报出 6 处 `TS2339`，证明"没消费者"正是"没进类型"的原因）；② 口径定为**强制走字典**——移动后台分类管理页原有 33 处内联 `zh ? … : …`，已迁成 23 个新键 + 6 处复用既有键（`dashCatManage`/`dashSaved`/`dashDeleted`/`dashEdit`/`dashDelete`/`editorCancel`），该页现仅剩 1 处 `zh ?`，那是**取字段值**（`descriptionZh || description`）不是文案，属正当用法。另删掉与 `editorScheduledDone` 中英同文的死键 `editorScheduledOk`。字典现为 **zh 326 / en 326 / Dict 326，逐键对称**（校验要用宽容正则——en 侧有两条的值换行写了，严格同行匹配会误报缺失）。
+  ③ **2026-10-01 再收两簇**（现 **339/339/339**）：后台分页钮「上一页/下一页」8 处硬写改吃**既有**键 `pagePrev/pageNext`（英文侧因此从 `Prev` 统一成 `Previous`，与第九轮接好的随想翻页钮同词）；搜索入口的**无障碍名**5 处各写各的（`Header`/`PostClient`/`ArchiveClient`/`SearchPanel` 各一份 `zh ?` 三元式，而 `SearchButton` 干脆只有中文——英文读者拿到的是中文 `aria-label`）→ 新建 `searchGlobalAria`/`searchGlobalTitle` 两处收口。加键前**先按值 grep 字典**：`emptyFiltered`/`noMatch`/`archiveEmpty` 三把都已声明且无人消费，归档空态因此复用 `emptyFiltered` 而不是再造一条。归档页 `lang` 引用清零（`{ t } = useLang()`）。⚠️ 仍有一族没动：`已删除/删除/保存中/网络错误/名称` 在 3 个字典键里同值重复（`deleteSuccess` 与 `dashDeleted` 与 `toastDeleted`），要先定"哪把是正名"才谈得上收——属改名决策，不是机械活。
 - **时间与编号**：日期按语言本地化（`2026年9月1日` / `Sep 1, 2026`），列表用相对时间（60s 自刷新）；阅读时长手工维护（默认 `5 min`）；封面编号 `No.XXXX` 由 id／标题哈希稳定派生，不做人工干预。
 - **SEO 字段**：每篇可覆盖 `seoTitle / seoDescription / seoKeywords / canonicalUrl / ogImage`，并可一键 `noIndex`；站点级有名称/描述/关键词/Favicon/Logo/页脚文案/每页篇数。
 - **输出**：`/sitemap.xml` 只收桌面正文地址；`/rss.xml` 提供订阅；两者在前台保持「隐形」，不占视觉。
@@ -295,7 +296,7 @@
 
 | 项 | 真值 |
 |----|------|
-| 应用 / 画廊 | v0.5.0 · 组件画廊 **64** 条目（2026-10-01；页面自己用 `C.length` 计数，不硬写数字） |
+| 应用 / 画廊 | v0.5.0 · 组件画廊 **65** 条目（2026-10-01；页面自己用 `C.length` 计数，不硬写数字） |
 | 动效 | 180/220/300/500ms · ease-out(0.22,1,0.36,1) · ease-in-out(0.4,0,0.2,1)（与 Android 同曲线）· spring≤1.15 |
 | 触控下限 | ≥48px（Web 与 Android 同一数；44 已于 2026-09-28 清零） |
 | 正文 | 17px/1.9 · 默认 max-w-3xl(768) |

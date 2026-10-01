@@ -891,6 +891,15 @@ const C = [
 - @keyframes 全部定义在 globals.css，组件里禁止塞 <style> 重复注册（Dialog 的 scaleIn 曾与全局分叉 0.96/0.98）
 - 跟随类微动效例外并写明理由：TOC 250ms、TocDrawer 160ms、归档进度轨 120ms、取色器 100ms——它们贴着指针走，套档会延迟
 - prefers-reduced-motion 下关自动播与入场动画，只留必要反馈`},
+ {id:"i18n-source",name:"文案单一来源（字典）",cat:"反馈",desc:"界面文案只从 lib/i18n.ts 的字典取；组件内禁止 lang === &quot;zh&quot; ? 中文 : English 的内联双语。zh / en / export type Dict 三块逐键对称 339/339/339。",
+  pv:`<div style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:260px;font-size:10px"><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:8px 10px"><div class="mono" style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dash-muted)">lib/i18n.ts</div><div class="mono" style="font-size:9px;margin-top:5px;color:var(--dash-text)">searchGlobalAria: "全局搜索" / "Search"<div style="color:var(--dash-muted)">pagePrev: "上一页" / "Previous"</div></div></div><div style="display:flex;gap:6px"><span style="flex:1;border:1px solid var(--dash-ok-border);background:var(--dash-ok-soft);color:var(--dash-ok);padding:6px 8px;text-align:center">ZH · 上一页</span><span style="flex:1;border:1px solid var(--dash-ok-border);background:var(--dash-ok-soft);color:var(--dash-ok);padding:6px 8px;text-align:center">EN · Previous</span></div><div style="border:1px solid var(--dash-danger-border);background:var(--dash-danger-soft);color:var(--dash-danger);padding:6px 8px" class="mono">✗ {lang === "zh" ? "上一页" : "Prev"}</div></div>`,
+  prompt:`${P_BASE}
+新建「文案单一来源」（还原 lib/i18n.ts + lib/lang-context.tsx 的 useLang）：
+- 一条界面文案 = 一个键；组件里只写 t.xxx，禁止 lang === "zh" 内联双语（本轮收掉搜索入口无障碍名 5 处、后台分页钮 8 处、归档 kicker 与 placeholder 各 1 处）
+- 建新键之前先**按值** grep 字典：本仓还躺着 100 多个"已声明未消费"的键，emptyFiltered / noMatch / archiveEmpty 三把都写着同一句「没有匹配的文章」，复用比再造一个强
+- 无障碍名也算文案：aria-label / title 同样走字典。SearchButton 曾把「全局搜索」硬写成中文，英文读者拿到的是中文无障碍名
+- 服务端壳（page.tsx 的 metadata）不能用语典：中文页名写在 routes 的 metadata 里，中英切换只覆盖客户端边界
+- 三块对称是可检查项：zh / en / export type Dict 的键数必须一致，差集为空；不等就是漏了第三块`},
 ];
 
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];

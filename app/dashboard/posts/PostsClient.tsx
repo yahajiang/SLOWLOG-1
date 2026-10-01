@@ -279,9 +279,9 @@ export default function PostsPage() {
         </div>
         {totalPages>1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--dash-border)] bg-[var(--dash-bg)] text-xs">
-            <button disabled={safePage<=1} onClick={()=>setPage(safePage-1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "上一页" : "Prev"}</button>
+            <button disabled={safePage<=1} onClick={()=>setPage(safePage-1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{t.pagePrev}</button>
             <span className="tabular-nums">{lang === "zh" ? `第 ${safePage} / ${totalPages} 页 · 共 ${total} 篇` : `Page ${safePage}/${totalPages} · ${total} posts`}</span>
-            <button disabled={safePage>=totalPages} onClick={()=>setPage(safePage+1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{lang === "zh" ? "下一页" : "Next"}</button>
+            <button disabled={safePage>=totalPages} onClick={()=>setPage(safePage+1)} className="px-3 py-1 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 hover:bg-[var(--dash-bg)]">{t.pageNext}</button>
           </div>
         )}
       </div>

@@ -231,14 +231,14 @@ export default function MobilePostsPage() {
                 onClick={() => setPage(safePage - 1)}
                 className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px] active:opacity-60"
               >
-                {lang === "zh" ? "上一页" : "Prev"}
+                {t.pagePrev}
               </button>
               <button
                 disabled={safePage >= totalPages}
                 onClick={() => setPage(safePage + 1)}
                 className="px-3 py-1.5 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px] active:opacity-60"
               >
-                {lang === "zh" ? "下一页" : "Next"}
+                {t.pageNext}
               </button>
             </span>
           )}
@@ -320,7 +320,7 @@ export default function MobilePostsPage() {
               onClick={() => setPage(safePage - 1)}
               className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px] active:opacity-60"
             >
-              {lang === "zh" ? "上一页" : "Prev"}
+              {t.pagePrev}
             </button>
             <span>
               {lang === "zh" ? `第 ${safePage}/${totalPages} 页` : `${safePage}/${totalPages}`}
@@ -330,7 +330,7 @@ export default function MobilePostsPage() {
               onClick={() => setPage(safePage + 1)}
               className="px-3 py-2 border border-[var(--dash-border)] rounded-none bg-[var(--dash-card)] disabled:opacity-50 min-h-[48px] active:opacity-60"
             >
-              {lang === "zh" ? "下一页" : "Next"}
+              {t.pageNext}
             </button>
           </div>
         )}

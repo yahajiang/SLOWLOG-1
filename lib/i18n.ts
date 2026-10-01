@@ -17,6 +17,10 @@ export const dict = {
     navAdmin: "后台",
     // Search
     searchPlaceholder: "搜索文章...",
+    searchGlobalAria: "全局搜索",
+    searchGlobalTitle: "全局搜索（/）",
+    archiveSearchPh: "搜索标题或分类…",
+    archiveKicker: "全部日志",
     // Hero
     featured: "推荐",
     readArticle: "阅读文章",
@@ -385,6 +389,10 @@ export const dict = {
     navPosts: "Posts",
     navAdmin: "Admin",
     searchPlaceholder: "Search articles...",
+    searchGlobalAria: "Search",
+    searchGlobalTitle: "Search (/)",
+    archiveSearchPh: "Search titles or categories…",
+    archiveKicker: "Archive",
     featured: "Featured",
     readArticle: "Read Article",
     inThisIssue: "In this issue",
@@ -737,6 +745,10 @@ export type Dict = {
   navPosts: string;
   navAdmin: string;
   searchPlaceholder: string;
+  searchGlobalAria: string;
+  searchGlobalTitle: string;
+  archiveSearchPh: string;
+  archiveKicker: string;
   featured: string;
   readArticle: string;
   inThisIssue: string;

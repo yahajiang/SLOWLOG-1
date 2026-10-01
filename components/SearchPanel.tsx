@@ -16,7 +16,7 @@ type IndexData = { v: number; posts: IndexPost[]; thoughts: IndexThought[]; cate
 type Row = { key: string; group: string; title: string; meta: string; kind: "post" | "cat" | "thought"; href: string; matchText: string };
 
 export function SearchPanel() {
-  const { lang } = useLang();
+  const { t, lang } = useLang();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -199,7 +199,7 @@ export function SearchPanel() {
       style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,.4)", backdropFilter: "blur(2px)", display: "flex", alignItems: "flex-start", justifyContent: "center", paddingTop: "10vh" }}
       role="dialog"
       aria-modal
-      aria-label={lang === "zh" ? "全局搜索" : "Search"}
+      aria-label={t.searchGlobalAria}
     >
       <div
         onClick={(e) => e.stopPropagation()}
