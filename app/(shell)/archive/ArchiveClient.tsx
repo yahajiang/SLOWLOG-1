@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import { Pagination } from "@/components/Pagination"
 import { useLang } from "@/lib/lang-context"
 import { mdInSiteTz } from "@/lib/relative-time"
+import { inputCls } from "@/components/ui/Input"
 
 // 归档页 = 查看全部的终点：真时间线（Motion 02 生长 + Motion 05 阅读）
 // 轴线随滚动生长（scaleY），节点进入视口依次点亮，文章从节点侧淡入。
@@ -128,14 +129,15 @@ export default function ArchiveClient({
         <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
           {t.archiveDesc(total, stats.yearCount)}
-          {category && ` · ${lang === "zh" ? "分类" : "Category"}: ${category}`}
-          {q && ` · ${lang === "zh" ? "搜索" : "Search"}: “${q}”`}
-          {(category || q) && (
+          {category && ` · ${t.filterCategory}: ${category}`}
+          {q && ` · ${t.filterQuery}: “${q}”`}
+          {q ? ` · ${t.filteredCount(filteredYears.reduce((a, [, arr]) => a + arr.length, 0))}` : ""}
+          {(category || q) && filteredYears.length > 0 && (
             <button
               onClick={() => router.replace(category ? `/archive?category=${encodeURIComponent(category)}` : "/archive", { scroll: false })}
               className="ml-2 underline underline-offset-4 hover:text-[var(--yh-text)]"
             >
-              {lang === "zh" ? "清除筛选" : "Clear"}
+              {t.clearFilters}
             </button>
           )}
         </p>
@@ -167,7 +169,7 @@ export default function ArchiveClient({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={lang === "zh" ? "搜索标题或分类…" : "Search titles or categories…"}
-            className="w-full pl-10 pr-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none rounded-none placeholder:text-[var(--yh-muted)]"
+            className={inputCls("lg", "front", "pl-10")}
           />
         </div>
       </div>
@@ -211,8 +213,16 @@ export default function ArchiveClient({
           ))}
           {filteredYears.length===0 && (
             <EmptyState
-              title={lang === "zh" ? "没有匹配的文章" : "No matching posts"}
-              hint={lang === "zh" ? "换个关键词试试，或清除筛选查看全部" : "Try another keyword, or clear the filter"}
+              title={t.emptyFiltered}
+              hint={t.emptyFilteredHint}
+              action={
+                <button
+                  onClick={() => { setQ(""); router.replace(category ? `/archive?category=${encodeURIComponent(category)}` : "/archive", { scroll: false }) }}
+                  className="min-h-[48px] px-4 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] hover:bg-[var(--yh-bg)] active:opacity-70 transition-colors"
+                >
+                  {t.clearFilters}
+                </button>
+              }
             />
           )}
         </div>

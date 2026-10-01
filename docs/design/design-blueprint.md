@@ -191,7 +191,7 @@
 
 | 页面 | 结构 | 设计要点 |
 |---|---|---|
-| **归档 /archive** | 53px 顶栏（同文章页）+ 标题区 + 年份卡列表 | 标题 serif 32px；mono 描述「N 篇 · M 个年份」；按年分组的直角卡，行 = mono 日期 + 标题（hover 强调色下划线）+ 分类徽标 + 时长（sm 起显示）；顶部搜索即时过滤标题/分类，并显示「过滤 N 篇」 |
+| **归档 /archive** | 53px 顶栏（同文章页）+ 标题区 + 年份卡列表 | 标题 serif 32px；mono 描述「N 篇 · M 个年份」；按年分组的直角卡，行 = mono 日期 + 标题（hover 强调色下划线）+ 分类徽标 + 时长（sm 起显示）；顶部搜索即时过滤标题/分类，过滤生效时在描述尾巴追加「· 筛选 N」（`t.filteredCount`，桌面/平板/移动三树同口径，2026-10-01 补齐桌面）；搜索框走 `inputCls("lg","front","pl-10")`，图标让位 40px 左内边距；**「清除筛选」只留一个**：有结果时是描述行尾的下划线文字链，零结果时让位给空态卡里的 48px 按钮（`filteredYears.length > 0` 才渲染页头那条），两处同吃 `t.clearFilters`；「分类 / 搜索」两个前缀走 `t.filterCategory` / `t.filterQuery`，空态标题与提示复用字典里原本躺着没人用的 `t.emptyFiltered` / `t.emptyFilteredHint` |
 | **登录 /login** | 全屏纸面居中，`max-w-sm` 直角卡 | 用户名可只填前缀（自动补全域名）；输入 focus 加深边框；改密成功显示绿色回执条；错误红条 + 按钮 loading；成功进入后台。⚠️ **这页必须动态渲染**：`LoginForm` 用了 `useSearchParams()`，页面一旦被预渲染，`<Suspense fallback={null}>` 会叫首屏 HTML 只剩 `null` —— 实测旧版 `○ /login` 的 HTML 里连 `<form>` 都没有，整张卡要等 JS 水合，慢链路就表现为"页面开了却输不了、刷新一下才正常"。现 `/login` 与 `/m/login` 均 `force-dynamic`（路由表 `ƒ`），缓存退回 `no-store`（原本还带 `s-maxage=60 + SWR≈1 年`）。登录提交收在 `lib/login-shared.ts` 一处：桌面/移动两个表单不再各写一遍 signIn；`signIn` 取不到 providers 时返回 undefined（库里写着 TODO），旧代码只判 `res?.error` 会把它当成功并被中间件弹回；成功改用 `location.assign` 整页导航（后台首屏是多个 DB 查询串起来的 RSC 渲染，`router.push` 期间只有「登录中…」没有浏览器进度）；凭据退避延时挪到**确认失败之后**，作者输错 5 次后拿正确密码不再被罚睡 3s |
 | **404** | 全屏居中 | 巨号「404」用极淡墨色压住情绪；一句解释 + 返回首页黑按钮 |
 | **加载态** | S 标 + 骨架卡 + 标语 | 主站：shimmer 骨架三条（200ms 级联）+ accent 呼吸点 + 「加载中」mono；后台：**18 个**路由级 loading（桌面后台 8 + 移动后台 7 + 三树组级壳 3；2026-09-28 起含 `/dashboard/tokens`，09-30 起含 `/m/dashboard/{categories,tokens}`，10-01 补 `/m/dashboard/settings`）——S 标紧凑行 + shimmer 扫光骨架按页面真实占位取形（概览统计卡 / 列表搜索条 / 随想输入条 / 媒体网格 / 分类表单 / 设置字段 / 改密表单，移动端 compact），导航切换零空白 | 后台壳的「加载中」小标此前硬编码中文——不是 RSC 限制无处可改：`DashLoading` 纯展示，加 `"use client"` 建一层客户端边界即可走 `t.loading`，与主站壳 `LoadingShell`（早就是 client + `t.loading`）同一口径。17 个加载态文件因此全部双语；⚠️ 后台在登录之后，本次只过了构建与类型，未做视觉复测 |
@@ -201,6 +201,8 @@
 
 - **加载边界不能盖住会 404 的段（刻意不补，别当漏项）**：`loading.tsx` 边界在流式渲染时会先冲刷 200 状态头，把真 404 吞成 soft-404。所以 `/tag/[tag]`、`/m/posts/[id]`、`/t/posts/[id]` 三处**故意没有**各自的 loading 壳（它们都会 `notFound()`），组级壳也只包列表页、不扩到阅读页。判据出处是 `components/LoadingShell.tsx` 与 `app/m/(shell)/loading.tsx` 的头注，不是遗漏。
 - **三处逐字重复收口（2026-10-01）**：① 后台卡片外壳 `bg-[var(--dash-card)] border … overflow-hidden` 原在 **18 处**逐字相同（含带后缀的变体）→ 收成 `components/ui/Panel.tsx` 的 `PANEL_CLS` 常量；用常量而不是包组件，是因为骨架屏里有嵌套 div，重排 18 处 JSX 的风险大于收益，而字符串常量同样只有一处实现、且零结构改动。② 后台页主标题 `text-xl font-semibold tracking-tight …` + 同一句 Jakarta 字体栈内联样式，原 **12 处**各写各的（还漂出 `text-lg` / `text-2xl` / 无色版）→ 收成 `components/ui/AdminTitle.tsx`。③ 品牌圆标（26px 墨圈 + 衬线斜体 S）4 处逐字相同 → `BrandMark`。编辑器的 `text-3xl` 大标题不并入：它渲染的是**文章自己的标题**并跟随页面配置的字体族，不是界面标题。
+- **归档三树同口径（2026-10-01）**：桌面归档缺「筛选 N」而移动版早有（同一件事两张脸），空态卡内也一直没有出口（「清除筛选」只在页头统计行，读者面对空卡要往上滚）；现桌面/平板（`ArchiveClient`）与移动（`MArchive`）都在空态卡内嵌 48px「清除筛选」按钮（桌面 `router.replace` 保住 category 只清 q），桌面补 `t.filteredCount`，两版搜索框统一 `inputCls("lg","front","pl-10")`。**没动**：桌面已有的防抖→服务端重取、self-canonical、时间线 scaleY 生长与年份节点节奏。
+- **画廊是规范的镜像，不是快照（2026-10-01）**：`public/design/gallery.html` 的 `:root`/`.dark` 曾落后产品端三轮（缺 dash 别名、危险五档含 `--dash-danger-fg`、语义三色 9 值、`--duration-exit`/`--motion-grow`），状态徽标表与 toast / 表单错误 / 删除确认预览还在用裸 hex。现补齐并把语义色改指 `var()`；条目 58 → **64**，新增 6 条把这一轮的收口写成可复用规范：`admin-input`（sm/md 36px 两档 + lg 48px，tone=admin/front）、`admin-shell`（`PANEL_CLS` / `AdminTitle` / `BrandMark`）、`list-error`（骨架屏 ≠ 错误态）、`semantic-palette`（ok/warn/info 的底-字-边三件套与夜版 rgba 配法）、`touch-two-tier`（48 前台整页 / 36 后台行内）、`motion-tiers`（180/220/300 + 退出统一 `--duration-exit`）。**画廊里剩下的字面 hex 是插画内容**（Paper/Ink 色板、三主题封面卡、代码编辑器主题、404 菱形母题），走令牌反而失真——判据是「它表达的是某个具体设计，还是界面的语义」。
 
 ---
 
@@ -293,7 +295,7 @@
 
 | 项 | 真值 |
 |----|------|
-| 应用 / 画廊 | v0.3.9 / 49 组件提示词 |
+| 应用 / 画廊 | v0.5.0 · 组件画廊 **64** 条目（2026-10-01；页面自己用 `C.length` 计数，不硬写数字） |
 | 动效 | 180/220/300/500ms · ease-out(0.22,1,0.36,1) · ease-in-out(0.4,0,0.2,1)（与 Android 同曲线）· spring≤1.15 |
 | 触控下限 | ≥48px（Web 与 Android 同一数；44 已于 2026-09-28 清零） |
 | 正文 | 17px/1.9 · 默认 max-w-3xl(768) |

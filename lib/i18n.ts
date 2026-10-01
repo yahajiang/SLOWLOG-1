@@ -47,6 +47,8 @@ export const dict = {
     archiveTitle: "归档",
     archiveDesc: (n: number, y: number) => `全部 ${n} 篇 · 按年份分组 · ${y} 年`,
     archiveEmpty: "未找到匹配文章",
+    filterCategory: "分类",
+    filterQuery: "搜索",
     viewAllGrouped: "查看全部 →",
     noFeaturedHint: "仅 1 篇推荐文章已在上方展示",
     noFeaturedSub: "再发布一篇将在此显示",
@@ -407,6 +409,8 @@ export const dict = {
     archiveTitle: "Archive",
     archiveDesc: (n: number, y: number) => `All ${n} posts · ${y} years`,
     archiveEmpty: "No matches",
+    filterCategory: "Category",
+    filterQuery: "Search",
     viewAllGrouped: "View all →",
     noFeaturedHint: "Only 1 featured post shown above",
     noFeaturedSub: "Publish another to show here",
@@ -754,6 +758,8 @@ export type Dict = {
   archiveTitle: string;
   archiveDesc: (n: number, y: number) => string;
   archiveEmpty: string;
+  filterCategory: string;
+  filterQuery: string;
   viewAllGrouped: string;
   noFeaturedHint: string;
   noFeaturedSub: string;

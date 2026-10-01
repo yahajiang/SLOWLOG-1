@@ -9,6 +9,7 @@ import { MHeader } from "./MHeader";
 import { MFooter } from "./MFooter";
 import { mCatLabel } from "@/lib/adapt"
 import { EmptyState } from "@/components/EmptyState"
+import { inputCls } from "@/components/ui/Input"
 
 // 归档页 = 查看全部的终点：移动端真时间线（与桌面 ArchiveClient 同套 tl-* 规范）
 // 轴线随滚动生长 + 节点视口点亮 + 条目淡入；tl-armed 由 JS 挂载，无 JS 静态可见。
@@ -87,7 +88,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-3 text-base border border-[var(--yh-border)] bg-[var(--dash-card)] focus:border-[var(--yh-accent)] focus:outline-none rounded-none placeholder:text-[var(--yh-muted)]"
+            className={inputCls("lg", "front", "pl-10")}
           />
         </div>
       </div>
@@ -130,8 +131,18 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
           ))}
           {filteredYears.length === 0 && (
             <EmptyState
-              title={lang === "zh" ? "没有匹配的文章" : "No matching posts"}
-              hint={lang === "zh" ? "换个关键词试试" : "Try another keyword"}
+              title={t.emptyFiltered}
+              hint={t.emptyFilteredHint}
+              action={
+                q ? (
+                  <button
+                    onClick={() => setQ("")}
+                    className="min-h-[48px] px-4 text-sm border border-[var(--yh-border)] bg-[var(--dash-card)] active:opacity-70 transition-colors"
+                  >
+                    {t.clearFilters}
+                  </button>
+                ) : undefined
+              }
             />
           )}
         </div>

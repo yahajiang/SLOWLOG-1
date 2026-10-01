@@ -172,9 +172,17 @@
   --yh-accent:#4a6fb5;--yh-accent:oklch(0.55 0.15 250);--dash-card:#ffffff;
   --shadow-card:0 1px 3px rgba(0,0,0,.04);--shadow-float:0 8px 30px -8px rgba(0,0,0,.15);--shadow-pop:0 20px 60px rgba(0,0,0,.12);
   --ease-spring:cubic-bezier(0.34,1.15,0.64,1);--ease-out:cubic-bezier(0.22,1,0.36,1);
-  --duration-fast:180ms;--duration-normal:300ms;--duration-slow:500ms;--motion-breath:8s;
+  --duration-fast:180ms;--duration-exit:220ms;--duration-normal:300ms;--duration-slow:500ms;
+  --motion-breath:8s;--motion-grow:480ms;
+  --dash-bg:var(--yh-bg);--dash-border:var(--yh-border);--dash-text:var(--yh-text);
+  --dash-muted:var(--yh-muted);--dash-accent:var(--yh-accent);
+  --dash-accent-soft:color-mix(in oklab,var(--yh-accent) 12%,white);
+  --dash-danger:#c44444;--dash-danger-strong:#a83a3a;--dash-danger-soft:#fdf6f5;--dash-danger-border:#ecc9c6;--dash-danger-fg:#ffffff;
+  --dash-ok:#2f7d52;--dash-ok-soft:#eef6f0;--dash-ok-border:#cfe3d5;
+  --dash-warn:#9a6a12;--dash-warn-soft:#fff9f1;--dash-warn-border:#ecd9b4;
+  --dash-info:#3c6fb0;--dash-info-soft:#eef3fa;--dash-info-border:#cfdcef;
 }
-.dark{--yh-bg:#14110d;--yh-text:#e8e4dc;--yh-muted:#8e8478;--yh-border:#2c2a26;--yh-accent:#8ea6e8;--yh-accent:oklch(0.78 0.13 250);--dash-card:#1c1915}
+.dark{--yh-bg:#14110d;--yh-text:#e8e4dc;--yh-muted:#8e8478;--yh-border:#2c2a26;--yh-accent:oklch(0.78 0.13 250);--dash-card:#1c1915;--dash-bg:#14110d;--dash-border:#2c2a26;--dash-text:#e8e4dc;--dash-muted:#8e8478;--dash-accent:#8ea6e8;--dash-accent-soft:rgba(160,180,255,.08);--dash-danger:#d97c72;--dash-danger-strong:#e6968c;--dash-danger-soft:rgba(217,124,114,.13);--dash-danger-border:rgba(217,124,114,.38);--dash-danger-fg:#231210;--dash-ok:#6fce96;--dash-ok-soft:rgba(111,206,150,.13);--dash-ok-border:rgba(111,206,150,.38);--dash-warn:#d9b26a;--dash-warn-soft:rgba(217,178,106,.13);--dash-warn-border:rgba(217,178,106,.38);--dash-info:#8fb2d9;--dash-info-soft:rgba(143,178,217,.13);--dash-info-border:rgba(143,178,217,.38)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--yh-bg);color:var(--yh-text);font-family:"Plus Jakarta Sans","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;transition:background .3s,color .3s}
 .serif{font-family:"Cormorant Garamond","Noto Serif SC","Songti SC",Georgia,serif}
@@ -421,14 +429,16 @@ const C = [
 - hover：仅 shadow-float（transition-shadow 300ms var(--ease-out)），**不再上浮**
 - 仪表盘首页 client 化（DashboardHome）接 useLang 中英；网格 2/4 列自适应
 - 入场随父容器 .stagger 错落（子项 60ms 起步、45ms 递增，11 项后封顶 465ms）`},
- {id:"toast",name:"Toast 通知",cat:"反馈",desc:"const { toast } = useToast()；toast(msg, type)：右上 slideInRight 0.3s 入场，success emerald / error red / info 纸面，2.5s 自动消失。",
-  pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">↻ 重播</button><div class="anim-toast" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;padding:9px 14px">✓ 已复制到剪贴板</div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">草稿已保存</div></div>`,
+ {id:"toast",name:"Toast 通知",cat:"反馈",desc:"const { toast } = useToast()；toast(msg, type)：slideInRight var(--duration-normal) 入场，success --dash-ok / error --dash-danger 家族 / info 纸面，宽度按视口夹取，2.5s 自动消失。",
+  pv:`<div style="width:100%;max-width:220px;position:relative;padding-top:26px"><button type="button" class="rp-btn" style="top:0;right:0" onclick="toastReplay(this)">↻ 重播</button><div class="anim-toast" style="background:var(--dash-ok-soft);border:1px solid var(--dash-ok-border);color:var(--dash-ok);font-size:11px;padding:9px 14px">✓ 已复制到剪贴板</div><div style="height:8px"></div><div class="anim-toast2" style="background:var(--dash-card);border:1px solid var(--yh-border);font-size:11px;padding:9px 14px;color:var(--yh-text)">草稿已保存</div></div>`,
   prompt:`${P_BASE}
 新建「Toast 通知」（还原 components/ui/Toast.tsx）：
 - ToastProvider + const { toast } = useToast()；toast(msg, type?: "success"|"error"|"info")
 - fixed top-4 right-4 z-[100]；条 min-w-240 max-w-360 px-4 py-3 直角 border + backdrop-blur + shadow-pop
 - 入场 slideInRight **0.28s** ease-out（translateX **10px**→0）；2500ms 后 slideOutRight 0.28s 退场
-- 语义色：success emerald / error red / info 纸面；文字用 dash-bg 反色按钮场景禁 text-white`},
+- 语义色全部走令牌：success --dash-ok(-soft/-border) / error --dash-danger 家族 / info 纸面
+- 宽度 min-w/max-w 用 min(…,calc(100vw-2rem)) 夹取，360px 视口不裁切
+- 动画名 slideInRight/slideOutRight 定义在 globals.css，组件内不再塞 <style> 重复注册`},
  {id:"timeline",name:"归档时间线",cat:"数据展示",desc:"Motion 02+05：轴线随滚动 scaleY 生长，大号衬线年份 + mono 计数，文章节点进入视口依次点亮。",
   pv:`<div class="tl" style="position:relative;padding-left:22px;width:100%;max-width:200px"><button type="button" class="rp-btn" onclick="tlReplay(this)">↻ 重播</button><span style="position:absolute;left:4px;top:2px;bottom:2px;width:1px;background:var(--yh-border)"></span><span style="position:absolute;left:4px;top:2px;height:72%;width:1px;background:var(--yh-accent);transform-origin:top;animation:pv-grow 3.6s ease-in-out infinite"></span><div style="position:relative;padding:3px 0 10px"><span style="position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:2px solid var(--yh-accent);background:var(--dash-card)"></span><span class="mono" style="font-size:10px;letter-spacing:.1em;font-weight:600">2026 · 8</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-03 封面系统</span></div><div style="position:relative;padding:3px 0"><span style="position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--yh-accent)"></span><span style="font-size:11px">09-01 编辑器</span></div></div>`,
   prompt:`${P_BASE}
@@ -502,11 +512,11 @@ const C = [
 - 不用插画、不用 emoji，保持编辑排印气质
 - 动画契约：容器 fadeIn 0.3s ease-out 一次性入场；操作按钮 hover 过渡 0.2s；无循环动画`},
  {id:"dlg",name:"操作对话框",cat:"反馈",desc:"ConfirmDialog：open/onOpenChange/variant=danger API；遮罩 maskIn + 面板 scaleIn 0.2s 入场，关闭 200ms 退场（渐隐+缩回 0.96）后卸载，Esc 关闭。",
-  pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:#dc2626;color:#fff;border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
+  pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:var(--dash-danger);color:var(--dash-danger-fg);border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
   prompt:`${P_BASE}
 新建「确认对话框 ConfirmDialog」：
 - open/onOpenChange/variant；遮罩 black/40 + blur；面板 scaleIn 200ms；关闭 200ms 退场后卸载
-- Esc/遮罩点击关闭；danger=red-600；按钮取消=描边`},
+- Esc/遮罩点击关闭；danger 走 --dash-danger 家族（实心钮文字用 --dash-danger-fg）；按钮取消=描边`},
  {id:"load",name:"加载状态",cat:"反馈",desc:"LoadingShell 过场骨架：纸纹 + 装订线 + 扫光骨架卡（光带挂 after 伪元素）+ 呼吸点 + 随机格言。只允许出现在 (shell) 列表页，详情段禁 loading（防 soft-404）。",
    pv:`<div style="width:100%;max-width:210px;text-align:center"><div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px"><span style="width:18px;height:18px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:inline-flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-style:italic;font-size:9px">S</span><span class="mono" style="font-size:9px;letter-spacing:.14em;color:var(--yh-muted)">慢日志 · SLOWLOG</span></div><div style="border:1px solid var(--yh-border);background:var(--dash-card);padding:12px;text-align:left"><div style="position:relative;height:5px;overflow:hidden;background:var(--yh-border);margin-bottom:6px"><i class="shim" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:75%;overflow:hidden;background:var(--yh-border);opacity:.7;margin-bottom:6px"><i class="shim d2" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="position:relative;height:5px;width:50%;overflow:hidden;background:var(--yh-border);opacity:.45"><i class="shim d3" style="position:absolute;top:0;left:0;height:100%;width:60%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)"></i></div><div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px"><span class="breath" style="width:5px;height:5px;background:var(--yh-accent);border-radius:50%"></span><span class="mono" style="font-size:8px;letter-spacing:.14em;color:var(--yh-muted)">LOADING</span></div></div></div>`,
    prompt:`${P_BASE}
@@ -603,14 +613,14 @@ const C = [
 - focus-visible 2px accent；reduced-motion 兜底
 - props { label?, hint?, checked } + sr-only checkbox`},
  {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：emerald 已发布 / amber 草稿 / sky 定时，文章列表与编辑器状态标。",
-  pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
+  pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-ok-soft);border:1px solid var(--dash-ok-border);color:var(--dash-ok);transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-warn-soft);border:1px solid var(--dash-warn-border);color:var(--dash-warn);transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-info-soft);border:1px solid var(--dash-info-border);color:var(--dash-info);transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
   prompt:`${P_BASE}
 新建「状态徽章 Badge」：
 - tones emerald/amber/sky；props { tone, children }
 - published→emerald / draft→amber / scheduled→sky
 - 静态签；状态切换 transition-colors 200ms`},
  {id:"formgrp",name:"表单控件组",cat:"输入",desc:"FormField 标签/hint/error 三行契约 + Input/Select 直角纸面 focus accent，后台表单标配。",
-  pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:#ef4444">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
+  pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:var(--dash-danger)">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
   prompt:`${P_BASE}
 新建「表单控件组」：
 - FormField：label / children / error / hint；required 红星
@@ -832,6 +842,55 @@ const C = [
 - 组头：色块徽章（ART_PALETTES 纸/墨/洗）+ ABBR + 篇数 + 分类描述（catDescription 中英回退）
 - 「查看全部」是同页过滤按钮（非 Link）：setActiveCategory + 清搜索 + scrollIntoView 到 #posts（scroll-mt 避 sticky 头，reduced-motion 用 auto）；切类后 Hero 换该分类 spotlight，随想/时间线隐藏
 - /t 平板树复用同一组件，行为一致`},
+ {id:"admin-input",name:"输入框一档实现",cat:"输入",desc:"components/ui/Input.tsx 导出 inputCls(size,tone,extra)：sm/md 36px、lg 48px；tone=admin 走 --dash-*，front 走 --yh-* 边 + 卡面底。<Input> 组件与裸 input 共用同一函数。",
+  pv:`<div style="display:flex;flex-direction:column;gap:9px;width:100%;max-width:250px"><input placeholder="lg · 登录与整页表单" style="width:100%;min-height:48px;padding:12px 16px;font-size:16px;border:1px solid var(--dash-border);background:var(--dash-bg);color:var(--dash-text);border-radius:0"><input placeholder="md · 后台常规 13px" style="width:100%;min-height:36px;padding:8px 12px;font-size:13px;border:1px solid var(--dash-border);background:var(--dash-bg);color:var(--dash-text);border-radius:0"><input placeholder="sm · 编辑行内" style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;border:1px solid var(--dash-border);background:var(--dash-bg);color:var(--dash-text);border-radius:0"></div>`,
+  prompt:`${P_BASE}
+新建「输入框一档实现」（还原 components/ui/Input.tsx）：
+- 导出 inputCls(size,tone,extra) 与 <Input>；size ∈ sm/md/lg，tone ∈ admin/front
+- 聚焦：focus 换 --dash-accent 边 + ring-1 accent/20；bg 由 --dash-bg 提到 --dash-card
+- 触控下限写在 size 档里（sm/md 36px、lg 48px），不靠调用方补
+- 裸 <input> 带一长串 value/onChange 时直接引 inputCls，与 PANEL_CLS 同一手法：单一来源、零结构改动
+- 表单标签不并档：字段标签 12px / 板块小标 11px 大写 / mono 9px kicker 是三种角色`},
+ {id:"admin-shell",name:"后台外壳三件套",cat:"数据展示",desc:"PANEL_CLS 卡片外壳、AdminTitle 页主标题、BrandMark 品牌圆标——此前分别有 18 / 12 / 4 份逐字副本。",
+  pv:`<div style="width:100%;max-width:250px"><h1 style="font-size:20px;font-weight:600;letter-spacing:-.01em;color:var(--dash-text);font-family:'Plus Jakarta Sans',system-ui;margin:0 0 8px">文章</h1><div style="background:var(--dash-card);border:1px solid var(--dash-border);overflow:hidden"><div style="padding:10px 12px;border-bottom:1px solid var(--dash-border);display:flex;align-items:center;gap:8px"><span style="width:26px;height:26px;border-radius:50%;background:var(--yh-text);color:var(--yh-bg);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:12px">S</span><span style="font-size:12px;color:var(--dash-muted)">PANEL_CLS + BrandMark</span></div><div style="padding:10px 12px;font-size:12px;color:var(--dash-text);border-top:1px solid var(--dash-border)">divide-y 行区（骨架与列表共用）</div></div></div>`,
+  prompt:`${P_BASE}
+新建「后台外壳三件套」（还原 components/ui/Panel.tsx + AdminTitle.tsx）：
+- PANEL_CLS = --dash-card + --dash-border + rounded-none + overflow-hidden；用常量不包组件（骨架里有嵌套 div，重排 JSX 风险大于收益）
+- AdminTitle：text-xl semibold tracking-tight --dash-text + Plus Jakarta Sans 内联栈；12 处副本收一处
+- BrandMark：26px 墨圈 + 衬线斜体 S + aria-hidden（旁边的文字站名才是名字）
+- 编辑器里 text-3xl 大标题不并入 AdminTitle——它渲染文章自己的标题，字体族跟页面配置走`},
+ {id:"list-error",name:"加载失败态",cat:"反馈",desc:"lib/admin-fetch.ts 的 loadList/loadObject 永不 reject；失败统一渲染 components/ui/ListError（说明 + 重试），与「没有数据」的空状态分开。",
+  pv:`<div style="width:100%;max-width:260px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:var(--dash-danger-soft);border:1px solid var(--dash-danger-border)"><span style="font-size:13px;color:var(--dash-danger)">加载失败，请检查网络或稍后重试</span><button style="min-height:48px;padding:0 14px;font-size:13px;border:1px solid var(--dash-border);background:var(--dash-card);color:var(--dash-text);border-radius:0;cursor:pointer">重试</button></div>`,
+  prompt:`${P_BASE}
+新建「加载失败态」（还原 lib/admin-fetch.ts + components/ui/ListError.tsx）：
+- 后台所有列表加载走唯一实现：no-store + 判 res.ok + 兜 catch，返回 { data, total, error }，永不 reject
+- error 非空即渲染 ListError：role=alert + 危险色 soft/border + 48px 重试钮，文案走字典 errorLoad/errorRetry
+- 空数据与拿不到数据必须是两张脸：前者安静一行字，后者可重试
+- 反例（本轮修掉的根因）：fetch().then(r=>r.json()) 不判 ok 无 catch ⇒ loading 永不复位，骨架屏转到天荒地老`},
+ {id:"semantic-palette",name:"危险五档 + 语义三色",cat:"数据展示",desc:"danger/strong/soft/border/fg 五档与 ok/warn/info ×三档，亮暗整组换档；组件内 emerald|amber|sky|violet|cyan|blue-N 与 text-zinc-700 残留 0。",
+  pv:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:260px;font-size:10px"><div style="padding:6px;background:var(--dash-danger-soft);border:1px solid var(--dash-danger-border);color:var(--dash-danger)">danger</div><div style="padding:6px;background:var(--dash-ok-soft);border:1px solid var(--dash-ok-border);color:var(--dash-ok)">ok</div><div style="padding:6px;background:var(--dash-warn-soft);border:1px solid var(--dash-warn-border);color:var(--dash-warn)">warn</div><div style="padding:6px;background:var(--dash-info-soft);border:1px solid var(--dash-info-border);color:var(--dash-info)">info</div><div style="padding:6px;background:var(--dash-danger);color:var(--dash-danger-fg)">实心钮底 + fg 字</div><div style="padding:6px;border:1px solid var(--dash-danger-strong);color:var(--dash-danger-strong)">strong · hover</div></div>`,
+  prompt:`${P_BASE}
+新建「语义色板」（还原 app/globals.css 的 --dash-danger* / --dash-ok* / --dash-warn* / --dash-info*）：
+- 每族三到五档：文字 / 浅底 soft / 边线 border（危险色另加 strong=hover 加深、fg=压在实心底上的字色）
+- 亮暗整组换档，不留单处覆盖；soft 值按「文字压 soft 上也要过 AA」反推（危险 4.62、警示 4.52）
+- 夜版实心危险钮的字必须走 --dash-danger-fg（#231210），白字在 #d97c72 上只有 2.97:1
+- Badge tone 用语义名（ok/warn/info），不用色相名（emerald/amber/sky）`},
+ {id:"touch-two-tier",name:"触控两档 + .hit",cat:"布局导航",desc:"48px 给前台三端与移动后台；桌面后台密集控件第二档 ≥36 且相邻间距 ≥4。.hit 伪元素把视觉小控件的命中区撑到 48×48 而不动外观。",
+  pv:`<div style="display:flex;align-items:center;gap:14px;width:100%;max-width:260px"><div style="width:48px;height:48px;border:1px solid var(--dash-accent);background:var(--dash-accent-soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--dash-accent)">48</div><div style="width:36px;height:36px;border:1px solid var(--dash-border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--dash-muted)">36</div><div style="position:relative;width:20px;height:10px;background:var(--yh-muted);display:flex;align-items:center;justify-content:center"><span style="position:absolute;top:50%;left:50%;width:48px;height:48px;transform:translate(-50%,-50%);border:1px dashed var(--dash-danger)"></span></div><span style="font-size:10px;color:var(--dash-muted)">.hit 视觉 20×10 / 命中 48×48</span></div>`,
+  prompt:`${P_BASE}
+新建「触控两档与 .hit」（还原 globals.css 的 .hit + 蓝图 §十二）：
+- 判据是渲染后的短边，不是类名——getBoundingClientRect 量，不看 min-h-[48px] 写了没
+- 前台三端 + 移动后台 + 一切触屏目标：短边 ≥48；桌面后台密集控件：≥36 且相邻间距 ≥4
+- 装饰件（CoverArt / LoadingShell 的 w-11、6px 轮播点）不算触控目标；轮播点改纯装饰，切换交给 48 箭头与 ←/→
+- .hit 用 ::after max(100%,48px) 居中撑开：外观一点不变，elementFromPoint 上下 18px 仍命中`},
+ {id:"motion-tiers",name:"动效四档时长",cat:"动效",desc:"fast 180 / exit 220 / normal 300 / slow 500 + ease-out(.22,1,.36,1)。组件不再内联注册 @keyframes，时长不再写 150/200/300 字面量。",
+  pv:`<div style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:260px;font-size:10px;color:var(--dash-muted)"><div style="display:flex;align-items:center;gap:8px"><span style="width:54px" class="mono">180 fast</span><span style="flex:1;height:4px;background:var(--dash-accent);opacity:.85"></span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:54px" class="mono">220 exit</span><span style="flex:1;height:4px;background:var(--dash-accent);opacity:.65"></span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:54px" class="mono">300 normal</span><span style="flex:1;height:4px;background:var(--dash-accent);opacity:.45"></span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:54px" class="mono">500 slow</span><span style="flex:1;height:4px;background:var(--dash-accent);opacity:.28"></span></div></div>`,
+  prompt:`${P_BASE}
+新建「动效四档时长」（还原 globals.css --duration-* 与 §十二 单一实现）：
+- 只动 transform/opacity；时长一律走 var(--duration-fast|exit|normal|slow)，不写 150/200/300 字面量
+- @keyframes 全部定义在 globals.css，组件里禁止塞 <style> 重复注册（Dialog 的 scaleIn 曾与全局分叉 0.96/0.98）
+- 跟随类微动效例外并写明理由：TOC 250ms、TocDrawer 160ms、归档进度轨 120ms、取色器 100ms——它们贴着指针走，套档会延迟
+- prefers-reduced-motion 下关自动播与入场动画，只留必要反馈`},
 ];
 
 const CATS = ["全部","布局导航","数据展示","反馈","输入","动效"];
@@ -986,19 +1045,19 @@ function btnClick(btn,txt){
 }
 function ffInput(inp){
   var line=inp.parentNode.querySelector(".ff-line"); if(!line) return;
-  if(!inp.value.trim()){ line.textContent="站点名称不能为空"; line.style.color="#ef4444"; }
+  if(!inp.value.trim()){ line.textContent="站点名称不能为空"; line.style.color="var(--dash-danger)"; }
   else { line.textContent="显示在浏览器标签页"; line.style.color="var(--yh-muted)"; }
-  line.style.animation="none"; void line.offsetWidth; line.style.animation="g-ffIn .2s ease-out";
+  line.style.animation="none"; void line.offsetWidth; line.style.animation="g-ffIn var(--duration-exit) var(--ease-out)";
 }
 var SB=[
-  ["#ecfdf5","#a7f3d0","#065f46","已发布"],
-  ["#fffbeb","#fde68a","#92400e","草稿"],
-  ["#f0f9ff","#bae6fd","#0369a1","定时"]
+  ["var(--dash-ok-soft)","var(--dash-ok-border)","var(--dash-ok)","已发布"],
+  ["var(--dash-warn-soft)","var(--dash-warn-border)","var(--dash-warn)","草稿"],
+  ["var(--dash-info-soft)","var(--dash-info-border)","var(--dash-info)","定时"]
 ];
 function sbClick(el){
   var i=((+(el.dataset.i||0))+1)%3; el.dataset.i=i;
   el.style.background=SB[i][0]; el.style.borderColor=SB[i][1]; el.style.color=SB[i][2]; el.textContent=SB[i][3];
-  el.style.animation="none"; void el.offsetWidth; el.style.animation="g-sbIn .25s ease-out";
+  el.style.animation="none"; void el.offsetWidth; el.style.animation="g-sbIn var(--duration-exit) var(--ease-out)";
 }
 function esClick(btn){
   if(btn.dataset.busy) return; btn.dataset.busy="1";
@@ -1033,7 +1092,7 @@ function toastReplay(btn){
 function dlgBtn(btn,del){
   var box=btn.closest('.pv,.m-pv'); if(!box) return;
   var panel=box.querySelector('.dlg-anim'); if(!panel) return;
-  if(del){ panel.style.borderColor='#dc2626'; setTimeout(function(){panel.style.borderColor=''},400); }
+  if(del){ panel.style.borderColor='var(--dash-danger)'; setTimeout(function(){panel.style.borderColor=''},400); }
   panel.style.animation='none'; void panel.offsetWidth; panel.style.animation='';
 }
 function coverSeed(inp){
