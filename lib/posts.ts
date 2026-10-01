@@ -355,12 +355,13 @@ export async function getArchiveStats() {
         if (r.category?.name) cats.add(r.category.name)
       }
       return {
+        postCount: rows.length,
         yearCount: years.size,
         categoryCount: cats.size,
         latestAt: latest ? new Date(latest).toISOString() : null,
       }
     },
-    { yearCount: 0, categoryCount: 0, latestAt: null as string | null },
+    { postCount: 0, yearCount: 0, categoryCount: 0, latestAt: null as string | null },
     "getArchiveStats"
   )
 }

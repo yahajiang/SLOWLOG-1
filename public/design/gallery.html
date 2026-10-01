@@ -398,7 +398,7 @@ body.dark .ti-sun{display:inline}
 
 <div class="wrap" id="home" data-page-node-id="erliiFLgAcRlbYJMZlAvOX">
   <h1>UI 组件</h1>
-  <p class="sub">v1.8 · 与真代码同源 · CoverArt / 灯箱 / 随想 / 后台侧栏 / 移动端壳 / 平板树 / RSS · 分类筛选 · 点卡片取提示词</p>
+  <p class="sub">v1.9 · 与真代码同源 · 65 条目 · 令牌与 globals.css 对齐（危险五档 + 语义三色）· 后台输入/外壳三件套/加载失败态 · 触控两档 · 动效四档 · 文案单一来源 · 点卡片取提示词</p>
   <div class="srch" data-page-node-id="43I4BvuDI9gYkGFtJWo4ld">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-page-node-id="YU6DRm5rG2nCtm4eQljXKJ"><circle cx="11" cy="11" r="7" data-page-node-id="D4DhEXrr9M2Xez7eS7LDKB"/><path d="M21 21l-4-4" data-page-node-id="hsOVjwqx6diTHKIjXSPyMl"/></svg>
     <input id="q" type="text" placeholder="搜索组件名称或描述…" oninput="render()" data-page-node-id="AEUsqm8aGQXulTpfiXYmHo">
@@ -511,7 +511,7 @@ const C = [
 - 可选操作按钮插槽；整体居中，留白充足
 - 不用插画、不用 emoji，保持编辑排印气质
 - 动画契约：容器 fadeIn 0.3s ease-out 一次性入场；操作按钮 hover 过渡 0.2s；无循环动画`},
- {id:"dlg",name:"操作对话框",cat:"反馈",desc:"ConfirmDialog：open/onOpenChange/variant=danger API；遮罩 maskIn + 面板 scaleIn 0.2s 入场，关闭 200ms 退场（渐隐+缩回 0.96）后卸载，Esc 关闭。",
+ {id:"dlg",name:"操作对话框",cat:"反馈",desc:"ConfirmDialog：open/onOpenChange/variant=danger API；@keyframes 全在 globals.css（scaleIn from scale .98），入场 var(--duration-normal)、退场 var(--duration-exit)，危险实心钮文字走 --dash-danger-fg，Esc 与遮罩点击关闭。",
   pv:`<div class="dlg-anim" style="width:100%;max-width:190px;border:1px solid var(--yh-border);background:var(--dash-card);padding:14px"><div style="font-size:12px;font-weight:600">确认删除？</div><div style="font-size:10px;color:var(--yh-muted);margin:6px 0 12px">此操作不可恢复，文章将永久删除。</div><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="dlg-btn" style="border:1px solid var(--yh-border);background:var(--dash-card);color:var(--yh-muted)" onclick="dlgBtn(this,false)">取消</button><button type="button" class="dlg-btn" style="background:var(--dash-danger);color:var(--dash-danger-fg);border:none" onclick="dlgBtn(this,true)">删除</button></div></div>`,
   prompt:`${P_BASE}
 新建「确认对话框 ConfirmDialog」：
@@ -612,12 +612,12 @@ const C = [
 - 滑块 dash-card 直角；transition-transform spring≤1.15
 - focus-visible 2px accent；reduced-motion 兜底
 - props { label?, hint?, checked } + sr-only checkbox`},
- {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：emerald 已发布 / amber 草稿 / sky 定时，文章列表与编辑器状态标。",
+ {id:"sbadge",name:"状态徽章",cat:"数据展示",desc:"ui/Badge 三 tone：ok 已发布 / warn 草稿 / info 定时，各走 --dash-ok|warn|info 的 soft/字/边三件套（2026-10-01 由色相名改成语义名），文章列表与编辑器状态标。",
   pv:`<div style="display:flex;gap:6px"><span data-i="0" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-ok-soft);border:1px solid var(--dash-ok-border);color:var(--dash-ok);transition:background .2s,border-color .2s,color .2s">已发布</span><span data-i="1" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-warn-soft);border:1px solid var(--dash-warn-border);color:var(--dash-warn);transition:background .2s,border-color .2s,color .2s">草稿</span><span data-i="2" onclick="sbClick(this)" style="cursor:pointer;font-size:9px;padding:2px 8px;background:var(--dash-info-soft);border:1px solid var(--dash-info-border);color:var(--dash-info);transition:background .2s,border-color .2s,color .2s">定时</span></div>`,
   prompt:`${P_BASE}
 新建「状态徽章 Badge」：
-- tones emerald/amber/sky；props { tone, children }
-- published→emerald / draft→amber / scheduled→sky
+- tones 用语义名 ok/warn/info（不是色相名 emerald/amber/sky）；props { tone, children }
+- published→ok / draft→warn / scheduled→info，三档各配 --dash-*-soft / 字色 / border
 - 静态签；状态切换 transition-colors 200ms`},
  {id:"formgrp",name:"表单控件组",cat:"输入",desc:"FormField 标签/hint/error 三行契约 + Input/Select 直角纸面 focus accent，后台表单标配。",
   pv:`<div style="width:100%;max-width:210px"><label style="display:block;font-size:10px;font-weight:500;color:var(--yh-muted);margin-bottom:4px">站点名称 <span style="color:var(--dash-danger)">*</span></label><input style="width:100%;padding:7px 10px;font-size:11px;border:1px solid var(--yh-accent);background:var(--dash-card);color:var(--yh-text);outline:none;transition:border-color .2s var(--ease-out),background .2s var(--ease-out)" value="慢日志" oninput="ffInput(this)"><div class="ff-line" style="height:12px;font-size:9px;color:var(--yh-muted);margin-top:3px">显示在浏览器标签页</div></div>`,
@@ -938,7 +938,7 @@ function openAbout(){
   var md=document.querySelector(".modal");
   if(md) md.classList.add("about");
   document.getElementById("m-body").innerHTML=`
-    <div class="m-meta" style="margin-bottom:14px"><span class="tag">DESIGN.md v1.8</span><span class="tag">58 组件</span><span class="tag">与真代码同源</span></div>
+    <div class="m-meta" style="margin-bottom:14px"><span class="tag">DESIGN.md v1.9</span><span class="tag">65 组件</span><span class="tag">与真代码同源</span></div>
     <div class="ab-card">
       <div class="ab-k mono">§ Identity · 你是谁在设计</div>
       <p class="ab-lead" style="margin:0">Editorial Web Designer — 画廊是设计契约的展品柜，不是营销落地页。每条提示词都应对齐真站源码路径与令牌。</p>
@@ -982,6 +982,15 @@ function openAbout(){
       <div class="bp-trace"><span class="q">DECISION</span>循环关键帧不写死 opacity —— 淡描边被拉成满黑会突然出现</div>
       <div class="bp-trace"><span class="q">DECISION</span>可交互预览真点击；不可交互用循环动效 —— 展品柜要能试</div>
       <div class="bp-trace"><span class="q">TRADEOFF</span>不做圆角卡片与渐变 hero —— 编辑气质优先</div>
+    </div>
+    <div class="ab-card">
+      <div class="ab-k mono">§ v1.9 · 本次同步（58 → 65）</div>
+      <div class="bp-trace"><span class="q">ADD</span>后台收口件入柜：admin-input（inputCls 三档两 tone）/ admin-shell（PANEL_CLS · AdminTitle · BrandMark）/ list-error（骨架 ≠ 异常态）</div>
+      <div class="bp-trace"><span class="q">ADD</span>体系件入柜：semantic-palette（危险五档 + 语义三色）/ touch-two-tier（48 与 ≥36 两档 + .hit）/ motion-tiers（180/220/300/500 单一实现）/ i18n-source（文案与无障碍名只从字典取）</div>
+      <div class="bp-trace"><span class="q">FIX</span>令牌块与 globals.css 对齐：补 dash 别名、危险五档含 --dash-danger-fg、语义三色 ×3、--duration-exit / --motion-grow；.dark 整组补齐</div>
+      <div class="bp-trace"><span class="q">FIX</span>语义色裸 hex 清零（含删除确认预览的 #dc2626 + 白字，那正是夜版 2.97:1 的缺陷分身）；时长字面量 .2s/.25s → var(--duration-exit)</div>
+      <div class="bp-trace"><span class="q">FIX</span>Badge tone 描述由色相名改语义名；对话框描述改指向 globals.css 的真 keyframes（scaleIn from .98）</div>
+      <div class="bp-trace"><span class="q">KEEP</span>Paper/Ink 色板、三主题封面卡、代码编辑器主题、404 菱形母题仍是字面 hex —— 它们是插画内容，不是界面语义</div>
     </div>
     <div class="ab-card">
       <div class="ab-k mono">§ v1.8 · 本次同步（49 → 58）</div>
@@ -1131,6 +1140,6 @@ document.addEventListener('click',function(e){
 });
 render();
 </script>
-<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.8</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
+<footer style="border-top:1px solid var(--yh-border);background:var(--dash-card);margin-top:48px"><div style="max-width:1200px;margin:0 auto;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span style="display:flex;gap:8px;align-items:center;font-size:11px"><span class="s-logo" style="width:18px;height:18px;font-size:9px;margin-right:0">S</span><b>慢日志 · SLOWLOG</b><span class="mono" style="font-size:8px;border:1px solid var(--yh-border);padding:0 4px;color:var(--yh-muted)">UI PROMPT v1.9</span></span><span class="mono" style="font-size:9px;color:var(--yh-muted);letter-spacing:.08em">© 2026 Yahajiang · 慢日志 SlowLog · GPL-3.0</span></div></footer>
 </body>
 </html>

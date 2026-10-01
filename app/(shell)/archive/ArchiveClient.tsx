@@ -14,6 +14,9 @@ import { Pagination } from "@/components/Pagination"
 import { useLang } from "@/lib/lang-context"
 import { mdInSiteTz } from "@/lib/relative-time"
 import { inputCls } from "@/components/ui/Input"
+import { filterYearsByQuery } from "@/lib/archive-match"
+// 只取类型：stats 的形状由服务端 getArchiveStats 决定，手写镜像会漂（本轮就漂过一次）
+import type { getArchiveStats } from "@/lib/posts"
 
 // 归档页 = 查看全部的终点：真时间线（Motion 02 生长 + Motion 05 阅读）
 // 轴线随滚动生长（scaleY），节点进入视口依次点亮，文章从节点侧淡入。
@@ -34,7 +37,7 @@ export default function ArchiveClient({
 }: {
   years: [number, any[]][];
   total: number;
-  stats: { yearCount: number; categoryCount: number; latestAt: string | null };
+  stats: Awaited<ReturnType<typeof getArchiveStats>>;
   page: number;
   totalPages: number;
   initialQ?: string;
@@ -56,10 +59,8 @@ export default function ArchiveClient({
     }, 320);
     return () => clearTimeout(id);
   }, [q, initialQ, router]);
-  // 当页内搜索（服务端已按 q 过滤过，这里仅作时间线分组展示）
-  const filteredYears = q.trim()
-    ? years.map(([y, arr]) => [y, arr.filter((p:any)=> ((p.titleZh||p.title||"") as string).toLowerCase().includes(q.toLowerCase()) || ((p.category||"") as string).toLowerCase().includes(q.toLowerCase()))] as [number, any[]]).filter(([,arr])=> arr.length>0)
-    : years
+  // 服务端已按 q 过滤；这里用同一把尺子（lib/archive-match）即时收窄，消掉 320ms 防抖的等待
+  const filteredYears = filterYearsByQuery(years, q)
   const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|");
   const catCount = stats.categoryCount;
   const latestMd = stats.latestAt ? mdInSiteTz(stats.latestAt) : "—";
@@ -103,9 +104,10 @@ export default function ArchiveClient({
         <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity">
             <BrandMark />
-            <span className="flex items-baseline gap-1">
+            <span className="flex items-baseline gap-1 whitespace-nowrap">
               <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
-              <span className="mono text-[12px] tracking-[0.14em] uppercase">· SLOWLOG</span>
+              {/* 70% 书脊容器在窄桌面里装不下整条品牌 + 四枚控件：拉丁副名先让位，品牌永不断字 */}
+              <span className="mono text-[12px] tracking-[0.14em] uppercase hidden md:inline">· SLOWLOG</span>
             </span>
           </Link>
           <div className="flex items-center gap-3">
@@ -119,7 +121,7 @@ export default function ArchiveClient({
             </button>
             <ThemeToggle />
             <LanguageSwitcher />
-            <Link href="/" className="mono inline-flex items-center min-h-[48px] text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">{t.backToHome}</Link>
+            <Link href="/" className="mono inline-flex items-center whitespace-nowrap min-h-[48px] text-[12px] tracking-[0.14em] uppercase text-[var(--yh-muted)] hover:text-[var(--yh-text)] transition-colors border border-[var(--yh-border)] px-3 py-[5px] bg-[var(--dash-card)] rounded-none">{t.backToHome}</Link>
           </div>
         </div>
       </div>
@@ -128,10 +130,10 @@ export default function ArchiveClient({
         <p className="mono text-[10px] tracking-[0.24em] uppercase text-[var(--yh-accent)]">Index · {t.archiveKicker}</p>
         <h1 className="serif text-[34px] font-semibold tracking-tight mt-2">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
-          {t.archiveDesc(total, stats.yearCount)}
+          {t.archiveDesc(stats.postCount, stats.yearCount)}
           {category && ` · ${t.filterCategory}: ${category}`}
           {q && ` · ${t.filterQuery}: “${q}”`}
-          {q ? ` · ${t.filteredCount(filteredYears.reduce((a, [, arr]) => a + arr.length, 0))}` : ""}
+          {q ? ` · ${t.filteredCount(total)}` : ""}
           {(category || q) && filteredYears.length > 0 && (
             <button
               onClick={() => router.replace(category ? `/archive?category=${encodeURIComponent(category)}` : "/archive", { scroll: false })}
@@ -146,7 +148,7 @@ export default function ArchiveClient({
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 border border-[var(--yh-border)] bg-[var(--dash-card)]">
           <div className="px-4 py-3 border-r border-b sm:border-b-0 border-[var(--yh-border)]">
             <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Posts</p>
-            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{total}</p>
+            <p className="serif text-[22px] font-semibold tracking-tight leading-tight mt-1">{stats.postCount}</p>
           </div>
           <div className="px-4 py-3 border-b sm:border-b-0 sm:border-r border-[var(--yh-border)]">
             <p className="mono text-[9px] tracking-[0.22em] uppercase text-[var(--yh-muted)]">Years</p>

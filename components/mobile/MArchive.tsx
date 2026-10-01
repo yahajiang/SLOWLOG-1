@@ -10,6 +10,7 @@ import { MFooter } from "./MFooter";
 import { mCatLabel } from "@/lib/adapt"
 import { EmptyState } from "@/components/EmptyState"
 import { inputCls } from "@/components/ui/Input"
+import { countYears, filterYearsByQuery } from "@/lib/archive-match"
 
 // 归档页 = 查看全部的终点：移动端真时间线（与桌面 ArchiveClient 同套 tl-* 规范）
 // 轴线随滚动生长 + 节点视口点亮 + 条目淡入；tl-armed 由 JS 挂载，无 JS 静态可见。
@@ -19,22 +20,8 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
   const [armed, setArmed] = useState(false);
   const [grow, setGrow] = useState(0);
   const tlRef = useRef<HTMLDivElement>(null);
-  const filteredYears = q.trim()
-    ? years
-        .map(
-          ([y, arr]) =>
-            [
-              y,
-              // P2-13：title / category 可能缺失，统一兜底为空串，避免 .toLowerCase() 抛错白屏
-              arr.filter(
-                (p: any) =>
-                  ((p.titleZh || p.title || "") as string).toLowerCase().includes(q.toLowerCase()) ||
-                  ((p.category || "") as string).toLowerCase().includes(q.toLowerCase())
-              ),
-            ] as [number, any[]]
-        )
-        .filter(([, arr]) => arr.length > 0)
-    : years;
+  // 移动版一次载入全部文章，匹配规则与桌面/服务端共用 lib/archive-match（含摘要字段）
+  const filteredYears = filterYearsByQuery(years, q);
   const tlKey = filteredYears.map(([y, arr]) => `${y}:${arr.length}`).join("|");
 
   useEffect(() => {
@@ -79,7 +66,7 @@ export function MArchive({ posts, years }: { posts: any[]; years: [number, any[]
         <h1 className="serif text-[28px] font-semibold tracking-tight">{t.archiveTitle}</h1>
         <p className="mono text-[11px] tracking-wide text-[var(--yh-muted)] mt-2">
           {t.archiveDesc(posts.length, years.length)}
-          {q && ` · ${t.filteredCount(filteredYears.reduce((a, [, arr]) => a + arr.length, 0))}`}
+          {q && ` · ${t.filteredCount(countYears(filteredYears))}`}
         </p>
         <div className="relative mt-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--yh-muted)]" />
