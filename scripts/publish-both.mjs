@@ -38,8 +38,21 @@ const PY = "C:/Users/Yahajiang/.workbuddy/binaries/python/envs/default/Scripts/p
  * 用于 filter-repo 的剔除路径（与历史标准流程一致）。
  * `mobile-preview` 是 2026-09-21 追加：13 张界面截图 / 5.5MB 二进制产出物，属**运行产物而非源码**，
  * 公开仓只留源码 ⇒ 一并剔除（⚠️ 私有仓保留；副作用：`docs/compose/spec/` 里 3 处截图引用在公开仓成死链）。
+ *
+ * 2026-10-01 追加 `PRIVATE_DOCS`：四份**审查/漏洞清单**。它们是给作者自己看的体检报告，
+ * 公开仓读者不需要 —— 而 `docs/full-review-2026-09-15.md`（89.6KB，77 处 P0/P1）、
+ * `docs/compose/spec/security-p0p1.md` 这类文档会把鉴权模型、限流阈值、默认账户与"哪个入口没设防"
+ * 一次性讲清；其中至少一条已经过期（写"matcher 不含 /m/dashboard/*"，而现 tip 已含），
+ * 等于既递刀又误导。README 与两份设计文档都不链接它们 ⇒ 剥掉不产生死链。
  */
-const FILTER_PATHS = ["cookies.txt", "cookies2.txt", "public/uploads", "backups", "content-export", "mobile-preview"];
+const PRIVATE_DOCS = [
+  "docs/full-review-2026-09-15.md",
+  "docs/audit-2026-09-15-independent.md",
+  "docs/backend-review-2026-09-14.md",
+  "docs/compose/spec/security-p0p1.md",
+];
+
+const FILTER_PATHS = ["cookies.txt", "cookies2.txt", "public/uploads", "backups", "content-export", "mobile-preview", ...PRIVATE_DOCS];
 
 /**
  * 用于**终检**的禁用路径 —— 刻意比 FILTER_PATHS 更严（多出 env 文件）。
