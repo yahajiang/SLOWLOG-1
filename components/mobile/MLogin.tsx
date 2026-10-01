@@ -47,10 +47,13 @@ export function MLogin() {
         <div className="bg-[var(--dash-card)] border border-[var(--yh-border)] p-6 rounded-none">
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
+              <label htmlFor="m-login-username" className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {lang === "zh" ? "用户名" : "Username"}
               </label>
               <input
+                id="m-login-username"
+                name="username"
+                autoComplete="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -60,10 +63,13 @@ export function MLogin() {
               />
             </div>
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
+              <label htmlFor="m-login-password" className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {lang === "zh" ? "密码" : "Password"}
               </label>
               <input
+                id="m-login-password"
+                name="password"
+                autoComplete="current-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

@@ -6,6 +6,7 @@ import { Search, Settings, X } from "lucide-react";
 import { useLang } from "@/lib/lang-context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useSiteSettings } from "@/lib/settings-context";
 
 interface MHeaderProps {
   searchQuery?: string;
@@ -18,6 +19,7 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const { t } = useLang();
+  const settings = useSiteSettings();
   const searchable = typeof onSearchChange === "function";
 
   // P2-11：搜索面板退场定时器需可清理，避免顶栏卸载后仍 setState
@@ -49,8 +51,8 @@ export function MHeader({ searchQuery = "", onSearchChange, showAdmin = false }:
         <Link href="/m" className="flex items-center gap-2 min-w-0 min-h-[48px] active:opacity-60">
           <span className="w-6 h-6 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[11px] shrink-0">S</span>
           <span className="flex items-baseline gap-1 min-w-0">
-            <span className="font-semibold text-[14px] tracking-tight text-[var(--yh-text)] truncate">慢日志</span>
-            <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--yh-text)] shrink-0">· SLOWLOG</span>
+            <span className="font-semibold text-[14px] tracking-tight text-[var(--yh-text)] truncate">{settings.siteName || "慢日志"}</span>
+            <span className="mono text-[11px] tracking-[0.14em] uppercase text-[var(--yh-text)] shrink-0">· {settings.siteNameEn || "SLOWLOG"}</span>
           </span>
         </Link>
         <div className="flex items-center gap-1 shrink-0">

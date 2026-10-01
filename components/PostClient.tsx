@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BrandMark } from "@/components/ui/Panel"
+import { SiteBrand } from "@/components/SiteBrand"
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -152,13 +152,7 @@ export function PostClient({
       {/* 顶部导航 */}
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="w-full max-w-[min(92%,1180px)] 2xl:max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity">
-            <BrandMark />
-            <span className="flex items-baseline gap-1">
-              <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
-              <span className="mono text-[12px] tracking-[0.14em] uppercase">· SLOWLOG</span>
-            </span>
-          </Link>
+          <SiteBrand className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity" />
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <button

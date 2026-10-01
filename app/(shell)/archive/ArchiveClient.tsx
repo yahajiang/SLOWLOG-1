@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { BrandMark } from "@/components/ui/Panel"
+import { SiteBrand } from "@/components/SiteBrand"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ChevronRight, Search } from "lucide-react"
@@ -102,14 +102,7 @@ export default function ArchiveClient({
     <>
       <div className="sticky top-0 z-40 h-[53px] bg-[var(--yh-bg)]/80 backdrop-blur-xl border-b border-[var(--yh-border)]">
         <div className="w-full max-w-[min(70%,1600px)] mx-auto px-6 h-full flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity">
-            <BrandMark />
-            <span className="flex items-baseline gap-1 whitespace-nowrap">
-              <span className="font-semibold text-[15px] tracking-tight">慢日志</span>
-              {/* 70% 书脊容器在窄桌面里装不下整条品牌 + 四枚控件：拉丁副名先让位，品牌永不断字 */}
-              <span className="mono text-[12px] tracking-[0.14em] uppercase hidden md:inline">· SLOWLOG</span>
-            </span>
-          </Link>
+          <SiteBrand className="inline-flex items-center gap-2 min-h-[48px] hover:opacity-60 transition-opacity" />
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("sl-open-search"))}

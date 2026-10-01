@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/lang-context";
+import { useSiteSettings } from "@/lib/settings-context";
 import { pickTagline } from "@/lib/taglines";
 
 interface MFooterProps {
@@ -12,6 +13,7 @@ interface MFooterProps {
 /** 移动端脚页：Logo 双语锁死 + 版本 + 链接纵向堆叠 + 桌面版切换 */
 export function MFooter({ desktopHref }: MFooterProps) {
   const { t, lang } = useLang();
+  const settings = useSiteSettings();
   const [tagline, setTagline] = useState(t.footerTagline);
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export function MFooter({ desktopHref }: MFooterProps) {
       <div className="w-full mx-auto px-4 py-4 flex flex-col items-center gap-3 text-center">
         <div className="flex items-center gap-2 text-[12px]">
           <span className="w-5 h-5 rounded-full bg-[var(--yh-text)] text-[var(--yh-bg)] flex items-center justify-center serif italic text-[10px]">S</span>
-          <span className="font-medium">慢日志 · SLOWLOG</span>
+          <span className="font-medium">{settings.siteName || "慢日志"} · {settings.siteNameEn || "SLOWLOG"}</span>
           <span className="mono text-[10px] px-1.5 py-0.5 rounded-none bg-[var(--dash-card)] border border-[var(--yh-border)] text-[var(--yh-muted)]">v{process.env.NEXT_PUBLIC_APP_VERSION || "0.3.9"}</span>
         </div>
         <p className="mono text-[11px] text-[var(--yh-muted)]">— {tagline}</p>

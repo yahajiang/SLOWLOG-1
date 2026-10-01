@@ -73,10 +73,13 @@ export default function LoginForm() {
 
           <form onSubmit={handleLogin} className="p-6 pt-4 space-y-5">
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
+              <label htmlFor="login-username" className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {zh ? "用户名" : "Username"}
               </label>
               <input
+                id="login-username"
+                name="username"
+                autoComplete="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -88,10 +91,13 @@ export default function LoginForm() {
             </div>
 
             <div>
-              <label className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
+              <label htmlFor="login-password" className="text-[11px] tracking-widest uppercase text-[var(--yh-muted)] font-medium block mb-2">
                 {zh ? "密码" : "Password"}
               </label>
               <input
+                id="login-password"
+                name="password"
+                autoComplete="current-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

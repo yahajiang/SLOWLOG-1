@@ -5,6 +5,11 @@ export const LANG_LABEL: Record<Lang, string> = {
   en: "EN",
 };
 
+// 英文量词：n===1 用单数，其余加 s（不规则复数走第三参）。中文侧不需要，故只在 en 字典里用。
+function pl(n: number, word: string, plural?: string): string {
+  return n === 1 ? `1 ${word}` : `${n} ${plural ?? word + "s"}`
+}
+
 export const dict = {
   zh: {
     // Site
@@ -397,7 +402,7 @@ export const dict = {
     readArticle: "Read Article",
     inThisIssue: "In this issue",
     inThisIssueDesc: (count: number, cats: number) =>
-      `${count} articles across ${cats} categories.`,
+      `${pl(count, "article")} across ${pl(cats, "category")}.`,
     latestArticles: "Latest Articles",
     allArticles: "All Articles",
     resultsFor: (q: string) => `Search for "${q}"`,
@@ -406,7 +411,7 @@ export const dict = {
     clearFilters: "Clear filters",
     thinking: "Thinking",
     browseTimeline: "Browse by timeline",
-    timelineDesc: (count: number) => `All ${count} posts grouped by year`,
+    timelineDesc: (count: number) => `All ${pl(count, "post")} grouped by year`,
     viewAll: "View all",
     footerSlogan: "SlowLog — Where words settle",
     footerBuilt: "Built with Next.js & Tailwind CSS",
@@ -415,7 +420,7 @@ export const dict = {
     switchToEn: "Switch UI to English (content stays in Chinese)",
     switchToZh: "Switch UI to Chinese",
     archiveTitle: "Archive",
-    archiveDesc: (n: number, y: number) => `All ${n} posts · ${y} years`,
+    archiveDesc: (n: number, y: number) => `All ${pl(n, "post")} · ${pl(y, "year")}`,
     archiveEmpty: "No matches",
     filterCategory: "Category",
     filterQuery: "Search",
@@ -427,7 +432,7 @@ export const dict = {
     readingRemaining: (m: number) => `~${m} min left`,
     almostDone: "Almost done",
     readDone: "Finished",
-    postsCount2: (n: number) => `${n} posts`,
+    postsCount2: (n: number) => pl(n, "post"),
     pagePrev: "Previous",
     pageNext: "Next",
     pageStatus: (page: number, total: number) => `Page ${page} of ${total}`,
@@ -471,7 +476,7 @@ export const dict = {
     noMatch: "No matching posts",
     createFirst: "Create first one",
     postsCount: (n: number, cat?: string, q?: string) => {
-      let s = `${n} posts`;
+      let s = pl(n, "post");
       if (cat && cat !== "All") s += ` · ${cat}`;
       if (q) s += ` · Search "${q}"`;
       return s;
@@ -586,7 +591,7 @@ export const dict = {
     dashBrowseMedia: "Media (latest 9)",
     dashNoCats: "No categories",
     dashNoImages: "No images",
-    dashPostsCount: (n: number) => `${n} posts`,
+    dashPostsCount: (n: number) => pl(n, "post"),
     dashMediaHint: "Tap image to copy link · Full media on desktop",
     dashDesktopAdmin: "Desktop admin",
     dashManageGroup: "Manage",
