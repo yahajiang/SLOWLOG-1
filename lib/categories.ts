@@ -55,7 +55,7 @@ export const CAT_ABBR: Record<string, string> = {
 
 export type TagSymbol = "grid" | "shield" | "doubleCircle" | "wave" | "diamond" | "window" | "hex" | "circle";
 
-// 功能优先 + 技术回退：主标签决定符号形态（扩展至 ~20 键，覆盖 Soulsync 6 分支 + 通用标签）
+// 标签 → 符号形态：中英各占一键，取值只允许 TagSymbol 那几种。
 export const TAG_SYMBOL_MAP: Record<string, TagSymbol> = {
   // 功能 — 菜单 / 生成
   menu: "grid", 菜单: "grid", pillow: "grid", 单: "grid", image: "grid",

@@ -38,9 +38,8 @@ export default async function TabletPostPage({
 
   const allRaw = await getAllPosts();
   const all = allRaw.map(adaptLegacyPost);
-  // 相关文章：同分类∩同标签 > 同分类 > 同标签 > 最新；最多 3 篇
+  // 相关文章的打分规则在 lib/adapt.ts 的 pickRelated，这里只决定取几篇
   const relatedPosts = pickRelated(all, post, 3);
-  // 上/下篇：平板与桌面共用 PostClient，同一实现
 
   return (
     <>

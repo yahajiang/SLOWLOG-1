@@ -39,7 +39,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (gate.kind === "session" && passwordChangeRequired(gate.session)) return apiError(403, "请先修改默认密码")
   const { id } = await params
   try {
-    // 检查分类下是否有文章
+    // 分类与文章是外键关系，直接删会抛 P2003；先数一遍换成可读的 400
     const count = await prisma.post.count({ where: { categoryId: id } })
     if (count > 0) return apiError(400, `该分类下有 ${count} 篇文章，无法删除`)
     await prisma.category.delete({ where: { id } })

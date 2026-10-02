@@ -76,7 +76,7 @@ export function adaptLegacyPost(p: any): LegacyPost {
   };
 }
 
-/** 相关文章打分：同分类 ×10 + 同标签 ×3，平局取最新（全站唯一规则） */
+/** 相关文章打分：同分类 ×10 + 同标签 ×3（叠加而非分层），平局取最新——全站唯一实现 */
 export function pickRelated(
   all: LegacyPost[],
   current: { id: string; category?: string; tags?: string[] },

@@ -53,9 +53,8 @@ export default async function PostPage({
 
   const allRaw = await getAllPosts();
   const all = allRaw.map(adaptLegacyPost);
-  // 相关文章：同分类∩同标签 > 同分类 > 同标签 > 最新；最多 3 篇
+  // 相关文章的打分规则在 lib/adapt.ts 的 pickRelated，这里只决定取几篇
   const relatedPosts = pickRelated(all, post, 3);
-  // 上/下篇：与移动版同一实现（这一端排成横向两栏）
 
   const siteUrl = await getSiteUrl();
   const jsonLd = {

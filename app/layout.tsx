@@ -64,8 +64,8 @@ export async function generateMetadata(): Promise<Metadata> {
         },
     title: {
       default: s.siteName,
-      // ⚠️ 模板是唯一实现：各页 title 一律写**裸名**（「归档」不是「归档 · 慢日志」）。
-      // 页面里再硬编码一次站点名会拼出「慢日志 | 慢日志」这种重复品牌 —— 上一版有 8 处如此。
+      // ⚠️ 模板是唯一实现：各页 title 一律写**裸名**（「归档」不是「归档 · 慢日志」），
+      // 页面再拼一次站点名就会得到「慢日志 | 慢日志」。
       // default 不吃 template，所以首页/无 title 的页仍然只有站点名。
       template: `%s | ${s.siteName}`,
     },
@@ -73,17 +73,17 @@ export async function generateMetadata(): Promise<Metadata> {
     ...(keywords.length ? { keywords } : {}),
     authors: [{ name: "Yahajiang" }],
     // RSS 自动发现声明放在下面 <head> 里，不在 metadata 里：
-    // ① 这版 Metadata 没有 links 键；② 文章页各自设了 alternates.canonical
-    // （app/posts/[id]/page.tsx:33），metadata 是浅合并，写在这里会被它们整体覆盖。
+    // ① 这版 Metadata 没有 links 键；② 文章页各自设了 alternates（app/posts/[id]/page.tsx），
+    // metadata 是浅合并，写在这里会被它们整体覆盖。
     openGraph: {
       title: s.siteName,
       description: s.siteDescription,
       type: "website",
       url: getSiteUrlSync(),
       siteName: s.siteName,
-      // 站点级分享卡：文章页有各自的 opengraph-image（lib/adapt.ts:101 postOgMeta），
-      // 但分享首页/归档时此前 og:image 为空、twitter:card 退成 summary，
-      // 于是「这是我的博客」这句话在群里显示成一块空白灰卡。
+      // 站点级分享卡：文章页有各自的 opengraph-image（lib/adapt.ts 的 postOgMeta），
+      // 但分享首页/归档时没有，og:image 为空会把 twitter:card 退成 summary——
+      // 于是「这是我的博客」在群里显示成一块空白灰卡。
       images: s.logoUrl
         ? [{ url: s.logoUrl, width: 512, height: 512, alt: s.siteName }]
         : [{ url: "/icon-512.png", width: 512, height: 512, alt: s.siteName }],
