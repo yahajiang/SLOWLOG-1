@@ -35,6 +35,9 @@ dev.log
 .mimosa/
 .zcode/
 skills-lock.json
+# 注：backups/ 与 content-export/ 曾在 v0.5.0 前被 force-add 跟踪（gitignore 对
+# 已跟踪文件无效），2026-10 已全部移出版本库、仅留磁盘；公开镜像由 publish-both.mjs
+# 的 FILTER_PATHS 兜底剔除，切勿再对这两个目录 git add -f
 backups/
 .workbuddy/
 .worktrees/
