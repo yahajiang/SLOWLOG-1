@@ -15,7 +15,7 @@
 | 动后台或登录链路 | §六 鉴权与凭据 | §九 一处实现与加载边界 |
 | 想知道哪里还是坑 | §十 坑位速查 | — |
 
-图例：⚠️ 会咬人（不知道就写错代码）｜✅ 已收口（照现有实现复用，别另起）｜🕐 待作者定（别擅自动）。
+图例：⚠️ 会咬人（不知道就写错代码）｜✅ 已收口（照现有实现复用，别另起）。
 
 ---
 
@@ -82,11 +82,11 @@
 
 - **双语成对**：`title/titleZh`、`excerpt/excerptZh`、`seoTitle/seoTitleZh`、`seoDescription/seoDescriptionZh`、Note 的 `content/contentZh`、Category 的 `name/nameZh`。**`Post.content` 只有一份** ⇒ `mapPost` 里 `headingsZh` 是 `headings` 的别名，注释写明"若将来有 contentZh 必须重算"。
 - **enum 一律 `String` + 应用层校验**（`Post.status`、`User.role`、`ApiToken.scope`、`Setting.theme`），写接口白名单在 `lib/schemas.ts`（zod）。
-- **可见性只有一条规则**：`lib/posts.ts:98/103` 的 `isPublicPost` / `publicPostWhere` = `status==="published"` **且** `publishedAt` 为空或已到点 ⇒ 草稿、归档、未来定时从任何公开入口都读不到；详情另有 `scheduledGuard`。
+- **可见性只有一条规则**：`lib/posts.ts` 的 `isPublicPost` / `publicPostWhere` = `status==="published"` **且** `publishedAt` 为空或已到点 ⇒ 草稿、归档、未来定时从任何公开入口都读不到；详情另有 `scheduledGuard`。
 - **缓存**：`getCachedPostRows` / `getCachedPostPage` / `getSettings` 全是 `unstable_cache` + `revalidate: 60` + tag；后台概览 30s。发布后统一 `revalidatePostPaths()`（tag + `/` + rss + sitemap + **三棵树的 `[id]`**，注释记录过旧实现漏了 `/m`、`/t`）。
 - **`degrade(fn, fallback, ctx)`**：只在 `NEXT_PHASE === "phase-production-build"` 吞 DB 异常返回空值，运行期照抛。CI 的 `build` job **故意不给 `DATABASE_URL`** 来验证这条。已确认保持，不要改回"运行期静默返回空列表"。⚠️ 例外：`getSettings` 走的是自己的 try/catch 静默降级（设置属装饰性数据，与内容查询策略刻意不同）。
 - **`stripPostHeavy`** 从列表载荷剥掉 `content*/html*/markdown*/headings*/pageConfig` ⇒ 阅读页必须把**原始 Prisma 行**传进 `PostClient` 才能解析主题。
-- **上限**：前台列表 `FRONT_LIST_LIMIT = 100`（`lib/posts.ts:195`，超出只 warn 一次）、单页 `FRONT_PAGE_SIZE_MAX = 20`、首页分组 `HOME_GROUP_LIMIT = 8`。后两个住在 `lib/list-constants.ts` —— 该文件单独存在是因为客户端组件不能 import `lib/posts.ts`（里面有 `revalidateTag`）。
+- **上限**：前台列表 `FRONT_LIST_LIMIT = 100`（`lib/posts.ts`，超出只 warn 一次）、单页 `FRONT_PAGE_SIZE_MAX = 20`、首页分组 `HOME_GROUP_LIMIT = 8`。后两个住在 `lib/list-constants.ts` —— 该文件单独存在是因为客户端组件不能 import `lib/posts.ts`（里面有 `revalidateTag`）。
 
 ---
 
@@ -116,7 +116,7 @@
 
 | 件 | 现值 / 规则 | 位置 |
 |---|---|---|
-| 令牌声明点 | `:root` 基础（含 `--radius-sm/md/lg`、`--shadow-card/pop/float`）→ `:root` 第二段（动效 + 危险五档 + 语义三色）→ `.dark` 整组夜值 → `.sl-force-light`；**第五份内联副本**在根 layout 的 critical CSS（只含基础色，故有 `.css-probe` 探针判断样式是否已加载） | `app/globals.css:9/111/1239/1348`、`app/layout.tsx:127/141` |
+| 令牌声明点 | `:root` 基础（含 `--radius-sm/md/lg`、`--shadow-card/pop/float`）→ `:root` 第二段（动效 + 危险五档 + 语义三色）→ `.dark` 整组夜值 → `.sl-force-light`；**第五份内联副本**在根 layout 的 critical CSS（只含基础色，故有 `.css-probe` 探针判断样式是否已加载） | `app/globals.css`、`app/layout.ts` |
 | 两族令牌 | `--yh-*` 前台、`--dash-*` 后台；危险五档 `danger/-strong/-soft/-border/-fg`（`-fg` 是实心钮文字色，夜版必须翻深，否则白字压暗红 2.97:1）；语义三色 `ok/warn/info` × 三档 ⇒ 组件里不再出现色相名 | `app/globals.css` |
 | ⚠️ 反相桥 | `.dark [class~=...]` 33 条会把裸 `text-zinc-*`/`bg-white` 重映射 —— 但源码里这类裸类**已清零**，它现在只是"有人写回来时兜底"。别拿它当翻译器去猜夜版色 | `app/globals.css` 末尾 |
 | 动效四档 | `--duration-fast 180 / exit 220 / normal 300 / slow 500`；`@keyframes` 只住在 globals，组件禁止内联 `<style>`；跟随类（TOC 250、抽屉 160、进度轨 120、取色器 100）刻意不并档 | `app/globals.css`、蓝图 §十二 |
@@ -133,7 +133,8 @@
 ## 九、一处实现与加载边界
 
 - **一条规则 = 一处实现**：可见性 `lib/posts.ts`、鉴权 `lib/app-auth.ts`、origin `lib/site-url.ts`、设置 `lib/settings.ts`、封面 `CoverArt.tsx`、加载壳 `LoadingShell`/`DashLoading`、后台列表加载 `lib/admin-fetch.ts`（`loadList`/`loadObject` 永不 reject，失败一律渲染 `ListError`）、归档匹配 `lib/archive-match.ts`、品牌 `SiteBrand.tsx`。
-- **`loading.tsx` 作用域纪律**（权威注释 `components/LoadingShell.tsx:10-15`）：它是流式 Suspense 边界，会**先冲刷 200 状态头**，只允许出现在 `(shell)` 列表组；会 `notFound()` 的详情段刻意不加，否则真 404 变 soft-404。⚠️ 现有一处自相矛盾：`app/dashboard/posts/[id]/page.tsx` 会 `notFound()`，却被 `dashboard/loading.tsx` 与 `dashboard/posts/loading.tsx` 两层包住（父段边界对后代生效）—— 只因整棵后台 noindex 才没造成 SEO 后果。
+  （`pageConfig` 的默认值也算一条规则：哨兵 `UNSET_PAGE_CONFIG` 是唯一出处，其余三处由 `scripts/check-page-config-default.mjs` 比对）
+- **`loading.tsx` 作用域纪律**（权威注释 `components/LoadingShell.tsx` 顶部）：它是流式 Suspense 边界，会**先冲刷 200 状态头**，只允许出现在 `(shell)` 列表组；会 `notFound()` 的详情段刻意不加，否则真 404 变 soft-404。⚠️ 现有一处自相矛盾：`app/dashboard/posts/[id]/page.tsx` 会 `notFound()`，却被 `dashboard/loading.tsx` 与 `dashboard/posts/loading.tsx` 两层包住（父段边界对后代生效）—— 只因整棵后台 noindex 才没造成 SEO 后果。
 
 ---
 
@@ -145,8 +146,9 @@
 | ✅ 已收口 | `/login` 首屏没有 `<form>` | 预渲染 + `useSearchParams()` 的 `Suspense fallback={null}` | `app/(shell)/login/page.tsx`（现 `force-dynamic`） |
 | ✅ 已收口 | 后台"骨架屏转到天荒地老" | 加载失败没有错误态（不判 `r.ok`、无 catch） | `lib/admin-fetch.ts` + `components/ui/ListError.tsx` |
 | ✅ 已收口 | 搜一个只命中摘要的词，时间线崩 | 服务端五路命中 vs 客户端窄规则，且 `p.category` 是对象 | `lib/archive-match.ts` |
-| 🕐 待作者定 | 站点主题/目录开关对文章无效 | 三处默认值漂移（schema vs JS vs SETTINGS_DEFAULTS） | `lib/page-config.ts:13` + `prisma/schema.prisma:63/119` |
-| 🕐 待作者定 | 夜版看着没生效 | `.sl-force-light` 本地重声明浅色板（上一条的直接后果） | `app/globals.css:1348` |
+| ✅ 已收口 | 站点主题/目录开关对文章无效 | 「未定制」判据拿的是 JS 侧默认（`system`/`true`），而文章实际带的是 schema 列默认（`light`/`false`）⇒ 永不相等，站点默认从不回填。现判据是与存储值逐字段相同的 `UNSET_PAGE_CONFIG`，四处默认由守卫比对 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
+| ⚠️ 已知代价 | 某篇设成 light + 不显示目录，改站点默认对它没用 | 等值判「未定制」分不开「没动过」与「刻意这么选」；该篇会挂 `.sl-force-light` | `lib/page-config.ts` 的 `withSiteDefaults` |
+| ⚠️ 未修 | Web 转夜版了，App 仍浅色 | `/api/app/sync` 原样下发 `pageConfig`，不套站点默认（读者端与预览都已套） | `app/api/app/sync/route.ts` |
 | ⚠️ 测量约束 | 英文页在 curl 里永远中文 | 语言是 `localStorage` 客户端态 | `lib/lang-context.tsx` |
 | ✅ 设计如此 | `npm run db:seed` 突然中止 | 缺 `AUTH_DEFAULT_PASSWORD`（源码已无明文兜底） | `prisma/seed.ts` 开头守卫 |
 | ⚠️ 未修 | 后台编辑器 404 是 soft-404 | 会 `notFound()` 的段被两层 `loading.tsx` 包住 | `app/dashboard/loading.tsx`、`app/dashboard/posts/loading.tsx` |

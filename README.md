@@ -103,7 +103,7 @@ node scripts/api-tests.mjs <url>    # 六场景集成测试（需先起服务 + 
 |---|---|---|
 | 一条规则 = 一处实现 | 可见性 / 鉴权 / Origin / 设置 / 封面 / 加载壳 / 列表加载 / 归档匹配 / 品牌块 / 输入框 各只有一处实现 | `lib/posts.ts`、`lib/app-auth.ts`、`lib/site-url.ts`、`lib/settings.ts`、`components/CoverArt.tsx`、`lib/admin-fetch.ts`、`lib/archive-match.ts`、`components/SiteBrand.tsx`、`components/ui/Input.tsx` |
 | 可见性 | `status==="published"` 且 `publishedAt` 为空或已到点；草稿 / 归档 / 未来定时从任何公开入口读不到 | `lib/posts.ts` `publicPostWhere()` |
-| 加载边界作用域 | `loading.tsx` 先冲刷 200 头 → 会 `notFound()` 的详情段**禁止**包，否则真 404 变 soft-404 | `components/LoadingShell.tsx:10-15` |
+| 加载边界作用域 | `loading.tsx` 先冲刷 200 头 → 会 `notFound()` 的详情段**禁止**包，否则真 404 变 soft-404 | `components/LoadingShell.tsx` 顶部 |
 | 标题模板只有一处 | 各页 `metadata` 只写裸名；中间层 layout **不写 `title`**（浅合并会吃掉根 `template`） | `app/layout.tsx` |
 | SEO 权重归一 | `/m` 靠 canonical 指桌面（仍 index）；`/t` 是 canonical + `noindex,follow`；sitemap 只收桌面 | 各树 `page.tsx` 的 `alternates` / `robots` |
 | Origin 两条路 | 302 目标必须命中 `ALLOWED_REDIRECT_HOSTS`；SEO 输出只信 `NEXT_PUBLIC_SITE_URL`，不读请求头 | `middleware.ts`、`lib/site-url.ts` |
@@ -114,7 +114,7 @@ node scripts/api-tests.mjs <url>    # 六场景集成测试（需先起服务 + 
 | 动效四档 | 180 / 220 / 300 / 500ms，`@keyframes` 只住在 globals；跟随类（TOC 250ms 等）刻意不并档 | `app/globals.css` |
 | i18n 契约 | 339 键三块对称；**语言是 localStorage 客户端态 ⇒ SSR/curl 永远中文**；加键先按值 grep；英文量词走 `pl()` | `lib/i18n.ts`、`lib/lang-context.tsx` |
 | 正文排印 | 17px / 1.9；宽度三档 672 / 768 / 1024（默认 768）；目录侧栏 308px；主线容器 `min(70%,1600px)` | `components/PostClient.tsx` |
-| ⚠️ 已知未决 | 站点「默认页配置 · 主题 / 目录开关」对未定制文章无效（三处默认值漂移），后果是夜版进不了文章页 | `lib/page-config.ts:13` + `prisma/schema.prisma:63/119` |
+| pageConfig 未定制判定 | 「未定制」= 逐字段等于 `UNSET_PAGE_CONFIG`（与 schema 列默认同值），站点「默认页配置 · 主题 / 目录」按此回填；四处默认由守卫比对 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
 
 ## API 一览
 
