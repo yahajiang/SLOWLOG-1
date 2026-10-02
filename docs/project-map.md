@@ -35,7 +35,7 @@
 | 图片 | Vercel Blob + sharp | 三级回退：Blob → `public/uploads/` → data URI |
 | 推送 | firebase-admin（FCM） | 失败只记日志，绝不阻塞发布 |
 
-**规模**：源码 ts/tsx **199**（`app`/`components`/`lib`，不含生成物）；`page.tsx` **30**、`layout.tsx` **3**、`loading.tsx` **18**、error 边界 **3**、`app/api/**/route.ts` **19** + `app/rss.xml/route.ts`；`components/ui/` 原语 **12** 件；字典 **339** 键 × 三块；组件画廊 **65** 条目。跟踪文件数：合并 `chore/remote-cleanup` 前 **341**，之后 **293**。
+**规模**：源码 ts/tsx **206**（`app`/`components`/`lib`，不含生成物）；`page.tsx` **30**、`layout.tsx` **3**、`loading.tsx` **18**、error 边界 **3**、`app/api/**/route.ts` **19** + `app/rss.xml/route.ts`；`components/ui/` 原语 **12** 件；字典 **339** 键 × 三块；组件画廊 **65** 条目。跟踪文件数：合并 `chore/remote-cleanup` 前 **341**，之后 **293**。
 
 ---
 

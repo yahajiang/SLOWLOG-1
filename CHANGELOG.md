@@ -20,7 +20,7 @@
 |---|---|---|
 | **删掉桌面与平板的「上一篇 / 下一篇」** | 作者定案：`PostClient` 的整块 section、`prev/next` props 与 chevron 图标一并移除，`/posts/[id]` 与 `/t/posts/[id]` 不再取相邻文章。**移动版保留改版前就有的纵向上下篇**；`lib/adapt.pickAdjacent` 与字典 `previous/next` 两键的唯一消费者就是它，不是死代码 | `components/PostClient.tsx` |
 | **删 25 个一次性脚本** | 16 个依赖未声明 Playwright 的截图/量测脚本 + 7 个已执行完的数据迁移脚本 + 硬编码 postId 的 schedule-e2e + PowerShell 版 smoke-test。判据：除自身用法注释外全仓零引用，`package.json` 与 CI 都不调用 | `scripts/` |
-| **公开镜像不再 ship 四份审查文档** | `full-review-2026-09-15.md`（89.6 KB / 77 处 P0-P1）、`audit-2026-09-15-independent.md`、`backend-review-2026-09-14.md`、`compose/spec/security-p0p1.md` 只进私有仓 | `scripts/publish-both.mjs` |
+| **公开镜像不再 ship 四份审查文档** | `full-review-2026-09-15.md`（89.6 KB / 50 条编号：P0×2、P1×6、P2×16、P3×26）、`audit-2026-09-15-independent.md`、`backend-review-2026-09-14.md`、`compose/spec/security-p0p1.md` 只进私有仓 | `scripts/publish-both.mjs` |
 
 ### Fixed
 
@@ -53,11 +53,12 @@
 | **动效单一实现** | `Dialog`/`FormField`/`Toast` 各自在 JSX 里塞 `<style>` 注册 `@keyframes`（`Dialog` 的 `scaleIn` 已与全局分叉 0.96 vs 0.98）→ 全部搬进 `globals.css`；时长字面量归 `--duration-*`，全仓 tsx 内三档裸数字残留 0 | `app/globals.css` |
 | **语义色令牌化** | `--dash-ok/warn/info` ×三档（底/字/边）入亮暗两组；`Badge` 的 tone 由色相名（emerald/amber/sky）改语义名；状态徽标、Toast、表单错误同源 | `app/globals.css`、`components/ui/Badge.tsx` |
 | **触屏按下反馈** | 移动前台与移动后台共 30 处 48px 目标只有颜色变化、无按下态 → 统一 `active:opacity-60` | 移动树组件 |
-| **后台页名各页自出** | **13 个页面**拆「服务端壳（`metadata`）+ `<X>Client.tsx`」，16 条后台路由（桌面 8 + 移动 7 + 编辑器）各有页名；中间层 layout 不再写 `title`（浅合并会吃掉根 `template`） | `app/dashboard/**`、`app/m/dashboard/**` |
+| **后台页名各页自出** | **16 个页面**拆「服务端壳（`metadata`）+ `<X>Client.tsx`」（桌面 9：概览/文章/编辑器/分类/媒体/随想/设置/令牌/改密 + 移动 7：概览/文章/随想/更多/设置/分类/令牌）各有页名；中间层 layout 不再写 `title`（浅合并会吃掉根 `template`） | `app/dashboard/**`、`app/m/dashboard/**` |
 | **文案收进字典** | 字典 **339/339/339** 逐键对称；后台分页钮 8 处硬写 `{lang==="zh"?"上一页":"Prev"}` 改吃既有 `pagePrev/pageNext`（英文侧因此 `Prev` → `Previous`，与随想翻页钮同词）；归档 kicker/placeholder、行内「保存/取消」等内联双语清零 | `lib/i18n.ts` |
 | **加载边界补齐** | 后台路由级 `loading.tsx` 到 **18** 个（含补上的 `/m/dashboard/settings`） | `app/**` |
 | **画廊与代码对齐** | `:root`/`.dark` 补齐 dash 别名、危险五档、语义三色、`--duration-exit`/`--motion-grow`；语义裸 hex 改 `var()`（含删除确认预览那对 `#dc2626 + #fff`）；条目 58 → **65**，新增 `admin-input`/`admin-shell`/`list-error`/`semantic-palette`/`touch-two-tier`/`motion-tiers`/`i18n-source` | `public/design/gallery.html` |
 | **文档** | 新增 `docs/project-map.md`（五棵树 / 请求流 / 数据层 / 鉴权 / 设计系统 / 仓库约定 / 坑位速查）；设计蓝图补 §六 上下篇定案、§九 后台标题、§十一 归档与匹配口径、§十二 危险五档与语义三色、§文案单一来源与品牌块/量词单一实现 | `docs/` |
+| **全量文档对账（数字全部重测）** | README 与项目地图的源码数 **199→206**（口径写进表里：git 跟踪、不含 `lib/generated/` 与 `next-env.d.ts`）；`Setting` **12→13 字段**；后台「壳 + Client」页面 **13→16**（桌面 9 + 移动 7 —— 旧数漏了 `app/dashboard/page.tsx` 与 `app/m/dashboard/page.tsx` 两个根页，`git ls-files 'app/dashboard/**/page.tsx'` 的 `**` 不匹配零层目录）；首屏编译 **9s→10s**。CHANGELOG 里 `full-review` 的「77 处 P0-P1」改成 **50 条编号（P0×2、P1×6、P2×16、P3×26）**。`gallery-DESIGN.md` 版本戳 v1.8→**v1.9**、条目 **58→65**、stagger 改成实测「60ms 起步 / 45ms 递增 / 11 项封顶 465ms」并补 v1.9 落地行。蓝图「继续阅读」不再写成 `同分类 > 同标签` 的分层淘汰（与 `×10 + ×3` 叠加自相矛盾） | `README.md`、`CHANGELOG.md`、`docs/project-map.md`、`docs/design/gallery-DESIGN.md`、`docs/design/design-blueprint.md` |
 | **注释只解释与介绍** | 注释里的历史重复计数与审计叙述清掉，规则说明收在实现处一处；顺带修掉三处失真：`app/layout.tsx` 把 `postOgMeta` 指到 `lib/adapt.ts:101`（实际 121，改成不带行号的符号引用）、两棵文章页把相关文章复述成「同分类 > 同标签」的分层淘汰（实际是 ×10 + ×3 叠加，可反超）、`DELETE /api/categories/[id]` 的「检查分类下是否有文章」换成真实原因（外键关系下先数一遍换可读 400） | `components/ui/Panel.tsx`、`AdminTitle.tsx`、`Input.tsx`、`lib/categories.ts`、`lib/adapt.ts`、`app/layout.tsx` |
 
 ### Security

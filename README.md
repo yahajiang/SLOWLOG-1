@@ -24,13 +24,13 @@
 
 | 维度 | 事实 |
 |---|---|
-| 源码文件 | `app`/`components`/`lib` 共 **199** 个 ts/tsx（不含 Prisma 生成物） |
-| 路由 | 生产构建 **54** 条：8 静态 + 2 SSG + 44 动态；`page.tsx` 30 个 |
+| 源码文件 | **206** 个 ts/tsx（git 跟踪口径，不含 `lib/generated/` 与 `next-env.d.ts`） |
+| 路由 | 生产构建 **54** 条：8 静态 + 2 SSG + 44 动态；`page.tsx` 30 个，其中后台 **16** 条（桌面 9 + 移动 7） |
 | 边界 | `layout.tsx` 3、`loading.tsx` 18、error 边界 3（含 `global-error.tsx`） |
 | 数据 | Prisma **9** 个 model，**零 enum**（枚举一律 `String` + zod 白名单） |
 | 文案 | `lib/i18n.ts` **339** 键，`zh` / `en` / `export type Dict` 三块逐键对称 |
 | 设计资产 | `public/design/gallery.html` **65** 条目（喂给 AI 的规范源，与代码同源） |
-| 首屏 JS | 共享 chunk **103 kB**；构建编译约 9s |
+| 首屏 JS | 共享 chunk **103 kB**；构建编译约 10s |
 | 质量门 | `tsc --noEmit` 0 / `eslint .` 0 / `next build` 绿 + CI 三 job |
 
 ## 技术栈
@@ -89,7 +89,7 @@ node scripts/api-tests.mjs <url>    # 六场景集成测试（需先起服务 + 
 | `Post` | 文章（双语标题/摘要/SEO 字段、Tiptap JSON 正文、`status`、`tags[]`、`pageConfig`、`featured`、`readTime`、`viewCount`、`publishedAt`） |
 | `Note` | 随想（≤500 字，中英成对） |
 | `Media` | 媒体（Blob URL + 尺寸 + MIME + alt） |
-| `Setting` | 站点设置（单例行 `id="singleton"`，12 字段） |
+| `Setting` | 站点设置（单例行 `id="singleton"`，13 字段） |
 | `ApiToken` | App 令牌（只存 SHA-256；`scope` = `sync` 90 天 / `admin` 7 天） |
 | `AppDevice` | FCM 设备 token |
 | `DeletedPost` | 删除墓碑（供 App 增量同步） |
@@ -143,7 +143,7 @@ app/
   (shell)/            首页 / 归档 / 登录 + 全站过场骨架（永不会 404 的列表组）
   posts/[id]/         阅读页 + opengraph-image        tag/[tag]/  标签聚合
   m/  t/              移动端与平板树（含 /m/dashboard 轻后台）
-  dashboard/          桌面后台（13 个页面是「服务端壳 + <X>Client.tsx」）
+  dashboard/          桌面后台 9 页（服务端壳 + <X>Client.tsx），移动后台另 7 页同构
   api/                19 个 handler                    rss.xml/ sitemap.ts/ robots.ts/ manifest.ts
   error.tsx  global-error.tsx  not-found.tsx  Providers.tsx
 components/

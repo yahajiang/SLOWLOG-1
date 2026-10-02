@@ -14,10 +14,10 @@ Editorial Web Designer — 画廊是「设计契约的展品柜」，不是营�
 - 封面预览必须演示 **CoverArt 语义**：淡入 + cover-sway 轻摆（循环关键帧不写死 opacity）、无大色块、标签签名章 + mono 代号
 
 ## Structure
-1. sticky 头（S 圆印 + 标题 + 搜索主题，sub 标 v1.8）
+1. sticky 头（S 圆印 + 标题 + 搜索主题，sub 标 v1.9）
 2. 搜索 + 分类 tabs + 计数（6 大类自动计数）
-3. 组件网格（58 条目：预览区 + 标签/名/两行描述，卡片 stagger 35ms 递增封顶 12 项）
-4. 模态：预览 + 可复制提示词（P_BASE + 条目专属）+ About 蓝图（v1.8）
+3. 组件网格（65 条目：预览区 + 标签/名/两行描述；卡片 stagger 60ms 起步、45ms 递增，11 项后封顶 465ms）
+4. 模态：预览 + 可复制提示词（P_BASE + 条目专属）+ About 蓝图（v1.9）
 
 ## Decision Trace
 - 封面条目从旧 ArticleArt 改为 CoverArt/HeroCover —— 主站已切换，画廊不同步则误导 AI
@@ -25,6 +25,7 @@ Editorial Web Designer — 画廊是「设计契约的展品柜」，不是营�
 - 动效契约：淡入 + cover-sway translateY；循环关键帧禁止写死 opacity:1（会把淡线拉黑）
 - 补过场组件组：桌面登录 / 404 幽灵页 / 错误边界入柜 —— 过场语言（纸纹 + 装订线 + 歪印）统一后契约补全（46 → 49）
 - v1.8（49 → 58）：平板三件套（tablet-gate/desktop-escape/tablet-tree）+ 数据链路（rss-feed/seo-canonical/settings-form）+ 交互边界（home-group-8/pagination-20/loading-scope）；修后台五 Tab・侧栏折叠・页脚设置驱动・分页口径 FRONT_PAGE_SIZE_MAX=20
+- v1.9（58 → 65）：`:root`/`.dark` 与 `globals.css` 对齐（dash 别名、危险五档含 `--dash-danger-fg`、语义三色 ok/warn/info × 三档、`--duration-exit`/`--motion-grow`）；语义裸 hex 改指 `var()`；新增 7 条把收口写成可复用规范 —— `admin-input`/`admin-shell`/`list-error`/`semantic-palette`/`touch-two-tier`/`motion-tiers`/`i18n-source`
 - 过场语言基元：`.paper-grain`（暗色 screen 混合）+ `.tick-{tl,tr,bl,br}` 四角装订线 —— 加载/错误/登录/404 共用；欢迎幕另有 `.welcome-side` 侧注
 - 画廊字体自托管：woff2 落 `public/fonts/` + 内嵌 @font-face —— 访客网络不请求 Google Fonts（国内阻塞会挂起渲染）；CJK 走系统衬线兜底
 
