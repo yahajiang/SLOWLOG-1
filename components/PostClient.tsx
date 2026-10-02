@@ -52,7 +52,7 @@ export function PostClient({
     ? { ...rawPost, title: rawPost.titleZh || rawPost.title, excerpt: rawPost.excerptZh || rawPost.excerpt, html: rawPost.htmlZh || rawPost.html, headings: rawPost.headingsZh || rawPost.headings }
     : rawPost;
   const content = (prismaRaw as any)?.content || (rawPost as any).content
-  // 站点级默认页配置回退：文章未定制（=内置默认值）的字段取「站点设置·页面默认配置」
+  // 站点级默认页配置回退（未定制的判据见 lib/page-config 的 withSiteDefaults）
   const siteSettings = useSiteSettings()
   const pageConfig = withSiteDefaults(
     parsePageConfig((prismaRaw as any)?.pageConfig),

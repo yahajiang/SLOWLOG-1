@@ -18,6 +18,21 @@ export const DEFAULT_PAGE_CONFIG: PageConfig = {
   showTOC: true,
 }
 
+/**
+ * 「未定制」的哨兵：与 prisma/schema.prisma 里 `Post.pageConfig` 的列默认逐字段一致。
+ * 一篇从没进过「页面主题配置」面板的文章，身上带的就是这一组值，所以判定未定制只能比它。
+ * 改列默认时必须同时改这里——两者不一致会让站点级默认在个别字段上重新失效。
+ */
+export const UNSET_PAGE_CONFIG: PageConfig = {
+  layout: "standard",
+  theme: "light",
+  primaryColor: "oklch(0.55 0.15 250)",
+  fontFamily: "sans",
+  backgroundColor: "#FFFFFF",
+  maxWidth: "medium",
+  showTOC: false,
+}
+
 /** 内容安全白名单：颜色（hex/rgb/hsl/oklch/color-mix/色名，禁 url 与分号花括号） */
 export function safeColor(v: unknown): string | undefined {
   if (typeof v !== "string") return undefined
@@ -74,18 +89,21 @@ export function parsePageConfig(raw: unknown): PageConfig {
 /**
  * 站点级默认页配置回退（Setting.defaultPageConfig 的消费入口）。
  *
- * 文章创建时 schema 默认 JSON 会全量写入 pageConfig，因此**无法从"字段缺失"
- * 判断是否定制**——改用逐字段比对：值仍等于内置默认（DEFAULT_PAGE_CONFIG）的
- * 字段视为"未定制"，回退到站点设置；作者显式改过的字段保持不变。
+ * 逐字段比较：文章某字段仍等于 `UNSET_PAGE_CONFIG`（= schema 列默认）就视为未定制，
+ * 取站点设置；作者改过的字段保持不变。内置 `DEFAULT_PAGE_CONFIG` 只做「值不合法时」的
+ * 兜底，不参与未定制判定——两者曾混用，导致夜版与「显示目录」对全部未定制文章失效。
+ *
+ * 已知代价：作者显式选成与列默认完全相同的值（light + 不显示目录）会被当作未定制，
+ * 由站点默认接管。彻底区分要改存储（字段缺失才算未设置），那需要动库结构与回填。
  */
 export function withSiteDefaults(post: PageConfig, site: PageConfig): PageConfig {
   const out: PageConfig = { ...post }
   const p = post as unknown as Record<string, unknown>
   const s = site as unknown as Record<string, unknown>
   const o = out as unknown as Record<string, unknown>
-  const d = DEFAULT_PAGE_CONFIG as unknown as Record<string, unknown>
-  for (const k of Object.keys(d)) {
-    if (p[k] === d[k] && s[k] !== undefined) o[k] = s[k]
+  const u = UNSET_PAGE_CONFIG as unknown as Record<string, unknown>
+  for (const k of Object.keys(u)) {
+    if (p[k] === u[k] && s[k] !== undefined) o[k] = s[k]
   }
   return out
 }
