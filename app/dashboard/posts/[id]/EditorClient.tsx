@@ -5,7 +5,8 @@ import dynamic from "next/dynamic"
 import { PostRenderer } from "@/components/editor/PostRenderer"
 import { ConfigPanel } from "@/components/editor/ConfigPanel"
 import type { PageConfig } from "@/lib/page-config"
-import { parsePageConfig } from "@/lib/page-config"
+import { parsePageConfig, withSiteDefaults } from "@/lib/page-config"
+import { useSiteSettings } from "@/lib/settings-context"
 import Link from "next/link"
 import { Breadcrumb } from "@/components/Breadcrumb"
 import { ConfirmDialog } from "@/components/ui/Dialog"
@@ -112,6 +113,12 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
   const splitRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const pageConfig: PageConfig = useMemo(() => parsePageConfig(post.pageConfig), [post.pageConfig])
+  const siteSettings = useSiteSettings()
+  // 预览与读者端同一套回退；pageConfig 本身是本文存储值，ConfigPanel 与保存都用它
+  const previewConfig = useMemo(
+    () => withSiteDefaults(pageConfig, parsePageConfig(siteSettings.defaultPageConfig)),
+    [pageConfig, siteSettings.defaultPageConfig]
+  )
 
   // 防抖字数统计 - 延迟 800ms
   useEffect(() => {
@@ -517,10 +524,10 @@ export default function EditorClient({ initialPost, categories, isNew }: { initi
           <div className="flex-1 min-w-0 flex flex-col bg-[var(--dash-bg)]">
             <div className="sticky top-0 z-10 bg-[var(--dash-card)]/80 backdrop-blur border-b border-[var(--dash-border)] px-4 py-2 flex items-center justify-between text-[11px] tracking-widest uppercase text-[var(--dash-muted)]">
               <span>预览 · 与前台一致</span>
-              <span className="text-xs normal-case tracking-normal">{pageConfig.layout} / {pageConfig.fontFamily} / {pageConfig.maxWidth}</span>
+              <span className="text-xs normal-case tracking-normal">{previewConfig.layout} / {previewConfig.fontFamily} / {previewConfig.maxWidth}</span>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <PreviewPanel content={post.content} post={post} pageConfig={pageConfig} categories={categories} />
+              <PreviewPanel content={post.content} post={post} pageConfig={previewConfig} categories={categories} />
             </div>
           </div>
         </div>

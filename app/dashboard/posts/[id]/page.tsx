@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { UNSET_PAGE_CONFIG } from "@/lib/page-config"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import EditorClient from "./EditorClient"
@@ -27,7 +28,7 @@ export default async function EditorPage({ params }: { params: Promise<{ id: str
       status: "draft",
       categoryId: null,
       tags: [],
-      pageConfig: { layout: "standard", theme: "light", primaryColor: "oklch(0.55 0.15 250)", fontFamily: "sans", backgroundColor: "#FFFFFF", maxWidth: "medium", showTOC: false },
+      pageConfig: UNSET_PAGE_CONFIG,
       seoTitle: null,
       seoDescription: null,
       seoKeywords: [],
@@ -40,7 +41,7 @@ export default async function EditorPage({ params }: { params: Promise<{ id: str
       authorInitial: "Y",
     }
   } else {
-    if (!post.pageConfig) post.pageConfig = { layout: "standard", theme: "light", primaryColor: "oklch(0.55 0.15 250)", fontFamily: "sans", backgroundColor: "#FFFFFF", maxWidth: "medium", showTOC: false }
+    if (!post.pageConfig) post.pageConfig = UNSET_PAGE_CONFIG
   }
   return <EditorClient initialPost={post} categories={categories} isNew={isNew} />
 }
