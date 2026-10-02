@@ -12,7 +12,7 @@ commits: c7dd01f..20422ae
 
 **What was built** — CoverArt 共享封面底盘：大衬线首字母 + 7 分类几何母题 + 底栏编号；wide/card 比例；cover-pulse/cover-flow 循环微动效（reduced-motion 可关）。ArticleArt/HeroCover 改薄封装，列表卡与 Hero 同语言。
 
-**Verification** — tsc 无 CoverArt/ArticleArt/HeroCover 错误；截图 mobile-preview/09-card-cover.png 确认 Plugin 卡为字母+方阵而非同心圆刷屏。
+**Verification** — tsc 无 CoverArt/ArticleArt/HeroCover 错误；截图 `mobile-preview/09-card-cover.png`（只留本地，不入仓）确认 Plugin 卡为字母+方阵而非同心圆刷屏。
 
 **Journey log**
 1. 用户看 localhost:3000 时改动在 worktree，未合并——先合 main 再验。

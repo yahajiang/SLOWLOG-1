@@ -12,7 +12,7 @@ commits: 270b553..70359f7
 
 **What was built** — Engineering 封面改为杂志分区：TagScene 真正居中（全局补 translate，56%），PluginSymbol 单角标固定右上，底栏一行 `ENG · 编号 · TAG`（剥掉 tag 自带的 `[]`），去掉中心 tag 芯片。各 variant3 装饰压到 ≤15% 透明度，并几何避开中心安全区（顶带限高、架构框缩角、SCALE 移到左上避免与角标叠字）。
 
-**Verification** — `npx tsc --noEmit` 无 ArticleArt 错误（其余为既有 prisma/implicit-any）；DOM dump 文本为 `["3 NODES · 3","◎","ENG · 3081 · TAURI"]`；截图 `mobile-preview/07-eng-cover.png` 确认主体居中、底栏一行、无叠字。Review（general-9）P1/P2 已按建议修完。
+**Verification** — `npx tsc --noEmit` 无 ArticleArt 错误（其余为既有 prisma/implicit-any）；DOM dump 文本为 `["3 NODES · 3","◎","ENG · 3081 · TAURI"]`；截图 `mobile-preview/07-eng-cover.png`（只留本地，不入仓）确认主体居中、底栏一行、无叠字。Review（general-9）P1/P2 已按建议修完。
 
 **Journey log**
 1. TagScene 原 `top-1/2 left-1/2` 缺 translate，主体偏右下——全局修正对所有分类有益。

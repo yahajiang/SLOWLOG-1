@@ -12,7 +12,7 @@ commits: 5658a43..687a338
 
 **What was built** — 新建独立 `components/HeroCover.tsx` 专供首页推荐位：16/10、巨衬线首字母（左）+ 7 分类几何母题（右）+ 底栏一行 `ABBR · 编号 · TAG`。无 TagScene / PluginSymbol。桌面 `HomeClient` 与移动 `MHome` Hero 接入；列表卡仍走 `ArticleArt`。
 
-**Verification** — `npx tsc --noEmit` 无 HeroCover/HomeClient/MHome 错误；截图 `mobile-preview/08-hero-cover.png`；Review C1（桌面双边框）已修 `noBorder`。
+**Verification** — `npx tsc --noEmit` 无 HeroCover/HomeClient/MHome 错误；截图 `mobile-preview/08-hero-cover.png`（该目录只留本地，不入仓，公开仓内不存在）；Review C1（桌面双边框）已修 `noBorder`。
 
 **Journey log**
 1. 推荐位原是 `ArticleArt tall` 缩略图，与卡片封面争同一套装饰语言。

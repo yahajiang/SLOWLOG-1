@@ -136,7 +136,7 @@
 - **一条规则 = 一处实现**：可见性 `lib/posts.ts`、鉴权 `lib/app-auth.ts`、origin `lib/site-url.ts`、设置 `lib/settings.ts`、封面 `CoverArt.tsx`、加载壳 `LoadingShell`/`DashLoading`、后台列表加载 `lib/admin-fetch.ts`（`loadList`/`loadObject` 永不 reject，失败一律渲染 `ListError`）、归档匹配 `lib/archive-match.ts`、品牌 `SiteBrand.tsx`。
 - **`loading.tsx` 作用域纪律**（权威注释 `components/LoadingShell.tsx:10-15`）：它是流式 Suspense 边界，会**先冲刷 200 状态头**，只允许出现在 `(shell)` 列表组；会 `notFound()` 的详情段刻意不加，否则真 404 变 soft-404。⚠️ 现有一处自相矛盾：`app/dashboard/posts/[id]/page.tsx` 会 `notFound()`，却被 `dashboard/loading.tsx` 与 `dashboard/posts/loading.tsx` 两层包住（父段边界对后代生效）—— 只因整棵后台 noindex 才没造成 SEO 后果。
 - **发布双仓**：`scripts/publish-both.mjs --yes`（默认 dry-run）。核心安全约束是**清洗表 `FILTER_PATHS` 与终检表 `AUDIT_FORBIDDEN` 分开定义**，终检同时扫「重写后的全历史」与「工作树」，任一命中即不推。`chore/remote-cleanup` 起新增 `PRIVATE_DOCS`：四份审查/漏洞清单（含 89.6 KB 的 `docs/full-review-2026-09-15.md`）不再进公开镜像。
-- **数据产物不入库**：`backups/`、`content-export/`、`mobile-preview/`、`public/uploads/`、`spark-output/`、`.tool-state/` 全在 `.gitignore`；⚠️ 但 gitignore 对**已跟踪**文件无效 —— 那 23 个历史遗留文件只有合并 `chore/remote-cleanup` 才真正移出跟踪（-6.16 MB）。别再 `git add -f`。
+- **数据产物不入库**：`backups/`、`content-export/`、`mobile-preview/`、`public/uploads/`、`spark-output/`、`.tool-state/` 全在 `.gitignore`（⚠️ `mobile-preview/` 是 2026-10-02 才补进去的，此前一直漏，取消跟踪后它以 `??` 裸在 `git status` 里）；⚠️ 但 gitignore 对**已跟踪**文件无效 —— 那 23 个历史遗留文件只有合并 `chore/remote-cleanup` 才真正移出跟踪（-6.16 MB）。别再 `git add -f`。
 - **`spark-output/` 是本地工作区**：审计笔记、对照稿、`context/audit.json` 只留本地，不进任何远端。
 - **版本与发布说明**：`CHANGELOG.md`（Keep a Changelog + 语义化版本）由作者维护；agent 改动是否入条目先问，别自己开版本。
 
