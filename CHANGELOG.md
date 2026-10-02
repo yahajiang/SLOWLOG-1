@@ -26,6 +26,7 @@
 
 | 结论 | 细节 | 位置 |
 |---|---|---|
+| **站点夜版/显示目录对文章全部失效** | `withSiteDefaults` 判「未定制」拿的是 `DEFAULT_PAGE_CONFIG`（`theme=system`/`showTOC=true`），而未进过配置面板的文章实际带的是 Prisma 列默认（`theme=light`/`showTOC=false`）⇒ 两者永不相等，站点默认从不回填，`PostClient` 见 `theme==="light"` 就给每篇挂 `sl-force-light`，夜版进不了文章页。判据换成与列默认逐字段相同的 `UNSET_PAGE_CONFIG` 哨兵，零迁移零回填；新增 `scripts/check-page-config-default.mjs` 静态守卫并接进 CI 类型检查阶段（改坏哨兵实测 rc=1 并指名字段）。代价：显式选成 light+不显示目录 的文章会被当作未定制 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
 | **`mobile-preview/` 从没被 .gitignore 覆盖** | `c939529` 称「这些目录早已被 .gitignore 覆盖」，实测四条里只有三条成立：`backups/`、`content-export/`、`/public/uploads` 命中，`mobile-preview/` 漏。取消跟踪后 13 张截图（5.5 MB）以 `??` 裸在 `git status`，下一次 `git add -A` 就把它们拉回版本库 —— 正是当初要防的那次 force-add。同时把注释里的「这两个目录」改成实际四个 | `.gitignore` |
 | **蓝图与真代码脱节** | 头部四行「核对/复核」删掉，换成一行现测值并声明数字唯一出处是文末《附、速查清单》：类目 5 族 · 符号映射 56 键 → 8 符号 · 画廊 65 条目 · 路由级 loading 18 个 · 字典 zh/en/Dict 各 339 键 · 动效四档 180/220/300/500ms；符号轴「32 键」改「56 键（中英各占一键）」；版本戳 v0.3.9 → v0.5.5（对齐 `package.json`） | `docs/design/design-blueprint.md` |
 | **三处截图引用在公开仓是死链** | `hero-cover` / `card-cover` / `cover-eng-zones` 三份 spec 的 Verification 段点名 `mobile-preview/0[789]-*.png`，那些截图既不入库也被镜像清洗 ⇒ 就地标注「只留本地，不入仓」，不再让读者去找不存在的文件 | `docs/compose/spec/` |

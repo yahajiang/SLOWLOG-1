@@ -108,8 +108,8 @@
 
 - 单行 `Setting`；服务端 `getSettings()`（带 tag 缓存），客户端 `useSiteSettings()`（`lib/settings-context.tsx`）。`lib/settings-shared.ts` 只放类型与默认值，免得把 prisma 拖进客户端 bundle。
 - 写接口字段白名单**就是 zod**（`settingsSchema`）；可空字段必须 `.nullable()`（只 `optional` 会把 `null` 判成 400）。
-- 每篇文章可带 `pageConfig`（布局/主题/主色/字体/宽度/目录），未定制字段回落站点「默认页配置」：`withSiteDefaults(post, site)` 的做法是**逐字段与 `DEFAULT_PAGE_CONFIG` 比对**（建档时 schema 默认会整份写进库，无法靠"字段缺失"判断）。
-- ⚠️ **已知漂移（待作者定，不是文档笔误）**：`DEFAULT_PAGE_CONFIG.theme="system"/showTOC=true`，而 Prisma `@default` 的 JSON 与 `SETTINGS_DEFAULTS.defaultPageConfig` 都是 `theme="light"/showTOC=false`。实测：文章带库默认 + 站点设成 `dark/showTOC=true` ⇒ 落地仍 `light/false`。后果是站点这两项**对未定制文章完全无效**，且 `theme==="light"` 会挂 `sl-force-light`（`app/globals.css:1348` 本地重声明浅色板）让夜版进不了文章页 —— 抽样 8/8 篇都带这个类。三条路：① 站点设置改「跟随系统」（零代码）② 让 `light` 只压色板不压 `html.dark` ③ 承认文章永远纸白是印刷品气质。
+- 每篇文章可带 `pageConfig`（布局/主题/主色/字体/宽度/目录）；未定制字段回落站点「默认页配置」：`withSiteDefaults(post, site)`（`lib/page-config.ts`）逐字段比较，判据是 `UNSET_PAGE_CONFIG` —— 它与 `prisma/schema.prisma` 里 `Post.pageConfig` 的列默认必须完全一致，改列默认就要同步改它。
+- ⚠️ **三处默认值漂移已修（2026-10-02，按零迁移方案）**：判据原先拿 `DEFAULT_PAGE_CONFIG`（`theme=system`/`showTOC=true`）去比，而未定制文章实际带的是列默认（`theme=light`/`showTOC=false`）⇒ 站点夜版与「显示目录」对全部未定制文章失效，`PostClient` 每篇都挂 `sl-force-light`。现 `DEFAULT_PAGE_CONFIG` 只兜「值不合法」。代价：作者显式选成与列默认完全相同的那组值（light + 不显示目录）会被当成未定制、由站点默认接管——要彻底区分得把存储改成「字段缺失才算未设置」，需动库结构与回填。
 
 ---
 
@@ -170,7 +170,7 @@
 
 ## 十二、当前挂着的待决项
 
-1. `pageConfig` 三处默认值漂移（第七节）—— 选①/②/③。
+1. ~~`pageConfig` 三处默认值漂移~~ ✅ 已落地（第七节）：判据换成列默认哨兵，零迁移。遗留的是存储语义——「显式 light」与「没动过」仍不可区分。
 2. 后台编辑器 soft-404（第九节）—— 拆 loading 边界还是接受。
 3. 平板树三处不对称（第十一节）。
 4. ✅ `chore/remote-cleanup` 四个提交已并入 `main`（数据产物取消跟踪、25 个死脚本、公开镜像停止 ship 审查文档、默认口令出仓）。
