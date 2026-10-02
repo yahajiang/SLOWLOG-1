@@ -8,13 +8,12 @@
 
 | 你要做的事 | 看哪节 | 通常还要看 |
 |---|---|---|
-| 跑起来 / 部署 | `README.md` 快速开始 | 本文 §六 鉴权、§九 发布 |
-| 改一个页面 / 加路由 | §三 五棵树、§四 请求流 | §九 加载边界纪律 |
+| 跑起来 / 部署 | `README.md` 快速开始 | 本文 §六 鉴权与凭据 |
+| 改一个页面 / 加路由 | §三 五棵树、§四 请求流 | §九 一处实现与加载边界 |
 | 改 UI / 令牌 / 文案 | §二 v0.5.5 硬规、§八 设计系统 | `docs/design/design-blueprint.md`、画廊 |
-| 查数据为什么读不到 / 缓存不生效 | §五 数据层 | §九 一处实现清单 |
-| 动后台或登录链路 | §六 鉴权与凭据 | §九 发布（凭据不出仓） |
-| 排查"我改好了但页面没变" | §十 验收基线 | §十一 坑位速查最后一行 |
-| 想知道哪里还是坑 | §十一 坑位速查、§十二 待决项 | — |
+| 查数据为什么读不到 / 缓存不生效 | §五 数据层 | §九 一处实现与加载边界 |
+| 动后台或登录链路 | §六 鉴权与凭据 | §九 一处实现与加载边界 |
+| 想知道哪里还是坑 | §十 坑位速查 | — |
 
 图例：⚠️ 会咬人（不知道就写错代码）｜✅ 已收口（照现有实现复用，别另起）｜🕐 待作者定（别擅自动）。
 
@@ -131,26 +130,14 @@
 
 ---
 
-## 九、仓库与发布约定
+## 九、一处实现与加载边界
 
 - **一条规则 = 一处实现**：可见性 `lib/posts.ts`、鉴权 `lib/app-auth.ts`、origin `lib/site-url.ts`、设置 `lib/settings.ts`、封面 `CoverArt.tsx`、加载壳 `LoadingShell`/`DashLoading`、后台列表加载 `lib/admin-fetch.ts`（`loadList`/`loadObject` 永不 reject，失败一律渲染 `ListError`）、归档匹配 `lib/archive-match.ts`、品牌 `SiteBrand.tsx`。
 - **`loading.tsx` 作用域纪律**（权威注释 `components/LoadingShell.tsx:10-15`）：它是流式 Suspense 边界，会**先冲刷 200 状态头**，只允许出现在 `(shell)` 列表组；会 `notFound()` 的详情段刻意不加，否则真 404 变 soft-404。⚠️ 现有一处自相矛盾：`app/dashboard/posts/[id]/page.tsx` 会 `notFound()`，却被 `dashboard/loading.tsx` 与 `dashboard/posts/loading.tsx` 两层包住（父段边界对后代生效）—— 只因整棵后台 noindex 才没造成 SEO 后果。
-- **发布双仓**：`scripts/publish-both.mjs --yes`（默认 dry-run）。核心安全约束是**清洗表 `FILTER_PATHS` 与终检表 `AUDIT_FORBIDDEN` 分开定义**，终检同时扫「重写后的全历史」与「工作树」，任一命中即不推。`chore/remote-cleanup` 起新增 `PRIVATE_DOCS`：四份审查/漏洞清单（含 89.6 KB 的 `docs/full-review-2026-09-15.md`）不再进公开镜像。
-- **数据产物不入库**：`backups/`、`content-export/`、`mobile-preview/`、`public/uploads/`、`spark-output/`、`.tool-state/` 全在 `.gitignore`（⚠️ `mobile-preview/` 是 2026-10-02 才补进去的，此前一直漏，取消跟踪后它以 `??` 裸在 `git status` 里）；⚠️ 但 gitignore 对**已跟踪**文件无效 —— 那 23 个历史遗留文件只有合并 `chore/remote-cleanup` 才真正移出跟踪（-6.16 MB）。别再 `git add -f`。
-- **`spark-output/` 是本地工作区**：审计笔记、对照稿、`context/audit.json` 只留本地，不进任何远端。
-- **版本与发布说明**：`CHANGELOG.md`（Keep a Changelog + 语义化版本）由作者维护；agent 改动是否入条目先问，别自己开版本。
 
 ---
 
-## 十、验收基线
-
-- **三件套**：`npx tsc --noEmit` 0 错 + `eslint .` 0 错 + `next build` 绿。CSS 类改动还要 grep `.next/static/css/*.css` 确认 utility 真被生成（产物里选择器是**转义形态**，拿源码类名硬搜会误报"没生成"）。
-- **视口与交互**：内嵌 `browser-use` 通道可截图 / 语义快照 / `fill` / `click` / `wait_for`（`wait_for` 的 `text` 要**数组**、不接 `timeout`），但视口恒 **645×655**。要 390 或 ≥1500 用 Edge headless + CDP（`Emulation.setDeviceMetricsOverride`、`Page.captureScreenshot`、`Network.setBlockedURLs` 造接口失败），零第三方依赖。⚠️ 每次开工先做一次 30 秒探针（点主题看整页是否翻转）再决定用哪条通道；`Runtime.evaluate` 里的 `el.click()` 没有 transient activation，剪贴板类交互必须走真输入。
-- **改 JSX 属性的两条教训**：定界符要成对处理；批量脚本插 `const` 要按语法块定位而不是按行首关键字 —— 每批手术后立刻 tsc。脚本报告不可信，CRLF 会让"按行匹配"的正则静默失效。
-
----
-
-## 十一、坑位速查（都是实测，不是猜测）
+## 十、坑位速查（都是实测，不是猜测）
 
 | 状态 | 现象 | 真因 | 位置 |
 |---|---|---|---|
@@ -168,25 +155,15 @@
 
 ---
 
-## 十二、当前挂着的待决项
-
-1. ~~`pageConfig` 三处默认值漂移~~ ✅ 已落地（第七节）：判据换成列默认哨兵，零迁移。遗留的是存储语义——「显式 light」与「没动过」仍不可区分。
-2. 后台编辑器 soft-404（第九节）—— 拆 loading 边界还是接受。
-3. 平板树三处不对称（第十一节）。
-4. ✅ `chore/remote-cleanup` 四个提交已并入 `main`（数据产物取消跟踪、25 个死脚本、公开镜像停止 ship 审查文档、默认口令出仓）。
-5. ⚠️ 并入后 **Vercel 必须补 `AUTH_DEFAULT_PASSWORD`**：默认账户判定改成「拿 env 里的初始口令与库中哈希比对」，env 缺失时判定恒为 false —— 登录不受影响，但**首次登录强制改密不再触发**。仍用默认口令的账户等于失去这道闸。
-6. `origin` 上那条一个月的 Vercel 安全分支 `vercel/react-server-components-cve-vu-351aao`（基于 2026-09-01 的 `309f770`，只钉 `next 15.4.10`）—— main 已在 15.5.24，确认后删。
-
----
 
 ## 附、文档地图
 
 | 文档 | 管什么 | 什么时候读 |
 |---|---|---|
 | `README.md` | 门面 + 速查表 + 环境变量 + API 表 | 第一次接触仓库 |
-| **本文** | 架构、规则、坑位、待决 | 动手改之前 |
+| **本文** | 架构、规则、坑位 | 动手改之前 |
 | `docs/design/design-blueprint.md` | 设计数值与视觉契约的权威版 | 改 UI / 令牌 / 排印 |
 | `docs/api/tiptap-contract.md` | 编辑器与渲染器的 JSON 文档契约 | 改编辑器或正文渲染 |
-| `CHANGELOG.md` | 发布历史（Keep a Changelog + semver） | 想知道"什么时候变成这样的" |
+| `CHANGELOG.md` | 变更历史（Keep a Changelog + semver） | 想知道"什么时候变成这样的" |
 | `public/design/gallery.html` | 65 条目组件画廊（可复制提示词的规范源） | 新建组件前对齐口径 |
 | `spark-output/`（本地，不入库） | 审计笔记、改前改后对照稿 | 复盘历史决策 |

@@ -32,6 +32,3 @@ Editorial Web Designer — 画廊是「设计契约的展品柜」，不是营�
 ## Anti-Patterns
 - 禁紫蓝渐变 hero、圆角阴影卡、emoji 标题、假数据百分比三联
 - 禁在预览里塞与主站不符的重色块
-
-## Workflow
-改主站组件后同步画廊条目与 About「近期落地」；提示词以真源路径为准。

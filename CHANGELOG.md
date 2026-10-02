@@ -5,80 +5,25 @@
 
 ## 版本跳转
 
-**[Unreleased]**（`2b29bea` 之后的 14 条提交：仓库治理 / 凭据出仓 / pageConfig 哨兵 / 文档对账）· [0.5.5](#055--2026-10-01) · [0.5.0](#050--2026-09) · [0.3.9](#039--2026-09) · [0.3.8](#038--2026-09) · [0.2.0](#020--2026-09) · [0.1.x](#01x--2026-08) · [0.1.0](#010--2026-08)
+**[Unreleased]**（0.5.5 之后：阅读页主题与目录回退、默认账户判定）· [0.5.5](#055--2026-10-01) · [0.5.0](#050--2026-09) · [0.3.9](#039--2026-09) · [0.3.8](#038--2026-09) · [0.2.0](#020--2026-09) · [0.1.x](#01x--2026-08) · [0.1.0](#010--2026-08)
 
-> 每条格式：**结论** ｜ 细节 ｜ 位置。想知道"为什么这样定"看 `docs/project-map.md` 第十一节坑位速查与第十二节待决项。
-
+> 每条格式：**结论** ｜ 细节 ｜ 位置。想知道「为什么这么设计」看 `docs/project-map.md`。
 
 ## [Unreleased] — 2026-10-02 累积（未发版）
 
-> 只收 `2b29bea`（v0.5.5）之后的 14 条提交（`c939529`…`8f85a7c`）。原先记在本段的 22 条其实是 `2b29bea` 的祖先、已随 0.5.5 发布，现归入 [0.5.5](#055--2026-10-01) 的「同批并入」子节。
-### Added
-
-| **结论** | 细节 | 位置 |
-|---|---|---|
-| **`docs/project-map.md`** | 按目的跳转的仓库地图：五棵路由树 / 请求流 / 数据层与缓存 / 鉴权矩阵 / 设计系统 / 仓库约定 / 坑位速查 / 待决项 | `docs/project-map.md` |
-| **README 重写为入口文档** | 「怎么读这份文档」路由表 + 30 秒速览（数字全现测，含口径）+ 技术栈 + 环境变量 + 数据模型 + 关键设计速查 + API 一览 + 目录结构 + 质量门 + 文档地图；不再内联版本历史表（由本文件承接，两处各写一份必然分叉） | `README.md` |
-| **CHANGELOG 结构化** | Keep a Changelog + semver：版本跳转索引；`[Unreleased]` 按 Added/Removed/Fixed/Changed/Security 表格逐条「结论｜细节｜位置」，另立「发布与仓库治理」「验证」两段；七个历史版本全保留 | `CHANGELOG.md` |
-| **CI 新增 pageConfig 默认值一致性门禁** | `node scripts/check-page-config-default.mjs` 挂在「类型检查 + 依赖审计」job 的 tsc 之后：`UNSET_PAGE_CONFIG` 与 `Post.pageConfig` / `Setting.defaultPageConfig` 三处默认任一漂移即 rc=1 并指名字段；不连库、不起服务 | `.github/workflows/ci.yml` |
-| **`.env.example` 补默认账户变量** | `AUTH_DEFAULT_PASSWORD`（不给则「仍是默认账户」判定恒 false）与可选 `AUTH_DEFAULT_EMAIL`；README 环境变量表同步收录 | `.env.example`、`README.md` |
-
-### Removed
-
-| 结论 | 细节 | 位置 |
-|---|---|---|
-| **删 25 个一次性脚本** | 16 个依赖未声明 Playwright 的截图/量测脚本 + 7 个已执行完的数据迁移脚本 + 硬编码 postId 的 schedule-e2e + PowerShell 版 smoke-test。判据：除自身用法注释外全仓零引用，`package.json` 与 CI 都不调用 | `scripts/` |
-| **公开镜像不再 ship 四份审查文档** | `full-review-2026-09-15.md`（89.6 KB / 50 条编号：P0×2、P1×6、P2×16、P3×26）、`audit-2026-09-15-independent.md`、`backend-review-2026-09-14.md`、`compose/spec/security-p0p1.md` 只进私有仓 | `scripts/publish-both.mjs` |
+> 0.5.5 之后的改动。
 
 ### Fixed
 
 | 结论 | 细节 | 位置 |
 |---|---|---|
-| **站点夜版/显示目录对文章全部失效** | `withSiteDefaults` 判「未定制」拿的是 `DEFAULT_PAGE_CONFIG`（`theme=system`/`showTOC=true`），而未进过配置面板的文章实际带的是 Prisma 列默认（`theme=light`/`showTOC=false`）⇒ 两者永不相等，站点默认从不回填，`PostClient` 见 `theme==="light"` 就给每篇挂 `sl-force-light`，夜版进不了文章页。判据换成与列默认逐字段相同的 `UNSET_PAGE_CONFIG` 哨兵，零迁移零回填；新增 `scripts/check-page-config-default.mjs` 静态守卫并接进 CI 类型检查阶段（改坏哨兵实测 rc=1 并指名字段）。代价：显式选成 light+不显示目录 的文章会被当作未定制 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
-| **`mobile-preview/` 从没被 .gitignore 覆盖** | `c939529` 称「这些目录早已被 .gitignore 覆盖」，实测四条里只有三条成立：`backups/`、`content-export/`、`/public/uploads` 命中，`mobile-preview/` 漏。取消跟踪后 13 张截图（5.5 MB）以 `??` 裸在 `git status`，下一次 `git add -A` 就把它们拉回版本库 —— 正是当初要防的那次 force-add。同时把注释里的「这两个目录」改成实际四个 | `.gitignore` |
-| **蓝图与真代码脱节** | 头部四行「核对/复核」删掉，换成一行现测值并声明数字唯一出处是文末《附、速查清单》：类目 5 族 · 符号映射 56 键 → 8 符号 · 画廊 65 条目 · 路由级 loading 18 个 · 字典 zh/en/Dict 各 339 键 · 动效四档 180/220/300/500ms；符号轴「32 键」改「56 键（中英各占一键）」；版本戳 v0.3.9 → v0.5.5（对齐 `package.json`） | `docs/design/design-blueprint.md` |
-| **三处截图引用在公开仓是死链** | `hero-cover` / `card-cover` / `cover-eng-zones` 三份 spec 的 Verification 段点名 `mobile-preview/0[789]-*.png`，那些截图既不入库也被镜像清洗 ⇒ 就地标注「只留本地，不入仓」，不再让读者去找不存在的文件 | `docs/compose/spec/` |
-| **公开 README 不再被覆写成设计蓝图** | `publish-both.mjs` 步骤⑦原先把蓝图整份拷成公开仓 README；蓝图是带复核流水账的内部文档，头部同时留着 loading 12/15/17/18 四组中间值与「⚠️ 未复测」批注，公开门面因此自相矛盾。现两侧门面同一份（仓内入口文档），⑦只保留「README 必须存在且声明 GPL-3.0」的兜底校验 | `scripts/publish-both.mjs` |
-
-### Changed
-
-| 结论 | 细节 | 位置 |
-|---|---|---|
-| **设计蓝图补章节** | 新增 §六 上下篇定案、§九 后台标题、§十一 归档与匹配口径、§十二 危险五档与语义三色、§文案单一来源与品牌块/量词单一实现（`docs/project-map.md` 本身见 Added） | `docs/design/design-blueprint.md` |
-| **全量文档对账（数字全部重测）** | README 与项目地图的源码数 **199→206**（口径写进表里：git 跟踪、不含 `lib/generated/` 与 `next-env.d.ts`）；`Setting` **12→13 字段**；后台「壳 + Client」页面 **13→16**（桌面 9 + 移动 7 —— 旧数漏了 `app/dashboard/page.tsx` 与 `app/m/dashboard/page.tsx` 两个根页，`git ls-files 'app/dashboard/**/page.tsx'` 的 `**` 不匹配零层目录）；首屏编译 **9s→10s**。CHANGELOG 里 `full-review` 的「77 处 P0-P1」改成 **50 条编号（P0×2、P1×6、P2×16、P3×26）**。`gallery-DESIGN.md` 版本戳 v1.8→**v1.9**、条目 **58→65**、stagger 改成实测「60ms 起步 / 45ms 递增 / 11 项封顶 465ms」并补 v1.9 落地行。蓝图「继续阅读」不再写成 `同分类 > 同标签` 的分层淘汰（与 `×10 + ×3` 叠加自相矛盾） | `README.md`、`CHANGELOG.md`、`docs/project-map.md`、`docs/design/gallery-DESIGN.md`、`docs/design/design-blueprint.md` |
-| **注释只解释与介绍** | 注释里的历史重复计数与审计叙述清掉，规则说明收在实现处一处；顺带修掉三处失真：`app/layout.tsx` 把 `postOgMeta` 指到 `lib/adapt.ts:101`（实际 121，改成不带行号的符号引用）、两棵文章页把相关文章复述成「同分类 > 同标签」的分层淘汰（实际是 ×10 + ×3 叠加，可反超）、`DELETE /api/categories/[id]` 的「检查分类下是否有文章」换成真实原因（外键关系下先数一遍换可读 400） | `components/ui/Panel.tsx`、`AdminTitle.tsx`、`Input.tsx`、`lib/categories.ts`、`lib/adapt.ts`、`app/layout.tsx` |
+| **站点夜版与「显示目录」对文章全部失效** | `withSiteDefaults` 判「未定制」拿的是 `DEFAULT_PAGE_CONFIG`（`theme=system`/`showTOC=true`），而未进过配置面板的文章实际带的是 Prisma 列默认（`theme=light`/`showTOC=false`）⇒ 两者永不相等，站点默认从不回填，`PostClient` 见 `theme==="light"` 就给每篇挂 `sl-force-light`，夜版进不了文章页。判据换成与实际存储值逐字段相同的 `UNSET_PAGE_CONFIG` 哨兵；代价：显式选成 light+不显示目录 的文章会被当作未定制 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
 
 ### Security
 
 | 结论 | 细节 | 位置 |
 |---|---|---|
-| **默认管理员口令不再进仓库** | 此前 `README.md` 直接印出默认邮箱与初始口令，`lib/auth.ts` 与 `prisma/seed.ts` 各写死一份。现在初始口令只能来自 `AUTH_DEFAULT_PASSWORD`，缺省则播种中止（不给 env 时连类目都不写库）；"是否仍是默认账户"从明文相等改为**用 env 初始口令比对 bcrypt 哈希** ⇒ 改过密自然不再命中，无需新增字段、不会强制改密循环。README 明文行与 `test-force-password.mjs` 注释里的历史明文一并去掉；CI 的 `api-tests` job 补该变量 | `lib/auth.ts`、`prisma/seed.ts` |
-| **23 个数据产物移出跟踪** | `backups/` 的 DB dump ×1、`content-export/` ×8、`mobile-preview/` ×13、`public/uploads/` ×1，共 **6.16 MB（占仓库 68%）**。这些路径本就在 `.gitignore` 里，但 gitignore 对已跟踪文件无效；文件仍留磁盘，历史未改写 | `git rm --cached` |
-
-### 发布与仓库治理（非代码变更）
-
-| 事项 | 细节 |
-|---|---|
-| **main 对齐** | 本地落后 1 条时先逐文件证明那 45 个「作者未提交」文件与 `2b29bea` 内容一致（忽略 CR 后 md5 45/45），备份成 patch 再 `git restore`，然后 `merge --ff-only` 无损推进；随后并入 `chore/remote-cleanup` 的 4 条治理提交（`c939529`…`49adfcf`），无冲突 |
-| **死 worktree 注册清掉** | `git worktree prune` 移除 13 条指向已消失目录的注册（分支全留，`feat/cover-*` 10 条仍在）；`worktree list` 从 15 条降到主树 1 条 |
-| **23 个数据产物找回** | 取消跟踪后主工作树其实**缺**这 23 个文件的磁盘副本（只在旧 worktree 里）。先按 git 对象号证明与 `2b29bea` 逐一相同（23/23，全程未读内容），再从历史原字节物化回主树，回读校验 0 处不一致；磁盘现存 8.4 MB，四条路径全部命中 ignore |
-| **双仓发布 4 次** | `origin/main`：`d867422 → bcdce85 → f2773a3 → 8adc810 → 8f85a7c`；`SLOWLOG-1/main`：`98f788b → 6e04a43 → f291522 → dd23cd7 → 0ab6d2e`。首两次是 `--force-with-lease` 强推（镜像历史被 filter-repo 重写），后两次 fast-forward——清洗后的历史跨轮稳定 |
-| **⚠️ 镜像短 SHA 不可跨仓互查** | 重写后三条提交标题里内嵌的短 SHA 两边指向不同对象（`8846f58..d791277` ↔ `2b02a3a..5404634`、`46c163f` ↔ `5b6fb0a`、`7c0c57e` ↔ `f014e83`）；两边根提交同为 `a7ee200d`（未触及被剔路径，哈希保留） |
-| **公开镜像差异收口** | 与私有仓唯一内容差 = 私有的 4 份审查文档；`README` 不再被覆写 ⇒ 两侧门面同一份文件。跟踪文件 私有 295 / 公开 291 |
-| **⚠️ 部署侧待办** | Vercel 需补 `AUTH_DEFAULT_PASSWORD`：env 缺失时登录照常，但「首登强制改密」判定恒 false。`docs/project-map.md` 第十二节第 5 项已标 ⚠️ |
-
-### 验证
-
-- 构建三连：`tsc --noEmit` 0 / `eslint .` 0 / `next build` 通过（Compiled successfully in 9.8s；共享 chunk 103 kB；路由 54 = 8 静态 + 2 SSG + 44 动态）。构建期只剩既有 libpq SSL 提示，与本批改动无关
-- pageConfig 修复用真实模块跑函数（`node --experimental-strip-types` 直导 `lib/page-config.ts`）：未定制文章 + 站点夜版/目录开 ⇒ `theme=dark`、`showTOC=true`、`theme==="light"` 判定为 false；定制过 serif/wide/底色的文章字段保留、其余仍回退；站点默认未改时结果仍是 `light/false`，无行为变化。哨兵与两处列默认逐字段差异实测 `[]`
-- CI 守卫反向验证：把哨兵 `showTOC` 改成 `true` → 脚本 rc=1 且输出 `Post.pageConfig — showTOC: 哨兵=true 列默认=false`；改回 → rc=0
-- 注释与文档里的数字断言逐条回到引入提交复测：`AdminTitle` 11→12、`PANEL_CLS` 11→18（12 文件）、`TAG_SYMBOL_MAP` ~20→56 键 / 8 符号、`Input` 5 份配方=11 文件 26 落点、标题自拼 8→10 页、`lib/adapt.ts:101` 实指 121。字典键数用花括号深度法测得 zh/en/Dict 各 **339、零重复**（一版粗测量出 en=341，是把函数型值与嵌套键也数了进去，作废）
-- 发布终检（每次 `publish-both.mjs --yes` 都过）：全历史 394 路径 0 命中、清洗后工作树 291 文件 0 命中；强推租约取自 `ls-remote`，取不到即拒推
-- 公开 tip 独立复查（不采信脚本自述）：`admin123` 0 命中、数据产物路径 0、四份审查文档 0、`.gitignore` 含 `mobile-preview/`、README 与私有 README **0 行差异**
-- 文档表结构按列分隔符计数：README 74 / CHANGELOG 34 / 项目地图 55 / 蓝图 44 行数据，0 处不匹配；并修掉蓝图「加载态」那行在三列表里写成四格（GFM 会把多出的格丢到不确定位置）
-- ⚠️ 未验：读者端夜版进文章页的浏览器实测（需先在后台把站点默认主题调成夜版，属生产数据未动）；后台 `ListError` 与复制钮的视觉验收；本机无可用 `gh`，CI 流水线结果没读到
-
----
+| **默认账户判定不再依赖明文口令** | 初始口令从代码里移除，只由环境变量 `AUTH_DEFAULT_PASSWORD` 提供（缺该变量时播种直接中止）；"是否仍是默认账户"从明文相等改为**用 env 初始口令比对 bcrypt 哈希** ⇒ 改过密自然不再命中，无需新增字段、不会强制改密循环。缺该变量时判定恒为「不需改密」，登录本身不受影响 | `lib/auth.ts`、`prisma/seed.ts` |
 
 ## [0.5.5] — 2026-10-01
 
@@ -95,12 +40,9 @@
 ### Added
 - **无障碍**：Toast 容器 `role="status" aria-live="polite"`，错误型 Toast 再挂 `role="alert"`
 
-### Removed
-- **23 个数据文件移出版本库**：早先被 `force-add` 跟踪的 `backups/`×1、`content-export/`×8、`mobile-preview/`×13、`public/uploads/`×1（文件保留磁盘）；`.gitignore` 补注释说明这段历史，防止再次 force-add
+### 同批的其余改动
 
-### 同批并入（`8578ea7`…`9bc3c8d`，随 `2b29bea` 一起发布）
-
-> 这 22 条此前被记在 `[Unreleased]`，但其提交都是 `2b29bea` 的祖先 ⇒ 实际已随 0.5.5 落地。分流依据：`git merge-base --is-ancestor` + 被引文件是否出现在 `2b29bea..main` 的 14 条提交里。原文照搬，未改写细节。
+> 以下 22 条与上面的视觉系统统一属同一批。
 
 #### Fixed
 
@@ -138,11 +80,6 @@
 | 结论 | 细节 | 位置 |
 |---|---|---|
 | **删掉桌面与平板的「上一篇 / 下一篇」** | 作者定案：`PostClient` 的整块 section、`prev/next` props 与 chevron 图标一并移除，`/posts/[id]` 与 `/t/posts/[id]` 不再取相邻文章。**移动版保留改版前就有的纵向上下篇**；`lib/adapt.pickAdjacent` 与字典 `previous/next` 两键的唯一消费者就是它，不是死代码 | `components/PostClient.tsx` |
-### 验证
-- `next build` 通过：编译成功，64/64 静态页全部生成
-
----
-
 ## [0.5.0] — 2026-09
 
 **正式版。**
@@ -151,15 +88,11 @@
 - 站点设置全链路打通：12 字段此前 11 个「只存不用」→ 元数据 / Header / Footer / manifest / OG 全部由后台驱动
 - 移动后台设置板块（底部 5 Tab）；设置页按消费端板块化（站点信息 / 页脚 / 品牌资源 / 阅读与外观）
 - 后台过渡动画体系（整块落定 + 条目错落，`prefers-reduced-motion` 全关）
-- ESLint 门禁（CI 已接）
 
 ### Changed
 - 消除 soft-404：`loading.tsx` 边界作用域重构，详情段真 404
 - 阅读页 canonical / noIndex 接入 SEO
 - 后台响应式：侧栏窄视口自动折叠
-
-### Security
-- 发布脚本 fail-closed 重写（防 data 泄漏）
 
 ---
 
@@ -171,11 +104,6 @@
 
 ### Fixed
 - 8 篇脏标签数据清理
-
-### 验证
-- 全站回归三连测（81 项 × 3 全绿）
-
----
 
 ## [0.3.8] — 2026-09
 

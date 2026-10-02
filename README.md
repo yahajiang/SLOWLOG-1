@@ -17,7 +17,7 @@
 | 只想跑起来 | [快速开始](#快速开始) → [环境变量](#环境变量) |
 | 要改 UI / 文案 / 令牌 | [关键设计速查表](#关键设计速查表) → `docs/design/design-blueprint.md` |
 | 新接手的会话或协作者 | **`docs/project-map.md`**（五棵树、请求流、数据层、坑位速查） |
-| 排查线上问题 | [API 一览](#api-一览) + [质量与验收](#质量与验收) |
+| 排查线上问题 / 页面与预期不符 | [API 一览](#api-一览) + `docs/project-map.md` §十 坑位速查 |
 | 看改了什么 | [`CHANGELOG.md`](./CHANGELOG.md) |
 
 ## 30 秒速览（现测于 v0.5.5）
@@ -31,7 +31,6 @@
 | 文案 | `lib/i18n.ts` **339** 键，`zh` / `en` / `export type Dict` 三块逐键对称 |
 | 设计资产 | `public/design/gallery.html` **65** 条目（喂给 AI 的规范源，与代码同源） |
 | 首屏 JS | 共享 chunk **103 kB**；构建编译约 10s |
-| 质量门 | `tsc --noEmit` 0 / `eslint .` 0 / `next build` 绿 + CI 三 job |
 
 ## 技术栈
 
@@ -45,7 +44,7 @@
 | 媒体 | Vercel Blob + sharp（三级回退：Blob → `public/uploads/` → data URI） |
 | 推送 | firebase-admin（FCM，未配置时自动跳过，绝不阻塞发布） |
 | 校验 | zod（写接口字段白名单即 schema） |
-| 部署 | Vercel（Git 推送自动部署） |
+| 托管 | Vercel |
 
 ## 快速开始
 
@@ -109,6 +108,7 @@ node scripts/api-tests.mjs <url>    # 六场景集成测试（需先起服务 + 
 | SEO 权重归一 | `/m` 靠 canonical 指桌面（仍 index）；`/t` 是 canonical + `noindex,follow`；sitemap 只收桌面 | 各树 `page.tsx` 的 `alternates` / `robots` |
 | Origin 两条路 | 302 目标必须命中 `ALLOWED_REDIRECT_HOSTS`；SEO 输出只信 `NEXT_PUBLIC_SITE_URL`，不读请求头 | `middleware.ts`、`lib/site-url.ts` |
 | 构建期降级 | 只有 `phase-production-build` 吞 DB 异常返回空值，运行期照抛；`getSettings` 是刻意的静默例外 | `lib/posts.ts` `degrade()` |
+| 登录防护 | 双维度计数（IP 主闸 + 账号辅）；超阈值走**渐进延迟**而不是硬锁——正确凭据永远能登进去，同一来源 15 分钟内失败满 30 次才硬拒。默认账户判定用环境变量里的初始口令比对哈希，改过密即不再命中 | `lib/auth.ts` |
 | 视觉政策 | 直角为身份（`rounded-none` 279 / `rounded-full` 38 只给生命感元素）；阴影只有 `--shadow-card/float/pop`；颜色一律语义令牌 | `app/globals.css`、`docs/design/design-blueprint.md` |
 | 触控下限 | 前台与移动后台整页 ≥48px；桌面后台密集控件第二档 ≥36 且间距 ≥4；小图标用 `.hit` 撑命中区 | 蓝图 §十二 |
 | 动效四档 | 180 / 220 / 300 / 500ms，`@keyframes` 只住在 globals；跟随类（TOC 250ms 等）刻意不并档 | `app/globals.css` |
@@ -160,34 +160,21 @@ lib/
 prisma/  schema.prisma  seed.ts
 public/design/gallery.html    组件画廊（65 条目，与代码同源的规范镜像）
 docs/                         项目地图 · 设计蓝图 · 编辑器契约 · 平板适配
-scripts/                      备份/恢复 · 内容导出导入 · API 集成测试 · 发布 · 体积红线 · 只读巡检
+scripts/                      备份/恢复 · 内容导出导入 · API 集成测试
 middleware.ts                 /admin 兼容 + 三端分流 + 后台鉴权 + 强制改密
-.github/workflows/ci.yml      质量门 + 无库构建 + 真库六场景测试
+.github/
 ```
-
-## 质量与验收
-
-- **三件套**：`npx tsc --noEmit` 0 错、`npm run lint` 0 错、`npm run build` 绿。改了 Tailwind 类还要 grep `.next/static/css/*.css` 确认 utility 真被生成（产物里选择器是转义形态）。
-- **CI**（`.github/workflows/ci.yml`）：`quality`（tsc + eslint + `npm audit --audit-level=critical`）→ `build`（**故意不给 `DATABASE_URL`**，验证构建期降级）→ `api-tests`（起真 Postgres + `db:seed` + 夹具，跑六场景：登录限流 / 改密 / 草稿保护 / 定时发布 / 缓存隔离 / 上传校验）。
-- **登录防护**：`verifyCredentials` 单一实现 —— IP 延迟阈值 10、硬拒 30、账号阈值 5、窗口 15 分钟、指数退避封顶 3s，且**退避只在确认失败之后睡**（正确密码不会被罚等）。
-- **视口与交互验收**：需要 390 / 1500 这类真实视口时用 headless 浏览器 + CDP（`Emulation.setDeviceMetricsOverride` + `Page.captureScreenshot` + `Network.setBlockedURLs` 造接口失败），不必引入 Playwright。
 
 ## 文档地图
 
 | 文档 | 管什么 |
 |---|---|
-| `docs/project-map.md` | **新会话先读这份**：五棵树、请求流、数据层、鉴权、设计系统、仓库约定、坑位速查 |
+| `docs/project-map.md` | **新会话先读这份**：它是什么、五棵树、请求流、数据层、鉴权、`pageConfig`、设计系统、一处实现与加载边界、坑位速查 |
 | `docs/design/design-blueprint.md` | 设计蓝图：暖纸四层、字级节奏、封面契约、状态与可达性、后台与工具页 |
 | `docs/api/tiptap-contract.md` | 编辑器与渲染器的 JSON 文档契约 |
 | `docs/design/tablet-adaptation.md` · `docs/compose/spec/*` | 平板适配与 App 侧规范 |
 | `public/design/gallery.html` | 组件画廊（可复制提示词的规范源） |
-| `CHANGELOG.md` | 发布历史（Keep a Changelog + 语义化版本） |
-
-## 部署
-
-**Vercel（推荐）**：导入仓库 → 配齐上表环境变量 → `git push` 触发生产构建（`prisma generate` 由 `postinstall` 代跑）。中国大陆直连不稳时可用 Cloudflare Workers 代理：`npm i -g wrangler && wrangler login && wrangler deploy`。
-
-**双仓发布**：`scripts/publish-both.mjs --yes` 把私有仓同步到公开镜像 —— 用 `git filter-repo` 剥离数据产物与非公开文档，并**独立终检**「重写后的全历史」与「工作树」两条，任一命中即不推（清洗表与终检表刻意分开定义，避免自证清白）。默认 dry-run。
+| `CHANGELOG.md` | 变更历史 |
 
 ## 许可
 
