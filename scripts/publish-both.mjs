@@ -43,7 +43,11 @@ const PY = "C:/Users/Yahajiang/.workbuddy/binaries/python/envs/default/Scripts/p
  * 公开仓读者不需要 —— 而 `docs/full-review-2026-09-15.md`（89.6KB，77 处 P0/P1）、
  * `docs/compose/spec/security-p0p1.md` 这类文档会把鉴权模型、限流阈值、默认账户与"哪个入口没设防"
  * 一次性讲清；其中至少一条已经过期（写"matcher 不含 /m/dashboard/*"，而现 tip 已含），
- * 等于既递刀又误导。README 与两份设计文档都不链接它们 ⇒ 剥掉不产生死链。
+ * 等于既递刀又误导。⚠️ 但 CHANGELOG 与 docs/project-map.md 会**点名**这四份（描述「不再 ship」
+ * 这件事本身就需要写出名字），公开侧读到的是名字而不是可点的文件 ⇒ 那两处已改成「仅私有仓」措辞。
+ *
+ * 2026-10-02 取消步骤⑦的「公开 README = 蓝图」覆写：蓝图是带复核流水账的内部文档（同一指标并存
+ * 12/15/17/18 四个 loading 计数与「未复测」批注），顶到门面位置就等于对外自相矛盾。
  */
 const PRIVATE_DOCS = [
   "docs/full-review-2026-09-15.md",
@@ -119,7 +123,7 @@ function main() {
     fatal("工作树不干净，请先提交（本脚本不会替你 commit）");
   }
   if (!fs.existsSync(path.join(REPO_DIR, BLUEPRINT))) {
-    fatal(`缺少蓝图源文件 ${BLUEPRINT} —— 公开仓 README 依赖它，无法继续`);
+    fatal(`缺少 ${BLUEPRINT} —— 它是设计系统说明的源文件，缺失说明树不完整`);
   }
   const localHead = gitOut(["rev-parse", "HEAD"]);
   console.log(`  本地 HEAD = ${localHead.slice(0, 12)}`);
@@ -181,20 +185,14 @@ function main() {
   }
   console.log(`  ✓ 工作树 ${treePaths.length} 个文件，0 命中`);
 
-  // ⑦ 公开仓 README = 蓝图（源文件在仓内，可复现）
-  step("⑦ 覆盖公开仓 README");
-  fs.copyFileSync(path.join(TMP, BLUEPRINT), path.join(TMP, "README.md"));
+  // ⑦ 公开仓 README 不再覆写：门面就是仓内那份入口文档，蓝图退回 docs/。
+  // 旧做法（README = 设计蓝图）把一份内部复核流水账推到门面位置——同一文件里并存
+  // 12 / 15 / 17 / 18 四个 loading 计数与「⚠️ 未复测」批注，读者判断不了现状。
+  // 这里只留「取错源文件」的兜底校验：README 必须存在且声明 GPL-3.0。
+  step("⑦ 校验公开仓 README");
   const readme = fs.readFileSync(path.join(TMP, "README.md"), "utf8");
-  if (!/GPL-3\.0/.test(readme)) fatal("蓝图 README 未声明 GPL-3.0，疑似取错源文件");
-  console.log(`  ✓ README = ${BLUEPRINT}（${readme.split("\n").length} 行）`);
-
-  gitOut(["add", "-A"], TMP);
-  if (gitOut(["status", "--porcelain"], TMP)) {
-    git(["commit", "-m", "chore: 同步公开仓库（README = 设计蓝图）"], { cwd: TMP });
-    console.log("  ✓ 已提交");
-  } else {
-    console.log("  · README 无变化，跳过提交");
-  }
+  if (!/GPL-3\.0/.test(readme)) fatal("README 未声明 GPL-3.0，疑似取错源文件");
+  console.log(`  ✓ README = 仓内入口文档（${readme.split("\n").length} 行，未覆写）`);
 
   // ⑧ 推送公开仓（显式租约强推）
   step("⑧ 公开仓 slowlog1");
