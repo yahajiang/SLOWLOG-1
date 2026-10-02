@@ -30,7 +30,7 @@
 | 数据 | Prisma **9** 个 model，**零 enum**（枚举一律 `String` + zod 白名单） |
 | 文案 | `lib/i18n.ts` **339** 键，`zh` / `en` / `export type Dict` 三块逐键对称 |
 | 设计资产 | `public/design/gallery.html` **65** 条目（喂给 AI 的规范源，与代码同源） |
-| 首屏 JS | 共享 chunk **103 kB**；构建编译约 10s |
+| 首屏 JS | 共享 chunk **103 kB**（`next build` 输出的首屏共享体积；编译耗时随机器浮动，不写进文档） |
 
 ## 技术栈
 

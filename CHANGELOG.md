@@ -18,6 +18,7 @@
 | 结论 | 细节 | 位置 |
 |---|---|---|
 | **站点夜版与「显示目录」对文章全部失效** | `withSiteDefaults` 判「未定制」拿的是 `DEFAULT_PAGE_CONFIG`（`theme=system`/`showTOC=true`），而未进过配置面板的文章实际带的是 Prisma 列默认（`theme=light`/`showTOC=false`）⇒ 两者永不相等，站点默认从不回填，`PostClient` 见 `theme==="light"` 就给每篇挂 `sl-force-light`，夜版进不了文章页。判据换成与实际存储值逐字段相同的 `UNSET_PAGE_CONFIG` 哨兵；代价：显式选成 light+不显示目录 的文章会被当作未定制 | `lib/page-config.ts`、`scripts/check-page-config-default.mjs` |
+| **编辑器预览与读者端分叉** | 预览面板只 `parsePageConfig(post.pageConfig)`，不套站点默认；夜版修复后读者端跟随站点、预览仍浅色，而面板标题正写着「预览 · 与前台一致」。现预览走 `withSiteDefaults`，`pageConfig` 存储值不变（`ConfigPanel` 与保存仍用原始量，避免把站点默认固化进文章） | `app/dashboard/posts/[id]/EditorClient.tsx` |
 
 ### Security
 
